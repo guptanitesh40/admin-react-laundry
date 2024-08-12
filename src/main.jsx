@@ -8,14 +8,13 @@ import EnterEmail from "./app/auth/components/EnterEmail.tsx";
 import CheckEmail from "./app/auth/components/CheckEmail.tsx";
 import ChangePassword from "./app/auth/components/ChangePassword.tsx";
 import DashBoard from "./app/auth/components/DashBorad.tsx";
-// import DashBoard from "./app/auth/components/DashBoard.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <App />, 
     children: [
-      { path: "/signin", element: <Signin /> },
+      { path: "/", element: <Signin /> },
       { path: "/signup", element: <Signup /> },
       { path: "/dashboard", element: <DashBoard /> },
       {

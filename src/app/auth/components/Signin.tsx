@@ -6,7 +6,7 @@ import useSignin from '../../hooks/useSignin';
 const Signin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [roleId, setRoleId] = useState(1); // Ensure the roleId is used here
+  const [roleId] = useState(1); // Ensure the roleId is used here
 
   const { Signin, loading, error } = useSignin();
   const navigate = useNavigate();
