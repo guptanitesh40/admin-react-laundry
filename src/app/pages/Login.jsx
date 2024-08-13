@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import useSignin from "../hooks/useSignin";
 import "../../style.css";
 import { login } from "../utils/authSlice";
+import useLogin from "../hooks/useLogin";
 
-const Signin = () => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [roleId] = useState(1);
 
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
-  const { Signin, loading, error } = useSignin();
+  const { Login, loading, error } = useLogin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,10 +23,13 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await Signin(username, password, roleId);
+    const success = await Login(username, password, roleId);
+  
     if (success) {
-      dispatch(login(true));
+      dispatch(login({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
       navigate("/dashboard");
+    } else {
+      dispatch(login({ isAuthenticated: false, token: null }));
     }
   };
 
@@ -38,29 +41,15 @@ const Signin = () => {
             <form
               onSubmit={handleSubmit}
               className="card-body flex flex-col gap-5 p-10"
-              id="sign_in_form"
+              id="log_in_form"
             >
               <div className="text-center mb-2.5">
                 <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
-                  Sign in
+                  Log in
                 </h3>
-                <div className="flex items-center justify-center font-medium">
-                  <span className="text-2sm text-gray-600 me-1.5">
-                    Need an account?
-                  </span>
-                  <Link to="/signup" className="text-2sm link">
-                    Sign up
-                  </Link>
-                </div>
+
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="border-t border-gray-200 w-full"></span>
-                <span className="text-2xs text-gray-500 font-medium uppercase">
-                  Or
-                </span>
-                <span className="border-t border-gray-200 w-full"></span>
-              </div>
               <div className="flex flex-col gap-1">
                 <label className="form-label text-gray-900">Email</label>
                 <input
@@ -103,21 +92,13 @@ const Signin = () => {
                   </button>
                 </div>
               </div>
-              <label className="checkbox-group">
-                <input
-                  className="checkbox checkbox-sm"
-                  name="check"
-                  type="checkbox"
-                  value="1"
-                />
-                <span className="checkbox-label">Remember me</span>
-              </label>
+              
               <button
                 type="submit"
                 className="btn btn-primary flex justify-center grow"
                 disabled={loading}
               >
-                {loading ? "Signing In..." : "Sign In"}
+                {loading ? "Logging In..." : "Log In"}
               </button>
             </form>
           </div>
@@ -127,4 +108,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Login;
