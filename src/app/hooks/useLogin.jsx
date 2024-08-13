@@ -9,43 +9,30 @@ const useLogin = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(LOGIN_URL , {
+      const response = await fetch(LOGIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, role_id: roleId }),
       });
 
+      const result = await response.json();
+      const { statusCode, message } = result;
+
       if (!response.ok) {
-        let errorMessage = "Login failed. Please check your credentials.";
-        switch (response.status) {
-          case 400:
-            errorMessage = "Bad Request. Please check the input fields.";
-            break;
-          case 401:
-            errorMessage = "Unauthorized. Incorrect username or password.";
-            break;
-          case 404:
-            errorMessage = "Endpoint not found.";
-            break;
-          default:
-            errorMessage = "Login failed. Please try again later.";
-            break;
-        }
+        const errorMessage = message ;
         toast.error(errorMessage, { position: "top-center" });
         return false;
       }
 
-      const data = await response.json();
-      const token = data.data?.token;
+      const token = result.data?.user?.token;
 
-      if (!token) {
-        toast.error("Invalid credentials. Please try again.", { position: "top-center" });
-        return false;
+      if (statusCode === 200) {
+        toast.success(message , { position: "top-center" });
+        localStorage.setItem("authToken", token);
+        return true;
       }
-
-      localStorage.setItem("authToken", token);
-      toast.success("Login successful!", { position: "top-center" });
-      return true;
+      toast.error(message , { position: "top-center" });
+      return false;
     } catch (error) {
       toast.error("An error occurred during login. Please try again.", { position: "top-center" });
       return false;
