@@ -1,43 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './style.css';
-import useSignin from '../../hooks/useSignin';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import useSignin from "../hooks/useSignin";
+import "../../style.css";
+import { login } from "../utils/authSlice";
 
 const Signin = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [roleId] = useState(1); // Ensure the roleId is used here
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [roleId] = useState(1);
 
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
   const { Signin, loading, error } = useSignin();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const success = await Signin(username, password, roleId);
-    
     if (success) {
-      navigate('/dashboard'); 
-    } else {
-      console.error('Login failed');      
+      dispatch(login(true));
+      navigate("/dashboard");
     }
   };
-
-  useEffect(() => {
-    const defaultThemeMode = 'light';
-    let themeMode;
-
-    if (document.documentElement) {
-      themeMode = localStorage.getItem('theme') ||
-        document.documentElement.getAttribute('data-theme-mode') ||
-        defaultThemeMode;
-
-      if (themeMode === 'system') {
-        themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-
-      document.documentElement.classList.add(themeMode);
-    }
-  }, []);
 
   return (
     <div className="flex h-full dark:bg-coal-500">
@@ -50,16 +41,24 @@ const Signin = () => {
               id="sign_in_form"
             >
               <div className="text-center mb-2.5">
-                <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">Sign in</h3>
+                <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
+                  Sign in
+                </h3>
                 <div className="flex items-center justify-center font-medium">
-                  <span className="text-2sm text-gray-600 me-1.5">Need an account?</span>
-                  <Link to="/signup" className="text-2sm link">Sign up</Link>
+                  <span className="text-2sm text-gray-600 me-1.5">
+                    Need an account?
+                  </span>
+                  <Link to="/signup" className="text-2sm link">
+                    Sign up
+                  </Link>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="border-t border-gray-200 w-full"></span>
-                <span className="text-2xs text-gray-500 font-medium uppercase">Or</span>
+                <span className="text-2xs text-gray-500 font-medium uppercase">
+                  Or
+                </span>
                 <span className="border-t border-gray-200 w-full"></span>
               </div>
               <div className="flex flex-col gap-1">
@@ -76,10 +75,16 @@ const Signin = () => {
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between gap-1">
                   <label className="form-label text-gray-900">Password</label>
-                  <Link className="text-2sm link shrink-0" to="/reset-password/enter-email">Forgot Password?</Link>
+                  <Link
+                    className="text-2sm link shrink-0"
+                    to="/reset-password/enter-email"
+                  >
+                    Forgot Password?
+                  </Link>
                 </div>
-                <label className="input border border-gray-300 rounded-md p-2" data-toggle-password="true">
+                <div className="relative">
                   <input
+                    className="input border border-gray-300 rounded-md p-2"
                     name="user_password"
                     placeholder="Enter Password"
                     type="password"
@@ -87,14 +92,24 @@ const Signin = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <button className="btn btn-icon" type="button" data-toggle-password-trigger="true">
+                  <button
+                    className="btn btn-icon absolute right-2 top-1/2 transform -translate-y-1/2"
+                    type="button"
+                    onClick={() => {
+                    }}
+                  >
                     <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
                     <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
                   </button>
-                </label>
+                </div>
               </div>
               <label className="checkbox-group">
-                <input className="checkbox checkbox-sm" name="check" type="checkbox" value="1" />
+                <input
+                  className="checkbox checkbox-sm"
+                  name="check"
+                  type="checkbox"
+                  value="1"
+                />
                 <span className="checkbox-label">Remember me</span>
               </label>
               <button
@@ -104,7 +119,6 @@ const Signin = () => {
               >
                 {loading ? "Signing In..." : "Sign In"}
               </button>
-              {error && <p className="text-red-500">{error}</p>}
             </form>
           </div>
         </div>

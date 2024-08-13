@@ -13,7 +13,7 @@ const useSignin = () => {
       const res = await fetch('http://3.109.181.159:3000/auth/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, role_id: roleId }), // Use role_id here
+        body: JSON.stringify({ username, password, role_id: roleId }), 
       });
 
       if (!res.ok) {
@@ -24,10 +24,10 @@ const useSignin = () => {
 
       localStorage.setItem("authToken", data.token);
 
-      toast.success("Login successful!");
+      toast.success("Login successful!", { position: "top-center" }); 
       return true; 
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message, { position: "top-center" });
       return false; 
     } finally {
       setLoading(false);
