@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import Login from "./app/pages/Login";
 
 const App = () => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state:any) => state.auth.isAuthenticated);
 
   return (
     <Routes>

@@ -4,15 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import "../../style.css";
 import { login } from "../utils/authSlice";
 import useLogin from "../hooks/useLogin";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [roleId] = useState(1);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [roleId] = useState<number>(1);
 
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
-  const { Login, loading, error } = useLogin();
+  const { Login, loading } = useLogin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +22,19 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (username.length > 50) {
+      toast.error("Username must be 50 characters or fewer.", { position: "top-center" });
+      return;
+    }
+
+    if (password.length > 50) {
+      toast.error("Password must be 50 characters or fewer.", { position: "top-center" });
+      return;
+    }
+    
     const success = await Login(username, password, roleId);
   
     if (success) {
@@ -47,14 +59,13 @@ const Login = () => {
                 <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
                   Log in
                 </h3>
-
               </div>
 
               <div className="flex flex-col gap-1">
                 <label className="form-label text-gray-900">Email</label>
                 <input
                   className="input border border-gray-300 rounded-md p-2"
-                  placeholder="email@email.com"
+                  placeholder="email@example.com"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -109,3 +120,4 @@ const Login = () => {
 };
 
 export default Login;
+``
