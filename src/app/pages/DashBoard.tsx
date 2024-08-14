@@ -6,7 +6,7 @@ import { logout } from "../utils/authSlice";
 const DashBoard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state:any) => state.auth.isAuthenticated);
 
   useEffect(() => {
     if (!isAuthenticated) {
