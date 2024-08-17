@@ -43,7 +43,7 @@ const Login = () => {
   
     if (success) {
       dispatch(login({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
-      navigate("/admin/dashboard");
+      navigate("/dashboard");
     } else {
       dispatch(login({ isAuthenticated: false, token: null }));
     }
