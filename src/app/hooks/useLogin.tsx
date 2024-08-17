@@ -6,14 +6,14 @@ const useLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const Login = useCallback(
-    async (username: string, password: string, roleId: number): Promise<boolean> => {
+    async (username: string, password: string, roleId: number, device_type: string, device_token: string): Promise<boolean> => {
       setLoading(true);
 
       try {
         const response = await fetch(LOGIN_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, role_id: roleId }),
+          body: JSON.stringify({ username, password, role_id: roleId, device_type, device_token }),
         });
 
         const result = await response.json();
