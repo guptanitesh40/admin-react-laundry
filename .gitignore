@@ -17,6 +17,7 @@ dist/
 build/
 
 src/metronic/
+public/
 
 # Dependency directories
 jspm_packages/
