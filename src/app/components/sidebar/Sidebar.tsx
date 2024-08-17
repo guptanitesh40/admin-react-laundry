@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const Sidebar: React.FC = () => {
 
@@ -66,7 +67,7 @@ export const Sidebar: React.FC = () => {
               <i className="ki-filled ki-element-11 text-lg"></i>
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
-              Dashboards
+              <Link to="/dashboard">Dashboard</Link>
             </span>
           </div>
         

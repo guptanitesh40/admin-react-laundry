@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../utils/authSlice";
 
 export const Header: React.FC = () => {
@@ -102,17 +102,19 @@ export const Header: React.FC = () => {
 
                 <div className="flex flex-col">
                   <div className="menu-item">
-                    <a
+                    <Link
                       className="menu-link"
-                      href="html/demo1/account/home/user-profile.html"
+                      to="/profile"
                     >
                       <span className="menu-icon">
                         <i className="ki-filled ki-profile-circle"></i>
                       </span>
                       <span className="menu-title">My Profile</span>
-                    </a>
+                      
+                    </Link>
                   </div>
                 </div>
+                
                 <div className="menu-separator"></div>
 
                 <div className="flex flex-col">
