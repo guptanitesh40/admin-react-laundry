@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "../components/sidebar/Sidebar";
-import { Header } from "../components/header/Header";
-import { Footer } from "../components/footer/Footer";
+import { Sidebar } from "../sidebar/Index";
+import { Header } from "../header/Index";
+import { Footer } from "../footer/Index";
 
 
 const MasterLayout: React.FC = () => {

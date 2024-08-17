@@ -1,11 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import MasterLayout from '../layout/MasterLayout';
-import DashBoard from '../components/dashboard/DashBoard';
+import MasterLayout from '../components/layout/Index';
+import DashBoard from '../components/dashboard/Index';
 
 const PrivateRoutes: React.FC = () => {
 
-  const Profile = lazy(() => import('../components/profile/Profile'));
+  const Profile = lazy(() => import('../components/profile/Index'));
 
   return (
     <Routes>
