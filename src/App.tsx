@@ -1,12 +1,9 @@
 import React, { Suspense, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import KTComponent from "./metronic/core/"; 
+import KTComponent from "./metronic/core/index"; 
 import KTLayout from "./metronic/app/layouts/demo1"; 
-import Login from './app/pages/Login';
 
 const App: React.FC = () => {
-  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
 
   useEffect(() => {
     KTComponent.init();
@@ -15,7 +12,7 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      {isAuthenticated ? <Outlet /> : <Login/>}
+      <Outlet />
     </Suspense>
   );
 };

@@ -10,9 +10,7 @@ const rootElement = document.getElementById('root') as HTMLElement;
 
 ReactDOM.createRoot(rootElement).render(
   <Provider store={store}>
-    <BrowserRouter>
       <AppRoutes />
       <Toaster position="top-center" reverseOrder={false} />
-    </BrowserRouter>
   </Provider>
 );

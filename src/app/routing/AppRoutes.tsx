@@ -1,15 +1,19 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Login from '../pages/Login';
-import { PrivateRoutes } from './PrivateRoutes';
-import App from '../../App';
+import React from "react";
+import { useSelector } from "react-redux";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Login from "../pages/Login";
+import { PrivateRoutes } from "./PrivateRoutes";
+import App from "../../App";
+import { ForgotPassword } from "../pages/ForgotPassword";
 
 
 const AppRoutes: React.FC = () => {
-  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: any) => state.auth.isAuthenticated
+  );
 
   return (
+    <BrowserRouter >
     <Routes>
       <Route element={<App />}>
         {isAuthenticated ? (
@@ -19,12 +23,15 @@ const AppRoutes: React.FC = () => {
           </>
         ) : (
           <>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </>
         )}
       </Route>
     </Routes>
+    </BrowserRouter>
+
   );
 };
 

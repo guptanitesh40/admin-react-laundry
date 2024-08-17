@@ -22,7 +22,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/admin/dashboard");
+      navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
@@ -82,7 +82,7 @@ const Login = () => {
                   <label className="form-label text-gray-900">Password</label>
                   <Link
                     className="text-2sm link shrink-0"
-                    to="#"
+                    to="/forgot-password"
                   >
                     Forgot Password?
                   </Link>

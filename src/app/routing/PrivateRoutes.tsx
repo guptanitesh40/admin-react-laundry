@@ -11,7 +11,6 @@ const PrivateRoutes: React.FC = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         <Route path='/dashboard' element={<DashBoard />} />
-        {/* <Route path='*' element={<Navigate to='/dashboard' />} /> */}
 
         <Route 
           path='/profile' 
@@ -21,7 +20,8 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
             }
         />
-        
+        <Route path="*" element={<h2 style={{ margin: '100px' }}>Page Not Found. Please navigate to a valid page.</h2>} />
+
       </Route>
     </Routes>
   );
