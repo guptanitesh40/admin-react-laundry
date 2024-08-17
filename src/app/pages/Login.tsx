@@ -6,6 +6,10 @@ import { login } from "../utils/authSlice";
 import useLogin from "../hooks/useLogin";
 import toast from "react-hot-toast";
 
+const roleId = 1;
+const device_type = "sasas";
+const device_token = "sdlknoin";
+
 const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -18,7 +22,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
@@ -35,24 +39,25 @@ const Login = () => {
       return;
     }
     
-    const success = await Login(username, password, roleId);
+    const success = await Login(username, password, roleId, device_type, device_token);
   
     if (success) {
       dispatch(login({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } else {
       dispatch(login({ isAuthenticated: false, token: null }));
     }
   };
 
   return (
-    <div className="flex h-full dark:bg-coal-500">
+    <div className="flex h-full dark:bg-coal-500 ">
       <div className="grid lg:grid-cols-2 grow">
         <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1">
-          <div className="card max-w-[370px] w-full">
+          <div className="card max-w-[450px] w-full">
+
             <form
               onSubmit={handleSubmit}
-              className="card-body flex flex-col gap-5 p-10"
+              className="card-body flex flex-col gap-5 p-10 w-[370px]"
               id="log_in_form"
             >
               <div className="text-center mb-2.5">
@@ -77,7 +82,7 @@ const Login = () => {
                   <label className="form-label text-gray-900">Password</label>
                   <Link
                     className="text-2sm link shrink-0"
-                    to="/reset-password/enter-email"
+                    to="#"
                   >
                     Forgot Password?
                   </Link>
@@ -92,15 +97,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <button
-                    className="btn btn-icon absolute right-2 top-1/2 transform -translate-y-1/2"
-                    type="button"
-                    onClick={() => {
-                    }}
-                  >
-                    <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
-                    <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
-                  </button>
+                  
                 </div>
               </div>
               
