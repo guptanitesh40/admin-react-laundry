@@ -1,43 +1,41 @@
-import { useState, useCallback } from "react";
-import toast from "react-hot-toast";
-import { LOGIN_URL } from "../utils/constant";
+import { useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
+import { LOGIN_URL } from '../utils/constant';
 
 const useLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const Login = useCallback(
-    async (username: string, password: string, roleId: number, device_type: string, device_token: string): Promise<boolean> => {
+  const login = useCallback(
+    async (username: string, password: string, roleId: number, deviceType: string, deviceToken: string): Promise<boolean> => {
       setLoading(true);
 
       try {
         const response = await fetch(LOGIN_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, role_id: roleId, device_type, device_token }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, role_id: roleId, device_type: deviceType, device_token: deviceToken }),
         });
 
         const result = await response.json();
         const { statusCode, message } = result;
 
         if (!response.ok) {
-          const errorMessage = message;
-          toast.error(errorMessage, { position: "top-center" });
+          toast.error(message || 'Login failed. Please try again.', { position: 'top-center' });
           return false;
         }
 
-        const token = result.data?.user?.token;
+        const token = result.data?.token;
 
-        if (statusCode === 200) {
-          toast.success(message, { position: "top-center" });
-          localStorage.setItem("authToken", token);
+        if (statusCode === 200 && token) {
+          localStorage.setItem('authToken', token);
+          toast.success(message || 'Login successful!', { position: 'top-center' });
           return true;
         }
-        toast.error(message, { position: "top-center" });
+
+        toast.error(message || 'Login failed. Please try again.', { position: 'top-center' });
         return false;
       } catch (error) {
-        toast.error("An error occurred during login. Please try again.", {
-          position: "top-center",
-        });
+        toast.error('An error occurred during login. Please try again.', { position: 'top-center' });
         return false;
       } finally {
         setLoading(false);
@@ -46,7 +44,7 @@ const useLogin = () => {
     []
   );
 
-  return { loading, Login };
+  return { loading, login };
 };
 
 export default useLogin;

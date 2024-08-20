@@ -2,22 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../../style.css";
-import { login } from "../utils/authSlice";
+import { login as loginAction } from "../utils/authSlice";
 import useLogin from "../hooks/useLogin";
 import toast from "react-hot-toast";
 
-const roleId = 1;
 const device_type = "sasas";
 const device_token = "sdlknoin";
 
-const Login = () => {
+const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [roleId] = useState<number>(1);
 
   const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
-  const { Login, loading } = useLogin();
+  const { login, loading } = useLogin();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,13 +37,13 @@ const Login = () => {
       return;
     }
     
-    const success = await Login(username, password, roleId, device_type, device_token);
+    const success = await login(username, password, 1, device_type, device_token);
   
     if (success) {
-      dispatch(login({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
+      dispatch(loginAction({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
       navigate("/dashboard");
     } else {
-      dispatch(login({ isAuthenticated: false, token: null }));
+      dispatch(loginAction({ isAuthenticated: false, token: null }));
     }
   };
 
@@ -54,7 +52,6 @@ const Login = () => {
       <div className="grid lg:grid-cols-2 grow">
         <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1">
           <div className="card max-w-[450px] w-full">
-
             <form
               onSubmit={handleSubmit}
               className="card-body flex flex-col gap-5 p-10 w-[370px]"
@@ -97,7 +94,6 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  
                 </div>
               </div>
               
@@ -117,4 +113,3 @@ const Login = () => {
 };
 
 export default Login;
-``

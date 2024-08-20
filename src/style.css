@@ -3393,9 +3393,9 @@ video {
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
   background-color: var(--tw-table-head-background-color);
-  color: var(--tw-gray-600);
-  font-weight: 500;
-  font-size: 0.8125rem;
+  color: var(--tw-gray-800);
+  font-weight: 600;
+  font-size: 0.9125rem;
   line-height: 1.125rem;
   vertical-align: middle;
 }
