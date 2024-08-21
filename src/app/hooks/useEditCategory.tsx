@@ -34,7 +34,6 @@ const useEditCategory = (refetchCategories: () => void) => {
         return false;
       }
     } catch (err) {
-      console.error('Edit failed:', err);
       toast.error('An unexpected error occurred while editing the category.', { position: 'top-center' });
       return false;
     } finally {

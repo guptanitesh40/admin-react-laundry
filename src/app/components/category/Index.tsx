@@ -108,7 +108,6 @@ const Category: React.FC = () => {
         toast.error("Failed to update category. Please try again.", { position: "top-center" });
       }
     } catch (error) {
-      console.error("Error updating category:", error);
       toast.error("An error occurred while updating the category. Please try again.", { position: "top-center" });
     }
   };
@@ -126,8 +125,14 @@ const Category: React.FC = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSaveClick();
+    }
+  };
+
   return (
-    <div className="p-4">
+    <div>
       <div className="card-header border-0 pt-5 mb-4">
         <h3 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-3xl mb-1">Category</span>
@@ -231,6 +236,7 @@ const Category: React.FC = () => {
           value={newCategory}
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="Category Name"
+          onKeyDown={handleKeyDown}
           className="border border-gray-300 px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
         <div className="flex justify-end space-x-4 mt-4">
