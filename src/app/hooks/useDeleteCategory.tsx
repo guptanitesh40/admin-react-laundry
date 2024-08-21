@@ -7,7 +7,7 @@ const useDeleteCategory = () => {
   const deleteCategory = async (categoryId: number): Promise<boolean> => {
     setLoading(true);
 
-    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_CATEGORY_URL}/${categoryId}`;
+    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${categoryId}`;
 
     try {
       const token = localStorage.getItem("authToken");

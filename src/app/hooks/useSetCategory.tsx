@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-const SET_CATEGORY_URL =`${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_CATEGORY_URL}`;
+const SET_CATEGORY_URL =`${import.meta.env.VITE_BASE_URL}/admin/categories`;
 
 const useSetCategory = () => {
   const [loading, setLoading] = useState<boolean>(false);

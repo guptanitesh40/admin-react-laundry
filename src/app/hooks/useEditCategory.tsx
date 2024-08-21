@@ -8,7 +8,7 @@ const useEditCategory = (refetchCategories: () => void) => {
   const editCategory = async (categoryId: number, newName: string): Promise<boolean> => {
     setLoading(true);
 
-    const EDIT_URL = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_CATEGORY_URL}/${categoryId}`;
+    const EDIT_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories${categoryId}`;
 
     try {
       const response = await fetch( EDIT_URL, {

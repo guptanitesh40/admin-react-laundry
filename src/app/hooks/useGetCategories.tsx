@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
-const GET_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_CATEGORY_URL}`;
+const GET_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
 
 interface Category {
   id: number;
