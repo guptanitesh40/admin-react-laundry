@@ -7,7 +7,8 @@ import Shimmer from '../components/shimmer';
 const PrivateRoutes: React.FC = () => {
 
   const Profile = lazy(() => import('../components/profile/Index'));
-  const Category = lazy(() => import('../components/category/index')); 
+  const Category = lazy(() => import('../components/category/Index')); 
+  const Product = lazy(() => import('../components/product/Product')); 
 
   return (
     <Routes>
@@ -19,6 +20,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Shimmer />}>
               <Category />
+            </Suspense>
+          } 
+        />
+
+        <Route 
+          path='/product' 
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <Product />
             </Suspense>
           } 
         />

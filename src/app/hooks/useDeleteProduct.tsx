@@ -1,13 +1,13 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const useDeleteCategory = () => {
+const useDeleteProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const deleteCategory = async (categoryId: number): Promise<boolean> => {
+  const deleteProduct = async (productId: number): Promise<boolean> => {
     setLoading(true);
 
-    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${categoryId}`;
+    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${productId}`;
 
     try {
       const token = localStorage.getItem("authToken");
@@ -19,7 +19,7 @@ const useDeleteCategory = () => {
         return false;
       }
 
-      const response = await fetch( DELETE_URL, {
+      const response = await fetch(DELETE_URL, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -29,16 +29,15 @@ const useDeleteCategory = () => {
 
       if (!response.ok) {
         const result = await response.json();
-        toast.error(result.message,{
+        toast.error(result.message ,{
           position: "top-center",
         });
         return false;
       }
 
-      const result = await response.json();
       return true;
     } catch (error) {
-      toast.error("An error occurred while deleting the category.", {
+      toast.error("An error occurred while deleting the product.", {
         position: "top-center",
       });
       return false;
@@ -47,7 +46,7 @@ const useDeleteCategory = () => {
     }
   };
 
-  return { deleteCategory, loading };
+  return { deleteProduct, loading };
 };
 
-export default useDeleteCategory;
+export default useDeleteProduct;

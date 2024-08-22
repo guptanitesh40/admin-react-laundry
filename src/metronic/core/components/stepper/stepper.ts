@@ -1,6 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable require-jsdoc */
-
 import KTData from '../../helpers/data';
 import KTDom from '../../helpers/dom';
 import KTComponent from '../component';
@@ -40,7 +37,6 @@ export class KTStepper extends KTComponent implements KTStepperInterface {
 
   protected _handlers(): void {
     if (!this._nextElement) {
-      console.error('data-stepper-next not found');
       return;
     }
 
