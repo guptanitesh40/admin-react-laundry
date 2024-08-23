@@ -29,7 +29,7 @@ const useDeleteCategory = () => {
 
       if (!response.ok) {
         const result = await response.json();
-        toast.error(result.message || "Failed to delete category.", {
+        toast.error(result.message,{
           position: "top-center",
         });
         return false;

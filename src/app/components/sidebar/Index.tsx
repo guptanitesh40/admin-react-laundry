@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MdCategory } from "react-icons/md";
+import { FaProductHunt } from "react-icons/fa";
 
 export const Sidebar: React.FC = () => {
 
@@ -89,6 +90,27 @@ export const Sidebar: React.FC = () => {
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
               <Link to="/category">Category</Link>
+            </span>
+            
+          </div>
+        
+        </div>
+
+        <div
+          className="menu-item"
+          data-menu-item-toggle="accordion"
+          data-menu-item-trigger="click"
+        >
+          <div
+            className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+            tabIndex={0}
+          >
+            <span className="menu-icon items-start text-gray-500 dark:text-gray-400 w-[20px]">
+            <FaProductHunt size={32}/>
+            
+            </span>
+            <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+              <Link to="/product">Product</Link>
             </span>
             
           </div>

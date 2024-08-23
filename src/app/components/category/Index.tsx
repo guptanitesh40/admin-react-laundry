@@ -1,24 +1,31 @@
 import React, { useState, useRef } from "react";
 import Modal from "react-modal";
 import toast from "react-hot-toast";
-import { FaCheck, FaPencilAlt } from "react-icons/fa";
+import { FaCheck, FaPencilAlt, FaPlus } from "react-icons/fa";
 import Shimmer from "../shimmer";
-import Swal from 'sweetalert2';
-import { useDeleteCategory, useEditCategory, useGetCategories, useSetCategory } from "../../hooks";
+import Swal from "sweetalert2";
+import {
+  useDeleteCategory,
+  useUpdateCategory,
+  useGetCategories,
+  useAddCategory,
+} from "../../hooks";
 
 Modal.setAppElement("#root");
 
 const Category: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [newCategory, setNewCategory] = useState<string>("");
-  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
+    null
+  );
   const [editingCategoryName, setEditingCategoryName] = useState<string>("");
   const [originalCategoryName, setOriginalCategoryName] = useState<string>("");
 
   const { categories, loading, refetch } = useGetCategories();
-  const { setCategory, loading: saving } = useSetCategory();
+  const { setCategory, loading: saving } = useAddCategory();
   const { deleteCategory, loading: deleting } = useDeleteCategory();
-  const { editCategory, loading: editing } = useEditCategory(refetch);
+  const { editCategory, loading: editing } = useUpdateCategory(refetch);
 
   const editableCellRef = useRef<HTMLTableCellElement | null>(null);
 
@@ -42,7 +49,9 @@ const Category: React.FC = () => {
         toast.error("Failed to add category.", { position: "top-center" });
       }
     } catch (error) {
-      toast.error("An error occurred while adding the category.", { position: "top-center" });
+      toast.error("An error occurred while adding the category.", {
+        position: "top-center",
+      });
     }
   };
 
@@ -53,14 +62,14 @@ const Category: React.FC = () => {
 
   const handleDeleteCategory = async (id: number) => {
     const { isConfirmed } = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this category!',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "You will not be able to recover this category!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel'
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
     });
 
     if (isConfirmed) {
@@ -68,15 +77,17 @@ const Category: React.FC = () => {
         const success = await deleteCategory(id);
         if (success) {
           refetch();
-          Swal.fire('Deleted!', 'The category has been deleted.', 'success');
+          Swal.fire("Deleted!", "The category has been deleted.", "success");
         } else {
-          toast.error('Failed to delete category.', { position: 'top-center' });
+          toast.error("Failed to delete category.", { position: "top-center" });
         }
       } catch (error) {
-        toast.error('An error occurred while deleting the category.', { position: 'top-center' });
+        toast.error("An error occurred while deleting the category.", {
+          position: "top-center",
+        });
       }
     } else {
-      Swal.fire('Cancelled', 'The category is safe :)', 'error');
+      Swal.fire("Cancelled", "The category is safe :)", "error");
     }
   };
 
@@ -98,17 +109,25 @@ const Category: React.FC = () => {
     }
 
     try {
-      const success = await editCategory(editingCategoryId!, editingCategoryName);
+      const success = await editCategory(
+        editingCategoryId!,
+        editingCategoryName
+      );
       if (success) {
         setEditingCategoryId(null);
         setEditingCategoryName("");
         setOriginalCategoryName("");
         refetch();
       } else {
-        toast.error("Failed to update category. Please try again.", { position: "top-center" });
+        toast.error("Failed to update category. Please try again.", {
+          position: "top-center",
+        });
       }
     } catch (error) {
-      toast.error("An error occurred while updating the category. Please try again.", { position: "top-center" });
+      toast.error(
+        "An error occurred while updating the category. Please try again.",
+        { position: "top-center" }
+      );
     }
   };
 
@@ -126,16 +145,18 @@ const Category: React.FC = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSaveClick();
     }
   };
 
   return (
     <div>
-      <div className="card-header border-0 pt-5 mb-4">
+      <div className="card-header border-0 mb-">
         <h3 className="card-title flex flex-col items-start">
-          <span className="card-label font-bold text-gray-700 text-3xl mb-1">Category</span>
+          <span className="card-label font-bold text-gray-700 text-3xl mb-1">
+            Category
+          </span>
         </h3>
         <div className="card-toolbar">
           <button
@@ -143,7 +164,9 @@ const Category: React.FC = () => {
             className="bg-gradient-to-r from-teal-400 to-teal-600 text-white font-semibold px-2 py-2 rounded-lg shadow-lg hover:shadow-xl"
             disabled={saving}
           >
-            + Add Category
+            <div className="flex">
+              <FaPlus className="mt-1 mr-1" /> Add Category
+            </div>{" "}
           </button>
         </div>
       </div>
@@ -154,7 +177,9 @@ const Category: React.FC = () => {
         ) : (
           <div className="table-responsive">
             {categories.length === 0 ? (
-              <p className="text-center text-gray-500">No categories available.</p>
+              <p className="text-center text-gray-500">
+                No categories available.
+              </p>
             ) : (
               <table className="w-full bg-white rounded-lg">
                 <thead className="bg-gray-200 text-gray-700">
@@ -167,17 +192,28 @@ const Category: React.FC = () => {
 
                 <tbody className="divide-y divide-gray-200">
                   {categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-gray-50 transition-colors duration-200">
-                      <td className="px-6 py-4 text-gray-600 font-medium">{category.id}</td>
+                    <tr
+                      key={category.id}
+                      className="hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <td className="px-6 py-4 text-gray-600 font-medium">
+                        {category.id}
+                      </td>
                       <td
-                        ref={category.id === editingCategoryId ? editableCellRef : null}
+                        ref={
+                          category.id === editingCategoryId
+                            ? editableCellRef
+                            : null
+                        }
                         className="px-6 py-4"
                       >
                         {editingCategoryId === category.id ? (
                           <input
                             type="text"
                             value={editingCategoryName}
-                            onChange={(e) => setEditingCategoryName(e.target.value)}
+                            onChange={(e) =>
+                              setEditingCategoryName(e.target.value)
+                            }
                             onKeyPress={handleKeyPress}
                             className="border border-gray-300 px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                             autoFocus
@@ -199,8 +235,10 @@ const Category: React.FC = () => {
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleEditClick(category.id, category.name)}
-                              className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                              onClick={() =>
+                                handleEditClick(category.id, category.name)
+                              }
+                              className="g-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
                             >
                               <FaPencilAlt className="text-yellow-600" />
                             </button>
@@ -249,7 +287,7 @@ const Category: React.FC = () => {
           </button>
           <button
             onClick={handleCancelClick}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg "
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
             disabled={saving}
           >
             Cancel
