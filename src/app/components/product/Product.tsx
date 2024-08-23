@@ -3,7 +3,12 @@ import Modal from "react-modal";
 import toast from "react-hot-toast";
 import { FaPencilAlt, FaPlus, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { useAddProduct, useDeleteProduct, useGetProduct, useUpdateProduct } from "../../hooks";
+import {
+  useAddProduct,
+  useDeleteProduct,
+  useGetProduct,
+  useUpdateProduct,
+} from "../../hooks";
 import Shimmer from "../shimmer";
 import ProductModal from "./ProductModal";
 
@@ -42,32 +47,28 @@ const Product: React.FC = () => {
         text: "You won't be able to revert this!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#dc3545", 
-        cancelButtonColor: "#6c757d", 
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Yes, delete it!",
         cancelButtonText: "No, cancel",
       });
 
       if (isConfirmed) {
-        const success = await deleteProduct(id); 
+        const { success, message } = await deleteProduct(id);
         if (success) {
           refetch();
-          Swal.fire("Deleted!", "The product has been deleted.", "success");
+          Swal.fire(message);
         } else {
-          Swal.fire("Failed!", "Failed to delete the product.", "error");
-          toast.error("Failed to delete product.", { position: "top-center" });
+          Swal.fire(message);
         }
       } else {
-        Swal.fire("Cancelled", "The product is safe :)", "error");
+        Swal.fire("Cancelled", "The product is safe :)", "info");
       }
-    } catch (error) {
-      Swal.fire(
-        "Error",
-        "An error occurred while deleting the product.",
-        "error"
-      );
-      toast.error("An error occurred while deleting the product.", {
-        position: "top-center",
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message ,
+        icon: "error",
       });
     }
   };
@@ -160,7 +161,9 @@ const Product: React.FC = () => {
         editMode={editMode}
         currentProduct={currentProduct}
         addProduct={(formData: FormData) => addProduct(formData)}
-        updateProduct={(id: number, formData: FormData) => updateProduct(id, formData)}
+        updateProduct={(id: number, formData: FormData) =>
+          updateProduct(id, formData)
+        }
         refetch={refetch}
         loading={addingProduct || updatingProduct}
         handleCancelClick={handleCancelClick}
