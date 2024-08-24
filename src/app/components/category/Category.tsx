@@ -4,12 +4,8 @@ import toast from "react-hot-toast";
 import { FaCheck, FaPencilAlt, FaPlus } from "react-icons/fa";
 import Shimmer from "../shimmer";
 import Swal from "sweetalert2";
-import {
-  useDeleteCategory,
-  useUpdateCategory,
-  useGetCategories,
-  useAddCategory,
-} from "../../hooks";
+import { useAddCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "../../hooks";
+
 
 Modal.setAppElement("#root");
 
@@ -23,9 +19,9 @@ const Category: React.FC = () => {
   const [originalCategoryName, setOriginalCategoryName] = useState<string>("");
 
   const { categories, loading, refetch } = useGetCategories();
-  const { setCategory, loading: saving } = useAddCategory();
+  const { addCategory, loading: saving } = useAddCategory();
   const { deleteCategory, loading: deleting } = useDeleteCategory();
-  const { editCategory, loading: editing } = useUpdateCategory(refetch);
+  const { updateCategory, loading: editing } = useUpdateCategory(refetch);
 
   const editableCellRef = useRef<HTMLTableCellElement | null>(null);
 
@@ -40,7 +36,7 @@ const Category: React.FC = () => {
     }
 
     try {
-      const result = await setCategory(newCategory);
+      const result = await addCategory(newCategory);
       if (result.success) {
         setNewCategory("");
         setModalIsOpen(false);
@@ -109,7 +105,7 @@ const Category: React.FC = () => {
     }
 
     try {
-      const success = await editCategory(
+      const success = await updateCategory(
         editingCategoryId!,
         editingCategoryName
       );
@@ -176,7 +172,7 @@ const Category: React.FC = () => {
           <Shimmer />
         ) : (
           <div className="table-responsive">
-            {categories.length === 0 ? (
+            {categories === null ? (
               <p className="text-center text-gray-500">
                 No categories available.
               </p>

@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
 const GET_PRODUCT_URL = `${import.meta.env.VITE_BASE_URL}/admin/products`;
+const token = localStorage.getItem('authToken');
 
 interface Product {
   id: number;
@@ -9,12 +10,11 @@ interface Product {
   image: string; 
 }
 
-const useGetProduct = () => {
+const useGetProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchProduct = useCallback(async () => {
-    const token = localStorage.getItem('authToken');
+  const fetchProduct = useCallback( async () => {
 
     if (!token) {
       toast.error('No authentication token found.', { position: 'top-center' });
@@ -44,7 +44,7 @@ const useGetProduct = () => {
         name: product.name,
         image: product.image, 
       })) || [];
-
+ 
       setProducts(productData);
 
     } catch (err: any) {
@@ -65,4 +65,4 @@ const useGetProduct = () => {
   return { products, loading, refetch: fetchProduct };
 };
 
-export default useGetProduct;
+export default useGetProducts;

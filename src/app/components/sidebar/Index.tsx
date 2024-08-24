@@ -55,9 +55,9 @@ export const Sidebar: React.FC = () => {
         data-menu-accordion-expand-all="false"
         id="sidebar_menu"
       >
-        
+        <Link to="/dashboard">
         <div
-          className="menu-item"
+          className="menu-item hover:bg-gray-50 transition-colors duration-200"
           data-menu-item-toggle="accordion"
           data-menu-item-trigger="click"
         >
@@ -69,15 +69,17 @@ export const Sidebar: React.FC = () => {
               <i className="ki-filled ki-element-11 text-lg"></i>
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
-              <Link to="/dashboard">Dashboard</Link>
+              Dashboard
             </span>
 
           </div>
         
         </div>
+        </Link>
 
+        <Link to="/category">
         <div
-          className="menu-item"
+          className="menu-item hover:bg-gray-50 transition-colors duration-200"
           data-menu-item-toggle="accordion"
           data-menu-item-trigger="click"
         >
@@ -95,9 +97,11 @@ export const Sidebar: React.FC = () => {
           </div>
         
         </div>
+        </Link>
 
+        <Link to="/product">
         <div
-          className="menu-item"
+          className="menu-item hover:bg-gray-50 transition-colors duration-200"
           data-menu-item-toggle="accordion"
           data-menu-item-trigger="click"
         >
@@ -116,6 +120,30 @@ export const Sidebar: React.FC = () => {
           </div>
         
         </div>
+        </Link>
+
+        <Link to="/services">
+        <div
+          className="menu-item hover:bg-gray-50 transition-colors duration-200"
+          data-menu-item-toggle="accordion"
+          data-menu-item-trigger="click"
+        >
+          <div
+            className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+            tabIndex={0}
+          >
+            <span className="menu-icon items-start text-gray-500 dark:text-gray-400 w-[20px]">
+            <FaProductHunt size={32}/>
+            
+            </span>
+            <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+              <Link to="/services">Services</Link>
+            </span>
+            
+          </div>
+        
+        </div>
+        </Link>
        
       </div>
 

@@ -3,10 +3,10 @@ import { toast } from 'react-hot-toast';
 
 const SET_CATEGORY_URL =`${import.meta.env.VITE_BASE_URL}/admin/categories`;
 
-const useSetCategory = () => {
+const useAddCategory = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const setCategory = async (category: string) => {
+  const addCategory = async (name: string): Promise<{ success: boolean }> => {    
     const token = localStorage.getItem('authToken');
     setLoading(true);
 
@@ -17,9 +17,9 @@ const useSetCategory = () => {
           'Content-Type': 'application/json',
           'Authorization': token ? `Bearer ${token}` : '',
         },
-        body: JSON.stringify({ name: category }),
+        body: JSON.stringify({ name }),
       });
-
+      
       if (!response.ok) {
         const errorData = await response.json();
         const message = errorData.message ;
@@ -44,7 +44,7 @@ const useSetCategory = () => {
     }
   };
 
-  return { setCategory, loading };
+  return { addCategory, loading };
 };
 
-export default useSetCategory;
+export default useAddCategory;
