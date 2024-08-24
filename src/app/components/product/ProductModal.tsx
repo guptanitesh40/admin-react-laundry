@@ -3,10 +3,7 @@ import Modal from "react-modal";
 import toast from "react-hot-toast";
 import { Controller, useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  addProductSchema,
-  updateProductSchema,
-} from "../../validation/productSchema";
+import { addItemSchema, updateItemSchema } from "../../validation/productSchema";
 
 Modal.setAppElement("#root");
 
@@ -37,7 +34,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   loading,
   handleCancelClick,
 }) => {
-  const schema = editMode ? updateProductSchema : addProductSchema;
+  const schema = editMode ? addItemSchema : updateItemSchema;
 
   const {
     control,

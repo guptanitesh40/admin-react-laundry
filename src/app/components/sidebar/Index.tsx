@@ -132,8 +132,8 @@ export const Sidebar: React.FC = () => {
             className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
             tabIndex={0}
           >
-            <span className="menu-icon items-start text-gray-500 dark:text-gray-400 w-[20px]">
-            <FaProductHunt size={32}/>
+            <span className="menu-icon items-start text-gray-500 dark:text-gray-400 ">
+            <img width="30" height="38" src="media/images/icons8-laundry-48.png"/>
             
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">

@@ -1,12 +1,9 @@
 import { useEffect } from "react";
-import {
-  addProductSchema,
-  updateProductSchema,
-} from "../../validation/productSchema";
 import toast from "react-hot-toast";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Modal from "react-modal";
+import { addItemSchema, updateItemSchema } from "../../validation/productSchema";
 
 Modal.setAppElement("#root");
 
@@ -37,7 +34,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   loading,
   handleCancelClick,
 }) => {
-  const schema = editMode ? updateProductSchema : addProductSchema;
+  const schema = editMode ? updateItemSchema : addItemSchema;
 
   const {
     control,
