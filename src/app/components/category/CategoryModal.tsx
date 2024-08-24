@@ -3,9 +3,8 @@ import Modal from "react-modal";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
-import * as yup from "yup"; // Import yup for validation
+import * as yup from "yup"; 
 
-// Define your validation schema
 const schema = yup.object().shape({
   name: yup.string().required("Category name is required"),
 });
