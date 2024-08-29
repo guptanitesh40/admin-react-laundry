@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MdCategory } from "react-icons/md";
+import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt } from "react-icons/fa";
 
 export const Sidebar: React.FC = () => {
@@ -133,8 +133,7 @@ export const Sidebar: React.FC = () => {
             tabIndex={0}
           >
             <span className="menu-icon items-start text-gray-500 dark:text-gray-400 ">
-            <img width="30" height="38" src="media/images/icons8-laundry-48.png"/>
-            
+            <MdLocalLaundryService size={22} />            
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
               <Link to="/services">Services</Link>

@@ -69,7 +69,7 @@ const Product: React.FC = () => {
 
   return (
     <div>
-      <div className="card-header border-0 pt-3 ">
+      <div className="card-header border-0">
         <h3 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-3xl mb-1">
             Products

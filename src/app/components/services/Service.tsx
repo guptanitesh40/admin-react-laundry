@@ -1,9 +1,9 @@
 import { FaPencilAlt, FaPlus, FaTrash } from "react-icons/fa";
-import Shimmer from "../shimmer";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import ServiceModal from "./ServiceModal";
 import { useAddService, useDeleteService, useGetServices, useUpdateService } from "../../hooks";
+import Shimmer from "../shimmer";
 
 const Service: React.FC = () => {
 
@@ -67,7 +67,7 @@ const Service: React.FC = () => {
 
   return (
     <div>
-      <div className="card-header border-0 pt-3 ">
+      <div className="card-header border-0 m-auto">
         <h3 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-3xl mb-1">
             Services
@@ -86,7 +86,7 @@ const Service: React.FC = () => {
         </div>
       </div>
 
-      <div className="card-body py-3">
+      <div className="card-body py">
         {loadingService ||
         addingService ||
         deletingService ||

@@ -5,6 +5,7 @@ import { FaCheck, FaPencilAlt, FaPlus } from "react-icons/fa";
 import Shimmer from "../shimmer";
 import Swal from "sweetalert2";
 import { useAddCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "../../hooks";
+import CategoryModal from "./CategoryModal";
 
 
 Modal.setAppElement("#root");
@@ -57,36 +58,38 @@ const Category: React.FC = () => {
   };
 
   const handleDeleteCategory = async (id: number) => {
-    const { isConfirmed } = await Swal.fire({
-      title: "Are you sure?",
-      text: "You will not be able to recover this category!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#dc3545",
-      cancelButtonColor: "#6c757d",
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel",
-    });
-
-    if (isConfirmed) {
-      try {
-        const success = await deleteCategory(id);
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel",
+      });
+  
+      if (isConfirmed) {
+        const { success, message } = await deleteCategory(id);
         if (success) {
           refetch();
-          Swal.fire("Deleted!", "The category has been deleted.", "success");
+          Swal.fire(message);
         } else {
-          toast.error("Failed to delete category.", { position: "top-center" });
+          Swal.fire(message);
         }
-      } catch (error) {
-        toast.error("An error occurred while deleting the category.", {
-          position: "top-center",
-        });
+      } else {
+        Swal.fire("Cancelled", "The category is safe :)", "info");
       }
-    } else {
-      Swal.fire("Cancelled", "The category is safe :)", "error");
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
     }
   };
-
+  
   const handleEditClick = (categoryId: number, categoryName: string) => {
     setEditingCategoryId(categoryId);
     setEditingCategoryName(categoryName);
@@ -148,7 +151,7 @@ const Category: React.FC = () => {
 
   return (
     <div>
-      <div className="card-header border-0 mb-">
+      <div className="card-header m-auto border-0 mb-">
         <h3 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-3xl mb-1">
             Category
@@ -257,39 +260,13 @@ const Category: React.FC = () => {
         )}
       </div>
 
-      <Modal
+      <CategoryModal
         isOpen={modalIsOpen}
-        onRequestClose={handleCancelClick}
-        contentLabel="Add Category Modal"
-        className="fixed inset-1/3 bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto z-50"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
-      >
-        <h2 className="text-2xl font-semibold mb-4">Add New Category</h2>
-        <input
-          type="text"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="Category Name"
-          onKeyDown={handleKeyDown}
-          className="border border-gray-300 px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-        <div className="flex justify-end space-x-4 mt-4">
-          <button
-            onClick={handleSaveClick}
-            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg"
-            disabled={saving}
-          >
-            Save
-          </button>
-          <button
-            onClick={handleCancelClick}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
-            disabled={saving}
-          >
-            Cancel
-          </button>
-        </div>
-      </Modal>
+        onRequestClose={() => setModalIsOpen(false)}
+        addCategory={addCategory}
+        refetch={refetch}
+        saving={saving}
+      />
     </div>
   );
 };

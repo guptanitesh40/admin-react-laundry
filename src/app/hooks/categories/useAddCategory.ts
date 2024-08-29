@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-const SET_CATEGORY_URL =`${import.meta.env.VITE_BASE_URL}/admin/categories`;
+const SET_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
 
 const useAddCategory = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addCategory = async (name: string): Promise<{ success: boolean }> => {    
+  const addCategory = async (name: string): Promise<{ success: boolean }> => {
     const token = localStorage.getItem('authToken');
     setLoading(true);
 
@@ -19,18 +19,17 @@ const useAddCategory = () => {
         },
         body: JSON.stringify({ name }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        const message = errorData.message ;
-       
+        const message = errorData.message || 'Failed to add category.';
         toast.error(message, { position: 'top-center' });
 
         return { success: false };
       }
 
       const data = await response.json();
-      toast.success(data.message, { position: 'top-center' });
+      toast.success(data.message || 'Category added successfully!', { position: 'top-center' });
       return { success: true };
     } catch (err: any) {
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {

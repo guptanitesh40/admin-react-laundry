@@ -12,7 +12,7 @@ const MasterLayout: React.FC = () => {
       <div className="wrapper flex grow flex-col">
         <Header />
         <main className="grow content pt-2" id="content" role="content">
-          <div className="d-flex flex-column flex-column-fluid">
+          <div className="container-fixed d-flex flex-column flex-column-fluid">
             <Outlet />
           </div>
           <div className="container-fixed"></div>

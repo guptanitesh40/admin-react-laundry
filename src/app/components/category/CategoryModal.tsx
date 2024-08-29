@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import Modal from "react-modal";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
-import * as yup from "yup"; 
+import * as yup from "yup";
 
 const schema = yup.object().shape({
   name: yup.string().required("Category name is required"),
@@ -12,13 +12,9 @@ const schema = yup.object().shape({
 interface CategoryModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-  editMode: boolean;
-  currentCategory?: { id: number; name: string } | null;
-  addCategory: (name: string) => Promise<boolean>;
-  updateCategory: (id: number, name: string) => Promise<boolean>;
+  addCategory: (name: string) => Promise<{ success: boolean }>;
   refetch: () => void;
   saving: boolean;
-  onCancelClick: () => void;
 }
 
 interface FormValues {
@@ -29,13 +25,10 @@ Modal.setAppElement("#root");
 
 const CategoryModal: React.FC<CategoryModalProps> = ({
   isOpen,
-  editMode,
-  currentCategory,
+  onRequestClose,
   addCategory,
-  updateCategory,
   refetch,
   saving,
-  onCancelClick,
 }) => {
   const {
     control,
@@ -49,21 +42,21 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      reset({
-        name: editMode && currentCategory ? currentCategory.name : "",
-      });
+      reset({ name: "" });
     }
-  }, [isOpen, editMode, currentCategory, reset]);
+  }, [isOpen, reset]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      if (editMode && currentCategory) {
-        await updateCategory(currentCategory.id, data.name);
+      const result = await addCategory(data.name);
+      if (result) {
+        refetch();
+        onRequestClose();
       } else {
-        await addCategory(data.name);
+        toast.error("Failed to add category. Please try again.", {
+          position: "top-center",
+        });
       }
-      refetch();
-      onCancelClick();
     } catch (error) {
       toast.error("An error occurred. Please try again.", {
         position: "top-center",
@@ -74,17 +67,14 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onCancelClick}
-      contentLabel="Category Modal"
+      onRequestClose={onRequestClose}
+      contentLabel="Add Category Modal"
       className="fixed inset-1/3 bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto z-50"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
     >
-      <h2 className="text-2xl font-semibold mb-4">
-        {editMode ? "Edit Category" : "Add New Category"}
-      </h2>
+      <h2 className="text-2xl font-semibold mb-4">Add New Category</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <label className="block text-gray-700">Category Name</label>
           <Controller
             name="name"
             control={control}
@@ -97,9 +87,15 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
               />
             )}
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-          )}
+          <p
+              className={`text-sm transition-opacity duration-300 ${
+                errors.name
+                  ? "text-red-500 opacity-100"
+                  : "text-transparent opacity-0"
+              }`}
+            >
+              {errors.name?.message || "\u00A0"}
+            </p>
         </div>
         <div className="flex justify-end space-x-4 mt-4">
           <button
@@ -107,13 +103,12 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg"
             disabled={saving}
           >
-            {editMode ? "Update" : "Save"}
+            Save
           </button>
           <button
             type="button"
-            onClick={onCancelClick}
+            onClick={onRequestClose}
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
-            disabled={saving}
           >
             Cancel
           </button>
