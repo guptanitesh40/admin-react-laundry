@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const addProductSchema = yup.object({
+export const addItemSchema = yup.object({
   name: yup.string().required("Name cannot be empty"),
   image: yup
     .mixed()
@@ -21,7 +21,7 @@ export const addProductSchema = yup.object({
     })
 });
 
-export const updateProductSchema = yup.object({
+export const updateItemSchema = yup.object({
   image: yup
     .mixed()
     .nullable()

@@ -1,40 +1,38 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
 import { FaPencilAlt, FaPlus, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { useState } from "react";
+import ServiceModal from "./ServiceModal";
+import { useAddService, useDeleteService, useGetServices, useUpdateService } from "../../hooks";
 import Shimmer from "../shimmer";
-import ProductModal from "./ProductModal";
-import { useAddProduct, useDeleteProduct, useGetProducts, useUpdateProduct } from "../../hooks";
 
-Modal.setAppElement("#root");
+const Service: React.FC = () => {
 
-const Product: React.FC = () => {
-  const { products, refetch, loading: loadingProduct } = useGetProducts();
-  const { addProduct, loading: addingProduct } = useAddProduct();
-  const { deleteProduct, loading: deletingProduct } = useDeleteProduct();
-  const { updateProduct, loading: updatingProduct } = useUpdateProduct(refetch);
+  const { services, refetch, loading: loadingService } = useGetServices();
+  const { deleteService, loading: deletingService } = useDeleteService();
+  const { addService, loading: addingService } = useAddService();
+  const { updateService, loading: updatingService } = useUpdateService(refetch);
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [currentProduct, setCurrentProduct] = useState<any>(null);
+  const [currentService, setCurrentService] = useState<any>(null);
 
-  const handleAddProduct = () => {
+  const handleAddService = () => {
     setEditMode(false);
     setModalIsOpen(true);
   };
 
-  const handleEditProduct = (product: any) => {
-    setCurrentProduct(product);
+  const handleEditService = (product: any) => {
+    setCurrentService(product);
     setEditMode(true);
     setModalIsOpen(true);
   };
 
   const handleCancelClick = () => {
     setModalIsOpen(false);
-    setCurrentProduct(null);
+    setCurrentService(null);
   };
 
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteService = async (id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -48,7 +46,7 @@ const Product: React.FC = () => {
       });
 
       if (isConfirmed) {
-        const { success, message } = await deleteProduct(id);
+        const { success, message } = await deleteService(id);
         if (success) {
           refetch();
           Swal.fire(message);
@@ -56,7 +54,7 @@ const Product: React.FC = () => {
           Swal.fire(message);
         }
       } else {
-        Swal.fire("Cancelled", "The product is safe :)", "info");
+        Swal.fire("Cancelled", "The Service is safe :)", "info");
       }
     } catch (error: any) {
       Swal.fire({
@@ -69,37 +67,35 @@ const Product: React.FC = () => {
 
   return (
     <div>
-      <div className="card-header border-0">
+      <div className="card-header border-0 m-auto">
         <h3 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-3xl mb-1">
-            Products
+            Services
           </span>
         </h3>
         <div className="card-toolbar">
           <button
-            onClick={handleAddProduct}
             className="bg-gradient-to-r from-teal-400 to-teal-600 text-white font-semibold px-2 py-2 rounded-lg shadow-lg hover:shadow-xl"
-            disabled={addingProduct}
+            onClick={() => handleAddService()}
+            disabled={addingService}
           >
             <div className="flex">
-              <FaPlus className="mt-1 mr-1" /> Add Product
+              <FaPlus className="mt-1 mr-1" /> Add Service
             </div>
           </button>
         </div>
       </div>
 
-      <div className="card-body py-3">
-        {loadingProduct ||
-        addingProduct ||
-        deletingProduct ||
-        updatingProduct ? (
+      <div className="card-body py">
+        {loadingService ||
+        addingService ||
+        deletingService ||
+        updatingService ? (
           <Shimmer />
         ) : (
           <div className="table-responsive">
-            {products === null ? (
-              <p className="text-center text-gray-500">
-                No products available.
-              </p>
+            {services === null ? (
+              <p className="text-center text-gray-500">No Service available.</p>
             ) : (
               <table className="w-full bg-white rounded-lg">
                 <thead className="bg-gray-200 text-gray-700">
@@ -111,31 +107,31 @@ const Product: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="text-gray-700">
-                  {products.map((product: any) => (
+                  {services.map((service: any) => (
                     <tr
                       className="hover:bg-gray-50 transition-colors duration-200"
-                      key={product.id}
+                      key={service.id}
                     >
-                      <td className="px-6 py-2">{product.id}</td>
-                      <td className="px-6 py-2">{product.name}</td>
+                      <td className="px-6 py-2">{service.id}</td>
+                      <td className="px-6 py-2">{service.name}</td>
                       <td className="px-6 py-2">
                         <img
-                          src={product.image}
-                          alt={product.name}
+                          src={service.image}
+                          alt={service.name}
                           className="w-12 h-12 object-cover rounded-lg"
                         />
                       </td>
                       <td className="flex px-9 py-2 justify-end text-end m-auto">
                         <button
-                          onClick={() => handleEditProduct(product)}
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          onClick={() => handleEditService(service)}
                         >
                           <FaPencilAlt className="text-yellow-600" />
                         </button>
 
                         <button
-                          onClick={() => handleDeleteProduct(product.id)}
                           className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                          onClick={() => handleDeleteService(service.id)}
                         >
                           <FaTrash className="text-red-500" />
                         </button>
@@ -149,21 +145,19 @@ const Product: React.FC = () => {
         )}
       </div>
 
-      <ProductModal
+      <ServiceModal
         isOpen={modalIsOpen}
         onRequestClose={handleCancelClick}
         editMode={editMode}
-        currentProduct={currentProduct}
-        addProduct={(formData: FormData) => addProduct(formData)}
-        updateProduct={(id: number, formData: FormData) =>
-          updateProduct(id, formData)
-        }
+        currentService={currentService}
+        addService={(formData: FormData) => addService(formData)}
+        updateService={updateService}
         refetch={refetch}
-        loading={addingProduct || updatingProduct}
+        loading={addingService || updatingService}
         handleCancelClick={handleCancelClick}
       />
     </div>
   );
 };
 
-export default Product;
+export default Service;

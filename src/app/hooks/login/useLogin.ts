@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { LOGIN_URL } from '../utils/constant';
+import { LOGIN_URL } from '../../utils/constant';
 
 const useLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,7 +20,7 @@ const useLogin = () => {
         const { statusCode, message } = result;
 
         if (!response.ok) {
-          toast.error(message || 'Login failed. Please try again.', { position: 'top-center' });
+          toast.error(message, { position: 'top-center' });
           return false;
         }
 

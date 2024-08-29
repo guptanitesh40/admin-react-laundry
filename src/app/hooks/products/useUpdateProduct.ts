@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-const useUpdateProduct = () => {
+const useUpdateProduct = (refetchProducts: () => void) => {
   const [loading, setLoading] = useState(false);
 
   const updateProduct = async (productId: number, formData: FormData) => {
@@ -10,12 +10,15 @@ const useUpdateProduct = () => {
     const UPDATE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${productId}`;
 
     try {
+      
       const token = localStorage.getItem('authToken');
+     
       if (!token) {
-        toast.error('No authentication token found.', { position: 'top-center' });
+        toast.error("No authentication token found", { position: 'top-center' });
         setLoading(false);
         return false;
-      }
+      } 
+
       const response = await fetch(UPDATE_URL, {
         method: 'PUT',
         headers: {
@@ -24,17 +27,22 @@ const useUpdateProduct = () => {
         body: formData,
       });
 
-      if (!response.ok) {
+      if (response.ok) {
         const result = await response.json();
-        toast.error(result.message , { position: 'top-center' });
+        toast.success(result.message, { position: 'top-center' });
+        refetchProducts();
+        return true;
+      } else {
+        const errorData = await response.json();
+        const message = errorData.message;
+      
+        toast.error(message, { position: 'top-center' });  
+        
         return false;
       }
 
-      const data = await response.json();
-      toast.success(data.message, { position: 'top-center' });
-      return true;
     } catch (error) {
-      toast.error('An error occurred while updating the product.', { position: 'top-center' });
+      toast.error(error.message, { position: 'top-center' });
       return false;
     } finally {
       setLoading(false);

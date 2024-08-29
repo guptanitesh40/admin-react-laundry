@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import Modal from "react-modal";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { Controller, useForm, SubmitHandler } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Modal from "react-modal";
 import { addItemSchema, updateItemSchema } from "../../validation/productSchema";
 
 Modal.setAppElement("#root");
 
-interface ProductModalProps {
+interface ServiceModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   editMode: boolean;
-  currentProduct?: { id: number; name: string; image?: string } | null;
-  addProduct: (formData: FormData) => Promise<boolean>;
-  updateProduct: (id: number, data: FormData) => Promise<boolean>;
+  currentService?: { id: number; name: string; image?: string } | null;
+  addService: (formData: FormData) => Promise<boolean>;
+  updateService: (id: number, data: FormData) => Promise<boolean>;
   refetch: () => void;
   loading: boolean;
   handleCancelClick: () => void;
@@ -24,17 +24,17 @@ interface FormValues {
   image?: FileList;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({
+const ServiceModal: React.FC<ServiceModalProps> = ({
   isOpen,
   editMode,
-  currentProduct,
-  addProduct,
-  updateProduct,
+  currentService,
+  addService,
+  updateService,
   refetch,
   loading,
   handleCancelClick,
 }) => {
-  const schema = editMode ? addItemSchema : updateItemSchema;
+  const schema = editMode ? updateItemSchema : addItemSchema;
 
   const {
     control,
@@ -49,9 +49,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      if (editMode && currentProduct) {
+      if (editMode && currentService) {
         reset({
-          name: currentProduct.name,
+          name: currentService.name || "",
           image: undefined,
         });
       } else {
@@ -61,7 +61,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         });
       }
     }
-  }, [isOpen, editMode, currentProduct, reset]);
+  }, [isOpen, editMode, currentService, reset]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -79,10 +79,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
 
     try {
-      if (editMode && currentProduct) {
-        await updateProduct(currentProduct.id, formData);
+      if (editMode && currentService) {
+        await updateService(currentService.id, formData);
       } else {
-        await addProduct(formData);
+        await addService(formData);
       }
       refetch();
       handleCancelClick();
@@ -176,4 +176,4 @@ const ProductModal: React.FC<ProductModalProps> = ({
   );
 };
 
-export default ProductModal;
+export default ServiceModal;

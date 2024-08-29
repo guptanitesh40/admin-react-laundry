@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../../style.css";
 import { login as loginAction } from "../utils/authSlice";
-import useLogin from "../hooks/useLogin";
 import toast from "react-hot-toast";
+import useLogin from "../hooks/login/useLogin";
 
 const device_type = "sasas";
 const device_token = "sdlknoin";

@@ -72,7 +72,7 @@ export const Header: React.FC = () => {
                 <img
                   alt=""
                   className="size-9 rounded-full border-2 border-success shrink-0"
-                  src="/media/avatars/blank.png"
+                  src="/media/images/blank.png"
                 />
               </div>
 
@@ -90,7 +90,6 @@ export const Header: React.FC = () => {
                       </span>
                       <a
                         className="text-xs text-gray-600 hover:text-primary font-medium leading-none"
-                        href="html/demo1/account/home/get-started.html"
                       >
                         c.fisher@gmail.com
                       </a>

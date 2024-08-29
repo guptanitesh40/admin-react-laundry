@@ -1,50 +1,65 @@
-import React, { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import MasterLayout from '../components/layout/Index';
-import DashBoard from '../components/dashboard/Index';
-import Shimmer from '../components/shimmer';
+import React, { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import MasterLayout from "../components/layout/Index";
+import DashBoard from "../components/dashboard/Index";
+import Shimmer from "../components/shimmer";
 
 const PrivateRoutes: React.FC = () => {
-
-  const Profile = lazy(() => import('../components/profile/Index'));
-  const Category = lazy(() => import('../components/category/Index')); 
-  const Product = lazy(() => import('../components/product/Product')); 
+  const Profile = lazy(() => import("../components/profile/Index"));
+  const Category = lazy(() => import("../components/category/Category"));
+  const Product = lazy(() => import("../components/product/Product"));
+  const Service = lazy(() => import("../components/services/Service"));
 
   return (
     <Routes>
       <Route element={<MasterLayout />}>
-        <Route path='/dashboard' element={<DashBoard />} />
-        
-        <Route 
-          path='/category' 
+        <Route path="/dashboard" element={<DashBoard />} />
+
+        <Route
+          path="/category"
           element={
             <Suspense fallback={<Shimmer />}>
               <Category />
             </Suspense>
-          } 
+          }
         />
 
-        <Route 
-          path='/product' 
+        <Route
+          path="/product"
           element={
             <Suspense fallback={<Shimmer />}>
               <Product />
             </Suspense>
-          } 
+          }
         />
-        
-        <Route 
-          path='/profile' 
+
+        <Route
+          path="/services"
           element={
-            <Suspense fallback={<h1 style={{ margin: '100px' }}>Loading...</h1>}>
+            <Suspense fallback={<Shimmer />}>
+              <Service />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <Suspense
+              fallback={<h1 style={{ margin: "100px" }}>Loading...</h1>}
+            >
               <Profile />
             </Suspense>
-          } 
+          }
         />
-        
-        <Route 
-          path="*" 
-          element={<h2 style={{ margin: '100px' }}>Page Not Found. Please navigate to a valid page.</h2>} 
+
+        <Route
+          path="*"
+          element={
+            <h2 style={{ margin: "100px" }}>
+              Page Not Found. Please navigate to a valid page.
+            </h2>
+          }
         />
       </Route>
     </Routes>

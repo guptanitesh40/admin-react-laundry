@@ -4,23 +4,14 @@ import toast from "react-hot-toast";
 const useDeleteProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const deleteProduct = async (
-    productId: number
-  ): Promise<{ success: boolean; message: string }> => {
+  const deleteProduct = async (productId: number): Promise<{ success: boolean; message: string }> => {
+    
     setLoading(true);
 
-    const DELETE_URL = `${
-      import.meta.env.VITE_BASE_URL
-    }/admin/products/${productId}`;
+    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${productId}`;
 
     try {
       const token = localStorage.getItem("authToken");
-      if (!token) {
-        const message = "No authentication token found.";
-        toast.error(message, { position: "top-center" });
-        setLoading(false);
-        return { success: false, message };
-      }
 
       const response = await fetch(DELETE_URL, {
         method: "DELETE",
@@ -31,6 +22,12 @@ const useDeleteProduct = () => {
       });
 
       const result = await response.json();
+
+      if (!token) {
+        toast.error(result.message, { position: "top-center" });
+        setLoading(false);
+        return { success: false, message : result.message};
+      }
 
       if (!response.ok) {
         toast.error(result.message, { position: "top-center" });
