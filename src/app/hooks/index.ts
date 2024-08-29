@@ -12,3 +12,8 @@ export { default as useGetServices } from './services/useGetServices';
 export { default as useAddService } from './services/useAddService';
 export { default as useDeleteService } from './services/useDeleteService';
 export { default as useUpdateService } from './services/useUpdateService';
+
+export { default as useFetchCoupon } from './coupon/useFetchCoupon';
+export { default as useAddCoupon } from './coupon/useAddCoupon';
+export { default as useDeleteCoupon } from './coupon/useDeleteCoupon';
+export { default as useUpdateCoupon } from './coupon/useUpdateCoupon';
