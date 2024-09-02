@@ -110,7 +110,7 @@ const CouponModal: React.FC = () => {
 
   return (
     <div className="align-center justify-center mx-16">
-    <div className="card card-grid w-[650px]">
+    <div className="card card-grid w-[790px]">
       <div className="border-0 mx-auto p-8 max-w-4xl align-middle">
         <h2 className="card-title flex flex-col items-start">
           <span className="card-label font-bold text-gray-700 text-2xl mb-5">
@@ -133,9 +133,8 @@ const CouponModal: React.FC = () => {
                 setFormData({ ...formData, code: e.target.value })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
-            <p className="text-red-500 text-sm">{errors.code || "\u00A0"}</p>
+            <p className="w-full text-red-500 text-sm">{errors.code || "\u00A0"}</p>
           </div>
 
           <div className="mb-4 col-span-1">
@@ -149,7 +148,6 @@ const CouponModal: React.FC = () => {
                 setFormData({ ...formData, title: e.target.value })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
             <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
           </div>
@@ -164,7 +162,6 @@ const CouponModal: React.FC = () => {
                 setFormData({ ...formData, description: e.target.value })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
             <p className="text-red-500 text-sm">
               {errors.description || "\u00A0"}
@@ -182,7 +179,6 @@ const CouponModal: React.FC = () => {
                 setFormData({ ...formData, discount_value: e.target.value })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
             <p className="text-red-500 text-sm">
               {errors.discount_value || "\u00A0"}
@@ -199,7 +195,6 @@ const CouponModal: React.FC = () => {
               onChange={(e) =>
                 setFormData({ ...formData, discount_type: e.target.value })
               }
-              required
             >
               <option value="" disabled>
                 Select Discount Type
@@ -213,7 +208,7 @@ const CouponModal: React.FC = () => {
           </div>
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div className="mb-4 col-span-1">
+            <div className="mb-4 col-span-1 w-[320px]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Start Time
               </label>
@@ -231,7 +226,7 @@ const CouponModal: React.FC = () => {
               </p>
             </div>
 
-            <div className="mb-4 col-span-1">
+            <div className="mb-4 col-span-1 w-[320px]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 End Time
               </label>
@@ -264,7 +259,6 @@ const CouponModal: React.FC = () => {
                 })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
             <p className="text-red-500 text-sm">
               {errors.maximum_usage_count_per_user || "\u00A0"}
@@ -282,7 +276,6 @@ const CouponModal: React.FC = () => {
                 setFormData({ ...formData, total_usage_count: e.target.value })
               }
               className="input border border-gray-300 rounded-md p-2 w-full"
-              required
             />
             <p className="text-red-500 text-sm">
               {errors.total_usage_count || "\u00A0"}
@@ -299,7 +292,6 @@ const CouponModal: React.FC = () => {
               onChange={(e) =>
                 setFormData({ ...formData, coupon_type: e.target.value })
               }
-              required
             >
               <option value="" disabled>
                 Select Coupon Type
