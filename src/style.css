@@ -6742,12 +6742,16 @@ label.rating-label {
 
 .demo1 .sidebar {
   width: var(--tw-sidebar-width);
+  overflow-x: hidden; 
 }
 
 .demo1.header-fixed .wrapper {
   padding-top: var(--tw-header-height);
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
 /* Desktop mode */
 
 @media (min-width: 1024px) {

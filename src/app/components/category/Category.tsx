@@ -150,6 +150,7 @@ const Category: React.FC = () => {
   };
 
   return (
+
     <div>
       <div className="card-header m-auto border-0 mb-">
         <h3 className="card-title flex flex-col items-start">
