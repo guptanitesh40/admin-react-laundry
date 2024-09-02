@@ -23,10 +23,6 @@ export const couponSchema = Yup.object().shape({
       const now = new Date();
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       return value >= startOfToday;
-    })
-    .test("is-before-end", "Start date must be before end date", function (value) {
-      const { end_time } = this.parent;
-      return !end_time || (value instanceof Date && end_time instanceof Date && value < end_time);
     }),
   end_time: Yup.date()
     .required("End date is required")
