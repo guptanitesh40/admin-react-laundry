@@ -7,7 +7,7 @@ import { Footer } from "../footer/Index";
 
 const MasterLayout: React.FC = () => {
   return (
-    <div className="flex grow">
+    <div className="flex grow overflow-auto">
       <Sidebar />
       <div className="wrapper flex grow flex-col">
         <Header />

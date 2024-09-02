@@ -1,263 +1,344 @@
-import React, { useEffect } from "react";
-import Modal from "react-modal";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAddCoupon, useUpdateCoupon } from "../../hooks";
 import toast from "react-hot-toast";
-import { Controller, useForm, SubmitHandler, FieldErrors } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { couponSchema } from "../../validation/couponShema";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs, { Dayjs } from "dayjs";
+import * as Yup from "yup";
+import { couponSchema } from "../../validation/couponSchema";
 
-Modal.setAppElement("#root");
+const CouponModal: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { coupon } = location.state || {};
 
-interface CouponModalProps {
-  isOpen: boolean;
-  onRequestClose: () => void;
-  editMode: boolean;
-  currentCoupon?: {
-    code: string;
-    description: string;
-    title: string;
-    start_time: string;
-    end_time: string;
-    total_usage_count: number;
-    maximum_usage_count_per_user: number;
-    discount_type: number;
-    discount_value: number;
-    coupon_type: number;
-  } | null;
-  addCoupon: (formData: FormData) => Promise<boolean>;
-  updateCoupon: (code: string, data: FormData) => Promise<boolean>;
-  refetch: () => void;
-  loading: boolean;
-  handleCancelClick: () => void;
-}
-
-interface FormValues {
-  code: string;
-  description: string;
-  title: string;
-  start_time: string;
-  end_time: string;
-  total_usage_count: number;
-  maximum_usage_count_per_user: number;
-  discount_type: number;
-  discount_value: number;
-  coupon_type: number;
-}
-
-const CouponModal: React.FC<CouponModalProps> = ({
-  isOpen,
-  editMode,
-  currentCoupon,
-  addCoupon,
-  updateCoupon,
-  refetch,
-  loading,
-  handleCancelClick,
-}) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormValues>({
-    resolver: !editMode ? yupResolver(couponSchema) : undefined,
-    mode: "onBlur",
+  const [formData, setFormData] = useState({
+    code: "",
+    title: "",
+    description: "",
+    discount_value: null,
+    discount_type: null,
+    start_time: dayjs(),
+    end_time: dayjs(),
+    maximum_usage_count_per_user: null,
+    total_usage_count: null,
+    coupon_type: null,
   });
 
+  const [errors, setErrors] = useState<any>({});
+
   useEffect(() => {
-    if (isOpen) {
-      if (editMode && currentCoupon) {
-        reset({
-          code: currentCoupon.code || "",
-          description: currentCoupon.description || "",
-          title: currentCoupon.title || "",
-          start_time: currentCoupon.start_time || "",
-          end_time: currentCoupon.end_time || "",
-          total_usage_count: currentCoupon.total_usage_count || 1,
-          maximum_usage_count_per_user: currentCoupon.maximum_usage_count_per_user || 1,
-          discount_type: currentCoupon.discount_type || 1,
-          discount_value: currentCoupon.discount_value || 0,
-          coupon_type: currentCoupon.coupon_type || 1,
-        });
-      } else {
-        reset({
-          code: "",
-          description: "",
-          title: "",
-          start_time: "",
-          end_time: "",
-          total_usage_count: 1,
-          maximum_usage_count_per_user: 1,
-          discount_type: 1,
-          discount_value: 0,
-          coupon_type: 1,
-        });
-      }
-    }
-  }, [isOpen, editMode, currentCoupon, reset]);
-
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => {
-      formData.append(key, data[key as keyof FormValues].toString());
-      console.log("Form Data: ", data);
-
-    });
-
-    try {
-      if (editMode && currentCoupon) {
-        await updateCoupon(currentCoupon.code, formData);
-      } else {
-        await addCoupon(formData);
-      }
-      refetch();
-      handleCancelClick();
-    } catch (error) {
-      toast.error("An error occurred. Please try again.", {
-        position: "top-center",
+    if (coupon) {
+      setFormData({
+        code: coupon.code,
+        title: coupon.title,
+        description: coupon.description,
+        discount_value: coupon.discount_value.toString(),
+        discount_type: coupon.discount_type.toString(),
+        start_time: dayjs(coupon.start_time),
+        end_time: dayjs(coupon.end_time),
+        maximum_usage_count_per_user:
+          coupon.maximum_usage_count_per_user.toString(),
+        total_usage_count: coupon.total_usage_count.toString(),
+        coupon_type: coupon.coupon_type.toString(),
       });
+    }
+  }, [coupon]);
+
+  const handelCancel = () => {
+    navigate("/coupon");
+  }
+
+  const handleStartTimeChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setFormData((prev) => ({ ...prev, start_time: newValue }));
     }
   };
 
-  return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={handleCancelClick}
-      contentLabel="Coupon Modal"
-      className="fixed inset-0 flex items-center justify-center p-4 sm:p-6"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-70 z-40 transition-opacity"
-      shouldCloseOnOverlayClick={true}
-      shouldCloseOnEsc={true}
-    >
-      <div className="relative w-full max-w-3xl bg-white rounded-xl shadow-lg p-8 sm:p-12 space-y-6">
-        <button
-          type="button"
-          onClick={handleCancelClick}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition duration-300"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+  const handleEndTimeChange = (newValue: Dayjs | null) => {
+    if (newValue) {
+      setFormData((prev) => ({ ...prev, end_time: newValue }));
+    }
+  };
 
-        <h2 className="text-4xl font-semibold text-gray-800 text-center">
-          {editMode ? "Edit Coupon" : "Add Coupon"}
+  const { addCoupon, loading: addingCoupon } = useAddCoupon();
+  const { updateCoupon, loading: updatingCoupon } = useUpdateCoupon();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const dataToValidate = {
+      ...formData,
+      discount_type: parseInt(formData.discount_type, 10),
+      coupon_type: parseInt(formData.coupon_type, 10),
+      discount_value: parseInt(formData.discount_value, 10),
+      maximum_usage_count_per_user: parseInt(
+        formData.maximum_usage_count_per_user,
+        10
+      ),
+      total_usage_count: parseInt(formData.total_usage_count, 10),
+      start_time: formData.start_time.toISOString(),
+      end_time: formData.end_time.toISOString(),
+    };
+
+    try {
+      await couponSchema.validate(dataToValidate, { abortEarly: false });
+
+      if (coupon?.coupon_id) {
+        await updateCoupon(coupon.coupon_id, dataToValidate);
+      } else {
+        await addCoupon(dataToValidate);
+      }
+
+      navigate("/coupon");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const formErrors: any = {};
+        error.inner.forEach((err) => {
+          formErrors[err.path] = err.message;
+        });
+        setErrors(formErrors);
+      } else {
+        toast.error("Failed to submit the form. Please try again.");
+      }
+    }
+  };
+
+  const isLoading = addingCoupon || updatingCoupon;
+
+  return (
+    <div className="align-center justify-center mx-16">
+    <div className="card card-grid w-[650px]">
+      <div className="border-0 mx-auto p-8 max-w-4xl align-middle">
+        <h2 className="card-title flex flex-col items-start">
+          <span className="card-label font-bold text-gray-700 text-2xl mb-5">
+            {coupon ? "Edit Coupon" : "Add Coupon"}
+          </span>
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {[
-            { label: "Code", type: "text", name: "code" },
-            { label: "Description", type: "textarea", name: "description" },
-            { label: "Title", type: "text", name: "title" },
-            { label: "Start Time", type: "datetime-local", name: "start_time" },
-            { label: "End Time", type: "datetime-local", name: "end_time" },
-            { label: "Total Usage Count", type: "number", name: "total_usage_count" },
-            { label: "Max Usage Count Per User", type: "number", name: "maximum_usage_count_per_user" },
-            { label: "Discount Value", type: "number", name: "discount_value" },
-          ].map(({ label, type, name }) => (
-            <div key={name} className="flex flex-col space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                {label}
-              </label>
-              <Controller
-                name={name as keyof FormValues}
-                control={control}
-                render={({ field }) =>
-                  type === "textarea" ? (
-                    <textarea
-                      {...field}
-                      className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-                      placeholder={`Enter ${label}`}
-                      rows={4}
-                    />
-                  ) : (
-                    <input
-                      type={type}
-                      {...field}
-                      className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-                      placeholder={`Enter ${label}`}
-                    />
-                  )
-                }
-              />
-              <p className="text-red-500 text-sm">
-                {(errors as Record<string, { message?: string }>)?.[name]?.message}
-              </p>
-            </div>
-          ))}
+        <form
+          onSubmit={handleSubmit}
+          className="w-full grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Code
+            </label>
+            <input
+              type="text"
+              value={formData.code}
+              onChange={(e) =>
+                setFormData({ ...formData, code: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">{errors.code || "\u00A0"}</p>
+          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
+          </div>
+
+          <div className="mb-4 col-span-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">
+              {errors.description || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Discount Value
+            </label>
+            <input
+              type="text"
+              value={formData.discount_value}
+              onChange={(e) =>
+                setFormData({ ...formData, discount_value: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">
+              {errors.discount_value || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Discount Type
             </label>
-            <Controller
-              name="discount_type"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-                >
-                  <option value={1}>Percentage</option>
-                  <option value={2}>Flat</option>
-                </select>
-              )}
-            />
-            <p className="text-red-500 text-sm">{errors.discount_type?.message}</p>
+            <select
+              className="select border border-gray-300 rounded-md p-2 w-full"
+              value={formData.discount_type ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, discount_type: e.target.value })
+              }
+              required
+            >
+              <option value="" disabled>
+                Select Discount Type
+              </option>
+              <option value="1">Percentage</option>
+              <option value="2">Flat</option>
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.discount_type || "\u00A0"}
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="mb-4 col-span-1">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Start Time
+              </label>
+              <DateTimePicker
+                value={formData.start_time}
+                onChange={handleStartTimeChange}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+              <p className="text-red-500 text-sm">
+                {errors.start_time || "\u00A0"}
+              </p>
+            </div>
+
+            <div className="mb-4 col-span-1">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                End Time
+              </label>
+              <DateTimePicker
+                value={formData.end_time}
+                onChange={handleEndTimeChange}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+              />
+              <p className="text-red-500 text-sm">
+                {errors.end_time || "\u00A0"}
+              </p>
+            </div>
+          </LocalizationProvider>
+
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Max Usage Per User
+            </label>
+            <input
+              type="text"
+              value={formData.maximum_usage_count_per_user}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  maximum_usage_count_per_user: e.target.value,
+                })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">
+              {errors.maximum_usage_count_per_user || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Total Usage Count
+            </label>
+            <input
+              type="text"
+              value={formData.total_usage_count}
+              onChange={(e) =>
+                setFormData({ ...formData, total_usage_count: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+              required
+            />
+            <p className="text-red-500 text-sm">
+              {errors.total_usage_count || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="mb-4 col-span-1">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Coupon Type
             </label>
-            <Controller
-              name="coupon_type"
-              control={control}
-              render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-                >
-                  <option value={1}>One-Time</option>
-                  <option value={2}>Recurring</option>
-                </select>
-              )}
-            />
-            <p className="text-red-500 text-sm">{errors.coupon_type?.message}</p>
+            <select
+              className="select border border-gray-300 rounded-md p-2 w-full"
+              value={formData.coupon_type ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, coupon_type: e.target.value })
+              }
+              required
+            >
+              <option value="" disabled>
+                Select Coupon Type
+              </option>
+              <option value="1">Web</option>
+              <option value="2">Mobile</option>
+              <option value="3">Both</option>
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.coupon_type || "\u00A0"}
+            </p>
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-4 mt-8">
+          <div className="flex items-center col-span-2 space-x-4">
             <button
-              type="button"
-              onClick={handleCancelClick}
-              className="py-2 px-6 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
             >
-              Cancel
+              {isLoading
+                ? "Saving..."
+                : coupon
+                ? "Update Coupon"
+                : "Add Coupon"}
             </button>
             <button
               type="submit"
-              className={`py-2 px-6 rounded-lg text-white ${
-                loading ? "bg-gray-400 cursor-not-allowed" : "bg-teal-500 hover:bg-teal-600 transition-colors duration-300"
-              }`}
-              disabled={loading}
+              className="btn  btn-light py-5 px-10 "
+              disabled={isLoading}
+              onClick={handelCancel}
             >
-              {loading ? "Saving..." : editMode ? "Update Coupon" : "Add Coupon"}
+              Cancel
             </button>
-          </div>
+            </div>
+        
         </form>
       </div>
-    </Modal>
+    </div>
+    </div>
   );
 };
 

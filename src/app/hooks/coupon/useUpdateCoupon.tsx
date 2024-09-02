@@ -1,10 +1,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const useUpdateCoupon = (refetchCoupons: () => void) => {
+const useUpdateCoupon = (refetchCoupons?: () => void) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateCoupon = async (couponId: number, formData: FormData): Promise<boolean> => {
+  const updateCoupon = async (couponId: number, formData: any): Promise<boolean> => {
     const token = localStorage.getItem('authToken');
     if (!token) {
       toast.error('No authentication token found.', { position: 'top-center' });
@@ -20,23 +20,23 @@ const useUpdateCoupon = (refetchCoupons: () => void) => {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: formData,
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const result = await response.json();
+        toast.success(result.message, { position: 'top-center' });
+        return true;
+      } else {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message , { position: 'top-center' });
         return false;
       }
-
-      const result = await response.json();
-      toast.success(result.message, { position: 'top-center' });
-      refetchCoupons();
-      return true;
-
+      
     } catch (error: any) {
-      toast.error('An unexpected error occurred.', { position: 'top-center' });
+      toast.error(error.message, { position: 'top-center' });
       return false;
 
     } finally {

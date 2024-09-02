@@ -1,17 +1,17 @@
 import React, { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
 import MasterLayout from "../components/layout/Index";
 import DashBoard from "../components/dashboard/Index";
 import Shimmer from "../components/shimmer";
-import Coupon from "../components/coupon/Coupon";
+
 const PrivateRoutes: React.FC = () => {
   const Profile = lazy(() => import("../components/profile/Index"));
-
-  
   const Category = lazy(() => import("../components/category/Category"));
   const Product = lazy(() => import("../components/product/Product"));
   const Service = lazy(() => import("../components/services/Service"));
-  
+  const Coupon = lazy(() => import("../components/coupon/Coupon"));
+  const CouponModal = lazy(() => import("../components/coupon/CouponModal"));
+
   return (
     <Routes>
       <Route element={<MasterLayout />}>
@@ -49,6 +49,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Shimmer />}>
               <Coupon />
+            </Suspense>
+          }
+        />
+        
+        <Route
+          path="/coupon/add"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <CouponModal />
             </Suspense>
           }
         />

@@ -6,7 +6,7 @@ const ADD_COUPON_URL = `${import.meta.env.VITE_BASE_URL}/admin/coupon`;
 const useAddCoupon = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addCoupon = async (formData: FormData): Promise<boolean> => {
+  const addCoupon = async (formData: any): Promise<boolean> => {
     const token = localStorage.getItem('authToken');
     if (!token) {
       toast.error('No authentication token found.', { position: 'top-center' });
@@ -20,8 +20,9 @@ const useAddCoupon = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
+          'Content-Type': 'application/json'
+        }, 
+        body: JSON.stringify(formData),
       });
         
       if (!response.ok) {

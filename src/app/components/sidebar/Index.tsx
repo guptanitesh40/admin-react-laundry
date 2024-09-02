@@ -8,7 +8,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <div
-      className="sidebar dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 z-20 hidden lg:flex flex-col items-stretch shrink-0"
+      className="sidebar scrollbar-hide dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 hidden lg:flex flex-col items-stretch shrink-0"
       data-drawer="true"
       data-drawer-class="drawer drawer-start top-0 bottom-0"
       data-drawer-enable="true|lg:false"
@@ -152,6 +152,7 @@ export const Sidebar: React.FC = () => {
                 </div>
               </div>
             </Link>
+            
           </div>
         </div>
         </Link>

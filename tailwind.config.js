@@ -1,9 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: [
-	  "./index.html",
-	  "./src/**/*.{js,ts,jsx,tsx}",
-	],
+		"./index.html",
+		"./src/**/*.{js,ts,jsx,tsx}",
+		"./node_modules/tailwind-datepicker-react/dist/**/*.tsx",
+		"./node_modules/tailwind-datepicker-react/dist/**/*.js",
+	  ],
 	safelist: [
 		  'demo1',
 		  'hidden',
@@ -598,6 +600,7 @@ export default {
 		  })
 	  },
 	  plugins: [
+          require("tailwind-scrollbar-hide"),
 		  require('./src/metronic/core/plugins/plugin'),
 		  require('./src/metronic/core/plugins/components/theme'),
 		  require('./src/metronic/core/plugins/components/breakpoints'),

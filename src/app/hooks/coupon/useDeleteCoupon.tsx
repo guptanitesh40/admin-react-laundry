@@ -31,8 +31,6 @@ const useDeleteCoupon = () => {
         toast.error(result.message, { position: 'top-center' });
         return { success: false, message: result.message };
       }
-
-      toast.success(result.message, { position: 'top-center' });
       return { success: true, message: result.message };
 
     } catch (error: any) {
