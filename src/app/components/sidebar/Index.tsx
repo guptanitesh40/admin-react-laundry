@@ -116,7 +116,7 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-        <Link to="/services">
+            <Link to="/services">
         <div
           className="menu-item hover:bg-gray-50 transition-colors duration-200"
           data-menu-item-toggle="accordion"
@@ -127,12 +127,16 @@ export const Sidebar: React.FC = () => {
             tabIndex={0}
           >
             <span className="menu-icon items-start text-gray-500 dark:text-gray-400 ">
-            <MdLocalLaundryService size={22} />            
+            <MdLocalLaundryService size={30} />            
             </span>
             <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
               <Link to="/services">Services</Link>
             </span>
             
+          </div>
+        </div>
+            </Link>
+
             <Link to="/coupon">
               <div
                 className="menu-item hover:bg-gray-50 transition-colors duration-200"
@@ -152,14 +156,11 @@ export const Sidebar: React.FC = () => {
                 </div>
               </div>
             </Link>
-            
-          </div>
-        </div>
-        </Link>
 
         </div>
         </div>
       </div>
+
     </div>
   );
 };
