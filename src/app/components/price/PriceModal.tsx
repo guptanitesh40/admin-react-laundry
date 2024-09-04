@@ -65,6 +65,7 @@ const PriceModal: React.FC<PriceModalProps> = ({ isOpen, handleClose }) => {
             </button>
           </div>
           <div className="p-5">
+
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -76,7 +77,7 @@ const PriceModal: React.FC<PriceModalProps> = ({ isOpen, handleClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, category_id: e.target.value })
                   }
-                  className="border border-gray-300 rounded-md p-2 w-full"
+                  className="input border border-gray-300 rounded-md p-2 w-full"
                   placeholder="Enter category ID"
                 />
               </div>
@@ -91,7 +92,7 @@ const PriceModal: React.FC<PriceModalProps> = ({ isOpen, handleClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, product_id: e.target.value })
                   }
-                  className="border border-gray-300 rounded-md p-2 w-full"
+                  className="input border border-gray-300 rounded-md p-2 w-full"
                   placeholder="Enter product ID"
                 />
               </div>
@@ -106,7 +107,7 @@ const PriceModal: React.FC<PriceModalProps> = ({ isOpen, handleClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, service_id: e.target.value })
                   }
-                  className="border border-gray-300 rounded-md p-2 w-full"
+                  className="input border border-gray-300 rounded-md p-2 w-full"
                   placeholder="Enter service ID"
                 />
               </div>
@@ -121,26 +122,28 @@ const PriceModal: React.FC<PriceModalProps> = ({ isOpen, handleClose }) => {
                   onChange={(e) =>
                     setFormData({ ...formData, price: e.target.value })
                   }
-                  className="border border-gray-300 rounded-md p-2 w-full"
+                  className="input border border-gray-300 rounded-md p-2 w-full"
                   placeholder="Enter price"
                 />
               </div>
 
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="px-4 py-2 mr-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-                  onClick={handleClose}
-                >
-                  Close
-                </button>
+              <div className="flex justify-end col-span-2 space-x-4">
                 <button
                   type="submit"
-                  className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  className="btn btn-primary"
                   disabled={addingPrice}
                 >
                   {addingPrice ? "Adding..." : "Add Price"}
                 </button>
+
+                <button
+                  type="button"
+                  className="btn  btn-light py-5 px-10"
+                  onClick={handleClose}
+                >
+                  Close
+                </button>
+               
               </div>
             </form>
           </div>

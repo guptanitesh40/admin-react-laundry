@@ -38,7 +38,6 @@ const useFetchCoupons = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message, { position: 'top-center' });
@@ -47,7 +46,7 @@ const useFetchCoupons = () => {
 
       const data = await response.json();
 
-      const couponData = data?.data?.map((coupon: any) => ({
+      const couponData = data?.data?.result.map((coupon: any) => ({
         coupon_id: coupon.coupon_id,
         code: coupon.code,
         discount_value: coupon.discount_value,
