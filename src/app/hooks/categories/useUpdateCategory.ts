@@ -4,10 +4,10 @@ import toast from 'react-hot-toast';
 const useUpdateCategory = (refetchCategories: () => void) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateCategory = async (categoryId: number, newName: string): Promise<boolean> => {
+  const updateCategory = async (category_id: number, newName: string): Promise<boolean> => {
     setLoading(true);
 
-    const UPDATE_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${categoryId}`;
+    const UPDATE_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${category_id}`;
 
     try {
       const response = await fetch(UPDATE_CATEGORY_URL, {
@@ -29,7 +29,7 @@ const useUpdateCategory = (refetchCategories: () => void) => {
         toast.error(errorData.message , { position: 'top-center' });
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.message, { position: 'top-center' });
       return false;
     } finally {

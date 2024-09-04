@@ -2,22 +2,21 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const useUpdateProduct = (refetchProducts: () => void) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const updateProduct = async (productId: number, formData: FormData) => {
+  const updateProduct = async (product_id: number, formData: FormData) => {
     setLoading(true);
 
-    const UPDATE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${productId}`;
+    const UPDATE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${product_id}`;
 
     try {
-      
       const token = localStorage.getItem('authToken');
-     
+
       if (!token) {
         toast.error("No authentication token found", { position: 'top-center' });
         setLoading(false);
         return false;
-      } 
+      }
 
       const response = await fetch(UPDATE_URL, {
         method: 'PUT',
@@ -35,12 +34,10 @@ const useUpdateProduct = (refetchProducts: () => void) => {
       } else {
         const errorData = await response.json();
         const message = errorData.message;
-      
-        toast.error(message, { position: 'top-center' });  
-        
+
+        toast.error(message, { position: 'top-center' });
         return false;
       }
-
     } catch (error) {
       toast.error(error.message, { position: 'top-center' });
       return false;

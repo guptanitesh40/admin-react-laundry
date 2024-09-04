@@ -34,7 +34,7 @@ const Product: React.FC = () => {
     setCurrentProduct(null);
   };
 
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteProduct = async (product_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -48,7 +48,7 @@ const Product: React.FC = () => {
       });
 
       if (isConfirmed) {
-        const { success, message } = await deleteProduct(id);
+        const { success, message } = await deleteProduct(product_id);
         if (success) {
           refetch();
           Swal.fire(message);
@@ -104,7 +104,7 @@ const Product: React.FC = () => {
               <table className="w-full bg-white rounded-lg">
                 <thead className="bg-gray-200 text-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left">Id</th>
+                    <th className="px-6 py-3 text-left">Product ID</th>
                     <th className="px-6 py-3 text-left">Name</th>
                     <th className="px-6 py-3 text-left">Image</th>
                     <th className="px-12 py-3 text-end">Actions</th>
@@ -114,9 +114,9 @@ const Product: React.FC = () => {
                   {products.map((product: any) => (
                     <tr
                       className="hover:bg-gray-50 transition-colors duration-200"
-                      key={product.id}
+                      key={product.product_id}
                     >
-                      <td className="px-6 py-2">{product.id}</td>
+                      <td className="px-6 py-2">{product.product_id}</td>
                       <td className="px-6 py-2">{product.name}</td>
                       <td className="px-6 py-2">
                         <img
@@ -134,7 +134,7 @@ const Product: React.FC = () => {
                         </button>
 
                         <button
-                          onClick={() => handleDeleteProduct(product.id)}
+                          onClick={() => handleDeleteProduct(product.product_id)}
                           className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                         >
                           <FaTrash className="text-red-500" />
@@ -155,8 +155,8 @@ const Product: React.FC = () => {
         editMode={editMode}
         currentProduct={currentProduct}
         addProduct={(formData: FormData) => addProduct(formData)}
-        updateProduct={(id: number, formData: FormData) =>
-          updateProduct(id, formData)
+        updateProduct={(product_id: number, formData: FormData) =>
+          updateProduct(product_id, formData)
         }
         refetch={refetch}
         loading={addingProduct || updatingProduct}

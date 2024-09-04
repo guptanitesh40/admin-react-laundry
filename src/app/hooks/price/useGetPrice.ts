@@ -1,20 +1,19 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
-const GET_PRODUCT_URL = `${import.meta.env.VITE_BASE_URL}/admin/products`;
-const token = localStorage.getItem('authToken');
+const GET_PRICE_URL = `${import.meta.env.VITE_BASE_URL}/prices`;
 
-interface Product {
-  product_id: number;
-  name: string;
-  image: string; 
+interface Price {
+  [key: string]: any;
 }
 
-const useGetProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+const useGetPrice = () => {
+  const [prices, setPrices] = useState<Price[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchProduct = useCallback(async () => {
+  const fetchPrices = useCallback(async () => {
+    const token = localStorage.getItem('authToken');
+
     if (!token) {
       toast.error('No authentication token found.', { position: 'top-center' });
       setLoading(false);
@@ -22,7 +21,7 @@ const useGetProducts = () => {
     }
 
     try {
-      const response = await fetch(GET_PRODUCT_URL, {
+      const response = await fetch(GET_PRICE_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,15 +31,12 @@ const useGetProducts = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message , { position: 'top-center' });
         return;
       }
 
       const data = await response.json();
-
-      const productData = data?.data?.product || [];
-      setProducts(productData);
-
+      setPrices(data?.data || []);
     } catch (err: any) {
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
         toast.error('Network error: Failed to fetch.', { position: 'top-center' });
@@ -53,10 +49,10 @@ const useGetProducts = () => {
   }, []);
 
   useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
+    fetchPrices();
+  }, [fetchPrices]);
 
-  return { products, loading, refetch: fetchProduct };
+  return { prices, loading, refetch: fetchPrices };
 };
 
-export default useGetProducts;
+export default useGetPrice;

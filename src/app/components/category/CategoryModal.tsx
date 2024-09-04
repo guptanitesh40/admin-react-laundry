@@ -49,7 +49,10 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       const result = await addCategory(data.name);
-      if (result) {
+      if (result.success) {
+        toast.success("Category added successfully!", {
+          position: "top-center",
+        });
         refetch();
         onRequestClose();
       } else {
@@ -82,28 +85,30 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
               <input
                 type="text"
                 {...field}
-                className="border border-gray-300 px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className={`border px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="Category Name"
               />
             )}
           />
           <p
-              className={`text-sm transition-opacity duration-300 ${
-                errors.name
-                  ? "text-red-500 opacity-100"
-                  : "text-transparent opacity-0"
-              }`}
-            >
-              {errors.name?.message || "\u00A0"}
-            </p>
+            className={`text-sm mt-1 ${
+              errors.name ? "text-red-500" : "text-transparent"
+            }`}
+          >
+            {errors.name?.message || "\u00A0"}
+          </p>
         </div>
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="submit"
-            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg"
+            className={`bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg ${
+              saving ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={saving}
           >
-            Save
+            {saving ? "Saving..." : "Save"}
           </button>
           <button
             type="button"

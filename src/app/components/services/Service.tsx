@@ -21,8 +21,8 @@ const Service: React.FC = () => {
     setModalIsOpen(true);
   };
 
-  const handleEditService = (product: any) => {
-    setCurrentService(product);
+  const handleEditService = (service: any) => {
+    setCurrentService(service);
     setEditMode(true);
     setModalIsOpen(true);
   };
@@ -32,7 +32,7 @@ const Service: React.FC = () => {
     setCurrentService(null);
   };
 
-  const handleDeleteService = async (id: number) => {
+  const handleDeleteService = async (service_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -46,7 +46,7 @@ const Service: React.FC = () => {
       });
 
       if (isConfirmed) {
-        const { success, message } = await deleteService(id);
+        const { success, message } = await deleteService(service_id);
         if (success) {
           refetch();
           Swal.fire(message);
@@ -100,7 +100,7 @@ const Service: React.FC = () => {
               <table className="w-full bg-white rounded-lg">
                 <thead className="bg-gray-200 text-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left">Id</th>
+                    <th className="px-6 py-3 text-left">Service ID</th>
                     <th className="px-6 py-3 text-left">Name</th>
                     <th className="px-6 py-3 text-left">Image</th>
                     <th className="px-12 py-3 text-end">Actions</th>
@@ -110,9 +110,9 @@ const Service: React.FC = () => {
                   {services.map((service: any) => (
                     <tr
                       className="hover:bg-gray-50 transition-colors duration-200"
-                      key={service.id}
+                      key={service.service_id}
                     >
-                      <td className="px-6 py-2">{service.id}</td>
+                      <td className="px-6 py-2">{service.service_id}</td>
                       <td className="px-6 py-2">{service.name}</td>
                       <td className="px-6 py-2">
                         <img
@@ -131,7 +131,7 @@ const Service: React.FC = () => {
 
                         <button
                           className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() => handleDeleteService(service.id)}
+                          onClick={() => handleDeleteService(service.service_id)}
                         >
                           <FaTrash className="text-red-500" />
                         </button>

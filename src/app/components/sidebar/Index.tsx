@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt } from "react-icons/fa";
-import { BiSolidCoupon } from 'react-icons/bi';
+import { BiSolidCoupon } from "react-icons/bi";
+import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 
 export const Sidebar: React.FC = () => {
-
   return (
     <div
       className="sidebar scrollbar-hide dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 hidden lg:flex flex-col items-stretch shrink-0"
@@ -41,7 +41,6 @@ export const Sidebar: React.FC = () => {
         id="sidebar_content"
       >
         <div
-
           className="scrollable-y-hover grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3"
           data-scrollable="true"
           data-scrollable-dependencies="#sidebar_header"
@@ -87,7 +86,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdCategory size={24}/>            
+                    <MdCategory size={24} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
                     Category
@@ -107,7 +106,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaProductHunt size={24}/>
+                    <FaProductHunt size={24} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
                     Product
@@ -117,24 +116,23 @@ export const Sidebar: React.FC = () => {
             </Link>
 
             <Link to="/services">
-        <div
-          className="menu-item hover:bg-gray-50 transition-colors duration-200"
-          data-menu-item-toggle="accordion"
-          data-menu-item-trigger="click"
-        >
-          <div
-            className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-            tabIndex={0}
-          >
-            <span className="menu-icon items-start text-gray-500 dark:text-gray-400 ">
-            <MdLocalLaundryService size={30} />            
-            </span>
-            <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
-              <Link to="/services">Services</Link>
-            </span>
-            
-          </div>
-        </div>
+              <div
+                className="menu-item hover:bg-gray-50 transition-colors duration-200"
+                data-menu-item-toggle="accordion"
+                data-menu-item-trigger="click"
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon items-start text-gray-500 dark:text-gray-400 ">
+                    <MdLocalLaundryService size={30} />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                    Services
+                  </span>
+                </div>
+              </div>
             </Link>
 
             <Link to="/coupon">
@@ -148,7 +146,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <BiSolidCoupon color='gray' size={32}/>
+                    <BiSolidCoupon color="gray" size={32} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
                     Coupon
@@ -157,10 +155,29 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-        </div>
+            <Link to="/price">
+              <div
+                className="menu-item hover:bg-gray-50 transition-colors duration-200"
+                data-menu-item-toggle="accordion"
+                data-menu-item-trigger="click"
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">                    
+                    <RiMoneyRupeeCircleFill size={32}/>
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                    Price
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+          </div>
         </div>
       </div>
-
     </div>
   );
 };

@@ -7,7 +7,6 @@ import Swal from "sweetalert2";
 import { useAddCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "../../hooks";
 import CategoryModal from "./CategoryModal";
 
-
 Modal.setAppElement("#root");
 
 const Category: React.FC = () => {
@@ -57,7 +56,7 @@ const Category: React.FC = () => {
     setNewCategory("");
   };
 
-  const handleDeleteCategory = async (id: number) => {
+  const handleDeleteCategory = async (category_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -69,9 +68,9 @@ const Category: React.FC = () => {
         confirmButtonText: "Yes, delete it!",
         cancelButtonText: "No, cancel",
       });
-  
+
       if (isConfirmed) {
-        const { success, message } = await deleteCategory(id);
+        const { success, message } = await deleteCategory(category_id);
         if (success) {
           refetch();
           Swal.fire(message);
@@ -89,9 +88,9 @@ const Category: React.FC = () => {
       });
     }
   };
-  
-  const handleEditClick = (categoryId: number, categoryName: string) => {
-    setEditingCategoryId(categoryId);
+
+  const handleEditClick = (category_id: number, categoryName: string) => {
+    setEditingCategoryId(category_id);
     setEditingCategoryName(categoryName);
     setOriginalCategoryName(categoryName);
   };
@@ -150,7 +149,6 @@ const Category: React.FC = () => {
   };
 
   return (
-
     <div>
       <div className="card-header m-auto border-0 mb-">
         <h3 className="card-title flex flex-col items-start">
@@ -184,7 +182,7 @@ const Category: React.FC = () => {
               <table className="w-full bg-white rounded-lg">
                 <thead className="bg-gray-200 text-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left">Id</th>
+                    <th className="px-6 py-3 text-left">Category ID</th>
                     <th className="px-6 py-3 text-left">Name</th>
                     <th className="px-6 py-3 text-right">Actions</th>
                   </tr>
@@ -193,21 +191,21 @@ const Category: React.FC = () => {
                 <tbody className="divide-y divide-gray-200">
                   {categories.map((category) => (
                     <tr
-                      key={category.id}
+                      key={category.category_id}
                       className="hover:bg-gray-50 transition-colors duration-200"
                     >
                       <td className="px-6 py-4 text-gray-600 font-medium">
-                        {category.id}
+                        {category.category_id}
                       </td>
                       <td
                         ref={
-                          category.id === editingCategoryId
+                          category.category_id === editingCategoryId
                             ? editableCellRef
                             : null
                         }
                         className="px-6 py-4"
                       >
-                        {editingCategoryId === category.id ? (
+                        {editingCategoryId === category.category_id ? (
                           <input
                             type="text"
                             value={editingCategoryName}
@@ -225,7 +223,7 @@ const Category: React.FC = () => {
 
                       <td className="px-6 py-3 text-right">
                         <div className="flex justify-end space-x-2">
-                          {editingCategoryId === category.id ? (
+                          {editingCategoryId === category.category_id ? (
                             <button
                               onClick={handleSaveEditClick}
                               className="bg-green-100 hover:bg-green-200 p-2 rounded-full transition-transform transform hover:scale-110"
@@ -236,15 +234,15 @@ const Category: React.FC = () => {
                           ) : (
                             <button
                               onClick={() =>
-                                handleEditClick(category.id, category.name)
+                                handleEditClick(category.category_id, category.name)
                               }
-                              className="g-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                              className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
                             >
                               <FaPencilAlt className="text-yellow-600" />
                             </button>
                           )}
                           <button
-                            onClick={() => handleDeleteCategory(category.id)}
+                            onClick={() => handleDeleteCategory(category.category_id)}
                             className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
                             disabled={deleting}
                           >

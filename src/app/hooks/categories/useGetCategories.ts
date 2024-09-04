@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 const GET_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
 
 interface Category {
-  id: number;
+  category_id: number;
   name: string;
 }
 
@@ -37,11 +37,7 @@ const useGetCategories = () => {
       }
 
       const data = await response.json();
-      const categoryData = data?.data?.result?.map((category: { category_id: number; name: string; }) => ({
-        id: category.category_id,
-        name: category.name,
-      })) || [];
-
+      const categoryData = data?.data?.result || [];
       setCategories(categoryData);
 
     } catch (err: any) {
