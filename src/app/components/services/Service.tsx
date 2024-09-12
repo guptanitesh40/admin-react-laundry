@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import ServiceModal from "./ServiceModal";
 import { useAddService, useDeleteService, useGetServices, useUpdateService } from "../../hooks";
-import Shimmer from "../shimmer";
+import Shimmer from "../shimmer/Shimmer";
 
 const Service: React.FC = () => {
 

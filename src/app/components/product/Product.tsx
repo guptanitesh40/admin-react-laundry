@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { FaPencilAlt, FaPlus, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
-import Shimmer from "../shimmer";
+import Shimmer from "../shimmer/Shimmer";
 import ProductModal from "./ProductModal";
 import { useAddProduct, useDeleteProduct, useGetProducts, useUpdateProduct } from "../../hooks";
 
