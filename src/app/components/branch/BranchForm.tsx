@@ -21,7 +21,6 @@ interface FormData {
 }
 
 const BranchForm: React.FC = () => {
-  
   const { addBranch, loading: adding } = useAddBranch();
   const { updateBranch, loading: updating } = useUpdateBranch();
   const { id } = useParams<{ id: string }>();
@@ -250,49 +249,65 @@ const BranchForm: React.FC = () => {
               {isEditMode ? "Company ID" : "Company"}
             </label>
 
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-300 w-full text-left flex justify-between items-center"
-            >
-              <span>
-                {isEditMode
-                  ? formData.company_id || "Company ID"
-                  : companies.find(
+            {isEditMode ? (
+              <input
+                type="text"
+                id="company_id"
+                name="company_id"
+                value={formData.company_id || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, company_id: e.target.value })
+                }
+                className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 text-gray-700 w-full"
+                disabled
+              />
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-300 w-full text-left flex justify-between items-center"
+                >
+                  <span>
+                    {companies.find(
                       (company) =>
                         company.company_id === Number(formData.company_id)
                     )?.company_name || "Select Company"}
-              </span>
-              {!isEditMode && <span className="ml-2">&#9662;</span>}
-            </button>
+                  </span>
+                  <span className="ml-2">&#9662;</span>
+                </button>
 
-            {isDropdownOpen && !isEditMode && (
-            <ul className="dropdown-menu scrollable-menu absolute z-10 mt-[73px] w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                {companies.map((company) => (
-                  <li
-                  key={company.company_id}
-                  className={`cursor-pointer hover:bg-gray-100 ${
-                    company.company_id === Number(formData.company_id)
-                      ? "bg-gray-200"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    handleDropdownChange(company.company_id, company.company_name)
-                  }
-                >
-                  <div className="block px-4 py-2 text-sm">
-                    {company.company_name}
-                  </div>
-                </li>
-                ))}
-              </ul>
+                {isDropdownOpen && (
+                  <ul className="dropdown-menu scrollable-menu absolute z-10 mt-[73px] w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                    {companies.map((company) => (
+                      <li
+                        key={company.company_id}
+                        className={`cursor-pointer hover:bg-gray-100 ${
+                          company.company_id === Number(formData.company_id)
+                            ? "bg-gray-200"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleDropdownChange(
+                            company.company_id,
+                            company.company_name
+                          )
+                        }
+                      >
+                        <div className="block px-4 py-2 text-sm">
+                          {company.company_name}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
             )}
 
             <p className="text-red-500 text-sm">
               {errors.company_id || "\u00A0"}
             </p>
           </div>
-
         </div>
 
         <div className="mt-6 flex gap-4">
