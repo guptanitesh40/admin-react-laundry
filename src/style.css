@@ -8292,3 +8292,8 @@ label.rating-label {
     background-size: cover;
   }
 }
+
+.fix {
+  border: none; 
+}
+

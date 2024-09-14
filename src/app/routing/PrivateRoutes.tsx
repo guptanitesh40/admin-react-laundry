@@ -6,6 +6,8 @@ import Shimmer from "../components/shimmer/Shimmer";
 import ListShimmer from "../components/shimmer/ListShimmer";
 import ProfileShimmer01 from "../components/shimmer/ProfileShimmer";
 import ProfileShimmer02 from "../components/shimmer/ProfileShimmer01";
+import Banner from "../components/banner/Banner";
+import BannerShimmer from "../components/shimmer/BannerShimmer";
 
 const PrivateRoutes: React.FC = () => {
   const Profile = lazy(() => import("../components/profile/Index"));
@@ -147,6 +149,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<ProfileShimmer02 />}>
               <BranchProfile />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/banner"
+          element={
+            <Suspense fallback={<BannerShimmer />}>
+              <Banner/>
             </Suspense>
           }
         />
