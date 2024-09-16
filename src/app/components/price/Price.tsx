@@ -84,23 +84,24 @@ const Price: React.FC = () => {
   };
 
   const handleSave = async () => {
-
     const updatedData = combinations
       .filter((combination) => {
         const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-  
+
         return (updatedPrices[key] !== undefined || combination.price > 0)
       })
       .map((combination) => ({
         category_id: combination.category.category_id,
         product_id: combination.product.product_id,
         service_id: combination.service.service_id,
-        price: updatedPrices[`${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`] || combination.price,
+        price:
+          updatedPrices[
+            `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`
+          ] || combination.price,
       }));
 
-
     try {
-      await addPrice(updatedData );
+      await addPrice(updatedData);
       refetch();
       setEditing(new Set());
     } catch (error) {
@@ -161,7 +162,10 @@ const Price: React.FC = () => {
                 <div className="card-body">
                   <div data-datatable="true" data-datatable-page-size="10">
                     <div className="scrollable-x-auto">
-                      <table className="table table-auto table-border" data-datatable-table="true">
+                      <table
+                        className="table table-auto table-border"
+                        data-datatable-table="true"
+                      >
                         <thead>
                           <tr>
                             <th className="w-[60px]">Id</th>
@@ -186,7 +190,9 @@ const Price: React.FC = () => {
                                   <td className="relative">
                                     {isEditing ? (
                                       <input
-                                        ref={(el) => (inputRefs.current[key] = el)}
+                                        ref={(el) =>
+                                          (inputRefs.current[key] = el)
+                                        }
                                         type="text"
                                         className="w-full h-full absolute inset-0 input input-bordered"
                                         value={
@@ -197,7 +203,9 @@ const Price: React.FC = () => {
                                         onChange={(e) =>
                                           handlePriceChange(
                                             key,
-                                            e.target.value === "" ? 0 : Number(e.target.value)
+                                            e.target.value === ""
+                                              ? 0
+                                              : Number(e.target.value)
                                           )
                                         }
                                         onBlur={() => handleInputBlur(key)}
@@ -207,7 +215,9 @@ const Price: React.FC = () => {
                                         className="cursor-pointer h-full flex"
                                         onClick={() => handleEditClick(key)}
                                       >
-                                        {combination.price || updatedPrices[key] ||"Add Price"}
+                                        {updatedPrices[key] !== undefined
+                                          ? updatedPrices[key]
+                                          : combination.price || "Add Price"}
                                       </span>
                                     )}
                                   </td>

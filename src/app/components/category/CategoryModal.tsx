@@ -48,18 +48,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const result = await addCategory(data.name);
-      if (result.success) {
-        toast.success("Category added successfully!", {
-          position: "top-center",
-        });
-        refetch();
-        onRequestClose();
-      } else {
-        toast.error("Failed to add category. Please try again.", {
-          position: "top-center",
-        });
-      }
+      await addCategory(data.name);
     } catch (error) {
       toast.error("An error occurred. Please try again.", {
         position: "top-center",
