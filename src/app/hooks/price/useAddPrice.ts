@@ -13,20 +13,26 @@ interface PriceData {
 const useAddPrice = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addPrice = async (priceData: PriceData) => {
+  const addPrice = async (priceData: PriceData[]) => {
     const token = localStorage.getItem('authToken');
+    
+    if (priceData.length === 0) {
+      toast.error("No changes detected. Please provide a price to save.", { position: 'top-center' });
+      return false;
+    }
+
     setLoading(true);
 
     try {
-      const payload = { prices: [priceData] };
+      const payload = { prices: priceData };
 
       const response = await fetch(ADD_PRICE_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(payload), 
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

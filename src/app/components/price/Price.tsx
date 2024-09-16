@@ -1,21 +1,27 @@
-import React, { useState, useCallback } from "react";
-import { useGetCategories, useGetPrice, useGetProducts, useGetServices } from "../../hooks";
-import PriceModal from "./PriceModal";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import {
+  useAddPrice,
+  useGetCategories,
+  useGetPrice,
+  useGetProducts,
+  useGetServices,
+} from "../../hooks";
 import Shimmer from "../shimmer";
-import ReactPaginate from "react-paginate";
-import { GrFormPrevious } from "react-icons/gr";
-import { MdNavigateNext } from "react-icons/md";
+import toast from "react-hot-toast";
 
 interface Category {
   category_id: number;
+  name: string;
 }
 
 interface Product {
   product_id: number;
+  name: string;
 }
 
 interface Service {
   service_id: number;
+  name: string;
 }
 
 interface Price {
@@ -34,23 +40,18 @@ const Price: React.FC = () => {
   const { products } = useGetProducts();
   const { services } = useGetServices();
   const { prices, loading, refetch } = useGetPrice();
+  const { addPrice } = useAddPrice();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
-    refetch();
-  };
+  const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>({});
+  const [editing, setEditing] = useState<Set<string>>(new Set());
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   const getCombinations = useCallback(
     (
       categories: Category[],
       products: Product[],
       services: Service[],
-      prices: Price[]
+      prices: Price[],
     ): Combination[] => {
       const combinations: Combination[] = [];
 
@@ -75,13 +76,63 @@ const Price: React.FC = () => {
 
   const combinations = getCombinations(categories, products, services, prices);
 
-  const offset = currentPage * rowsPerPage;
-  const currentCombinations = combinations.slice(offset, offset + rowsPerPage);
-  const pageCount = Math.ceil(combinations.length / rowsPerPage);
-
-  const handlePageClick = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
+  const handlePriceChange = (key: string, value: number) => {
+    setUpdatedPrices((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
+
+  const handleSave = async () => {
+
+    const updatedData = combinations
+      .filter((combination) => {
+        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+  
+        return (updatedPrices[key] !== undefined || combination.price > 0)
+      })
+      .map((combination) => ({
+        category_id: combination.category.category_id,
+        product_id: combination.product.product_id,
+        service_id: combination.service.service_id,
+        price: updatedPrices[`${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`] || combination.price,
+      }));
+
+
+    try {
+      await addPrice(updatedData );
+      refetch();
+      setEditing(new Set());
+    } catch (error) {
+      toast.error("Failed to save prices.");
+    }
+  };
+
+  const handleEditClick = (key: string) => {
+    setEditing((prev) => {
+      const updatedEditing = new Set(prev);
+      updatedEditing.add(key);
+      return updatedEditing;
+    });
+  };
+
+  const handleInputBlur = (key: string) => {
+    setEditing((prev) => {
+      const updatedEditing = new Set(prev);
+      updatedEditing.delete(key);
+      return updatedEditing;
+    });
+  };
+
+  useEffect(() => {
+    const keys = Array.from(editing);
+    if (keys.length > 0) {
+      const key = keys[0];
+      if (inputRefs.current[key]) {
+        inputRefs.current[key]?.focus();
+      }
+    }
+  }, [editing]);
 
   return (
     <div>
@@ -89,7 +140,7 @@ const Price: React.FC = () => {
         <Shimmer />
       ) : (
         <>
-          <div className="container-fixed">
+          <div>
             <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
               <div className="flex flex-col justify-center gap-2">
                 <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
@@ -97,43 +148,72 @@ const Price: React.FC = () => {
                 </h1>
               </div>
               <div className="flex items-center gap-2.5">
-                <button className="btn btn-primary" onClick={openModal}>
-                  Add Price
+                <button className="btn btn-primary" onClick={handleSave}>
+                  Save price
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="container-fixed">
+          <div>
             <div className="grid gap-5 lg:gap-7.5">
               <div className="card card-grid min-w-full">
                 <div className="card-body">
                   <div data-datatable="true" data-datatable-page-size="10">
                     <div className="scrollable-x-auto">
-                      <table
-                        className="table table-auto table-border"
-                        data-datatable-table="true"
-                      >
+                      <table className="table table-auto table-border" data-datatable-table="true">
                         <thead>
                           <tr>
-                            <th className="w-[60px] text-center">Id</th>
-                            <th className="min-w-[300px]">Category ID</th>
-                            <th className="min-w-[300px]">Product ID</th>
-                            <th className="min-w-[175px]">Service ID</th>
-                            <th className="min-w-[175px]">Price</th>
+                            <th className="w-[60px]">Id</th>
+                            <th className="min-w-[200px]">Category </th>
+                            <th className="min-w-[200px]">Product </th>
+                            <th className="min-w-[200px]">Service </th>
+                            <th className="w-[200px]">Price</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {currentCombinations.length > 0 ? (
-                            currentCombinations.map((combination, index) => (
-                              <tr key={index}>
-                                <td>{offset + index + 1}</td>
-                                <td>{combination.category.category_id}</td>
-                                <td>{combination.product.product_id}</td>
-                                <td>{combination.service.service_id}</td>
-                                <td>{combination.price}</td>
-                              </tr>
-                            ))
+                          {combinations.length > 0 ? (
+                            combinations.map((combination, index) => {
+                              const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+                              const isEditing = editing.has(key);
+
+                              return (
+                                <tr key={index}>
+                                  <td>{index + 1}</td>
+                                  <td>{combination.category.name}</td>
+                                  <td>{combination.product.name}</td>
+                                  <td>{combination.service.name}</td>
+                                  <td className="relative">
+                                    {isEditing ? (
+                                      <input
+                                        ref={(el) => (inputRefs.current[key] = el)}
+                                        type="text"
+                                        className="w-full h-full absolute inset-0 input input-bordered"
+                                        value={
+                                          updatedPrices[key] !== undefined
+                                            ? updatedPrices[key]
+                                            : combination.price || ""
+                                        }
+                                        onChange={(e) =>
+                                          handlePriceChange(
+                                            key,
+                                            e.target.value === "" ? 0 : Number(e.target.value)
+                                          )
+                                        }
+                                        onBlur={() => handleInputBlur(key)}
+                                      />
+                                    ) : (
+                                      <span
+                                        className="cursor-pointer h-full flex"
+                                        onClick={() => handleEditClick(key)}
+                                      >
+                                        {combination.price || updatedPrices[key] ||"Add Price"}
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })
                           ) : (
                             <tr>
                               <td colSpan={5} className="text-center">
@@ -143,50 +223,12 @@ const Price: React.FC = () => {
                           )}
                         </tbody>
                       </table>
-
-                      <div className="card-footer flex justify-between items-center gap-5 text-gray-600 text-2sm font-medium">
-                        <div className="flex items-center gap-2">
-                          Show
-                          <select
-                            className="select select-sm w-16"
-                            value={rowsPerPage}
-                            onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                          >
-                            <option value={5}>5</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                          </select>
-                          per page
-                        </div>
-
-                        <div className="pagination inline-flex gap-1">
-                          <ReactPaginate
-                            previousLabel={<GrFormPrevious />}
-                            nextLabel={<MdNavigateNext />}
-                            breakLabel={"..."}
-                            pageCount={pageCount}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={3}
-                            onPageChange={handlePageClick}
-                            containerClassName={"pagination flex gap-1"}
-                            pageClassName={"btn"}
-                            pageLinkClassName={""}
-                            activeClassName={"bg-gray-200 text-gray-800"}
-                            previousClassName={"btn"}
-                            nextClassName={"btn"}
-                            breakClassName={"btn"}
-                            disabledClassName={"btn disabled"}
-                          />
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          <PriceModal isOpen={isModalOpen} handleClose={closeModal} />
         </>
       )}
     </div>

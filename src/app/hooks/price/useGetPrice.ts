@@ -14,12 +14,6 @@ const useGetPrice = () => {
   const fetchPrices = useCallback(async () => {
     const token = localStorage.getItem('authToken');
 
-    if (!token) {
-      toast.error('No authentication token found.', { position: 'top-center' });
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await fetch(GET_PRICE_URL, {
         method: 'GET',
@@ -51,7 +45,7 @@ const useGetPrice = () => {
   useEffect(() => {
     fetchPrices();
   }, [fetchPrices]);
-
+  
   return { prices, loading, refetch: fetchPrices };
 };
 
