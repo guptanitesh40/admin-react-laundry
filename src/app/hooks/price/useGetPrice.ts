@@ -1,28 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
-const GET_CATEGORY_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
+const GET_PRICE_URL = `${import.meta.env.VITE_BASE_URL}/prices`;
 
-interface Category {
-  category_id: number;
-  name: string;
+interface Price {
+  [key: string]: any;
 }
 
-const useGetCategories = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+const useGetPrice = () => {
+  const [prices, setPrices] = useState<Price[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchCategories = useCallback(async () => {
+  const fetchPrices = useCallback(async () => {
     const token = localStorage.getItem('authToken');
-  
-    if (!token) {
-      toast.error('No authentication token found.', { position: 'top-center' });
-      setLoading(false);
-      return;
-    }
 
     try {
-      const response = await fetch(GET_CATEGORY_URL, {
+      const response = await fetch(GET_PRICE_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,14 +25,12 @@ const useGetCategories = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message , { position: 'top-center' });
         return;
       }
 
       const data = await response.json();
-      const categoryData = data?.data?.result || [];
-      setCategories(categoryData);
-
+      setPrices(data?.data || []);
     } catch (err: any) {
       if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
         toast.error('Network error: Failed to fetch.', { position: 'top-center' });
@@ -52,10 +43,10 @@ const useGetCategories = () => {
   }, []);
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-
-  return { categories, loading, refetch: fetchCategories };
+    fetchPrices();
+  }, [fetchPrices]);
+  
+  return { prices, loading, refetch: fetchPrices };
 };
 
-export default useGetCategories;
+export default useGetPrice;

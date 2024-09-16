@@ -5,13 +5,11 @@ const useDeleteCategory = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const token = localStorage.getItem("authToken");
 
-  const deleteCategory = async (categoryId: number): Promise<{ success: boolean; message: string }> => {
+  const deleteCategory = async (category_id: number): Promise<{ success: boolean; message: string }> => {
     setLoading(true);
-    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${categoryId}`;
+    const DELETE_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories/${category_id}`;
 
     try {
-      const token = localStorage.getItem("authToken");
-
       const response = await fetch(DELETE_URL, {
         method: "DELETE",
         headers: {
@@ -22,12 +20,6 @@ const useDeleteCategory = () => {
 
       const result = await response.json();
       
-      if (!token) {
-        toast.error(result.message, { position: "top-center" });
-        setLoading(false);
-        return { success: false, message : result.message};
-      }
-
       if (!response.ok) {
         toast.error(result.message, { position: "top-center" });
         return { success: false, message: result.message };

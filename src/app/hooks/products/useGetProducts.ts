@@ -5,7 +5,7 @@ const GET_PRODUCT_URL = `${import.meta.env.VITE_BASE_URL}/admin/products`;
 const token = localStorage.getItem('authToken');
 
 interface Product {
-  id: number;
+  product_id: number;
   name: string;
   image: string; 
 }
@@ -14,8 +14,7 @@ const useGetProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchProduct = useCallback( async () => {
-
+  const fetchProduct = useCallback(async () => {
     if (!token) {
       toast.error('No authentication token found.', { position: 'top-center' });
       setLoading(false);
@@ -39,12 +38,7 @@ const useGetProducts = () => {
 
       const data = await response.json();
 
-      const productData = data?.data?.product?.map((product: { product_id: number; name: string; image: string; }) => ({
-        id: product.product_id,
-        name: product.name,
-        image: product.image, 
-      })) || [];
- 
+      const productData = data?.data?.product || [];
       setProducts(productData);
 
     } catch (err: any) {

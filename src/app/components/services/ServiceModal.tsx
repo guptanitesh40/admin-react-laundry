@@ -11,7 +11,7 @@ interface ServiceModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   editMode: boolean;
-  currentService?: { id: number; name: string; image?: string } | null;
+  currentService?: { service_id: number; name: string; image?: string } | null;
   addService: (formData: FormData) => Promise<boolean>;
   updateService: (id: number, data: FormData) => Promise<boolean>;
   refetch: () => void;
@@ -80,7 +80,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
 
     try {
       if (editMode && currentService) {
-        await updateService(currentService.id, formData);
+        await updateService(currentService.service_id, formData);
       } else {
         await addService(formData);
       }
@@ -97,7 +97,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     <Modal
       isOpen={isOpen}
       onRequestClose={handleCancelClick}
-      contentLabel="Product Modal"
+      contentLabel="Service Modal"
       className="fixed inset-0 flex bg-black items-center justify-center rounded-lg p-6 mx-auto z-50 bg-opacity-50"
       overlayClassName="fixed inset-0 z-40"
       shouldCloseOnOverlayClick={true}
@@ -105,9 +105,9 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     >
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
         <h2 className="text-xl font-bold mb-4">
-          {editMode ? "Edit Product" : "Add Product"}
+          {editMode ? "Edit Service" : "Add Service"}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1  ">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
           <div>
             <label className="block text-gray-700">Name</label>
             <Controller
@@ -118,7 +118,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
                   type="text"
                   {...field}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Product Name"
+                  placeholder="Service Name"
                 />
               )}
             />

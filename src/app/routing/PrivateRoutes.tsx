@@ -11,6 +11,7 @@ const PrivateRoutes: React.FC = () => {
   const Service = lazy(() => import("../components/services/Service"));
   const Coupon = lazy(() => import("../components/coupon/Coupon"));
   const CouponModal = lazy(() => import("../components/coupon/CouponModal"));
+  const Price = lazy(() => import("../components/price/Price"));
 
   return (
     <Routes>
@@ -58,6 +59,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Shimmer />}>
               <CouponModal />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/price"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <Price />
             </Suspense>
           }
         />

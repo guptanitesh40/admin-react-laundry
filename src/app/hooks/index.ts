@@ -17,3 +17,6 @@ export { default as useFetchCoupon } from './coupon/useFetchCoupon';
 export { default as useAddCoupon } from './coupon/useAddCoupon';
 export { default as useDeleteCoupon } from './coupon/useDeleteCoupon';
 export { default as useUpdateCoupon } from './coupon/useUpdateCoupon';
+
+export { default as useGetPrice } from './price/useGetPrice';
+export { default as useAddPrice } from './price/useAddPrice';

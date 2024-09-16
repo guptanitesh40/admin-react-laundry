@@ -11,9 +11,9 @@ interface ProductModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   editMode: boolean;
-  currentProduct?: { id: number; name: string; image?: string } | null;
+  currentProduct?: { product_id: number; name: string; image?: string } | null;
   addProduct: (formData: FormData) => Promise<boolean>;
-  updateProduct: (id: number, data: FormData) => Promise<boolean>;
+  updateProduct: (product_id: number, data: FormData) => Promise<boolean>;
   refetch: () => void;
   loading: boolean;
   handleCancelClick: () => void;
@@ -80,7 +80,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
     try {
       if (editMode && currentProduct) {
-        await updateProduct(currentProduct.id, formData);
+        await updateProduct(currentProduct.product_id, formData);
       } else {
         await addProduct(formData);
       }
@@ -107,7 +107,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <h2 className="text-xl font-bold mb-4">
           {editMode ? "Edit Product" : "Add Product"}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1  ">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
           <div>
             <label className="block text-gray-700">Name</label>
             <Controller
