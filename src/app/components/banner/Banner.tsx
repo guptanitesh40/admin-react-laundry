@@ -80,11 +80,6 @@ const Banner: React.FC = () => {
         </div>
   
         <div>
-          {banners.length === null ? (
-            <div className="text-center text-xl text-gray-600">
-              <p>No banners available</p>
-            </div>
-          ) : (
             <div className="grid gap-5 lg:gap-7.5">
               <div className="fix card card-grid min-w-full">
               
@@ -103,6 +98,13 @@ const Banner: React.FC = () => {
                           <th className="min-w-[100px]">Actions</th>
                         </tr>
                       </thead>
+                      {banners.length === 0 ? (
+                        <td colSpan={4}>
+                        <div className="text-center text-xl text-gray-600">
+                          <p>No banners available</p>
+                        </div>
+                        </td>
+                      ) : (
                       <tbody>
                         {loadingBanner ? (
                           <tr>
@@ -155,12 +157,13 @@ const Banner: React.FC = () => {
                           ))
                         )}
                       </tbody>
+                      )}
                     </table>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          
         </div>
       </div>
   

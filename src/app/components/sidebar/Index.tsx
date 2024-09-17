@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
-import { FaProductHunt, FaBuilding } from "react-icons/fa";
+import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from 'react-icons/bi';
 import { RiBuilding2Fill } from "react-icons/ri";
 
@@ -148,7 +148,7 @@ export const Sidebar: React.FC = () => {
               <div className={`menu-item transition-colors duration-200 ${getItemClass('banner')}`}>
                 <div className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]" tabIndex={0}>
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaBuilding color='gray' size={25} />
+                    <FaImages color='gray' size={25} />                  
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Banner
