@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useDeleteBranch, useGetBranch } from "../../hooks";
+import { useDeleteBranch, useGetBranch, useGetCompany } from "../../hooks";
 import ListShimmer from "../shimmer/ListShimmer";
 
 interface Branch {
@@ -19,6 +19,7 @@ interface Branch {
   branch_email: string;
   branch_registration_number: string;
   company_id: number;
+  company_name: string;
 }
 
 const BranchList: React.FC = () => {
@@ -27,6 +28,7 @@ const BranchList: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const pageFromParams = searchParams.get("page");
+  const { companies, refetch: fetchCompany } = useGetCompany();
 
   const { branches, refetch, loading, totalBranches } = useGetBranch(
     currentPage,
@@ -42,7 +44,7 @@ const BranchList: React.FC = () => {
   }, [pageFromParams]);
 
   useEffect(() => {
-    refetch(); 
+    refetch();
   }, [currentPage, refetch]);
 
   const totalPages = Math.ceil(totalBranches / perPage);
@@ -125,7 +127,7 @@ const BranchList: React.FC = () => {
                         <th className="w-[60px]">Id</th>
                         <th className="min-w-[200px]">Branch Name</th>
                         <th className="min-w-[240px]">Address</th>
-                        <th className="w-[60px]">Company id</th>
+                        <th className="w-[60px]">Company Name</th>
                         <th className="w-[50px]">Actions</th>
                       </tr>
                     </thead>
@@ -137,13 +139,24 @@ const BranchList: React.FC = () => {
                             <td>
                               <span
                                 className="cursor-pointer hover:text-primary"
-                                onClick={() => navigate(`/branch-profile/${branch.branch_id}`)}
+                                onClick={() =>
+                                  navigate(
+                                    `/branch-profile/${branch.branch_id}`
+                                  )
+                                }
                               >
                                 {branch.branch_name}
                               </span>
                             </td>
                             <td>{branch.branch_address}</td>
-                            <td>{branch.company_id}</td>
+
+                            <td>
+                              {companies.find(
+                                (company) =>
+                                  company.company_id === branch.company_id
+                              )?.company_name || "Not Available"}
+                            </td>
+
                             <td>
                               <div className="flex gap-2">
                                 <button
@@ -153,7 +166,9 @@ const BranchList: React.FC = () => {
                                   <FaPencilAlt className="text-yellow-600" />
                                 </button>
                                 <button
-                                  onClick={() => handleDeleteBranch(branch.branch_id)}
+                                  onClick={() =>
+                                    handleDeleteBranch(branch.branch_id)
+                                  }
                                   className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
                                 >
                                   <FaTrash className="text-red-500" />
@@ -190,7 +205,9 @@ const BranchList: React.FC = () => {
                     {Array.from({ length: totalPages }).map((_, index) => (
                       <button
                         key={index}
-                        className={`btn ${currentPage === index + 1 ? "active" : ""}`}
+                        className={`btn ${
+                          currentPage === index + 1 ? "active" : ""
+                        }`}
                         onClick={() => handlePageChange(index + 1)}
                       >
                         {index + 1}
@@ -199,7 +216,9 @@ const BranchList: React.FC = () => {
                     <button
                       disabled={currentPage === totalPages}
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
+                      className={`btn ${
+                        currentPage === totalPages ? "disabled" : ""
+                      }`}
                     >
                       <FaChevronRight />
                     </button>
