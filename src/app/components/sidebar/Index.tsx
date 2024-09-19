@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from 'react-icons/bi';
