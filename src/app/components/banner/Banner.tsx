@@ -1,14 +1,13 @@
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useDeleteBanner, useGetBanner } from "../../hooks";
-import ListShimmer from "../shimmer/ListShimmer";
+import BannerShimmer from "../shimmer/BannerShimmer";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import BannerModal from "./BannerModal";
-import BannerShimmer from "../shimmer/BannerShimmer";
 
 const Banner: React.FC = () => {
   const { deleteBanner } = useDeleteBanner();
-  const { banners, refetch, loading: loadingBanner } = useGetBanner();
+  const { banners, refetch, loading } = useGetBanner();
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -17,12 +16,12 @@ const Banner: React.FC = () => {
   const handleAddBanner = () => {
     setEditMode(false);
     setModalIsOpen(true);
-    setCurrentBanner(null); 
+    setCurrentBanner(null);
   };
 
   const handleEditBanner = (banner: any) => {
     setEditMode(true);
-    setCurrentBanner(banner); 
+    setCurrentBanner(banner);
     setModalIsOpen(true);
   };
 
@@ -64,109 +63,87 @@ const Banner: React.FC = () => {
     }
   };
 
-
   return (
     <div className="container-fixed">
-      <div className="flex flex-col items-stretch gap-5 lg:gap-7.5">
-        <div className="flex flex-wrap items-center gap-5 justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">Banners</h1>
-  
-          <div className="flex gap-5">
-            <button className="btn btn-success" onClick={handleAddBanner}>
-              <i className="ki-filled ki-plus-squared"></i>
-              Add Banner
+      {loading ? (
+        <BannerShimmer />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+            <div className="flex flex-col justify-center gap-2">
+              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+                Banners
+              </h1>
+            </div>
+            <button className="btn btn-primary" onClick={handleAddBanner}>
+              <i className="ki-filled ki-plus-squared"></i> Add Banner
             </button>
           </div>
-        </div>
-  
-        <div>
-            <div className="grid gap-5 lg:gap-7.5">
-              <div className="fix card card-grid min-w-full">
-              
-                <div data-datatable="true" data-datatable-page-size="10">
-                  <div className="scrollable-x-auto fix">
-                    <table
-                      className="table table-auto table-border rounded-[20px]"
-                      data-datatable-table="true"
-                    >
-                      <thead>
-                        <tr>
-                          <th className="w-[60px]">ID</th>
-                          <th className="min-w-[200px]">Image</th>
-                          <th className="min-w-[165px]">Title</th>
-                          <th className="min-w-[205px] truncate break-words">Description</th>
-                          <th className="min-w-[100px]">Actions</th>
-                        </tr>
-                      </thead>
-                      {banners.length === 0 ? (
-                        <td colSpan={4}>
-                        <div className="text-center text-xl text-gray-600">
-                          <p>No banners available</p>
-                        </div>
-                        </td>
-                      ) : (
+
+          <div className="grid gap-5 lg:gap-7.5">
+            <div className="card card-grid min-w-full">
+              <div className="card-body">
+                <div className="scrollable-x-auto">
+                  <table className="table table-auto table-border">
+                    <thead>
+                      <tr>
+                        <th className="w-[60px]">ID</th>
+                        <th className="min-w-[200px]">Image</th>
+                        <th className="min-w-[165px]">Title</th>
+                        <th className="min-w-[205px]">Description</th>
+                        <th className="w-[125px]">Actions</th>
+                      </tr>
+                    </thead>
+                    {banners.length > 0 ? (
                       <tbody>
-                        {loadingBanner ? (
-                          <tr>
-                            <td colSpan={5}>
-                              <BannerShimmer />
+                        {banners.map((banner) => (
+                          <tr key={banner.banner_id}>
+                            <td>{banner.banner_id}</td>
+                            <td>
+                              <img
+                                alt={banner.title}
+                                className="rounded-lg size-20 shrink-0"
+                                src={banner.image}
+                              />
+                            </td>
+                            <td>{banner.title}</td>
+                            <td className="max-w-[105px] break-words overflow-hidden">
+                              {banner.description}
+                            </td>
+                            <td>
+                              <button
+                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                onClick={() => handleEditBanner(banner)}
+                              >
+                                <FaPencilAlt className="text-yellow-600" />
+                              </button>
+                              <button
+                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                onClick={() => handleDeleteBanner(banner.banner_id)}
+                              >
+                                <FaTrash className="text-red-500" />
+                              </button>
                             </td>
                           </tr>
-                        ) : (
-                          banners.map((banner) => (
-                            <tr key={banner.banner_id}>
-                              <td>
-                                <div className="flex items-center gap-2.5">
-                                  {banner.banner_id}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="flex items-center gap-2.5">
-                                  <img
-                                    alt={banner.title}
-                                    className="rounded-lg size-20 shrink-0"
-                                    src={banner.image}
-                                  />
-                                </div>
-                              </td>
-                              <td>
-                                <div className="flex items-center gap-2.5">
-                                  {banner.title}
-                                </div>
-                              </td>
-                              <td className="whitespace-normal overflow-hidden max-w-[105px]">
-                                <div className="break-words overflow-hidden">
-                                  {banner.description}
-                                </div>
-                              </td>
-                              <td>
-                                <button
-                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                                  onClick={() => handleEditBanner(banner)}
-                                >
-                                  <FaPencilAlt className="text-yellow-600" />
-                                </button>
-                                <button
-                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                                  onClick={() => handleDeleteBanner(banner.banner_id)}
-                                >
-                                  <FaTrash className="text-red-500" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))
-                        )}
+                        ))}
                       </tbody>
-                      )}
-                    </table>
-                  </div>
+                    ) : (
+                      <tbody>
+                        <tr>
+                          <td colSpan={5} className="text-center">
+                            No banners available
+                          </td>
+                        </tr>
+                      </tbody>
+                    )}
+                  </table>
                 </div>
               </div>
             </div>
-          
-        </div>
-      </div>
-  
+          </div>
+        </>
+      )}
+
       <BannerModal
         isOpen={modalIsOpen}
         onClose={handleCloseModal}
@@ -176,7 +153,6 @@ const Banner: React.FC = () => {
       />
     </div>
   );
-  
 };
 
 export default Banner;
