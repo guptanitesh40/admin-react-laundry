@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FaPencilAlt, FaTrash, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaPencilAlt,
+  FaTrash,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDeleteBranch, useGetBranch } from "../../hooks";
@@ -21,7 +26,7 @@ const BranchList: React.FC = () => {
   const perPage = 10;
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageFromParams = searchParams.get('page');
+  const pageFromParams = searchParams.get("page");
 
   const { branches, refetch, loading, totalBranches } = useGetBranch(
     currentPage,
@@ -31,9 +36,14 @@ const BranchList: React.FC = () => {
 
   useEffect(() => {
     if (pageFromParams) {
-      setCurrentPage(Number(pageFromParams));
+      const newPage = Number(pageFromParams);
+      setCurrentPage(newPage);
     }
   }, [pageFromParams]);
+
+  useEffect(() => {
+    refetch(); 
+  }, [currentPage, refetch]);
 
   const totalPages = Math.ceil(totalBranches / perPage);
 
@@ -41,7 +51,6 @@ const BranchList: React.FC = () => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
       setSearchParams({ page: newPage.toString() });
-      refetch();
     }
   };
 
@@ -88,115 +97,119 @@ const BranchList: React.FC = () => {
 
   return (
     <div className="container-fixed">
-      <div className="flex flex-col items-stretch gap-5 lg:gap-7.5">
-        <div className="flex flex-wrap items-center gap-5 justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Branch List</h1>
-            <p className="text-lg font-medium text-gray-700">
-              Total Branches: {totalBranches}
-            </p>
-          </div>
-
-          <div className="flex gap-5">
-            <button
-              className="btn btn-success"
-              onClick={handleAddBranch}
-            >
-              <i className="ki-filled ki-plus-squared"></i>
-              New Branch
+      {loading ? (
+        <ListShimmer />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+                Branch List
+              </h1>
+              <span className="text-lg text-gray-700">
+                Total Branches: {totalBranches}
+              </span>
+            </div>
+            <button onClick={handleAddBranch} className="btn btn-primary">
+              Add Branch
             </button>
           </div>
-        </div>
 
-        <div id="branch_list">
-          <div className="flex flex-col gap-5 lg:gap-7.5">
-            {loading ? <ListShimmer /> : (
-              <>
-                {branches.length === 0 ? (
-                  <div className="text-center text-gray-600">
-                    <p>No branches available.</p>
-                  </div>
-                ) : (
-                  branches.map((branch) => (
-                    <div
-                      className="card p-5 lg:p-7.5 hover:shadow-lg transition-shadow duration-300"
-                      key={branch.branch_id}
-                    >
-                      <div className="flex items-center flex-wrap justify-between gap-5">
-                        <div className="flex items-center gap-3.5">
-                          <div>
-                            <span
-                              className="text-lg font-semibold cursor-pointer text-gray-900 hover:text-primary"
-                              onClick={() =>
-                                navigate(`/branch-profile/${branch.branch_id}`)
-                              }
-                            >
-                              {branch.branch_name}
-                            </span>
-                            <div className="flex items-center text-sm font-medium text-gray-600">
-                              {branch.branch_address}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center lg:gap-4">
-                          <button
-                            className="bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => handleUpdateBranch(branch)}
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteBranch(branch.branch_id)}
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </>
-            )}
-
-            {totalBranches > perPage && (
-              <div className="flex items-center gap-4 mt-4">
-                <span>
-                  Showing {branches.length} of {totalBranches} Branches
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    className={`btn ${currentPage === 1 ? "opacity-50" : ""}`}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <FaChevronLeft />
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index + 1}
-                      className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-
-                  <button
-                    className={`btn ${currentPage === totalPages ? "opacity-50" : ""}`}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <FaChevronRight />
-                  </button>
+          <div>
+            <div className="grid gap-5 lg:gap-4.5">
+              <div className="card card-grid min-w-full">
+                <div className="card-body">
+                  <table className="table table-auto table-border">
+                    <thead>
+                      <tr>
+                        <th className="w-[60px]">Id</th>
+                        <th className="min-w-[200px]">Branch Name</th>
+                        <th className="min-w-[240px]">Address</th>
+                        <th className="w-[60px]">Company id</th>
+                        <th className="w-[50px]">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {branches.length > 0 ? (
+                        branches.map((branch) => (
+                          <tr key={branch.branch_id}>
+                            <td>{branch.branch_id}</td>
+                            <td>
+                              <span
+                                className="cursor-pointer hover:text-primary"
+                                onClick={() => navigate(`/branch-profile/${branch.branch_id}`)}
+                              >
+                                {branch.branch_name}
+                              </span>
+                            </td>
+                            <td>{branch.branch_address}</td>
+                            <td>{branch.company_id}</td>
+                            <td>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleUpdateBranch(branch)}
+                                  className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteBranch(branch.branch_id)}
+                                  className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="text-center">
+                            No branches available.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            )}
+
+              {totalBranches > perPage && (
+                <div className="flex items-center gap-4 mt-4">
+                  <span className="text-gray-700">
+                    Showing {branches.length} of {totalBranches} Branches
+                  </span>
+                  <div className="pagination" data-datatable-pagination="true">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                    >
+                      <FaChevronLeft />
+                    </button>
+                    {Array.from({ length: totalPages }).map((_, index) => (
+                      <button
+                        key={index}
+                        className={`btn ${currentPage === index + 1 ? "active" : ""}`}
+                        onClick={() => handlePageChange(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
+                    >
+                      <FaChevronRight />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

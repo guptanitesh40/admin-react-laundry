@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
 const token = localStorage.getItem("authToken");
 
-const useGetBranch = (pageNumber?: number, perPage?: number) => {
+const useGetBranch = (pageNumber = 1, perPage = 10) => {
   const [branches, setBranches] = useState<any[]>([]);
   const [totalBranches, setTotalBranches] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,7 @@ const useGetBranch = (pageNumber?: number, perPage?: number) => {
       toast.error(error?.message || "An error occurred while fetching data", {
         position: "top-center",
       });
-    }
-     finally {
+    } finally {
       setLoading(false);
     }
   }, [pageNumber, perPage]);

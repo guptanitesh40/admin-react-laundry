@@ -333,7 +333,7 @@ const CompanyForm: React.FC = () => {
               onChange={handleChange}
               className="border border-gray-300 rounded-md p-2"
             />
-            <p className="text-red-500 text-sm">{errors.logo ? errors.logo[0] : '\u00A0'}</p>
+            <p className="text-red-500 text-sm">{ errors.logo ||'\u00A0'}</p>
           </div>
 
           <div className="flex flex-col">

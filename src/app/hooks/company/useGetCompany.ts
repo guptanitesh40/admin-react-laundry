@@ -26,7 +26,7 @@ interface Company {
   contract_document: null;
 }
 
-const useGetCompany = (page?: number, perPage?: number) => {
+const useGetCompany = (pageNumber: number = 1, perPage: number = 10) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -34,7 +34,7 @@ const useGetCompany = (page?: number, perPage?: number) => {
   const fetchCompany = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${GET_COMPANY_URL}?page=${page}&perPage=${perPage}`, {
+      const response = await fetch(`${GET_COMPANY_URL}?page_number=${pageNumber}&per_page=${perPage}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const useGetCompany = (page?: number, perPage?: number) => {
     } finally {
       setLoading(false);
     }
-  }, [page, perPage]);
+  }, [pageNumber, perPage]);
 
   useEffect(() => {
     fetchCompany();

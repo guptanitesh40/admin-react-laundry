@@ -19,7 +19,7 @@ export const companySchema = Yup.object().shape({
     .required("State is required")
     .test("required", "State is required", (value) => !!value),
 
-    zip_code: Yup.string()
+  zip_code: Yup.string()
     .test("required", "Zip Code is required", (value) => {
       if (value === null || value === '') return false; 
       return true; 
@@ -58,31 +58,6 @@ export const companySchema = Yup.object().shape({
     .email("Invalid email address")
     .test("required", "Email is required", (value) => !!value),
 
-    logo: Yup.mixed<FileValue>()
-    .nullable()
-    .test(
-      "fileSize",
-      "File is too large",
-      (value: FileValue) => {
-        if (value === null) return true; 
-        if (value instanceof File) {
-          return value.size <= 2000000; 
-        }
-        return false; 
-      }
-    )
-    .test(
-      "fileType",
-      "Unsupported file format",
-      (value: FileValue) => {
-        if (value === null) return true; 
-        if (value instanceof File) {
-          return ["image/jpeg", "image/png"].includes(value.type);
-        }
-        return false;
-      }
-    ),
-
   registration_number: Yup.string()
     .nullable()
     .test("required", "Registration Number is required", (value) => !!value),
@@ -97,7 +72,7 @@ export const companySchema = Yup.object().shape({
     .nullable()
     .test("required", "GSTIN is required", (value) => !!value),
 
-    company_ownedby: Yup.string()
+  company_ownedby: Yup.string()
     .test("required", "Company Owned By is required", (value) => {
       if (value === null || value === '') return false; 
       return true; 
@@ -122,5 +97,24 @@ export const companySchema = Yup.object().shape({
         return ["application/pdf"].includes(value.type);
       }
       return true;
+    }),
+
+  logo: Yup.mixed<FileValue>()
+    .nullable()
+    .required("Logo is required")
+    .test("fileSize", "Logo file is too large", (value) => {
+      if (!value) return true;
+      if (value instanceof File) {
+        return value.size <= 2000000; 
+      }
+      return true;
+    })
+    .test("fileType", "Unsupported logo format", (value) => {
+      if (!value) return true; 
+      if (value instanceof File) {
+        return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
+      }
+      return true;
     })
 });
+

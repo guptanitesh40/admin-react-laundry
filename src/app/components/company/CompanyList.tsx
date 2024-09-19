@@ -1,11 +1,11 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaPencilAlt,
   FaTrash,
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDeleteCompany, useGetCompany } from "../../hooks";
 import ListShimmer from "../shimmer/ListShimmer";
@@ -18,20 +18,38 @@ interface Company {
 }
 
 const CompanyList: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const page = parseInt(queryParams.get("page") || "1", 10);
+  const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageFromParams = searchParams.get("page");
 
-  const { companies, refetch, loading: loadingCompany, totalCount } = useGetCompany(page, perPage);
+  const {
+    companies,
+    refetch,
+    loading: loadingCompany,
+    totalCount,
+  } = useGetCompany(currentPage, perPage);
   const { deleteCompany } = useDeleteCompany();
+
+  useEffect(() => {
+    if (pageFromParams) {
+      setCurrentPage(Number(pageFromParams));
+    }
+  }, [pageFromParams]);
+
+  useEffect(() => {
+    refetch(); 
+  }, [currentPage, refetch]);
 
   const totalPages = Math.ceil(totalCount / perPage);
 
-  useEffect(() => {
-    refetch();
-  }, [page, perPage, refetch]);
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setSearchParams({ page: newPage.toString() });
+    }
+  };
 
   const handleAddCompany = () => {
     navigate("/company/add");
@@ -39,12 +57,6 @@ const CompanyList: React.FC = () => {
 
   const handleUpdateCompany = (company: Company) => {
     navigate(`/company/edit/${company.company_id}`, { state: { company } });
-  };
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      navigate(`/companies?page=${newPage}`);
-    }
   };
 
   const handleDeleteCompany = async (company_id: number) => {
@@ -82,122 +94,130 @@ const CompanyList: React.FC = () => {
 
   return (
     <div className="container-fixed">
-      <div className="flex flex-col items-stretch gap-5 lg:gap-7.5">
-        <div className="flex flex-wrap items-center gap-5 justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Company List</h1>
-            <p className="text-lg font-medium text-gray-700">
-              Total Companies: {totalCount}
-            </p>
-          </div>
-
-          <div className="flex gap-5">
-            <button className="btn btn-success" onClick={handleAddCompany}>
-              <i className="ki-filled ki-plus-squared"></i>
-              New Company
+      {loadingCompany ? (
+        <ListShimmer />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+                Company List
+              </h1>
+              <span className="text-lg text-gray-700">
+                Total Companies: {totalCount}
+              </span>
+            </div>
+            <button onClick={handleAddCompany} className="btn btn-primary">
+              Add Company
             </button>
           </div>
-        </div>
 
-        <div className="" id="companies_list">
-          <div className="flex flex-col gap-5 lg:gap-7.5">
-            {loadingCompany ? (
-              <ListShimmer />
-            ) : (
-              <>
-                {totalCount === 0 ? (
-                  <div className="text-center text-gray-600">
-                    <p>No companies available.</p>
-                  </div>
-                ) : (
-                  companies.map((company) => (
-                    <div
-                      className="card p-5 lg:p-7.5 hover:shadow-lg transition-shadow duration-300"
-                      key={company.company_id}
+          <div>
+            <div className="grid gap-5 lg:gap-7.5">
+              <div className="card card-grid min-w-full">
+                <div className="card-body">
+                  <table className="table table-auto table-border">
+                    <thead>
+                      <tr>
+                        <th className="w-[60px]">Id</th>
+                        <th className="min-w-[200px]">Company Name</th>
+                        <th className="min-w-[240px]">Address</th>
+                        <th className="w-[50px]">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {companies.length > 0 ? (
+                        companies.map((company) => (
+                          <tr key={company.company_id}>
+                            <td>{company.company_id}</td>
+                            <td>
+                              <span
+                                className="cursor-pointer hover:text-primary"
+                                onClick={() =>
+                                  navigate(
+                                    `/company-profile/${company.company_id}`
+                                  )
+                                }
+                              >
+                                {company.company_name}
+                              </span>
+                            </td>
+                            <td>{company.address}</td>
+                            <td>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleUpdateCompany(company)}
+                                  className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteCompany(company.company_id)
+                                  }
+                                  className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="text-center">
+                            No companies available.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {totalCount > perPage && (
+                <div className="flex items-center gap-4 mt-4">
+                  <span className="text-gray-700">
+                    Showing {companies.length} of {totalCount} Companies
+                  </span>
+
+                  <div className="pagination" data-datatable-pagination="true">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className={`btn ${currentPage === 1 ? "disabled" : ""}`}
                     >
-                      <div className="flex items-center flex-wrap justify-between gap-5">
-                        <div className="flex items-center gap-3.5">
-                          <div className="flex items-center justify-center w-[50px]">
-                            <img
-                              alt=""
-                              className="size-[50px] shrink-0 rounded-lg"
-                              src={company.logo}
-                            />
-                          </div>
-                          <div>
-                            <span
-                              className="text-lg font-semibold cursor-pointer text-gray-900 hover:text-primary"
-                              onClick={() =>
-                                navigate(`/company-profile/${company.company_id}`)
-                              }
-                            >
-                              {company.company_name}
-                            </span>
-                            <div className="flex items-center text-sm font-medium text-gray-600">
-                              {company.address}
-                            </div>
-                          </div>
-                        </div>
+                      <FaChevronLeft />
+                    </button>
 
-                        <div className="flex items-center lg:gap-4">
-                          <button
-                            className="bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => handleUpdateCompany(company)}
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`btn ${
+                          currentPage === index + 1 ? "active" : ""
+                        }`}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
 
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteCompany(company.company_id)}
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        {totalCount > perPage && (
-          <div className="flex items-center gap-4 order-1 md:order-2 mt-4">
-            <span>
-              Showing {companies.length} of {totalCount} Companies
-            </span>
-            <div className="pagination" data-datatable-pagination="true">
-              <button
-                className={`btn ${page === 1 ? "opacity-50" : ""}`}
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-              >
-                <FaChevronLeft />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index + 1}
-                  className={`btn ${page === index + 1 ? "active" : ""}`}
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-
-              <button
-                className={`btn ${page === totalPages ? "opacity-50" : ""}`}
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-              >
-                <FaChevronRight />
-              </button>
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className={`btn ${
+                        currentPage === totalPages ? "disabled" : ""
+                      }`}
+                    >
+                      <FaChevronRight />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };
