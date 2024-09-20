@@ -34,8 +34,7 @@ const useUpdateCompany = () => {
 
       if (response.ok) {
         const result = await response.json();
-        toast.success(result.message, { position: "top-center" });
-        
+        toast.success(result.message, { position: "top-center" });     
         return true;
       }
 

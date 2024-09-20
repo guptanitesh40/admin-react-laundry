@@ -30,3 +30,8 @@ export { default as useGetBranch} from './branch/useGetBranch';
 export { default as useAddBranch } from './branch/useAddBranch';
 export { default as useDeleteBranch } from './branch/useDeleteBranch';
 export { default as useUpdateBranch } from './branch/useUpdateBranch';
+
+export { default as useGetBanner } from './banner/useGetBanner';
+export { default as useAddBanner} from './banner/useAddBanner';
+export { default as useDeleteBanner } from './banner/useDeleteBanner';
+export { default as useUpdateBanner } from './banner/useUpdateBanner';

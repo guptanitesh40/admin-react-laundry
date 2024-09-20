@@ -6,7 +6,7 @@ import {
   useGetProducts,
   useGetServices,
 } from "../../hooks";
-import Shimmer from "../shimmer";
+import Shimmer from "../shimmer/Shimmer";
 import toast from "react-hot-toast";
 
 interface Category {
@@ -136,7 +136,7 @@ const Price: React.FC = () => {
   }, [editing]);
 
   return (
-    <div>
+    <div className="container-fixed">
       {loading ? (
         <Shimmer />
       ) : (
