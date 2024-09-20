@@ -2380,6 +2380,12 @@ video {
   display: block;
 }
 
+.scrollable-menu {
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

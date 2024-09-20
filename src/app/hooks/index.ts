@@ -20,3 +20,13 @@ export { default as useUpdateCoupon } from './coupon/useUpdateCoupon';
 
 export { default as useGetPrice } from './price/useGetPrice';
 export { default as useAddPrice } from './price/useAddPrice';
+
+export { default as useGetCompany} from './company/useGetCompany';
+export { default as useAddCompany } from './company/useAddCompany';
+export { default as useDeleteCompany } from './company/useDeleteCompany';
+export { default as useUpdateCompany } from './company/useUpdateCompany';
+
+export { default as useGetBranch} from './branch/useGetBranch';
+export { default as useAddBranch } from './branch/useAddBranch';
+export { default as useDeleteBranch } from './branch/useDeleteBranch';
+export { default as useUpdateBranch } from './branch/useUpdateBranch';

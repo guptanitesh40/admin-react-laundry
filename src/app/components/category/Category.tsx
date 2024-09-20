@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import Modal from "react-modal";
 import toast from "react-hot-toast";
 import { FaCheck, FaPencilAlt, FaPlus } from "react-icons/fa";
-import Shimmer from "../shimmer";
+import Shimmer from "../shimmer/Shimmer";
 import Swal from "sweetalert2";
 import { useAddCategory, useDeleteCategory, useGetCategories, useUpdateCategory } from "../../hooks";
 import CategoryModal from "./CategoryModal";

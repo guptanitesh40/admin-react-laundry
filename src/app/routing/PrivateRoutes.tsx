@@ -1,8 +1,11 @@
 import React, { lazy, Suspense } from "react";
-import {  Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import MasterLayout from "../components/layout/Index";
 import DashBoard from "../components/dashboard/Index";
-import Shimmer from "../components/shimmer";
+import Shimmer from "../components/shimmer/Shimmer";
+import ListShimmer from "../components/shimmer/ListShimmer";
+import ProfileShimmer01 from "../components/shimmer/ProfileShimmer";
+import ProfileShimmer02 from "../components/shimmer/ProfileShimmer01";
 
 const PrivateRoutes: React.FC = () => {
   const Profile = lazy(() => import("../components/profile/Index"));
@@ -12,6 +15,12 @@ const PrivateRoutes: React.FC = () => {
   const Coupon = lazy(() => import("../components/coupon/Coupon"));
   const CouponModal = lazy(() => import("../components/coupon/CouponModal"));
   const Price = lazy(() => import("../components/price/Price"));
+  const CompanyList = lazy(() => import("../components/company/CompanyList"));
+  const CompanyProfile = lazy(() => import("../components/company/CompanyProfile"));
+  const CompanyForm = lazy(() => import("../components/company/CompanyForm"));
+  const BranchList = lazy(() => import("../components/branch/BranchList"));
+  const BranchForm = lazy(() => import("../components/branch/BranchForm"))
+  const BranchProfile = lazy(() => import("../components/branch/BranchProfile"))
 
   return (
     <Routes>
@@ -53,9 +62,9 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-        
+
         <Route
-          path="/coupon/add"
+          path="/coupon-modal/:id"
           element={
             <Suspense fallback={<Shimmer />}>
               <CouponModal />
@@ -73,22 +82,81 @@ const PrivateRoutes: React.FC = () => {
         />
 
         <Route
-          path="/profile"
+          path="/companies"
           element={
-            <Suspense
-              fallback={<h1 style={{ margin: "100px" }}>Loading...</h1>}
-            >
-              <Profile />
+            <Suspense fallback={<ListShimmer />}>
+              <CompanyList />
             </Suspense>
           }
         />
 
         <Route
-          path="*"
+          path="/company-profile/:id"
           element={
-            <h2 style={{ margin: "100px" }}>
-              Page Not Found. Please navigate to a valid page.
-            </h2>
+            <Suspense fallback={<ProfileShimmer01 />}>
+              <CompanyProfile />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/company/add"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <CompanyForm />
+            </Suspense>
+          }
+        />
+        
+        <Route
+          path="/company/edit/:id"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <CompanyForm />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/branches"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <BranchList />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/branch/add"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <BranchForm />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/branch/edit/:id"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <BranchForm />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/branch-profile/:id"
+          element={
+            <Suspense fallback={<ProfileShimmer02 />}>
+              <BranchProfile />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <Profile />
+            </Suspense>
           }
         />
       </Route>
@@ -96,4 +164,4 @@ const PrivateRoutes: React.FC = () => {
   );
 };
 
-export { PrivateRoutes };
+export {PrivateRoutes};
