@@ -8,16 +8,20 @@ const useUpdateBranch = () => {
         const token = localStorage.getItem("authToken");
 
         const UPDATE_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches/${branch_id}`;
-
         setLoading(true);
+
+        if (formData.company_id && typeof formData.company_id !== 'number') {
+            formData.company_id = Number(formData.company_id);
+          }
+        
         try {
             const response = await fetch(UPDATE_BRANCH_URL, {
                 method: "PUT",
                 headers: {
                     'Authorization': `Bearer ${token}`, 
-                    ...(formData instanceof FormData ? {} : { 'Content-Type': 'application/json' })
+                    'Content-Type': 'application/json', 
                 },
-                body: formData instanceof FormData ? formData : JSON.stringify(formData),
+                body: JSON.stringify(formData),
             });
 
             if (response.ok) {
@@ -31,10 +35,11 @@ const useUpdateBranch = () => {
             return false;
 
         } catch (error: any) {
-            toast.error(error.message || 'An unexpected error occurred', { position: "top-center" });
+            toast.error(error?.message || 'Network error: Failed to fetch.', {
+              position: "top-center",
+            });
             return false;
-
-        } finally {
+          } finally {
             setLoading(false);
         }
     };

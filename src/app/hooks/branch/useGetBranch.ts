@@ -36,7 +36,7 @@ const useGetBranch = (pageNumber = 1, perPage = 10) => {
       setBranches(allBranches);
       setTotalBranches(totalCount);
     } catch (error: any) {
-      toast.error(error?.message || "An error occurred while fetching data", {
+      toast.error(error?.message || 'Network error: Failed to fetch.', {
         position: "top-center",
       });
     } finally {
