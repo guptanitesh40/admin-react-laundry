@@ -7,21 +7,21 @@ import * as Yup from "yup";
 interface BannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  refetch: () => void;
   bannerData?: {
     title: string;
     description: string;
     image: string;
   };
   banner_id?: number;
+  setIsSubmit: (value : boolean) => void;
 }
 
 const BannerModal: React.FC<BannerModalProps> = ({
   isOpen,
   onClose,
-  refetch,
   bannerData,
   banner_id,
+  setIsSubmit,
 }) => {
   const { addBanner, loading: adding } = useAddBanner();
   const { updateBanner, loading: updating } = useUpdateBanner();
@@ -101,10 +101,12 @@ const BannerModal: React.FC<BannerModalProps> = ({
 
       if (banner_id) { 
          await updateBanner(banner_id, formDataObj);
+         setIsSubmit(true);
       } else {
          await addBanner(formDataObj);
+         setIsSubmit(true);
       }
-      refetch();
+
       onClose();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {

@@ -19,19 +19,33 @@ interface Coupon {
   total_usage_count: number;
 }
 
-const useFetchCoupons = () => {
+const useFetchCoupons = (
+  pageNumber: number = 1,
+  perPage: number = 5,
+  search: string = '',
+  sortColumn?: string,
+  sortOrder?: string
+) => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [totalCoupons,setTotalCoupons] = useState(0);
 
   const fetchCoupons = useCallback(async () => {
-    if (!token) {
-      toast.error('No authentication token found.', { position: 'top-center' });
-      setLoading(false);
-      return;
-    }
+    const token = localStorage.getItem("authToken");
 
+    const queryParams = new URLSearchParams();
+
+    if (pageNumber) queryParams.append("page_number", pageNumber.toString());
+    if (perPage) queryParams.append("per_page", perPage.toString());
+    if (search) queryParams.append("search", search);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
+    if (sortOrder) queryParams.append("order", sortOrder);
+
+    const url = `${FETCH_COUPON_URL}?${queryParams}`;
+
+    setLoading(true);
     try {
-      const response = await fetch(FETCH_COUPON_URL, {
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -45,39 +59,25 @@ const useFetchCoupons = () => {
       }
 
       const data = await response.json();
-
-      const couponData = data?.data?.result.map((coupon: any) => ({
-        coupon_id: coupon.coupon_id,
-        code: coupon.code,
-        discount_value: coupon.discount_value,
-        discount_type: coupon.discount_type,
-        start_time: coupon.start_time,
-        end_time: coupon.end_time,
-        title: coupon.title,
-        description: coupon.description,
-        coupon_type: coupon.coupon_type,
-        maximum_usage_count_per_user: coupon.maximum_usage_count_per_user,
-        total_usage_count: coupon.total_usage_count,
-      })) || [];
+      const allCoupon = data?.data?.result || [];
+      const totalCount = data?.data?.count || 0;
       
-      setCoupons(couponData);
-
-    } catch (err: any) {
-      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        toast.error('Network error: Failed to fetch.', { position: 'top-center' });
-      } else {
-        toast.error('An unexpected error occurred.', { position: 'top-center' });
-      }
+      setCoupons(allCoupon);
+      setTotalCoupons(totalCount);
+    } catch (error: any) {
+      toast.error(error?.message || 'Network error: Failed to fetch.', {
+        position: "top-center",
+      });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
   useEffect(() => {
     fetchCoupons();
   }, [fetchCoupons]);
 
-  return { coupons, loading, refetch: fetchCoupons };
+  return { coupons, totalCoupons, loading,fetchCoupons };
 };
 
 export default useFetchCoupons;

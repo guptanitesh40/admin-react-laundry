@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-const useUpdateProduct = (refetchProducts: () => void) => {
+const useUpdateProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateProduct = async (product_id: number, formData: FormData) => {
+  const updateProduct = async (product_id: number,formData: FormData): Promise<boolean> => {
     setLoading(true);
 
     const UPDATE_URL = `${import.meta.env.VITE_BASE_URL}/admin/products/${product_id}`;
@@ -29,7 +29,6 @@ const useUpdateProduct = (refetchProducts: () => void) => {
       if (response.ok) {
         const result = await response.json();
         toast.success(result.message, { position: 'top-center' });
-        refetchProducts();
         return true;
       } else {
         const errorData = await response.json();

@@ -10,8 +10,10 @@ const useUpdateBranch = () => {
         const UPDATE_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches/${branch_id}`;
         setLoading(true);
 
-        if (formData.company_id && typeof formData.company_id !== 'number') {
-            formData.company_id = Number(formData.company_id);
+        const ObjFormData = {
+            ...formData,
+            company_id: parseInt(formData.company_id),
+            branch_manager_id: parseInt(formData.branch_manager_id),
           }
         
         try {
@@ -21,7 +23,7 @@ const useUpdateBranch = () => {
                     'Authorization': `Bearer ${token}`, 
                     'Content-Type': 'application/json', 
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(ObjFormData),
             });
 
             if (response.ok) {

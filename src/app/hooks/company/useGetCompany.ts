@@ -26,19 +26,37 @@ interface Company {
   contract_document: null;
 }
 
-const useGetCompany = (pageNumber: number = 1, perPage: number = 10) => {
+const useGetCompany = (
+  pageNumber: number = 1,
+  perPage: number = 5,
+  search: string = '',
+  sortColumn?: string,
+  sortOrder?: string
+) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  const fetchCompany = useCallback(async () => {
+  const fetchCompanies = useCallback(async () => {
+    const token = localStorage.getItem("authToken");
+
+    const queryParams = new URLSearchParams();
+
+    if (pageNumber) queryParams.append("page_number", pageNumber.toString());
+    if (perPage) queryParams.append("per_page", perPage.toString());
+    if (search) queryParams.append("search", search);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
+    if (sortOrder) queryParams.append("order", sortOrder);
+
+    const url = `${GET_COMPANY_URL}?${queryParams}`;
+
     setLoading(true);
     try {
-      const response = await fetch(`${GET_COMPANY_URL}?page_number=${pageNumber}&per_page=${perPage}`, {
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
@@ -51,9 +69,11 @@ const useGetCompany = (pageNumber: number = 1, perPage: number = 10) => {
       }
 
       const data = await response.json();
-      setCompanies(data.data.result || []); 
-      setTotalCount(data.data.count || 0);
+      const allCompany = data?.data?.result || [];
+      const totalCount = data?.data?.count || 0;
 
+      setCompanies(allCompany);
+      setTotalCount(totalCount);
     } catch (error: any) {
       toast.error(error?.message || "An error occurred while fetching data", {
         position: "top-center",
@@ -61,13 +81,13 @@ const useGetCompany = (pageNumber: number = 1, perPage: number = 10) => {
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage]);
+  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
   useEffect(() => {
-    fetchCompany();
-  }, [fetchCompany]);
+    fetchCompanies();
+  }, [fetchCompanies]);
 
-  return { companies, loading, totalCount, refetch: fetchCompany };
+  return { companies, loading, totalCount, fetchCompanies };
 };
 
 export default useGetCompany;

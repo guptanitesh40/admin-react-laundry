@@ -1,114 +1,97 @@
-import React, { useEffect } from "react";
-import Modal from "react-modal";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
 import toast from "react-hot-toast";
-import * as yup from "yup";
+import { useAddCategory } from "../../hooks";
 
-const schema = yup.object().shape({
-  name: yup.string().required("Category name is required"),
+const schema = Yup.object().shape({
+  name: Yup.string().required("Category name is required"),
 });
 
 interface CategoryModalProps {
   isOpen: boolean;
-  onRequestClose: () => void;
-  addCategory: (name: string) => Promise<{ success: boolean }>;
-  refetch: () => void;
-  saving: boolean;
+  onClose: () => void;
+  setIsSubmit: (value: boolean) => void;
 }
-
-interface FormValues {
-  name: string;
-}
-
-Modal.setAppElement("#root");
 
 const CategoryModal: React.FC<CategoryModalProps> = ({
   isOpen,
-  onRequestClose,
-  addCategory,
-  refetch,
-  saving,
+  onClose,
+  setIsSubmit,
 }) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FormValues>({
-    resolver: yupResolver(schema),
-    mode: "onBlur",
-  });
+  const { addCategory, loading: adding } = useAddCategory();
+  const [formData, setFormData] = useState({ name: "" });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isOpen) {
-      reset({ name: "" });
+      setFormData({ name: "" });
+      setErrors({});
     }
-  }, [isOpen, reset]);
+  }, [isOpen]);
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      await addCategory(data.name);
+      await schema.validate(formData, { abortEarly: false });
+      await addCategory(formData.name);
+      setIsSubmit(true); 
+      onClose();
     } catch (error) {
-      toast.error("An error occurred. Please try again.", {
-        position: "top-center",
-      });
+      if (error instanceof Yup.ValidationError) {
+        const formErrors: Record<string, string> = {};
+        error.inner.forEach((err) => {
+          if (err.path) formErrors[err.path] = err.message;
+        });
+        setErrors(formErrors);
+      } else {
+        toast.error("Failed to submit the form. Please try again.");
+      }
     }
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      contentLabel="Add Category Modal"
-      className="fixed inset-1/3 bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto z-50"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
-    >
-      <h2 className="text-2xl font-semibold mb-4">Add New Category</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
+    isOpen && (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
+          <h1 className="text-2xl font-bold mb-6">Add Category</h1>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col mb-4">
+              <label className="mb-2 font-semibold" htmlFor="name">Name</label>
               <input
                 type="text"
-                {...field}
-                className={`border px-4 py-2 rounded-lg w-full text-gray-800 placeholder-gray-500 focus:outline-none ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Category Name"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="input border border-gray-300 rounded-md p-2"
+                disabled={adding} 
               />
-            )}
-          />
-          <p
-            className={`text-sm mt-1 ${
-              errors.name ? "text-red-500" : "text-transparent"
-            }`}
-          >
-            {errors.name?.message || "\u00A0"}
-          </p>
+              <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
+            </div>
+            <div className="flex gap-4 mt-4">
+              <button
+                type="submit"
+                className={`btn btn-primary ${adding ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={adding}
+              >
+                {adding ? "Adding..." : "Add Category"}
+              </button>
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={onClose}
+                disabled={adding} 
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="flex justify-end space-x-4 mt-4">
-          <button
-            type="submit"
-            className={`bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg ${
-              saving ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={saving}
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-          <button
-            type="button"
-            onClick={onRequestClose}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </Modal>
+      </div>
+    )
   );
 };
 
