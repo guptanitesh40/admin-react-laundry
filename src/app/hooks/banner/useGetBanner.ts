@@ -2,29 +2,43 @@ import { useCallback, useEffect, useState } from "react";
 import toast, { Toast } from "react-hot-toast";
 
 const GET_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners`;
+const token = localStorage.getItem("authToken");
 
 interface Banner {
-  banner_id:number;
+  banner_id: number;
   title: string;
-  description: string; 
+  description: string;
   image: string;
 }
 
-const useGetBanner = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+const useGetBanner = (
+  pageNumber: number = 1,
+  perPage: number = 5,
+  search: string = "",
+  sortColumn?: string,
+  sortOrder?: string
+) => {
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [totalBanners, setTotalBanners] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchBanner = useCallback(async () => {
-    const token = localStorage.getItem("authToken");
-
+  const fetchBanners = useCallback(async () => {
     setLoading(true);
 
+    const queryParams = new URLSearchParams();
+
+    if (pageNumber) queryParams.append("page_number", pageNumber.toString());
+    if (perPage) queryParams.append("per_page", perPage.toString());
+    if (search) queryParams.append("search", search);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
+    if (sortOrder) queryParams.append("order", sortOrder);
+
     try {
-      const response = await fetch(GET_BANNER_URL, {
+      const response = await fetch(`${GET_BANNER_URL}?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
@@ -35,26 +49,25 @@ const useGetBanner = () => {
       }
 
       const data = await response.json();
-      setBanners(data?.data?.banner);
+      const allBanners = data?.data?.banner || [];
+      const totalCount = data?.data?.count || 0;
 
-    } catch (err: any) {
-      if (err.name === "TypeError" && err.message.includes("Failed to fetch")) {
-        toast.error("Network error: Failed to fetch.", {
-          position: "top-center",
-        });
-      } else {
-        toast.error("An unexpected error occured", { position: "top-center" });
-      }
+      setBanners(allBanners);
+      setTotalBanners(totalCount);
+    } catch (error: any) {
+      toast.error(error?.message || "Network error: Failed to fetch.", {
+        position: "top-center",
+      });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
   useEffect(() => {
-    fetchBanner();
-  }, [fetchBanner]);
+    fetchBanners();
+  }, [fetchBanners]);
 
-  return { banners,loading, refetch:fetchBanner };
+  return { banners, totalBanners, loading, fetchBanners };
 };
 
 export default useGetBanner;

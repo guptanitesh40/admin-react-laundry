@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const useUpdateService = (refetchServices: () => void) => {
+const useUpdateService = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateService = async (service_id: number, formData: FormData) => {
@@ -29,7 +29,6 @@ const useUpdateService = (refetchServices: () => void) => {
       if (response.ok) {
         const result = await response.json();
         toast.success(result.message, { position: 'top-center' });
-        refetchServices();
         return true;
       } else {
         const errorData = await response.json();

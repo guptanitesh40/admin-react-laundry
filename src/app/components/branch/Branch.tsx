@@ -1,17 +1,27 @@
-import React, { Suspense, useState, lazy } from "react";
-import CategoryModal from "./CategoryModal";
-import CategoryTable from "./CategoryTable";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import BranchTable from "./BranchTable";
 
-const Category: React.FC = () => {
-  const [search, setSearch] = useState<string>(null);
-  const [searchInput, setSearchInput] = useState<string>("");
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+interface Branch {
+  branch_id: number;
+  branch_name: string;
+  branch_address: string;
+  branch_manager: string;
+  branch_phone_number: string;
+  branch_email: string;
+  branch_registration_number: string;
+  company_id: number;
+  company_name: string;
+}
 
-  const handleAddCategory = () => {
-    setEditMode(false);
-    setModalIsOpen(true);
+const Branch: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [search,setSearch] = useState<string >("");
+  const [searchInput,setSearchInput] = useState<string>("");
+
+  const handleAddBranch = () => {
+    navigate("/branch/add");
   };
 
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,16 +31,19 @@ const Category: React.FC = () => {
 
   return (
     <div className="container-fixed relative">
-      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
-        <h1 className="text-xl font-semibold leading-none text-gray-900">
-          Categories
-        </h1>
-        <button onClick={handleAddCategory} className="btn btn-primary">
-          <i className="ki-filled ki-plus-squared"></i>Add Category
-        </button>
-      </div>
+     
+          <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+                Branch List
+              </h1>
+            </div>
+            <button onClick={handleAddBranch} className="btn btn-primary">
+              Add Branch
+            </button>
+          </div>
 
-      <div className="absolute top-11 right-[2.5rem] mt-2">
+          <div className="absolute top-11 right-[2.5rem] mt-2">
         <form onSubmit={onSearchSubmit} className="w-64 relative flex">
           <input
             type="search"
@@ -58,17 +71,11 @@ const Category: React.FC = () => {
             </svg>
           </button>
         </form>
-      </div>
+          </div>
 
-      <CategoryTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} />
-
-      <CategoryModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-      />
+          <BranchTable search={search}/>
     </div>
   );
 };
 
-export default Category;
+export default Branch;

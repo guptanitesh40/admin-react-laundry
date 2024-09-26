@@ -32,7 +32,7 @@ const CompanyForm: React.FC = () => {
   const { addCompany, loading: adding } = useAddCompany();
   const { updateCompany, loading: updating } = useUpdateCompany();
   const { id } = useParams<{ id: string }>();
-  const { companies, refetch } = useGetCompany();
+  const { companies, fetchCompanies } = useGetCompany();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
@@ -60,14 +60,14 @@ const CompanyForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await refetch();
+        await fetchCompanies();
       } catch (error) {
         toast.error("Failed to fetch company data.");
       }
     };
 
     fetchData();
-  }, [refetch]);
+  }, [fetchCompanies]);
 
   useEffect(() => {
     if (companies.length > 0 && id) {

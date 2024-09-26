@@ -13,7 +13,7 @@ import {
 interface FormData {
   branch_name: string;
   branch_address: string;
-  branch_manager: string;
+  branch_manager_id: string;
   branch_phone_number: string;
   branch_email: string;
   branch_registration_number: string;
@@ -24,14 +24,14 @@ const BranchForm: React.FC = () => {
   const { addBranch, loading: adding } = useAddBranch();
   const { updateBranch, loading: updating } = useUpdateBranch();
   const { id } = useParams<{ id: string }>();
-  const { branches, refetch } = useGetBranch();
-  const { companies, refetch: fetchCompany } = useGetCompany();
+  const { branches, fetchBranches } = useGetBranch();
+  const { companies, fetchCompanies } = useGetCompany();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
     branch_name: "",
     branch_address: "",
-    branch_manager: "",
+    branch_manager_id: "",
     branch_phone_number: "",
     branch_email: "",
     branch_registration_number: "",
@@ -46,15 +46,15 @@ const BranchForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await refetch();
-        await fetchCompany();
+        await fetchBranches();
+        await fetchCompanies();
       } catch (error) {
         toast.error("Failed to fetch branch or company data.");
       }
     };
 
     fetchData();
-  }, [refetch, fetchCompany]);
+  }, [fetchBranches, fetchCompanies]);
 
   useEffect(() => {
     if (branches.length > 0 && id) {
@@ -63,7 +63,7 @@ const BranchForm: React.FC = () => {
         setFormData({
           branch_name: branch.branch_name || "",
           branch_address: branch.branch_address || "",
-          branch_manager: branch.branch_manager || "",
+          branch_manager_id: branch.branch_manager_id || "",
           branch_phone_number: branch.branch_phone_number || "",
           branch_email: branch.branch_email || "",
           branch_registration_number: branch.branch_registration_number || "",
@@ -101,7 +101,7 @@ const BranchForm: React.FC = () => {
           setFormData({
             branch_name: "",
             branch_address: "",
-            branch_manager: "",
+            branch_manager_id: "",
             branch_phone_number: "",
             branch_email: "",
             branch_registration_number: "",
@@ -174,19 +174,19 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_manager">
-              Branch Manager
+            <label className="mb-2 font-semibold" htmlFor="branch_manager_id">
+              Branch Manager Id
             </label>
             <input
               type="text"
-              id="branch_manager"
-              name="branch_manager"
-              value={formData.branch_manager}
+              id="branch_manager_id"
+              name="branch_manager_id"
+              value={formData.branch_manager_id}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
             <p className="text-red-500 text-sm">
-              {errors.branch_manager || "\u00A0"}
+              {errors.branch_manager_id || "\u00A0"}
             </p>
           </div>
 

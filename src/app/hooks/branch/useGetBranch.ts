@@ -2,22 +2,38 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
-const token = localStorage.getItem("authToken");
 
-const useGetBranch = (pageNumber = 1, perPage = 10) => {
+const useGetBranch = (
+  pageNumber: number = 1, 
+  perPage: number = 5,
+  search: string = '', 
+  sortColumn?: string, 
+  sortOrder?: string
+) => {
   const [branches, setBranches] = useState<any[]>([]);
   const [totalBranches, setTotalBranches] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchBranches = useCallback(async () => {
-    setLoading(true);
+    const token = localStorage.getItem("authToken");
+   
+    const queryParams = new URLSearchParams();
 
+    if (pageNumber) queryParams.append('page_number', pageNumber.toString());
+    if (perPage) queryParams.append('per_page', perPage.toString());
+    if (search) queryParams.append('search', search);
+    if (sortColumn) queryParams.append('sortBy', sortColumn);
+    if (sortOrder) queryParams.append('order', sortOrder);
+
+    const url = `${GET_BRANCH_URL}?${queryParams}`;
+
+    setLoading(true);
     try {
-      const response = await fetch(`${GET_BRANCH_URL}?page_number=${pageNumber}&per_page=${perPage}`, {
+      const response = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
@@ -42,13 +58,13 @@ const useGetBranch = (pageNumber = 1, perPage = 10) => {
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage]);
+  }, [pageNumber, perPage, sortOrder,sortColumn, search]);
 
   useEffect(() => {
     fetchBranches();
   }, [fetchBranches]);
 
-  return { branches, totalBranches, loading, refetch: fetchBranches };
+  return { branches, totalBranches, loading,fetchBranches };
 };
 
 export default useGetBranch;

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 const useUpdateBanner = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateBanner = async (banner_id: number,formData: any): Promise<boolean> => {
+  const updateBanner = async (banner_id: number,formData: FormData): Promise<boolean> => {
     const token = localStorage.getItem("authToken");
 
     const UPDATE_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners/${banner_id}`;

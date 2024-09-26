@@ -1,160 +1,83 @@
-import { FaPencilAlt, FaPlus, FaTrash } from "react-icons/fa";
-import Swal from "sweetalert2";
-import { useState } from "react";
+import React, { useState } from "react";
 import ServiceModal from "./ServiceModal";
-import { useAddService, useDeleteService, useGetServices, useUpdateService } from "../../hooks";
-import Shimmer from "../shimmer/Shimmer";
+import ServiceTable from "./ServiceTable";
+
 
 const Service: React.FC = () => {
-
-  const { services, refetch, loading: loadingService } = useGetServices();
-  const { deleteService, loading: deletingService } = useDeleteService();
-  const { addService, loading: addingService } = useAddService();
-  const { updateService, loading: updatingService } = useUpdateService(refetch);
-
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [editMode, setEditMode] = useState<boolean>(false);
   const [currentService, setCurrentService] = useState<any>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [isSubmit,setIsSubmit] = useState<boolean>(false);
+
 
   const handleAddService = () => {
     setEditMode(false);
     setModalIsOpen(true);
-  };
-
-  const handleEditService = (service: any) => {
-    setCurrentService(service);
-    setEditMode(true);
-    setModalIsOpen(true);
-  };
-
-  const handleCancelClick = () => {
-    setModalIsOpen(false);
     setCurrentService(null);
   };
 
-  const handleDeleteService = async (service_id: number) => {
-    try {
-      const { isConfirmed } = await Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#dc3545",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-      });
+  const handleEditService = (service: any) => {
+    setEditMode(true);
+    setCurrentService(service);
+    setModalIsOpen(true);
+  };
 
-      if (isConfirmed) {
-        const { success, message } = await deleteService(service_id);
-        if (success) {
-          refetch();
-          Swal.fire(message);
-        } else {
-          Swal.fire(message);
-        }
-      } else {
-        Swal.fire("Cancelled", "The Service is safe :)", "info");
-      }
-    } catch (error: any) {
-      Swal.fire({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
-    }
+  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearch(searchInput);
   };
 
   return (
-    <div>
-      <div className="card-header border-0 m-auto">
-        <h3 className="card-title flex flex-col items-start">
-          <span className="card-label font-bold text-gray-700 text-3xl mb-1">
-            Services
-          </span>
-        </h3>
-        <div className="card-toolbar">
+    <div className="container-fixed relative">
+      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
+        <h1 className="text-xl font-semibold leading-none text-gray-900">
+          Services
+        </h1>
+        <button onClick={handleAddService} className="btn btn-primary">
+          <i className="ki-filled ki-plus-squared"></i>Add Service
+        </button>
+      </div>
+
+      <div className="absolute top-11 right-[2.5rem] mt-2">
+        <form onSubmit={onSearchSubmit} className="w-64 relative flex">
+          <input
+            type="search"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] text-gray-700 outline-none focus:border-gray-500 focus:bg-white border-gray-500"
+            placeholder="Search"
+          />
           <button
-            className="bg-gradient-to-r from-teal-400 to-teal-600 text-white font-semibold px-2 py-2 rounded-lg shadow-lg hover:shadow-xl"
-            onClick={() => handleAddService()}
-            disabled={addingService}
+            type="submit"
+            className="relative z-[2] -ml-0.5 flex items-center rounded-e bg-gray-500 px-5 text-xs font-medium uppercase leading-normal text-white"
           >
-            <div className="flex">
-              <FaPlus className="mt-1 mr-1" /> Add Service
-            </div>
+            <svg
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="h-5 w-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
           </button>
-        </div>
+        </form>
       </div>
 
-      <div className="card-body py">
-        {loadingService ||
-        addingService ||
-        deletingService ||
-        updatingService ? (
-          <Shimmer />
-        ) : (
-          <div className="table-responsive">
-            {services === null ? (
-              <p className="text-center text-gray-500">No Service available.</p>
-            ) : (
-              <table className="w-full bg-white rounded-lg">
-                <thead className="bg-gray-200 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left">Service ID</th>
-                    <th className="px-6 py-3 text-left">Name</th>
-                    <th className="px-6 py-3 text-left">Image</th>
-                    <th className="px-12 py-3 text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-700">
-                  {services.map((service: any) => (
-                    <tr
-                      className="hover:bg-gray-50 transition-colors duration-200"
-                      key={service.service_id}
-                    >
-                      <td className="px-6 py-2">{service.service_id}</td>
-                      <td className="px-6 py-2">{service.name}</td>
-                      <td className="px-6 py-2">
-                        <img
-                          src={service.image}
-                          alt={service.name}
-                          className="w-12 h-12 object-cover rounded-lg"
-                        />
-                      </td>
-                      <td className="flex px-9 py-2 justify-end text-end m-auto">
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => handleEditService(service)}
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() => handleDeleteService(service.service_id)}
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
-      </div>
+      <ServiceTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setEditService={handleEditService} />
 
       <ServiceModal
+        setIsSubmit={setIsSubmit}
         isOpen={modalIsOpen}
-        onRequestClose={handleCancelClick}
-        editMode={editMode}
-        currentService={currentService}
-        addService={(formData: FormData) => addService(formData)}
-        updateService={updateService}
-        refetch={refetch}
-        loading={addingService || updatingService}
-        handleCancelClick={handleCancelClick}
+        onClose={() => setModalIsOpen(false)}
+        serviceData={currentService}
+        service_id={currentService?.service_id}
       />
     </div>
   );

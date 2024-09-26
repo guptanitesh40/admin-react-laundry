@@ -1,17 +1,19 @@
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useDeleteBanner, useGetBanner } from "../../hooks";
-import BannerShimmer from "../shimmer/BannerShimmer";
-import Swal from "sweetalert2";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import BannerTable from "./BannerTable";
 import BannerModal from "./BannerModal";
 
 const Banner: React.FC = () => {
-  const { deleteBanner } = useDeleteBanner();
-  const { banners, refetch, loading } = useGetBanner();
-
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [editMode, setEditMode] = useState<boolean>(false);
   const [currentBanner, setCurrentBanner] = useState<any>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [isSubmit,setIsSubmit] = useState<boolean>(false);
+
+  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearch(searchInput);
+  };
 
   const handleAddBanner = () => {
     setEditMode(false);
@@ -25,129 +27,54 @@ const Banner: React.FC = () => {
     setModalIsOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModalIsOpen(false);
-    setCurrentBanner(null);
-  };
-
-  const handleDeleteBanner = async (banner_id: number) => {
-    try {
-      const { isConfirmed } = await Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#dc3545",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-      });
-
-      if (isConfirmed) {
-        const { success, message } = await deleteBanner(banner_id);
-        if (success) {
-          await refetch();
-          Swal.fire("Deleted!", message, "success");
-        } else {
-          Swal.fire("Error!", message, "error");
-        }
-      } else {
-        Swal.fire("Cancelled", "The banner is safe :)", "info");
-      }
-    } catch (error: any) {
-      Swal.fire({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
-    }
-  };
-
   return (
-    <div className="container-fixed">
-      {loading ? (
-        <BannerShimmer />
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
-            <div className="flex flex-col justify-center gap-2">
-              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
-                Banners
-              </h1>
-            </div>
-            <button className="btn btn-primary" onClick={handleAddBanner}>
-              <i className="ki-filled ki-plus-squared"></i> Add Banner
-            </button>
-          </div>
+    <div className="container-fixed relative">
 
-          <div className="grid gap-5 lg:gap-7.5">
-            <div className="card card-grid min-w-full">
-              <div className="card-body">
-                <div className="scrollable-x-auto">
-                  <table className="table table-auto table-border">
-                    <thead>
-                      <tr>
-                        <th className="w-[60px]">ID</th>
-                        <th className="min-w-[200px]">Image</th>
-                        <th className="min-w-[165px]">Title</th>
-                        <th className="min-w-[205px]">Description</th>
-                        <th className="w-[125px]">Actions</th>
-                      </tr>
-                    </thead>
-                    {banners.length > 0 ? (
-                      <tbody>
-                        {banners.map((banner) => (
-                          <tr key={banner.banner_id}>
-                            <td>{banner.banner_id}</td>
-                            <td>
-                              <img
-                                alt={banner.title}
-                                className="rounded-lg size-20 shrink-0"
-                                src={banner.image}
-                              />
-                            </td>
-                            <td>{banner.title}</td>
-                            <td className="max-w-[105px] break-words overflow-hidden">
-                              {banner.description}
-                            </td>
-                            <td>
-                              <button
-                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                                onClick={() => handleEditBanner(banner)}
-                              >
-                                <FaPencilAlt className="text-yellow-600" />
-                              </button>
-                              <button
-                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                                onClick={() => handleDeleteBanner(banner.banner_id)}
-                              >
-                                <FaTrash className="text-red-500" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    ) : (
-                      <tbody>
-                        <tr>
-                          <td colSpan={5} className="text-center">
-                            No banners available
-                          </td>
-                        </tr>
-                      </tbody>
-                    )}
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
+        <h1 className="text-xl font-semibold leading-none text-gray-900">
+          Banners
+        </h1>
+        <button onClick={handleAddBanner} className="btn btn-primary">
+          <i className="ki-filled ki-plus-squared"></i>Add Banner
+        </button>
+      </div>
 
+      <div className="absolute top-11 right-[2.5rem] mt-2">
+      <form onSubmit={onSearchSubmit} className="w-64 relative flex">
+        <input
+          type="search"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] text-gray-700 outline-none focus:border-primary focus:bg-white border-primary"
+          placeholder="Search"
+        />
+
+        <button
+          type="submit"
+          className="relative z-[2] -ml-0.5 flex items-center rounded-e bg-gray-500 px-5 text-xs font-medium uppercase leading-normal text-white"
+        >
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="h-5 w-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+        </button>
+      </form>
+      </div>
+
+      <BannerTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setEditBanner={handleEditBanner} />
       <BannerModal
+        setIsSubmit={setIsSubmit}
         isOpen={modalIsOpen}
-        onClose={handleCloseModal}
-        refetch={refetch}
+        onClose={() => setModalIsOpen(false)}
         bannerData={currentBanner}
         banner_id={currentBanner?.banner_id}
       />

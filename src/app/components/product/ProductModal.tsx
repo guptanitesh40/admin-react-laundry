@@ -1,178 +1,179 @@
-import React, { useEffect } from "react";
-import Modal from "react-modal";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Controller, useForm, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { addItemSchema, updateItemSchema } from "../../validation/productSchema";
-
-Modal.setAppElement("#root");
+import { useAddProduct, useUpdateProduct } from "../../hooks";
+import { productSchema } from "../../validation/productSchema";
+import * as Yup from "yup";
 
 interface ProductModalProps {
   isOpen: boolean;
-  onRequestClose: () => void;
-  editMode: boolean;
-  currentProduct?: { product_id: number; name: string; image?: string } | null;
-  addProduct: (formData: FormData) => Promise<boolean>;
-  updateProduct: (product_id: number, data: FormData) => Promise<boolean>;
-  refetch: () => void;
-  loading: boolean;
-  handleCancelClick: () => void;
-}
-
-interface FormValues {
-  name: string;
-  image?: FileList;
+  onClose: () => void;
+  productData?: {
+    name: string;
+    image: string;
+  };
+  product_id?: number;
+  setIsSubmit: (value: boolean) => void;
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
-  editMode,
-  currentProduct,
-  addProduct,
-  updateProduct,
-  refetch,
-  loading,
-  handleCancelClick,
+  onClose,
+  productData,
+  product_id,
+  setIsSubmit,
 }) => {
-  const schema = editMode ? addItemSchema : updateItemSchema;
+  const { addProduct, loading: adding } = useAddProduct();
+  const { updateProduct, loading: updating } = useUpdateProduct();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm<FormValues>({
-    resolver: yupResolver(schema),
-    mode: "onBlur",
+  const [formData, setFormData] = useState({
+    name: "",
+    image: "" as string | File,
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isOpen) {
-      if (editMode && currentProduct) {
-        reset({
-          name: currentProduct.name,
-          image: undefined,
+      if (productData) {
+        setFormData({
+          name: productData.name,
+          image: productData.image,
         });
       } else {
-        reset({
+        setFormData({
           name: "",
-          image: undefined,
+          image: "",
         });
       }
+    } else {
+      setErrors({});
     }
-  }, [isOpen, editMode, currentProduct, reset]);
+  }, [isOpen, productData]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setValue("image", e.target.files);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = e.target;
+
+    if (name === "image" && files && files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        image: files[0],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const formData = new FormData();
-    if (data.name) {
-      formData.append("name", data.name);
-    }
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     try {
-      if (editMode && currentProduct) {
-        await updateProduct(currentProduct.product_id, formData);
-      } else {
-        await addProduct(formData);
+      const schema = productSchema(!!product_id);
+      await schema.validate(formData, { abortEarly: false });
+
+      const formDataObj = new FormData();
+      formDataObj.append("name", formData.name);
+      if (formData.image instanceof File) {
+        formDataObj.append("image", formData.image);
       }
-      refetch();
-      handleCancelClick();
+
+      if (product_id) {
+        await updateProduct(product_id, formDataObj);
+      } else {
+        await addProduct(formDataObj);
+      }
+      setIsSubmit(true);
+      onClose();
     } catch (error) {
-      toast.error("An error occurred. Please try again.", {
-        position: "top-center",
-      });
+      if (error instanceof Yup.ValidationError) {
+        const formErrors: Record<string, string> = {};
+        error.inner.forEach((err) => {
+          formErrors[err.path || ""] = err.message;
+        });
+        setErrors(formErrors);
+      } else {
+        toast.error("Failed to submit the form. Please try again.");
+      }
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onRequestClose={handleCancelClick}
-      contentLabel="Product Modal"
-      className="fixed inset-0 flex bg-black items-center justify-center rounded-lg p-6 mx-auto z-50 bg-opacity-50"
-      overlayClassName="fixed inset-0 z-40"
-      shouldCloseOnOverlayClick={true}
-      shouldCloseOnEsc={true}
-    >
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-xl font-bold mb-4">
-          {editMode ? "Edit Product" : "Add Product"}
-        </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
-          <div>
-            <label className="block text-gray-700">Name</label>
-            <Controller
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
+        <button
+          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          data-modal-dismiss="true"
+          onClick={onClose}
+        >
+          <i className="ki-filled ki-cross"></i>
+        </button>
+        <h1 className="text-2xl font-bold mb-6">
+          {product_id ? "Edit Product" : "Add Product"}
+        </h1>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col mb-4">
+            <label className="mb-2 font-semibold" htmlFor="name">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
               name="name"
-              control={control}
-              render={({ field }) => (
-                <input
-                  type="text"
-                  {...field}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Product Name"
-                />
-              )}
+              value={formData.name}
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2"
             />
-            <p
-              className={`text-sm transition-opacity duration-300 ${
-                errors.name
-                  ? "text-red-500 opacity-100"
-                  : "text-transparent opacity-0"
-              }`}
-            >
-              {errors.name?.message || "\u00A0"}
-            </p>
+            <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
           </div>
 
-          <div>
-            <label className="block text-gray-700">Image</label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="file"
-                onChange={handleImageChange}
-                className="cursor-pointer block border rounded p-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
-            <p
-              className={`text-sm transition-opacity duration-300 ${
-                errors.image
-                  ? "text-red-500 opacity-100"
-                  : "text-transparent opacity-0"
-              }`}
-            >
-              {errors.image?.message || "\u00A0"}
-            </p>
+          <div className="flex flex-col">
+            <label className="mb-2 font-semibold" htmlFor="image">
+              Image
+            </label>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2"
+            />
+            <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex gap-4 mt-4">
             <button
               type="submit"
-              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg"
-              disabled={loading}
+              className={`btn btn-primary ${
+                adding || updating ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={adding || updating}
             >
-              {editMode ? "Update" : "Add"}
+              {adding || updating
+                ? adding
+                  ? "Adding..."
+                  : "Updating..."
+                : product_id
+                ? "Update Product"
+                : "Add Product"}
             </button>
             <button
               type="button"
-              onClick={handleCancelClick}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
-              disabled={loading}
+              className="btn btn-light"
+              onClick={onClose}
+              disabled={adding || updating}
             >
               Cancel
             </button>
           </div>
         </form>
       </div>
-    </Modal>
+    </div>
   );
 };
 

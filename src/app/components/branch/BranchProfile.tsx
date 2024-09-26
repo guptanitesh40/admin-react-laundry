@@ -7,7 +7,7 @@ interface Branch {
   branch_id: number;
   branch_name: string;
   branch_address: string;
-  branch_manager: string;
+  branch_manager_id: string;
   branch_phone_number: string;
   branch_email: string;
   branch_registration_number: string;
@@ -58,7 +58,7 @@ const BranchProfile: React.FC = () => {
                 Manager:
               </td>
               <td className="text-sm font-medium text-gray-800 pb-3">
-                {selectedBranch.branch_manager}
+                {selectedBranch.branch_manager_id}
               </td>
             </tr>
             <tr>

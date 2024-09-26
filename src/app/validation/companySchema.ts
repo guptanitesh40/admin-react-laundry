@@ -60,28 +60,21 @@ export const companySchema = Yup.object().shape({
 
     logo: Yup.mixed<FileValue>()
     .nullable()
-    .test(
-      "fileSize",
-      "File is too large",
-      (value: FileValue) => {
-        if (value === null) return true; 
-        if (value instanceof File) {
-          return value.size <= 2000000; 
-        }
-        return false; 
+    .required("Logo is required")
+    .test("fileSize", "Logo file is too large", (value) => {
+      if (!value) return true;
+      if (value instanceof File) {
+        return value.size <= 2000000; 
       }
-    )
-    .test(
-      "fileType",
-      "Unsupported file format",
-      (value: FileValue) => {
-        if (value === null) return true; 
-        if (value instanceof File) {
-          return ["image/jpeg", "image/png"].includes(value.type);
-        }
-        return false;
+      return true;
+    })
+    .test("fileType", "Unsupported logo format", (value) => {
+      if (!value) return true; 
+      if (value instanceof File) {
+        return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
       }
-    ),
+      return true;
+    }),
 
   registration_number: Yup.string()
     .nullable()
