@@ -15,7 +15,7 @@ interface ServiceTableProps {
 
 const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubmit, setEditService }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(5);
+  const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -112,12 +112,11 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
     }
-    fetchServices();
   };
 
   const handlePageChange = (newPage: number) => {
@@ -147,7 +146,6 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
             value={perPage}
             onChange={handlePerPageChange}
           >
-            <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>

@@ -5,7 +5,7 @@ const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
 
 const useGetBranch = (
   pageNumber: number = 1, 
-  perPage: number = 5,
+  perPage: number = 10,
   search: string = '', 
   sortColumn?: string, 
   sortOrder?: string

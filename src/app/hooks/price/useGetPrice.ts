@@ -46,7 +46,7 @@ const useGetPrice = () => {
     fetchPrices();
   }, [fetchPrices]);
   
-  return { prices, loading, refetch: fetchPrices };
+  return { prices, loading, fetchPrices };
 };
 
 export default useGetPrice;

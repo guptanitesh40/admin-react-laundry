@@ -12,7 +12,7 @@ interface Product {
 
 const useGetProducts = (
   pageNumber: number = 1, 
-  perPage: number = 5,
+  perPage: number = 10,
   search: string = '', 
   sortColumn?: string, 
   sortOrder?: string
