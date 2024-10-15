@@ -21,8 +21,12 @@ const PrivateRoutes: React.FC = () => {
   const CompanyProfile = lazy(() => import("../components/company/CompanyProfile"));
   const CompanyForm = lazy(() => import("../components/company/CompanyForm"));
   const Branch = lazy(() => import("../components/branch/Branch"));
-  const BranchForm = lazy(() => import("../components/branch/BranchForm"))
-  const BranchProfile = lazy(() => import("../components/branch/BranchProfile"))
+  const BranchForm = lazy(() => import("../components/branch/BranchForm"));
+  const BranchProfile = lazy(() => import("../components/branch/BranchProfile"));
+  const Order = lazy(() => import("../components/order/Order"));
+  const OrderForm = lazy(() => import("../components/order/OrderForm"));
+  const OrderDetail = lazy(() => import("../components/order/OrderDetail"));
+  const User = lazy(() => import("../components/user/User"))
 
   return (
     <Routes>
@@ -145,6 +149,7 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
+
         <Route
           path="/branch/edit/:id"
           element={
@@ -153,6 +158,7 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
+        
         <Route
           path="/branch-profile/:id"
           element={
@@ -171,6 +177,50 @@ const PrivateRoutes: React.FC = () => {
           }
         />
 
+        <Route
+          path="/orders"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Order />
+            </Suspense>
+          }
+        />
+
+        <Route 
+          path="/order/add"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <OrderForm />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/order/edit/:id"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <OrderForm />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/order/:id"
+          element={
+            <Suspense fallback={<Shimmer/>}>
+              <OrderDetail />
+            </Suspense>
+          }
+        />
+
+      <Route
+          path="/user"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <User/>
+            </Suspense>
+          }
+        />
         <Route
           path="/profile"
           element={

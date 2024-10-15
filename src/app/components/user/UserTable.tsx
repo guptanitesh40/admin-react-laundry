@@ -1,40 +1,41 @@
-import React, { useEffect, useState } from "react";
+import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import { useDeleteUser, useGetOrder, useGetUsers } from "../../hooks";
+import TableShimmer from "../shimmer/TableShimmer";
+import { useEffect, useState } from "react";
 import {
   FaChevronLeft,
   FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useDeleteBanner, useGetBanner, useGetUsers } from "../../hooks";
-import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import TableShimmer from "../shimmer/TableShimmer";
+import { Gender, Role } from "../../../types/enums";
+import Swal from "sweetalert2";
 
-interface BannerTableProps {
+interface UserTableProps {
   search: string;
-  setEditBanner: (banner: any) => void;
   isSubmit: boolean;
-  setIsSubmit: (value : boolean) => void;
+  setIsSubmit: (value: boolean) => void;
+  setEditUser: (user: any) => void;
 }
 
-const BannerTable: React.FC<BannerTableProps> = ({
+const UserTable: React.FC<UserTableProps> = ({
   search,
-  setEditBanner,
   isSubmit,
-  setIsSubmit
+  setIsSubmit,
+  setEditUser
 }) => {
-  const { deleteBanner } = useDeleteBanner();
+  const { deleteUser } = useDeleteUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
-  const pageFromParams = searchParams.get("page");
-  const perPageFromParams = searchParams.get("perPage");
+  const pageParams = searchParams.get("page");
+  const perPageParams = searchParams.get("perPage");
 
-  const { banners, fetchBanners, totalBanners, loading } = useGetBanner(
+  const { users, fetchUsers, totalUsers, loading } = useGetUsers(
     currentPage,
     perPage,
     search,
@@ -42,48 +43,45 @@ const BannerTable: React.FC<BannerTableProps> = ({
     sortOrder
   );
 
-  const totalPages = Math.ceil(totalBanners / perPage);
+  const totalPages = Math.ceil(totalUsers / perPage);
 
   useEffect(() => {
     if (isSubmit) {
-      fetchBanners();
+      fetchUsers();
       setIsSubmit(false);
     }
-
-  }, [isSubmit,fetchBanners]);
+  }, [isSubmit, fetchUsers]);
 
   useEffect(() => {
-    if (pageFromParams) {
-      setCurrentPage(Number(pageFromParams));
+    if (pageParams) {
+      setCurrentPage(Number(pageParams));
     }
-    if (perPageFromParams) {
-      setPerPage(Number(perPageFromParams));
+    if (perPageParams) {
+      setPerPage(Number(perPageParams));
     }
-  }, [pageFromParams, perPageFromParams]);
+  }, [pageParams, perPageParams]);
 
   useEffect(() => {
     if (search) {
       setCurrentPage(1);
       setSearchParams({
         search: search,
-        page: "1", 
-        perPage: perPage.toString()      
+        page: "1",
+        perPage: perPage.toString(),
       });
-    }
-    else
-    {
+    } else {
       setSearchParams({
-        page: "1", 
-        perPage: perPage.toString()      
+        page: "1",
+        perPage: perPage.toString(),
       });
     }
   }, [search]);
 
   useEffect(() => {
-    fetchBanners();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBanners]);
+    fetchUsers();
+  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchUsers]);
 
-  const handleDeleteBanner = async (banner_id: number) => {
+  const handleDeleteUser = async (user_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -97,19 +95,17 @@ const BannerTable: React.FC<BannerTableProps> = ({
       });
 
       if (isConfirmed) {
-        const { success, message } = await deleteBanner(banner_id);
+        const { success, message } = await deleteUser(user_id);
         if (success) {
-          const updatedBanners = banners.filter(
-            (banner) => banner.banner_id !== banner_id
-          );         
-          if (updatedBanners.length === 0 && currentPage > 1) {
+          const updatedUsers = users.filter((user) => user.user_id !== user_id);
+          if (updatedUsers.length === 0 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
             setSearchParams({
               page: (currentPage - 1).toString(),
               perPage: perPage.toString(),
             });
           }
-          await fetchBanners();
+          await fetchUsers();
           Swal.fire(message);
         } else {
           Swal.fire(message);
@@ -126,7 +122,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -174,23 +170,23 @@ const BannerTable: React.FC<BannerTableProps> = ({
               <table className="table table-auto table-border">
                 <thead>
                   <tr>
-                    <th className="w-[100px]">
+                    <th className="min-w-[100px]">
                       <div
                         className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("banner_id")}
+                        onClick={() => handleSort("user_id")}
                       >
                         Id
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "banner_id" && sortOrder === "ASC"
+                              sortColumn === "user_id" && sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "banner_id" && sortOrder === "DESC"
+                              sortColumn === "user_id" && sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -198,29 +194,24 @@ const BannerTable: React.FC<BannerTableProps> = ({
                         </div>
                       </div>
                     </th>
-                    <th className="min-w-[200px]">
-                      <div className="flex justify-between">
-                        Image
-                        <div className="flex "></div>
-                      </div>
-                    </th>
+
                     <th className="min-w-[165px]">
                       <div
                         className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("title")}
+                        onClick={() => handleSort("user_id")}
                       >
-                        Title
+                        User name
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "title" && sortOrder === "ASC"
+                              sortColumn === "user_id" && sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "title" && sortOrder === "DESC"
+                              sortColumn === "user_id" && sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -228,16 +219,42 @@ const BannerTable: React.FC<BannerTableProps> = ({
                         </div>
                       </div>
                     </th>
-                    <th className="min-w-[205px]">
+
+                    <th className="min-w-[250px]">
                       <div
                         className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("description")}
+                        onClick={() => handleSort("email")}
                       >
-                        Description
+                        Email
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "description" &&
+                              sortColumn === "email" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "email" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th>
+
+                    <th className="min-w-[165px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("mobile_number")}
+                      >
+                        Mobile no
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "mobile_number" &&
                               sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
@@ -245,7 +262,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "description" &&
+                              sortColumn === "mobile_number" &&
                               sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
@@ -254,36 +271,93 @@ const BannerTable: React.FC<BannerTableProps> = ({
                         </div>
                       </div>
                     </th>
-                    <th className="w-[125px]">Actions</th>
+
+                    <th className="min-w-[170px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("role_id")}
+                      >
+                        Role
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "role_id" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "role_id" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th>
+
+                    <th className="min-w-[150px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("gender")}
+                      >
+                        Gender
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "gender" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "gender" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th>
+                    <th className="min-w-[140px]">Actions</th>
                   </tr>
                 </thead>
-                {loading ? (<TableShimmer/>
-                ):
-                banners.length > 0 ? (
+                {loading ? (
+                  <TableShimmer />
+                ) : users.length > 0 ? (
                   <tbody>
-                    {banners.map((banner) => (
-                      <tr key={banner.banner_id}>
-                        <td>{banner.banner_id}</td>
+                    {users.map((user) => (
+                      <tr key={user.user_id}>
+                        <td>{user.user_id}</td>
                         <td>
-                          <img
-                            className="rounded-lg size-20 shrink-0"
-                            src={banner.image}
-                          />
+                          {user.first_name} {user.last_name}
                         </td>
-                        <td>{banner.title}</td>
-                        <td className="max-w-[105px] break-words overflow-hidden">
-                          {banner.description}
+                        <td>{user.email}</td>
+                        <td>{user.mobile_number}</td>
+                        <td>
+                          {Role[user.role_id as unknown as keyof typeof Role]}
                         </td>
                         <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditBanner(banner)}
+                          {
+                            Gender[
+                              user.gender as unknown as keyof typeof Gender
+                            ]
+                          }
+                        </td>
+                        <td>
+                          <button 
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          onClick={() => setEditUser(user.user_id)}
                           >
-                            <FaPencilAlt className="text-yellow-600" />
+                            <FaPencilAlt
+                              className="text-yellow-600"                              
+                            />
                           </button>
                           <button
                             className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteBanner(banner.banner_id)}
+                            onClick={() => handleDeleteUser(user.user_id)}
                           >
                             <FaTrash className="text-red-500" />
                           </button>
@@ -295,7 +369,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                   <tbody>
                     <tr>
                       <td colSpan={5} className="text-center">
-                        No banners available
+                        No users available
                       </td>
                     </tr>
                   </tbody>
@@ -306,10 +380,10 @@ const BannerTable: React.FC<BannerTableProps> = ({
         </div>
       </div>
 
-      {totalBanners > perPage && (
+      {totalUsers > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">
-            Showing {banners.length} of {totalBanners} Branches
+            Showing {users.length} of {totalUsers} Users
           </span>
           <div className="pagination" data-datatable-pagination="true">
             <button
@@ -342,4 +416,4 @@ const BannerTable: React.FC<BannerTableProps> = ({
   );
 };
 
-export default BannerTable;
+export default UserTable;

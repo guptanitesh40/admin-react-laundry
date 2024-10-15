@@ -131,6 +131,7 @@ const BranchForm: React.FC = () => {
   const handleCancel = () => {
     navigate("/branches");
   };
+  
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
       <h1 className="text-2xl font-bold mb-6">

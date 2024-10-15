@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from "react";
 import {
-  FaCheck,
   FaChevronLeft,
   FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
+import { ImCheckmark, ImCross } from "react-icons/im";
 import Swal from "sweetalert2";
 import {
   useDeleteCategory,
   useGetCategories,
+  useGetCategory,
   useUpdateCategory,
-} from "../../hooks";
+} from "../../hooks"; // Ensure correct imports
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import { ImCheckmark, ImCross } from "react-icons/im";
 import TableShimmer from "../shimmer/TableShimmer";
+import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+
+interface Category {
+  category_id: number;
+  name: string;
+}
 
 interface CategoryTableProps {
   search: string;
@@ -29,24 +34,24 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   isSubmit,
   setIsSubmit,
 }) => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParams = searchParams.get("page");
+  const perPageParams = searchParams.get("perPage");
+
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
     null
   );
   const [editingCategoryName, setEditingCategoryName] = useState<string>("");
-  const [originalCategoryName, setOriginalCategoryName] = useState<string>("");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>();
-  const pageParams = searchParams.get("page");
-  const perPageParams = searchParams.get("perPage");
 
   const { categories, totalCategories, fetchCategories, loading } =
     useGetCategories(currentPage, perPage, search, sortColumn, sortOrder);
 
+  const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory(fetchCategories);
 
@@ -59,16 +64,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     }
   }, [isSubmit, fetchCategories]);
 
-  const handleEditClick = (category_id: number, categoryName: string) => {
-    setEditingCategoryId(category_id);
-    setEditingCategoryName(categoryName);
-    setOriginalCategoryName(categoryName);
-  };
+  useEffect(() => {
+    if (category) {
+      setEditingCategoryName(category.name || "");
+    }
+  }, [category]);
 
-  const handleCancelEditClick = () => {
-    setEditingCategoryId(null);
-    setEditingCategoryName("");
-    setOriginalCategoryName("");
+  const handleEditClick = (category_id: number) => {
+    setEditingCategoryId(category_id);
   };
 
   const handleSaveEditClick = async () => {
@@ -77,26 +80,29 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       return;
     }
 
-    if (editingCategoryName === originalCategoryName) {
+    if (category && editingCategoryName === category.name) {
       handleCancelEditClick();
       return;
     }
 
     try {
       const success = await updateCategory(
-        editingCategoryId!,
+        editingCategoryId,
         editingCategoryName
       );
       if (success) {
-        setEditingCategoryId(null);
-        setEditingCategoryName("");
-        setOriginalCategoryName("");
+        handleCancelEditClick();
       }
     } catch (error) {
       toast.error("An error occurred while updating the category.", {
         position: "top-center",
       });
     }
+  };
+
+  const handleCancelEditClick = () => {
+    setEditingCategoryId(null);
+    setEditingCategoryName("");
   };
 
   const handleDeleteCategory = async (category_id: number) => {
@@ -115,16 +121,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       if (isConfirmed) {
         const { success, message } = await deleteCategory(category_id);
         if (success) {
-          const updatedCategories = categories.filter(
-            (category) => category.category_id !== category_id
-          );
-          if (updatedCategories.length === 0 && currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-            setSearchParams({
-              page: (currentPage - 1).toString(),
-              perPage: perPage.toString(),
-            });
-          }
           await fetchCategories();
           Swal.fire(message);
         } else {
@@ -147,24 +143,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     if (perPageParams) {
       setPerPage(Number(perPageParams));
     }
-
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
     if (search) {
       setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1", 
-        perPage: perPage.toString()      
-      });
-    }
-    else
-    {
-      setSearchParams({
-        page: "1", 
-        perPage: perPage.toString()      
-      });
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({ page: "1", perPage: perPage.toString() });
     }
   }, [search]);
 
@@ -174,7 +160,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -187,7 +173,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       setSearchParams({
         page: newPage.toString(),
         perPage: perPage.toString(),
-        
       });
     }
   };
@@ -222,63 +207,65 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
             <div className="scrollable-x-auto">
               <table className="table table-auto table-border">
                 <thead>
-                  <th className="w-[100px]">
-                    <div
-                      className="flex justify-between cursor-pointer"
-                      onClick={() => handleSort("category_id")}
-                    >
-                      Id
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "category_id" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "category_id" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
+                  <tr>
+                    <th className="w-[100px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("category_id")}
+                      >
+                        Id
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "category_id" &&
+                              sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "category_id" &&
+                              sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </th>
-                  <th className="min-w-[165px]">
-                    <div
-                      className="flex justify-between cursor-pointer"
-                      onClick={() => handleSort("category_name")}
-                    >
-                      Category Name
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "category_name" &&
-                            sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "category_name" &&
-                            sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
+                    </th>
+                    <th className="min-w-[165px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("name")}
+                      >
+                        Category Name
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "name" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "name" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </th>
-                  <th className="w-[125px]">Actions</th>
+                    </th>
+                    <th className="w-[125px]">Actions</th>
+                  </tr>
                 </thead>
                 {loading ? (
                   <TableShimmer />
                 ) : categories.length > 0 ? (
                   <tbody>
-                    {categories.map((category) => (
+                    {categories.map((category: Category) => (
                       <tr key={category.category_id}>
                         <td>{category.category_id}</td>
                         <td>
@@ -306,14 +293,16 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                               <button
                                 className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                                 onClick={handleSaveEditClick}
+                                aria-label="Save"
                               >
-                                <ImCheckmark />
+                                <ImCheckmark color="green" />
                               </button>
                               <button
                                 className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                                 onClick={handleCancelEditClick}
+                                aria-label="Cancel"
                               >
-                                <ImCross />
+                                <ImCross color="red" />
                               </button>
                             </>
                           ) : (
@@ -321,11 +310,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                               <button
                                 className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                                 onClick={() =>
-                                  handleEditClick(
-                                    category.category_id,
-                                    category.name
-                                  )
+                                  handleEditClick(category.category_id)
                                 }
+                                aria-label="Edit"
                               >
                                 <FaPencilAlt className="text-yellow-600" />
                               </button>
@@ -334,6 +321,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                                 onClick={() =>
                                   handleDeleteCategory(category.category_id)
                                 }
+                                aria-label="Delete"
                               >
                                 <FaTrash className="text-red-500" />
                               </button>
@@ -346,8 +334,8 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 ) : (
                   <tbody>
                     <tr>
-                      <td colSpan={5} className="text-center">
-                        No categories available
+                      <td colSpan={3} className="text-center">
+                        No categories found.
                       </td>
                     </tr>
                   </tbody>

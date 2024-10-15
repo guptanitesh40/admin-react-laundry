@@ -8,7 +8,7 @@ const token = localStorage.getItem('authToken');
 interface Coupon {
   coupon_id: number;
   code: string;
-  discount_value: string;
+  discount_value: number;
   discount_type: number;
   start_time: string;
   end_time: string;
@@ -20,8 +20,8 @@ interface Coupon {
 }
 
 const useFetchCoupons = (
-  pageNumber: number = 1,
-  perPage: number = 10,
+  pageNumber: number,
+  perPage: number,
   search: string = '',
   sortColumn?: string,
   sortOrder?: string

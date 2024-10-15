@@ -24,9 +24,9 @@ export const companySchema = Yup.object().shape({
       if (value === null || value === '') return false; 
       return true; 
     })
-    .test("format", "Zip Code must be a number", (value) => {
+    .test("format", "Zip Code must be a 6 digit number", (value) => {
       if (value === null || value === '') return true;
-      return /^[0-9]+$/.test(value);
+      return /^[0-9]{6}$/.test(value);
     }),
 
   company_owner_name: Yup.string()

@@ -1,24 +1,40 @@
-import { useState } from "react";
-import PriceTable from "./PriceTable";
+import React, { useState } from "react";
+import UserTable from "./UserTable";
+import UserModal from "./UserModal";
 
-const Price: React.FC = () => {
-  const [isSave,setIsSave] = useState<boolean>(false);
+const User: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
+
+  const handleEditUser = (user_id:number) => {
+    setEditMode(true);
+    setCurrentUser(user_id);
+    setModalIsOpen(true);
+  }
+
+  const handleAddUser = () => {
+    setModalIsOpen(true);
+    setCurrentUser(null);
+  };
 
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput);
   };
 
-  return(
+  return (
     <div className="container-fixed relative">
       <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
         <h1 className="text-xl font-semibold leading-none text-gray-900">
-          Price Table
+          Users
         </h1>
-        <button onClick={() => setIsSave(true)} className="btn btn-primary">
-          <i className="ki-filled ki-plus-squared"></i>Save
+        <button onClick={handleAddUser} className="btn btn-primary">
+          <i className="ki-filled ki-plus-squared"></i>Add User
         </button>
       </div>
 
@@ -52,10 +68,21 @@ const Price: React.FC = () => {
         </form>
       </div>
 
-      <PriceTable  search={search} isSave={isSave} setIsSave={setIsSave}/>
+      <UserTable
+        search={search}
+        isSubmit={isSubmit}
+        setIsSubmit={setIsSubmit}
+        setEditUser={handleEditUser}
+      />
 
+      <UserModal
+        setIsSubmit={setIsSubmit}
+        isOpen={modalIsOpen}
+        onClose={() => setModalIsOpen(false)}
+        user_id={currentUser}
+      />
     </div>
   );
 };
 
-export default Price;
+export default User;

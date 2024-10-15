@@ -12,8 +12,7 @@ const useAddBranch = () => {
     setLoading(true);
   
     if (formData.company_id && typeof formData.company_id !== 'number') {
-      formData.company_id = Number(formData.company_id);
-      
+      formData.company_id = Number(formData.company_id);      
     }
     const ObjFormData = {
       ...formData,

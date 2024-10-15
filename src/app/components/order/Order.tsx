@@ -1,41 +1,34 @@
 import React, { useState } from "react";
-import BannerTable from "./BannerTable";
-import BannerModal from "./BannerModal";
+import OrderTable from "./OrderTable";
+import { useNavigate } from "react-router-dom";
 
-const Banner: React.FC = () => {
+const Order: React.FC = () => {
+
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [currentBanner, setCurrentBanner] = useState<any>(null);
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [isSubmit,setIsSubmit] = useState<boolean>(false);
+  const navigate = useNavigate();
+
+
+  const handleAddOrder = () => {
+    navigate("/order/add");
+  };
 
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch(searchInput);
-  };
-
-  const handleAddBanner = () => {
-    setEditMode(false);
-    setModalIsOpen(true);
-    setCurrentBanner(null);
-  };
-
-  const handleEditBanner = (banner: any) => {
-    setEditMode(true);
-    setCurrentBanner(banner);
-    setModalIsOpen(true);
-  };
+};
 
   return (
     <div className="container-fixed relative">
 
       <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
         <h1 className="text-xl font-semibold leading-none text-gray-900">
-          Banners
+          Orders
         </h1>
-        <button onClick={handleAddBanner} className="btn btn-primary">
-          <i className="ki-filled ki-plus-squared"></i>Add Banner
+        <button className="btn btn-primary"
+        onClick={handleAddOrder}
+        >
+          <i className="ki-filled ki-plus-squared"></i>Add Order
         </button>
       </div>
 
@@ -70,16 +63,10 @@ const Banner: React.FC = () => {
       </form>
       </div>
 
-      <BannerTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setEditBanner={handleEditBanner} />
-      <BannerModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        bannerData={currentBanner}
-        banner_id={currentBanner?.banner_id}
-      />
+      <OrderTable search={search}/>
+      
     </div>
   );
 };
 
-export default Banner;
+export default Order;

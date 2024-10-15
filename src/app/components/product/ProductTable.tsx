@@ -15,7 +15,7 @@ interface ProductTableProps {
   search: string;
   setEditProduct: (product: any) => void;
   isSubmit: boolean;
-  setIsSubmit: (value:boolean) => void;
+  setIsSubmit: (value: boolean) => void;
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({
@@ -32,23 +32,23 @@ const ProductTable: React.FC<ProductTableProps> = ({
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-  const {
-    products,
-    totalProducts,
-    loading,
-    fetchProduct,
-  } = useGetProducts(currentPage, perPage, search, sortColumn, sortOrder);
+  const { products, totalProducts, loading, fetchProducts } = useGetProducts(
+    currentPage,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder
+  );
 
   const totalPages = Math.ceil(totalProducts / perPage);
 
   useEffect(() => {
     if (isSubmit) {
-      fetchProduct();
+      fetchProducts();
       setIsSubmit(false);
     }
+  }, [isSubmit, fetchProducts]);
 
-  }, [isSubmit,fetchProduct]);
-  
   const { deleteProduct } = useDeleteProduct();
 
   const handleDeleteProduct = async (product_id: number) => {
@@ -70,21 +70,18 @@ const ProductTable: React.FC<ProductTableProps> = ({
           const updatedProducts = products.filter(
             (product) => product.product_id !== product_id
           );
-          if(updatedProducts.length === 0 && currentPage > 1)
-          {
+          if (updatedProducts.length === 0 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
             setSearchParams({
               page: (currentPage - 1).toString(),
               perPage: perPage.toString(),
             });
           }
-          await fetchProduct();
+          await fetchProducts();
           Swal.fire(message);
         } else {
           Swal.fire(message);
         }
-      } else {
-        Swal.fire("Cancelled", "The product is safe :)", "info");
       }
     } catch (error: any) {
       Swal.fire({
@@ -109,26 +106,24 @@ const ProductTable: React.FC<ProductTableProps> = ({
       setCurrentPage(1);
       setSearchParams({
         search: search,
-        page: "1", 
-        perPage: perPage.toString()      
+        page: "1",
+        perPage: perPage.toString(),
       });
-    }
-    else
-    {
+    } else {
       setSearchParams({
-        page: "1", 
-        perPage: perPage.toString()      
+        page: "1",
+        perPage: perPage.toString(),
       });
     }
   }, [search]);
-  
+
   useEffect(() => {
-    fetchProduct();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchProduct]);
+    fetchProducts();
+  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchProducts]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -152,7 +147,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-
   return (
     <>
       <div className="inline-block">
@@ -169,6 +163,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
           per page
         </div>
       </div>
+
       <div className="grid gap-5 lg:gap-7.5">
         <div className="card card-grid min-w-full">
           <div className="card-body">
@@ -185,8 +180,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "product_id" &&
-                              sortOrder === "ASC"
+                              sortColumn === "product_id" && sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -203,32 +197,30 @@ const ProductTable: React.FC<ProductTableProps> = ({
                       </div>
                     </th>
                     <th className="min-w-[165px]">
-                    <div
-                      className="flex justify-between cursor-pointer"
-                      onClick={() => handleSort("name")}
-                    >
-                      Product Name
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "name" &&
-                            sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "name" &&
-                            sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("name")}
+                      >
+                        Product Name
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "name" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "name" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </th>
-                    <th className="min-w-[200px]">
+                    </th>
+                    <th className="min-w-[100px]">
                       <div className="flex justify-between">
                         Image
                         <div className="flex "></div>
@@ -240,8 +232,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                 </thead>
                 {loading ? (
                   <TableShimmer />
-                ) :
-                products.length > 0 ? (
+                ) : products.length > 0 ? (
                   <tbody>
                     {products.map((product) => (
                       <tr key={product.product_id}>
@@ -288,6 +279,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
           </div>
         </div>
       </div>
+
       {totalProducts > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">

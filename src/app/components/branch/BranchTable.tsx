@@ -73,9 +73,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
         } else {
           Swal.fire(message);
         }
-      } else {
-        Swal.fire("Cancelled", "The branch is safe :)", "info");
-      }
+      } 
     } catch (error: any) {
       Swal.fire({
         title: "Error",

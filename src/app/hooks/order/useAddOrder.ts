@@ -2,34 +2,25 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-const ADD_COMPANY_URL = `${BASE_URL}/companies`;
+const ADD_ORDER_URL = `${BASE_URL}/admin/orders`;
 
-const useAddCompany = () => {
+const useAddOrder = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addCompany = async (formData: any) => {
+  const addOrder = async (formData: any) => {
     const token = localStorage.getItem('authToken');
     setLoading(true);
 
+    
     try {
-      const formToSubmit = new FormData();
 
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) {
-          if (value instanceof FileList) {
-            formToSubmit.append(key, value[0]);
-          } else {
-            formToSubmit.append(key, value as string);
-          }
-        }
-      });
-
-      const response = await fetch(ADD_COMPANY_URL, {
+      const response = await fetch(ADD_ORDER_URL, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': `application/json`,
         },
-        body: formToSubmit,
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -44,16 +35,16 @@ const useAddCompany = () => {
       return true;
 
     } catch (error: any) {
-      toast.error(error?.message || 'Network error: Failed to fetch.', {
-        position: "top-center",
-      });
+        toast.error(error?.message || 'Network error: Failed to fetch.', {
+            position: "top-center",
+          });
       return false;
     } finally {
       setLoading(false);
     }
   };
 
-  return { addCompany, loading };
+  return { addOrder, loading };
 };
 
-export default useAddCompany;
+export default useAddOrder;

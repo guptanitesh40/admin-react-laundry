@@ -21,7 +21,7 @@ const useGetProducts = (
   const [totalProducts,setTotalProducts] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchProduct = useCallback(async () => {
+  const fetchProducts = useCallback(async () => {
     const token = localStorage.getItem('authToken');
     const queryParams = new URLSearchParams();
 
@@ -65,11 +65,7 @@ const useGetProducts = (
     }
   }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
-  useEffect(() => {
-    fetchProduct();
-  }, [fetchProduct]);
-
-  return { products, loading,totalProducts, fetchProduct };
+  return { products, loading,totalProducts, fetchProducts };
 };
 
 export default useGetProducts;
