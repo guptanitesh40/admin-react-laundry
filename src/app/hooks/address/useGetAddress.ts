@@ -18,7 +18,6 @@ const useGetAddress = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchAddress = async (user_id: number) => {
-    console.log("user id",user_id);
     const token = localStorage.getItem("authToken");
 
     const GET_ADDRESS_URL = `${import.meta.env.VITE_BASE_URL}/address/${user_id}/user`;
@@ -39,7 +38,6 @@ const useGetAddress = () => {
       }
 
       const data = await response.json();
-      console.log("address:",data);
       const addressData = data?.data?.result || [];
       setAddress(addressData);
     } catch (error: any) {
