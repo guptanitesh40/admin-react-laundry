@@ -5,7 +5,6 @@ const GET_ORDER_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders`;
 const token = localStorage.getItem("authToken");
 
 interface Order {
-    gst: ReactNode;
     estimated_pickup_time: string;
     estimated_delivery_time: string;
     user: any;
@@ -18,7 +17,7 @@ interface Order {
     coupon_code: string; 
     coupon_discount: number; 
     description: string; 
-    address_details: string; 
+    address_id: number | null; 
     paid_amount: number;
     payment_type: string;
     payment_status: string; 

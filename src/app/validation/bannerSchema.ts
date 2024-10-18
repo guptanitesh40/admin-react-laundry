@@ -6,11 +6,13 @@ export const bannerSchema = (editMode: boolean): Yup.ObjectSchema<any, any, any>
   Yup.object().shape({
     title: Yup.string()
       .required("Title is required")
-      .test("required", "Title is required", (value) => !!value),
+      .test("required", "Title is required", (value) => !!value)
+      .max(50,"Max title length exceeded by 50 characters"),
 
     description: Yup.string()
       .required("Description is required")
-      .test("required", "Description is required", (value) => !!value),
+      .test("required", "Description is required", (value) => !!value)
+      .max(255,"Max description length exceeded by 255 characters"),
 
     image: Yup.mixed<FileValue>()
       .test(

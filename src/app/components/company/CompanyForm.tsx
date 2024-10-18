@@ -296,7 +296,7 @@ const CompanyForm: React.FC = () => {
               Email
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               name="email"
               value={formData.email}

@@ -3,7 +3,6 @@ import toast from "react-hot-toast";
 import { useAddUser, useUpdateUser } from "../../hooks";
 import * as Yup from "yup";
 import { userSchema } from "../../validation/userSchema";
-import { useParams } from "react-router-dom";
 import useGetUser from "../../hooks/user/useGetuser";
 
 interface UserModalProps {
@@ -164,7 +163,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 Email
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email}

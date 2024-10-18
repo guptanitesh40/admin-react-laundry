@@ -6,7 +6,8 @@ export const productSchema = (editMode: boolean): Yup.ObjectSchema<any, any, any
   Yup.object().shape({
     name: Yup.string()
       .required("Name cannot be empty")
-      .test("required", "Name cannot be empty", (value) => !!value),
+      .test("required", "Name cannot be empty", (value) => !!value)
+      .max(30, "max length exceeded by 30"),
 
     image: Yup.mixed<FileValue>()
       .test("required", "Image is required", function (value) {

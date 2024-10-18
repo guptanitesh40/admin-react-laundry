@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
-  gst: number;
   estimated_pickup_time: string | number | Date;
   estimated_delivery_time: string | number | Date;
   user: any;
@@ -18,7 +17,7 @@ interface Order {
   coupon_code: string;
   coupon_discount: number;
   description: string;
-  address_details: string;
+  address_id: number;
   paid_amount: number;
   payment_type: number;
   payment_status: number;

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import {
   useAddOrder,
   useFetchCoupons,
+  useGetAddress,
   useGetCategories,
   useGetPrice,
   useGetProductsOnId,
@@ -20,15 +21,16 @@ interface item {
   category_id: number;
   product_id: number;
   service_id: number;
+  description: string | null;
   price: number;
   quantity: number;
   item_Total: number;
+  showDescription: boolean;
 }
 
 interface FormData {
   coupon_code: string;
   coupon_discount: number;
-  description: string | null;
   express_delivery_charges: number;
   shipping_charges: number;
   payment_type: number;
@@ -37,7 +39,7 @@ interface FormData {
   sub_total: number;
   paid_amount: number;
   transaction_id: string;
-  address_details: string | null;
+  address_id: number | null;
   username: string;
   user_id: number;
   items: item[];
@@ -62,16 +64,20 @@ const OrderForm: React.FC = () => {
   const order_id = Number(id);
   const perPage = 1000;
   const pageNumber = 1;
+
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
   const { fetchCustomers } = useGetCustomer();
   const { coupons } = useFetchCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
+  const { address, fetchAddress } = useGetAddress();
 
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     coupon_code: "",
     coupon_discount: null,
-    description: "",
     express_delivery_charges: null,
     shipping_charges: null,
     payment_type: null,
@@ -80,7 +86,7 @@ const OrderForm: React.FC = () => {
     sub_total: null,
     paid_amount: null,
     transaction_id: "",
-    address_details: "",
+    address_id: null,
     username: "",
     user_id: null,
     items: [
@@ -88,16 +94,21 @@ const OrderForm: React.FC = () => {
         category_id: null,
         product_id: null,
         service_id: null,
+        description: null,
         price: null,
         quantity: 1,
         item_Total: null,
+        showDescription: false,
       },
     ],
   });
 
   useEffect(() => {
+    if (formData.user_id) {
+      fetchAddress(formData.user_id);
+    }
     fetchCategories();
-  }, [fetchCategories, fetchPrices]);
+  }, [fetchCategories, fetchPrices, formData.user_id]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -122,7 +133,6 @@ const OrderForm: React.FC = () => {
       const initialFormData: FormData = {
         coupon_code: order.coupon_code || "",
         coupon_discount: order.coupon_discount || null,
-        description: order.description || "",
         express_delivery_charges: order.express_delivery_charges || null,
         shipping_charges: order.shipping_charges || null,
         payment_type: order.payment_type || null,
@@ -131,7 +141,7 @@ const OrderForm: React.FC = () => {
         sub_total: null,
         paid_amount: order.paid_amount || null,
         transaction_id: order.transaction_id || "",
-        address_details: order.address_details || "",
+        address_id: order.address_id,
         username: fullName,
         user_id: order.user_id || null,
         items: order.items.map(
@@ -139,9 +149,11 @@ const OrderForm: React.FC = () => {
             category_id: item.category_id,
             product_id: item.product_id,
             service_id: item.service_id,
+            description: item.description || null,
             price: item.price,
             quantity: item.quantity,
             item_Total: item.price * item.quantity,
+            showDescription: !!item.description,
           })
         ),
       };
@@ -156,7 +168,6 @@ const OrderForm: React.FC = () => {
       const initialFormData: FormData = {
         coupon_code: "",
         coupon_discount: null,
-        description: "",
         express_delivery_charges: null,
         shipping_charges: null,
         payment_type: null,
@@ -165,7 +176,7 @@ const OrderForm: React.FC = () => {
         sub_total: null,
         paid_amount: null,
         transaction_id: "",
-        address_details: "",
+        address_id: null,
         username: "",
         user_id: null,
         items: [
@@ -173,9 +184,11 @@ const OrderForm: React.FC = () => {
             category_id: null,
             product_id: null,
             service_id: null,
+            description: null,
             price: null,
             quantity: 1,
             item_Total: null,
+            showDescription: false,
           },
         ],
       };
@@ -191,13 +204,14 @@ const OrderForm: React.FC = () => {
         category_id: Number(item.category_id),
         product_id: Number(item.product_id),
         service_id: Number(item.service_id),
+        description: item.description,
         price: Number(item.price),
         quantity: Number(item.quantity),
       }));
 
       const dataToValidate = {
         ...formData,
-        address_id: 1,
+        address_id: Number(formData.address_id),
         coupon_discount: Number(formData.coupon_discount),
         shipping_charges: Number(formData.shipping_charges),
         paid_amount: Number(formData.paid_amount),
@@ -209,7 +223,6 @@ const OrderForm: React.FC = () => {
       };
 
       let success;
-
       await orderSchema.validate(dataToValidate, { abortEarly: false });
 
       if (order) {
@@ -264,9 +277,11 @@ const OrderForm: React.FC = () => {
           category_id: null,
           product_id: null,
           service_id: null,
+          description: null,
           price: null,
           quantity: 1,
           item_Total: null,
+          showDescription: false,
         },
       ],
     }));
@@ -280,7 +295,6 @@ const OrderForm: React.FC = () => {
       return { ...newFormData, sub_total: newSubTotal };
     });
   };
-  
 
   const handleItemChange = (index: number, field: string, value: any) => {
     setFormData((prev) => {
@@ -288,8 +302,11 @@ const OrderForm: React.FC = () => {
         if (i === index) {
           const updatedItem = { ...item, [field]: value };
 
-          const category_id = Number(updatedItem.category_id);
+          if (field === "showDescription") {
+            updatedItem.showDescription = value;
+          }
 
+          const category_id = Number(updatedItem.category_id);
           const product_id = Number(updatedItem.product_id);
           const service_id = Number(updatedItem.service_id);
           const quantity = Number(updatedItem.quantity) || 1;
@@ -312,7 +329,6 @@ const OrderForm: React.FC = () => {
             updatedItem.price = null;
             updatedItem.item_Total = null;
           }
-
           return updatedItem;
         }
         return item;
@@ -375,6 +391,19 @@ const OrderForm: React.FC = () => {
     return finalSubTotal;
   };
 
+  const handleAddressChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedAddressId = event.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      address_id: selectedAddressId,
+    }));
+  };
+
+  const handleAddAddress = (e: React.FormEvent) => {
+    e.preventDefault();
+    setModalIsOpen(true);
+  };
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -383,8 +412,8 @@ const OrderForm: React.FC = () => {
         </h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="relative flex flex-col">
+          <div className="flex gap-6">
+            <div className="relative flex flex-col flex-[0_0_40%]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 User Name
               </label>
@@ -420,30 +449,36 @@ const OrderForm: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
-              />
-            </div>
+            <div className="grow flex">
+              <div className="grow flex flex-col">
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Address Details
+                </label>
+                <select
+                  value={formData.address_id ?? ""}
+                  onChange={handleAddressChange}
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                >
+                  <option value="" disabled>
+                    Select Address
+                  </option>
+                  {address.map((addr) => (
+                    <option key={addr.address_id} value={addr.address_id}>
+                      {addr.building_number}, {addr.area}, {addr.landmark},{" "}
+                      {addr.city}, {addr.state}, {addr.pincode}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Address Details
-              </label>
-              <textarea
-                value={formData.address_details || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, address_details: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
-              />
+              <div className="flex flex-col self-center">
+                <button 
+                className="btn btn-primary w-20 ml-2"
+                onClick={handleAddAddress}
+                >
+                  Add address
+                </button>
+              </div>
             </div>
           </div>
 
@@ -454,155 +489,207 @@ const OrderForm: React.FC = () => {
           </div>
 
           {formData.items.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-4"
-            >
-              <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Category
-                </label>
-                <select
-                  value={item.category_id ?? ""}
-                  onChange={(e) =>
-                    handleItemChange(index, "category_id", e.target.value)
-                  }
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                >
-                  <option value="" disabled>
-                    Select Category
-                  </option>
-                  {categories.map((cat) => (
-                    <option key={cat.category_id} value={cat.category_id}>
-                      {cat.name}
+            <>
+              <div
+                key={index}
+                className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
+              >
+                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Category
+                  </label>
+                  <select
+                    value={item.category_id ?? ""}
+                    onChange={(e) =>
+                      handleItemChange(index, "category_id", e.target.value)
+                    }
+                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  >
+                    <option value="" disabled>
+                      Select Category
                     </option>
-                  ))}
-                </select>
-                {"\u00A0"}
-              </div>
+                    {categories.map((cat) => (
+                      <option key={cat.category_id} value={cat.category_id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="w-full text-red-500 text-sm">
+                    {errors[`items[${index}].category_id`] || "\u00A0"}
+                  </p>
+                </div>
 
-              <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Product
-                </label>
-                <select
-                  value={item.product_id ?? ""}
-                  onChange={(e) =>
-                    handleItemChange(index, "product_id", e.target.value)
-                  }
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                >
-                  <option value="" disabled>
-                    Select Product
-                  </option>
-                  {products.map((prod) => (
-                    <option
-                      key={prod.product_product_id}
-                      value={prod.product_product_id}
-                    >
-                      {prod.product_name}
+                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Product
+                  </label>
+                  <select
+                    value={item.product_id ?? ""}
+                    onChange={(e) =>
+                      handleItemChange(index, "product_id", e.target.value)
+                    }
+                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  >
+                    <option value="" disabled>
+                      Select Product
                     </option>
-                  ))}
-                </select>
-                {"\u00A0"}
-              </div>
+                    {products.map((prod) => (
+                      <option
+                        key={prod.product_product_id}
+                        value={prod.product_product_id}
+                      >
+                        {prod.product_name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="w-full text-red-500 text-sm">
+                    {errors[`items[${index}].product_id`] || "\u00A0"}
+                  </p>
+                </div>
 
-              <div className="flex flex-col flex-1 mt-4 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Service
-                </label>
-                <select
-                  value={item.service_id ?? ""}
-                  onChange={(e) =>
-                    handleItemChange(index, "service_id", e.target.value)
-                  }
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                >
-                  <option value="" disabled>
-                    Select Service
-                  </option>
-                  {services?.map((serv) => (
-                    <option
-                      key={serv?.service_service_id}
-                      value={serv?.service_service_id}
-                    >
-                      {serv.service_name}
+                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Service
+                  </label>
+                  <select
+                    value={item.service_id ?? ""}
+                    onChange={(e) =>
+                      handleItemChange(index, "service_id", e.target.value)
+                    }
+                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  >
+                    <option value="" disabled>
+                      Select Service
                     </option>
-                  ))}
-                </select>
-                {"\u00A0"}
-              </div>
+                    {services?.map((serv) => (
+                      <option
+                        key={serv?.service_service_id}
+                        value={serv?.service_service_id}
+                      >
+                        {serv.service_name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="w-full text-red-500 text-sm">
+                    {errors[`items[${index}].service_id`] || "\u00A0"}
+                    <br />
+                  </p>
+                  <p className="w-full text-red-500 text-sm">
+                    {"\u00A0"}
+                    <br />
+                  </p>
+                </div>
 
-              <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Price
-                </label>
-                <input
-                  type="text"
-                  value={item.price || ""}
-                  onChange={(e) =>
-                    handleItemChange(index, "price", e.target.value)
-                  }
-                  className="input border border-gray-300 rounded-md p-2 w-full"
-                  readOnly
-                />
-                <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
-              </div>
-
-              <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Quantity
-                </label>
-                <input
-                  type="text"
-                  value={item.quantity ?? 1}
-                  onChange={(e) =>
-                    handleItemChange(index, "quantity", e.target.value)
-                  }
-                  className="input border border-gray-300 rounded-md p-2 w-full"
-                />
-                <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
-              </div>
-
-              <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Item total
-                </label>
-                <input
-                  type="text"
-                  value={item.item_Total ?? ""}
-                  onChange={(e) =>
-                    handleItemChange(index, "item_Total", e.target.value)
-                  }
-                  className="input border border-gray-300 rounded-md p-2"
-                  min="0"
-                  step="0.01"
-                  readOnly
-                />
-                <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  className={`p-2 mb-10 rounded-full ${
-                    formData.items.length > 1
-                      ? "bg-red-100 hover:bg-red-200"
-                      : "bg-gray-200 cursor-not-allowed"
-                  }`}
-                  onClick={() => handleRemoveItem(index)}
-                  disabled={formData.items.length === 1}
-                >
-                  <FaTrash
-                    className={`${
-                      formData.items.length > 1
-                        ? "text-red-500"
-                        : "text-gray-400"
-                    }`}
+                <div className="flex flex-col flex-1">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Price
+                  </label>
+                  <input
+                    type="text"
+                    value={item.price || ""}
+                    onChange={(e) =>
+                      handleItemChange(index, "price", e.target.value)
+                    }
+                    className="input border border-gray-300 rounded-md p-2 w-full"
+                    readOnly
                   />
-                </button>
+                  <p className="w-full text-red-500 text-sm">
+                    {errors[`items[${index}].price`] || "\u00A0"}
+                  </p>
+                </div>
+
+                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Quantity
+                  </label>
+                  <input
+                    type="text"
+                    value={item.quantity ?? 1}
+                    onChange={(e) =>
+                      handleItemChange(index, "quantity", e.target.value)
+                    }
+                    className="input border border-gray-300 rounded-md p-2 w-full"
+                  />
+                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
+                </div>
+
+                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Item total
+                  </label>
+                  <input
+                    type="text"
+                    value={item.item_Total ?? ""}
+                    onChange={(e) =>
+                      handleItemChange(index, "item_Total", e.target.value)
+                    }
+                    className="input border border-gray-300 rounded-md p-2"
+                    min="0"
+                    step="0.01"
+                    readOnly
+                  />
+                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
+                </div>
+
+                <div className="flex flex-col md:mb-0">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Description
+                  </label>
+                  <input
+                    className="checkbox checkbox-lg m-auto"
+                    data-datatable-check="true"
+                    type="checkbox"
+                    checked={item.showDescription}
+                    onChange={(e) =>
+                      handleItemChange(
+                        index,
+                        "showDescription",
+                        e.target.checked
+                      )
+                    }
+                  />
+                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
+                </div>
+
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    className={`p-2 mt-8 rounded-full ${
+                      formData.items.length > 1
+                        ? "bg-red-100 hover:bg-red-200"
+                        : "bg-gray-200 cursor-not-allowed"
+                    }`}
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={formData.items.length === 1}
+                  >
+                    <FaTrash
+                      className={`${
+                        formData.items.length > 1
+                          ? "text-red-500"
+                          : "text-gray-400"
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
-            </div>
+
+              {item.showDescription && (
+                <div>
+                  <div className="flex flex-col w-80 mb-8">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={item.description || ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "description", e.target.value)
+                      }
+                      className="input border border-gray-300 rounded-md p-2 w-full"
+                    />
+                  </div>
+                </div>
+              )}
+            </>
           ))}
 
           <button
@@ -821,7 +908,8 @@ const OrderForm: React.FC = () => {
               Cancel
             </button>
           </div>
-        </form>
+        </form>  
+
       </div>
     </div>
   );

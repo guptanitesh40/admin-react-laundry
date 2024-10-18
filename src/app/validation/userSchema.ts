@@ -4,7 +4,8 @@ export const userSchema = (isEdit: boolean = false) => {
   return Yup.object().shape({
     first_name: Yup.string().required("First name is required"),
     last_name: Yup.string().required("Last name is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: Yup.string()
+    .email("Enter a valid email"),
     password: isEdit
       ? Yup.string().min(6, "Password must be at least 6 characters")
       : Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),

@@ -17,7 +17,7 @@ const CouponModal: React.FC = () => {
   const [startDate, setStartDate] = useState<Dayjs | null>();
 
   const [formData, setFormData] = useState({
-    code: "",
+    code: null,
     title: "",
     description: "",
     discount_value: null,

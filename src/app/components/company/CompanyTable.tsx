@@ -140,7 +140,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
   };
 
   return (
-    <>
+    <div>
       <div className="inline-block">
         <div className="flex mb-3 items-center gap-2">
           Show
@@ -327,7 +327,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

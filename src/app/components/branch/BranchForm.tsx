@@ -213,7 +213,7 @@ const BranchForm: React.FC = () => {
               Branch Email
             </label>
             <input
-              type="email"
+              type="text"
               id="branch_email"
               name="branch_email"
               value={formData.branch_email}

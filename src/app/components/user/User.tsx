@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import UserTable from "./UserTable";
 import UserModal from "./UserModal";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 
 const User: React.FC = () => {
   const [search, setSearch] = useState<string>("");
@@ -9,7 +11,7 @@ const User: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
-
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleEditUser = (user_id:number) => {
     setEditMode(true);
@@ -22,14 +24,22 @@ const User: React.FC = () => {
     setCurrentUser(null);
   };
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(searchInput);
+    try {
+      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]); 
+      }
+    }
   };
 
   return (
     <div className="container-fixed relative">
-      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
+      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <h1 className="text-xl font-semibold leading-none text-gray-900">
           Users
         </h1>
@@ -66,6 +76,7 @@ const User: React.FC = () => {
             </svg>
           </button>
         </form>
+        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
       </div>
 
       <UserTable

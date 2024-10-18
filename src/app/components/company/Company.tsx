@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CompanyTable from "./CompanyTable";
-import { useGetCompany } from "../../hooks";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 
 interface Company {
   company_id: number;
@@ -13,31 +14,44 @@ interface Company {
 const Company: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const navigate = useNavigate();
-  
+
   const handleAddCompany = () => {
     navigate("/company/add");
   };
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(searchInput);
+    try {
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
   };
 
   return (
-    <div className="container-fixed relative"> 
-          <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
-                Company List
-              </h1>
-            </div>
-            <button onClick={handleAddCompany} className="btn btn-primary">
-              Add Company
-            </button>
-          </div>
+    <div className="container-fixed relative">
+      <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+            Company List
+          </h1>
+        </div>
+        <button onClick={handleAddCompany} className="btn btn-primary">
+          Add Company
+        </button>
+      </div>
 
-          <div className="absolute top-11 right-[2.5rem] mt-2">
+      <div className="absolute top-11 right-[2.5rem] mt-2">
         <form onSubmit={onSearchSubmit} className="w-64 relative flex">
           <input
             type="search"
@@ -65,9 +79,10 @@ const Company: React.FC = () => {
             </svg>
           </button>
         </form>
-          </div>
-     
-          <CompanyTable search={search}/>
+        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
+      </div>
+
+      <CompanyTable search={search} />
     </div>
   );
 };

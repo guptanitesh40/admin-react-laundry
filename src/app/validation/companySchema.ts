@@ -55,7 +55,7 @@ export const companySchema = Yup.object().shape({
 
   email: Yup.string()
     .required("Email is required")
-    .email("Invalid email address")
+    .email("Enter a valid email")
     .test("required", "Email is required", (value) => !!value),
 
     logo: Yup.mixed<FileValue>()

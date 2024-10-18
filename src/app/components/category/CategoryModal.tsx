@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import { useAddCategory } from "../../hooks";
 
 const schema = Yup.object().shape({
-  name: Yup.string().required("Category name is required"),
+  name: Yup.string().required("Category name is required")
+  .max(30, "max length exceeded by 30")
 });
 
 interface CategoryModalProps {

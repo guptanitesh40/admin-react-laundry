@@ -201,7 +201,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("name")}
                       >
-                        Product Name
+                        Product name
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={

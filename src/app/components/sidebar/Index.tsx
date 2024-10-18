@@ -4,6 +4,7 @@ import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from 'react-icons/bi';
 import { RiBuilding2Fill } from "react-icons/ri";
+import { LiaUserCircle } from "react-icons/lia";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -187,7 +188,7 @@ export const Sidebar: React.FC = () => {
               <div className={`menu-item transition-colors duration-200 ${getItemClass('user')}`}>
                 <div className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]" tabIndex={0}>
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaImages color='gray' size={25} />                  
+                    <LiaUserCircle color='gray' size={33}/>                  
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Users

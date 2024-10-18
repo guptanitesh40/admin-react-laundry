@@ -6,14 +6,14 @@ export const branchSchema = Yup.object().shape({
   branch_address: Yup.string().required("Branch address is required"),
 
   branch_manager_id: Yup.string()
-  .test("required", "branch manager id is required", (value) => {
-    if (value === null || value === '') return false; 
-    return true; 
-  })
-  .test("format", "branch manager id must be a number", (value) => {
-    if (value === null || value === '') return true;
-    return /^[0-9]+$/.test(value);
-  }),
+    .test("required", "branch manager id is required", (value) => {
+      if (value === null || value === "") return false;
+      return true;
+    })
+    .test("format", "branch manager id must be a number", (value) => {
+      if (value === null || value === "") return true;
+      return /^[0-9]+$/.test(value);
+    }),
 
   branch_phone_number: Yup.string()
     .nullable()
@@ -25,10 +25,11 @@ export const branchSchema = Yup.object().shape({
       if (value === null || value === "") return false;
       return true;
     }),
-    
+
   branch_email: Yup.string()
-    .required("Branch email is required")
-    .email("Invalid email address"),
+    .required("Email is required")
+    .email("Enter a valid email")
+    .test("required", "Email is required", (value) => !!value),
 
   branch_registration_number: Yup.string()
     .nullable()
