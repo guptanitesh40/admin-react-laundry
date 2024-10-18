@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 const useAddAddress = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addAddress = async (user_id: number, addressData: any) => {
-    const ADD_ADDRESS_URL = `${import.meta.env.VITE_BASE_URL}/address/${user_id}`;
+  const addAddress = async (addressData: any) => {
+    const ADD_ADDRESS_URL = `${import.meta.env.VITE_BASE_URL}/address/admin/`;
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
@@ -16,7 +16,7 @@ const useAddAddress = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: addressData,
+        body: JSON.stringify(addressData),
       });
 
       if (!response.ok) {

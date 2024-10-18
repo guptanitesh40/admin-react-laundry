@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
@@ -16,6 +16,7 @@ import { FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetSingleOrder from "../../hooks/order/useGetSingleOrder";
 import { orderSchema } from "../../validation/orderSchema";
+import AddressModal from "./AddressModal";
 
 interface item {
   category_id: number;
@@ -104,11 +105,18 @@ const OrderForm: React.FC = () => {
   });
 
   useEffect(() => {
-    if (formData.user_id) {
-      fetchAddress(formData.user_id);
-    }
+    const fetchData = async () => {
+      if (formData.user_id) {
+        await fetchAddress(formData.user_id);
+      }
+      if (isSubmit) {
+        await fetchAddress(formData.user_id);
+        setIsSubmit(false);
+      }
+    };
+    fetchData();
     fetchCategories();
-  }, [fetchCategories, fetchPrices, formData.user_id]);
+  }, [fetchCategories, formData.user_id, isSubmit]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -401,7 +409,11 @@ const OrderForm: React.FC = () => {
 
   const handleAddAddress = (e: React.FormEvent) => {
     e.preventDefault();
-    setModalIsOpen(true);
+    if (!formData.user_id) {
+      toast.error("Please select the user to add address");
+    } else {
+      setModalIsOpen(true);
+    }
   };
 
   return (
@@ -465,16 +477,16 @@ const OrderForm: React.FC = () => {
                   {address.map((addr) => (
                     <option key={addr.address_id} value={addr.address_id}>
                       {addr.building_number}, {addr.area}, {addr.landmark},{" "}
-                      {addr.city}, {addr.state}, {addr.pincode}
+                      {addr.city}, {addr.state},{addr.country}, {addr.pincode}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div className="flex flex-col self-center">
-                <button 
-                className="btn btn-primary w-20 ml-2"
-                onClick={handleAddAddress}
+                <button
+                  className="btn btn-primary w-20 ml-2"
+                  onClick={handleAddAddress}
                 >
                   Add address
                 </button>
@@ -908,8 +920,14 @@ const OrderForm: React.FC = () => {
               Cancel
             </button>
           </div>
-        </form>  
+        </form>
 
+        <AddressModal
+          isOpen={modalIsOpen}
+          setIsSubmit={setIsSubmit}
+          onClose={() => setModalIsOpen(false)}
+          userId={formData.user_id}
+        />
       </div>
     </div>
   );
