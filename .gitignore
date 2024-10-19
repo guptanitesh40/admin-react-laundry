@@ -13,7 +13,6 @@ yarn-error.log
 .env.*.local
 
 # Build output
-dist/
 build/
 
 # Dependency directories
