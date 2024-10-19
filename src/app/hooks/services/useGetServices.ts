@@ -63,10 +63,6 @@ const useGetServices = (
     }
   }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
-  useEffect(() => {
-    fetchServices();
-  }, [fetchServices]);
-
   return { services, totalServices, fetchServices, loading };
 };
 

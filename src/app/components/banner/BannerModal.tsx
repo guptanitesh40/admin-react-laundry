@@ -13,7 +13,7 @@ interface BannerModalProps {
     image: string;
   };
   banner_id?: number;
-  setIsSubmit: (value : boolean) => void;
+  setIsSubmit: (value: boolean) => void;
 }
 
 const BannerModal: React.FC<BannerModalProps> = ({
@@ -25,7 +25,6 @@ const BannerModal: React.FC<BannerModalProps> = ({
 }) => {
   const { addBanner, loading: adding } = useAddBanner();
   const { updateBanner, loading: updating } = useUpdateBanner();
-
 
   const [formData, setFormData] = useState({
     title: "",
@@ -55,16 +54,18 @@ const BannerModal: React.FC<BannerModalProps> = ({
     }
   }, [isOpen, bannerData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target;
-  
+
     if (target instanceof HTMLInputElement) {
       const { name, value, files } = target;
-  
+
       if (name === "image" && files && files.length > 0) {
         setFormData((prev) => ({
           ...prev,
-          image: files[0], 
+          image: files[0],
         }));
       } else {
         setFormData((prev) => ({
@@ -74,14 +75,14 @@ const BannerModal: React.FC<BannerModalProps> = ({
       }
     } else if (target instanceof HTMLTextAreaElement) {
       const { name, value } = target;
-      
+
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -96,15 +97,15 @@ const BannerModal: React.FC<BannerModalProps> = ({
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
       if (formData.image instanceof File) {
-        formDataObj.append("image", formData.image); 
+        formDataObj.append("image", formData.image);
       }
 
-      if (banner_id) { 
-         await updateBanner(banner_id, formDataObj);
-         setIsSubmit(true);
+      if (banner_id) {
+        await updateBanner(banner_id, formDataObj);
+        setIsSubmit(true);
       } else {
-         await addBanner(formDataObj);
-         setIsSubmit(true);
+        await addBanner(formDataObj);
+        setIsSubmit(true);
       }
 
       onClose();
@@ -125,18 +126,24 @@ const BannerModal: React.FC<BannerModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
+      <div
+        className="fixed inset-0 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
+
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
-      <button className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default" data-modal-dismiss="true"
-      onClick={onClose}
-      >
-          <i className="ki-filled ki-cross">
-          </i>
-         </button>
+        <button
+          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
+          data-modal-dismiss="true"
+          onClick={onClose}
+        >
+          <i className="ki-filled ki-cross"></i>
+        </button>
         <h1 className="text-2xl font-bold mb-6">
           {banner_id ? "Edit Banner" : "Add Banner"}
         </h1>
         <form onSubmit={handleSubmit}>
+          
           <div className="flex flex-col mb-4">
             <label className="mb-2 font-semibold" htmlFor="title">
               Title
@@ -169,7 +176,6 @@ const BannerModal: React.FC<BannerModalProps> = ({
             </p>
           </div>
 
-          
           <div className="flex flex-col">
             <label className="mb-2 font-semibold" htmlFor="image">
               Image
@@ -195,13 +201,13 @@ const BannerModal: React.FC<BannerModalProps> = ({
               }`}
               disabled={adding || updating}
             >
-               {adding || updating
+              {adding || updating
                 ? adding
                   ? "Adding..."
                   : "Updating..."
                 : banner_id
-                  ? "Update Banner"
-                  : "Add Banner"}               
+                ? "Update Banner"
+                : "Add Banner"}
             </button>
             <button
               type="button"
@@ -212,6 +218,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
               Cancel
             </button>
           </div>
+
         </form>
       </div>
     </div>

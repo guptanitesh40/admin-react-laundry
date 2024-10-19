@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import CouponTable from "./CouponTable";
 import { useNavigate } from "react-router-dom";
-
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 
 Modal.setAppElement("#root");
 
@@ -10,20 +11,30 @@ const Coupon: React.FC = () => {
   
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const navigate = useNavigate();
  
   const handleAddCoupon = () => {
     navigate("/coupon/add");
   };
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(searchInput);
+    try {
+      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]); 
+      }
+    }
   };
 
   return (
     <div className="container-fixed relative">
-      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
+      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <h1 className="text-xl font-semibold leading-none text-gray-900">
           Coupons
         </h1>
@@ -60,6 +71,7 @@ const Coupon: React.FC = () => {
             </svg>
           </button>
         </form>
+        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
       </div>
 
       <CouponTable search={search} />

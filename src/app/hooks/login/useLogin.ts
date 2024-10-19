@@ -7,35 +7,39 @@ const useLogin = () => {
 
   const login = useCallback(
     async (username: string, password: string, roleId: number, deviceType: string, deviceToken: string): Promise<boolean> => {
+      const token = localStorage.getItem('authToken');
       setLoading(true);
 
       try {
         const response = await fetch(LOGIN_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ username, password, role_id: roleId, device_type: deviceType, device_token: deviceToken }),
         });
 
         const result = await response.json();
-        const { statusCode, message } = result;
+        const { statusCode, message, data } = result;
 
         if (!response.ok) {
           toast.error(message, { position: 'top-center' });
           return false;
         }
 
-        const token = result.data?.token;
+        const authToken = data?.token;
 
-        if (statusCode === 200 && token) {
-          localStorage.setItem('authToken', token);
-          toast.success(message || 'Login successful!', { position: 'top-center' });
+        if (statusCode === 200 && authToken) {
+          localStorage.setItem('authToken', authToken);
+          toast.success(message, { position: 'top-center' });
           return true;
         }
 
-        toast.error(message || 'Login failed. Please try again.', { position: 'top-center' });
+        toast.error(message, { position: 'top-center' });
         return false;
-      } catch (error) {
-        toast.error('An error occurred during login. Please try again.', { position: 'top-center' });
+      } catch (error: any) {
+        toast.error(error?.message, { position: 'top-center' });
         return false;
       } finally {
         setLoading(false);

@@ -15,7 +15,6 @@ const useAddPrice = () => {
 
   const addPrice = async (priceData: PriceData[]) => {
     const token = localStorage.getItem('authToken');
-    
     if (priceData.length === 0) {
       toast.error("No changes detected. Please provide a price to save.", { position: 'top-center' });
       return false;

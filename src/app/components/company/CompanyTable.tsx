@@ -21,6 +21,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+  
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
@@ -69,8 +70,6 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
         } else {
           Swal.fire(message);
         }
-      } else {
-        Swal.fire("Cancelled", "The company is safe :)", "info");
       }
     } catch (error: any) {
       Swal.fire({
@@ -141,7 +140,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
   };
 
   return (
-    <>
+    <div>
       <div className="inline-block">
         <div className="flex mb-3 items-center gap-2">
           Show
@@ -328,7 +327,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

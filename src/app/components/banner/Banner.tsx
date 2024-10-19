@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BannerTable from "./BannerTable";
 import BannerModal from "./BannerModal";
 

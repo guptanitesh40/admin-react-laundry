@@ -43,12 +43,10 @@ const useAddCompany = () => {
       toast.success(data.message, { position: 'top-center' });
       return true;
 
-    } catch (err: any) {
-      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        toast.error('Network error: Failed to fetch.', { position: 'top-center' });
-      } else {
-        toast.error('An unexpected error occurred.', { position: 'top-center' });
-      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Network error: Failed to fetch.', {
+        position: "top-center",
+      });
       return false;
     } finally {
       setLoading(false);

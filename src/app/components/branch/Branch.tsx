@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BranchTable from "./BranchTable";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 
 interface Branch {
   branch_id: number;
@@ -17,33 +19,41 @@ interface Branch {
 const Branch: React.FC = () => {
   const navigate = useNavigate();
 
-  const [search,setSearch] = useState<string >("");
-  const [searchInput,setSearchInput] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleAddBranch = () => {
     navigate("/branch/add");
   };
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(searchInput);
+    try {
+      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]); 
+      }
+    }
   };
 
   return (
     <div className="container-fixed relative">
-     
-          <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
-            <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
-                Branch List
-              </h1>
-            </div>
-            <button onClick={handleAddBranch} className="btn btn-primary">
-              Add Branch
-            </button>
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-semibold leading-none text-gray-900 py-3">
+            Branch List
+          </h1>
+        </div>
+        <button onClick={handleAddBranch} className="btn btn-primary">
+          Add Branch
+        </button>
+      </div>
 
-          <div className="absolute top-11 right-[2.5rem] mt-2">
+      <div className="absolute top-11 right-[2.5rem] mt-2">
         <form onSubmit={onSearchSubmit} className="w-64 relative flex">
           <input
             type="search"
@@ -71,9 +81,10 @@ const Branch: React.FC = () => {
             </svg>
           </button>
         </form>
-          </div>
+        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
+      </div>
 
-          <BranchTable search={search}/>
+      <BranchTable search={search} />
     </div>
   );
 };

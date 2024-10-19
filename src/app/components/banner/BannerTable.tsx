@@ -5,7 +5,7 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useDeleteBanner, useGetBanner } from "../../hooks";
+import { useDeleteBanner, useGetBanner, useGetUsers } from "../../hooks";
 import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
@@ -166,6 +166,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
           per page
         </div>
       </div>
+
       <div className="grid gap-5 lg:gap-7.5">
         <div className="card card-grid min-w-full">
           <div className="card-body">
@@ -304,6 +305,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
           </div>
         </div>
       </div>
+
       {totalBanners > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">

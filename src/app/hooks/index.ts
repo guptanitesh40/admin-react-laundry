@@ -1,19 +1,22 @@
 export { default as useGetCategories } from './categories/useGetCategories';
 export { default as useAddCategory } from './categories/useAddCategory';
+export { default as useGetCategory } from './categories/useGetCategory';
 export { default as useDeleteCategory } from './categories/useDeleteCategory';
 export { default as useUpdateCategory } from './categories/useUpdateCategory';
 
 export { default as useGetProducts } from './products/useGetProducts';
+export { default as useGetProductsOnId } from './products/useGetProductOnId';
 export { default as useAddProduct } from './products/useAddProduct';
 export { default as useDeleteProduct } from './products/useDeleteProduct';
 export { default as useUpdateProduct } from './products/useUpdateProduct';
 
 export { default as useGetServices } from './services/useGetServices';
+export { default as useGetServicesOnId } from './services/useGetServiceOnId';
 export { default as useAddService } from './services/useAddService';
 export { default as useDeleteService } from './services/useDeleteService';
 export { default as useUpdateService } from './services/useUpdateService';
 
-export { default as useFetchCoupon } from './coupon/useFetchCoupon';
+export { default as useFetchCoupons } from './coupon/useFetchCoupons';
 export { default as useAddCoupon } from './coupon/useAddCoupon';
 export { default as useDeleteCoupon } from './coupon/useDeleteCoupon';
 export { default as useUpdateCoupon } from './coupon/useUpdateCoupon';
@@ -35,3 +38,15 @@ export { default as useGetBanner } from './banner/useGetBanner';
 export { default as useAddBanner} from './banner/useAddBanner';
 export { default as useDeleteBanner } from './banner/useDeleteBanner';
 export { default as useUpdateBanner } from './banner/useUpdateBanner';
+
+export { default as useGetOrder} from './order/useGetOrder';
+export { default as useAddOrder} from './order/useAddOrder';
+export { default as useDeleteOrder } from './order/useDeleteOrder';
+export { default as useUpdateOrder } from './order/useUpdateOrder';
+
+export { default as useGetUsers} from './user/useGetUsers';
+export { default as useAddUser} from './user/useAddUser';
+export { default as useDeleteUser } from './user/useDeleteUser';
+export { default as useUpdateUser } from './user/useUpdateUser';
+
+export { default as useGetAddress } from './address/useGetAddress';

@@ -48,9 +48,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
   isSave,
   setIsSave,
 }) => {
-  const { categories } = useGetCategories();
-  const { products } = useGetProducts();
-  const { services } = useGetServices();
+  const { categories, fetchCategories } = useGetCategories();
+  const { products, fetchProducts } = useGetProducts();
+  const { services, fetchServices } = useGetServices();
   const { prices, loading, fetchPrices } = useGetPrice();
   const { addPrice } = useAddPrice();
 
@@ -62,6 +62,12 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+    fetchServices();
+  },[fetchCategories, fetchProducts, fetchServices])
 
   const getCombinations = useCallback(
     (
@@ -93,27 +99,26 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   const combinations = getCombinations(categories, products, services, prices);
 
-  const filteredCombinations = combinations.filter((combination) => {
-    const searchLower = search.toLowerCase();
-    return (
-      combination.category.name.toLowerCase().includes(searchLower) ||
-      combination.product.name.toLowerCase().includes(searchLower) ||
-      combination.service.name.toLowerCase().includes(searchLower)
-    );
-  }).sort((a: any,b: any) => {
-    if(["category", "product", "service"].includes(sortColumn)) {
+  const filteredCombinations = combinations
+    .filter((combination) => {
+      const searchLower = search.toLowerCase();
+      return (
+        combination.category.name.toLowerCase().includes(searchLower) ||
+        combination.product.name.toLowerCase().includes(searchLower) ||
+        combination.service.name.toLowerCase().includes(searchLower)
+      );
+    })
+    .sort((a: any, b: any) => {
+      if (["category", "product", "service"].includes(sortColumn)) {
         return sortOrder === "ASC"
-        ? a[sortColumn].name.localeCompare(b[sortColumn].name)
-        : b[sortColumn].name.localeCompare(a[sortColumn].name)      
-    }
-    if(sortColumn === "price")
-      {
-          return sortOrder === "ASC"
-          ? a.price - b.price
-          : b.price - a.price
+          ? a[sortColumn].name.localeCompare(b[sortColumn].name)
+          : b[sortColumn].name.localeCompare(a[sortColumn].name);
       }
-    return 0;
-  })
+      if (sortColumn === "price") {
+        return sortOrder === "ASC" ? a.price - b.price : b.price - a.price;
+      }
+      return 0;
+    });
 
   const handleEditClick = (key: string) => {
     setEditing((prev) => {
@@ -132,7 +137,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -211,9 +216,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
                     >
                       <thead>
                         <tr>
-                          <th className="w-[100px]">                            
-                            Id                            
-                          </th>
+                          <th className="w-[100px]">Id</th>
                           <th className="min-w-[200px]">
                             <div
                               className="flex justify-between cursor-pointer"
@@ -257,7 +260,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                 />
                                 <FaArrowUpLong
                                   color={
-                                    sortColumn === "banner_id" &&
+                                    sortColumn === "product" &&
                                     sortOrder === "DESC"
                                       ? "gray"
                                       : "lightgray"
@@ -292,8 +295,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
                               </div>
                             </div>
                           </th>
-                          <th className="w-[200px]">
-                          <div
+                          
+                          <th className="min-w-[200px]">
+                            <div
                               className="flex justify-between cursor-pointer"
                               onClick={() => handleSort("price")}
                             >

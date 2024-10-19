@@ -1,7 +1,13 @@
 import * as Yup from "yup";
 
 export const couponSchema = Yup.object().shape({
-  code: Yup.string().required("Please enter coupon value"),
+  code: Yup.string()
+  .required("Please enter coupon value") 
+  .test("required", "Please enter coupon value", (value) => !!value)
+  .min(3, "Coupon code must be at least 3 characters long")
+  .max(30, "Coupon code cannot be more than 30 characters")
+  .matches(/^[a-zA-Z0-9]*$/, "Coupon code can only contain letters and numbers") 
+  .nullable(),
   title: Yup.string().required("Please enter title value"),
   description: Yup.string(),
   discount_value: Yup.number()

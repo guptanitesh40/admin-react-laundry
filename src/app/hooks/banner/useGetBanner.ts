@@ -4,12 +4,6 @@ import toast, { Toast } from "react-hot-toast";
 const GET_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners`;
 const token = localStorage.getItem("authToken");
 
-interface Banner {
-  banner_id: number;
-  title: string;
-  description: string;
-  image: string;
-}
 
 const useGetBanner = (
   pageNumber: number = 1,
@@ -18,7 +12,7 @@ const useGetBanner = (
   sortColumn?: string,
   sortOrder?: string
 ) => {
-  const [banners, setBanners] = useState<Banner[]>([]);
+  const [banners, setBanners] = useState([]);
   const [totalBanners, setTotalBanners] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 

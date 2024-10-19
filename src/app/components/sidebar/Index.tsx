@@ -4,6 +4,8 @@ import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from 'react-icons/bi';
 import { RiBuilding2Fill } from "react-icons/ri";
+import { LiaUserCircle } from "react-icons/lia";
+import { HiMiniPencilSquare } from "react-icons/hi2";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -165,6 +167,32 @@ export const Sidebar: React.FC = () => {
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Banner
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/orders" onClick={() => handleItemClick('orders')}>
+              <div className={`menu-item transition-colors duration-200 ${getItemClass('orders')}`}>
+                <div className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]" tabIndex={0}>
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <HiMiniPencilSquare color='gray'size={31}/>              
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Orders
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/user" onClick={() => handleItemClick('user')}>
+              <div className={`menu-item transition-colors duration-200 ${getItemClass('user')}`}>
+                <div className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]" tabIndex={0}>
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <LiaUserCircle color='gray' size={33}/>                  
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Users
                   </span>
                 </div>
               </div>
