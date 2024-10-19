@@ -13,8 +13,8 @@ yarn-error.log
 .env.*.local
 
 # Build output
-dist/
 build/
+dist/media
 
 # Dependency directories
 jspm_packages/
