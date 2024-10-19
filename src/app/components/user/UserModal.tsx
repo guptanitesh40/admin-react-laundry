@@ -119,7 +119,7 @@ const UserModal: React.FC<UserModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="first_name">
+              <label htmlFor="first_name" className="mb-2 font-semibold">
                 First Name
               </label>
               <input
@@ -138,7 +138,7 @@ const UserModal: React.FC<UserModalProps> = ({
             </div>
 
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="last_name">
+              <label htmlFor="last_name" className="mb-2 font-semibold">
                 Last Name
               </label>
               <input
@@ -159,7 +159,7 @@ const UserModal: React.FC<UserModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="email">
+              <label htmlFor="email" className="mb-2 font-semibold">
                 Email
               </label>
               <input
@@ -176,7 +176,7 @@ const UserModal: React.FC<UserModalProps> = ({
             </div>
 
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="mobile_number">
+              <label htmlFor="mobile_number" className="mb-2 font-semibold">
                 Mobile Number
               </label>
               <input
@@ -197,7 +197,7 @@ const UserModal: React.FC<UserModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="password">
+              <label htmlFor="password" className="mb-2 font-semibold">
                 Password
               </label>
               <input
@@ -248,7 +248,7 @@ const UserModal: React.FC<UserModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="password">
+              <label className="mb-2 font-semibold">
                 Gender
               </label>
               <div className="flex space-x-4">
@@ -308,7 +308,7 @@ const UserModal: React.FC<UserModalProps> = ({
 
             {!user_id && (
               <div className="flex flex-col">
-                <label className="mb-2 font-semibold" htmlFor="otp">
+                <label  htmlFor="otp" className="mb-2 font-semibold">
                   Enter OTP
                 </label>
                 <div className="flex">

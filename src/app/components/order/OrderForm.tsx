@@ -426,12 +426,13 @@ const OrderForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="flex gap-6">
             <div className="relative flex flex-col flex-[0_0_40%]">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
                 User Name
               </label>
 
               <input
                 type="text"
+                id="username"
                 value={userSearch || ""}
                 onChange={handleInputChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
@@ -463,10 +464,11 @@ const OrderForm: React.FC = () => {
 
             <div className="grow flex">
               <div className="grow flex flex-col">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
                   Address Details
                 </label>
                 <select
+                  id="address"
                   value={formData.address_id ?? ""}
                   onChange={handleAddressChange}
                   className="select border border-gray-300 rounded-md p-2 w-full text-sm"
@@ -507,10 +509,11 @@ const OrderForm: React.FC = () => {
                 className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
               >
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                  <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
                     Category
                   </label>
                   <select
+                    id="category"
                     value={item.category_id ?? ""}
                     onChange={(e) =>
                       handleItemChange(index, "category_id", e.target.value)
@@ -532,10 +535,11 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                  <label htmlFor="product" className="block text-gray-700 text-sm font-bold mb-2">
                     Product
                   </label>
                   <select
+                    id="product"
                     value={item.product_id ?? ""}
                     onChange={(e) =>
                       handleItemChange(index, "product_id", e.target.value)
@@ -560,10 +564,11 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                  <label htmlFor="service" className="block text-gray-700 text-sm font-bold mb-2">
                     Service
                   </label>
                   <select
+                    id="service"
                     value={item.service_id ?? ""}
                     onChange={(e) =>
                       handleItemChange(index, "service_id", e.target.value)
@@ -644,11 +649,12 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                  <label htmlFor="description_checkbox" className="block text-gray-700 text-sm font-bold mb-2">
                     Description
                   </label>
                   <input
                     className="checkbox checkbox-lg m-auto"
+                    id="description_checkbox"
                     data-datatable-check="true"
                     type="checkbox"
                     checked={item.showDescription}
@@ -688,10 +694,11 @@ const OrderForm: React.FC = () => {
               {item.showDescription && (
                 <div>
                   <div className="flex flex-col w-80 mb-8">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                    <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
                       Description
                     </label>
                     <textarea
+                      id="description"
                       value={item.description || ""}
                       onChange={(e) =>
                         handleItemChange(index, "description", e.target.value)
@@ -766,11 +773,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="express_delivery_charges" className="block text-gray-700 text-sm font-bold mb-2">
                 Express Delivery Charges
               </label>
               <input
                 type="text"
+                id="express_delivery_charges"
                 min="0"
                 value={formData.express_delivery_charges || ""}
                 onChange={(e) =>
@@ -784,11 +792,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="shipping_charges" className="block text-gray-700 text-sm font-bold mb-2">
                 Shipping Charges
               </label>
               <input
                 type="text"
+                id="shipping_charges"
                 min="0"
                 value={formData.shipping_charges || ""}
                 onChange={(e) =>
@@ -817,11 +826,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="paid_amount" className="block text-gray-700 text-sm font-bold mb-2">
                 Paid amount
               </label>
               <input
                 type="text"
+                id="paid_amount"
                 value={formData.paid_amount || ""}
                 onChange={(e) =>
                   setFormData({
@@ -839,11 +849,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="payment_method" className="block text-gray-700 text-sm font-bold mb-2">
                 Payment Method
               </label>
               <select
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                id="payment_method"
                 value={formData.payment_type ?? ""}
                 onChange={(e) =>
                   setFormData({
@@ -864,11 +875,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="payment_status" className="block text-gray-700 text-sm font-bold mb-2">
                 Payment Status
               </label>
               <select
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                id="payment_status"
                 value={formData.payment_status ?? ""}
                 onChange={(e) =>
                   setFormData({
@@ -890,11 +902,12 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="transaction_id" className="block text-gray-700 text-sm font-bold mb-2">
                 Transaction ID
               </label>
               <input
                 type="text"
+                id="transaction_id"
                 value={formData.transaction_id || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, transaction_id: e.target.value })

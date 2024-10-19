@@ -98,11 +98,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">
+              <label htmlFor="building_number" className="block text-gray-700 font-semibold">
                 Building Number
               </label>
               <input
                 type="text"
+                id="building_number"
                 name="building_number"
                 value={addressData.building_number}
                 onChange={(e) =>
@@ -116,9 +117,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">Area</label>
+              <label htmlFor="area" className="block text-gray-700 font-semibold">Area</label>
               <input
                 type="text"
+                id="area"
                 name="area"
                 value={addressData.area}
                 onChange={(e) =>
@@ -132,11 +134,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">
+              <label htmlFor="landmark" className="block text-gray-700 font-semibold">
                 Landmark
               </label>
               <input
                 type="text"
+                id="landmark"
                 name="landmark"
                 value={addressData.landmark}
                 onChange={(e) =>
@@ -150,11 +153,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">
+              <label htmlFor="pincode" className="block text-gray-700 font-semibold">
                 Pin code
               </label>
               <input
                 type="text"
+                id="pincode"
                 name="pincode"
                 value={addressData.pincode}
                 onChange={(e) =>
@@ -169,9 +173,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">City</label>
+              <label htmlFor="city" className="block text-gray-700 font-semibold">City</label>
               <input
                 type="text"
+                id="city"
                 name="city"
                 value={addressData.city}
                 onChange={(e) =>
@@ -185,10 +190,11 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">State</label>
+              <label htmlFor="state" className="block text-gray-700 font-semibold">State</label>
               <input
                 type="text"
-                name="city"
+                id="state"
+                name="state"
                 value={addressData.state}
                 onChange={(e) =>
                   setAddressData({
@@ -201,12 +207,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 font-semibold">
+              <label htmlFor="country" className="block text-gray-700 font-semibold">
                 Country
               </label>
               <input
                 type="text"
-                name="city"
+                id="country"
+                name="country"
                 value={addressData.country}
                 onChange={(e) =>
                   setAddressData({

@@ -4,8 +4,9 @@ import toast from "react-hot-toast";
 import { useAddCategory } from "../../hooks";
 
 const schema = Yup.object().shape({
-  name: Yup.string().required("Category name is required")
-  .max(30, "max length exceeded by 30")
+  name: Yup.string()
+    .required("Category name is required")
+    .max(30, "Maximum length of 30 characters exceeded"),
 });
 
 interface CategoryModalProps {
@@ -35,7 +36,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     try {
       await schema.validate(formData, { abortEarly: false });
       await addCategory(formData.name);
-      setIsSubmit(true); 
+      setIsSubmit(true);
       onClose();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -53,12 +54,17 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   return (
     isOpen && (
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
+        <div
+          className="fixed inset-0 bg-black opacity-50"
+          onClick={onClose}
+        ></div>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 z-10 relative">
           <h1 className="text-2xl font-bold mb-6">Add Category</h1>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col mb-4">
-              <label className="mb-2 font-semibold" htmlFor="name">Name</label>
+              <label className="mb-2 font-semibold" htmlFor="name">
+                Name
+              </label>
               <input
                 type="text"
                 id="name"
@@ -68,14 +74,16 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                   setFormData({ ...formData, name: e.target.value })
                 }
                 className="input border border-gray-300 rounded-md p-2"
-                disabled={adding} 
+                disabled={adding}
               />
               <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
             </div>
             <div className="flex gap-4 mt-4">
               <button
                 type="submit"
-                className={`btn btn-primary ${adding ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`btn btn-primary ${
+                  adding ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 disabled={adding}
               >
                 {adding ? "Adding..." : "Add Category"}
@@ -84,7 +92,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                 type="button"
                 className="btn btn-light"
                 onClick={onClose}
-                disabled={adding} 
+                disabled={adding}
               >
                 Cancel
               </button>
