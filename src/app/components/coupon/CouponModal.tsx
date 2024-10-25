@@ -226,8 +226,8 @@ const CouponModal: React.FC = () => {
                 <option value="" disabled>
                   Select Discount Type
                 </option>
-                <option value={2}>Flat</option>
-                <option value={1}>Percentage</option>
+                <option value={1}>Flat</option>
+                <option value={2}>Percentage</option>
               </select>
               <p className="text-red-500 text-sm">
                 {errors.discount_type || "\u00A0"}

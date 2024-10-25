@@ -1,7 +1,7 @@
 const EnterOtp = () => {
   return (
     <>
-      <h2>Enter Otp </h2>
+      <h2>Enter Otp</h2>
     </>
   );
 };
