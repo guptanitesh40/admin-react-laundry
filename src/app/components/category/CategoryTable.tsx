@@ -37,7 +37,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParams = searchParams.get("page");
@@ -235,24 +235,22 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                       </div>
                     </th>
                     <th className="min-w-[165px]">
-                    <div
+                      <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("name")}
                       >
-                        Category name
+                        Category Name
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "name" &&
-                              sortOrder === "ASC"
+                              sortColumn === "name" && sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "name" &&
-                              sortOrder === "DESC"
+                              sortColumn === "name" && sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }

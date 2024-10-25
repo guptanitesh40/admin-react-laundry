@@ -21,9 +21,20 @@ const UserModal: React.FC<UserModalProps> = ({
   const { addUser, loading: adding } = useAddUser();
   const { updateUser, loading: updating } = useUpdateUser();
 
-  const { user } = useGetUser(user_id);
-  
+  const { user, fetchUser } = useGetUser();
+
   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    mobile_number: "",
+    gender: null,
+    role_id: null,
+    otp: "",
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
@@ -37,9 +48,14 @@ const UserModal: React.FC<UserModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isOpen) {
-      if (user) {
-        setFormData({
+    if (isOpen && user_id) {
+      fetchUser(user_id);
+    }
+  }, [isOpen, user_id]);
+
+  useEffect(() => {
+    if (isOpen && user && user_id) {
+      const fetchedData = {
           ...formData,
           first_name: user.first_name,
           last_name: user.last_name,
@@ -48,7 +64,10 @@ const UserModal: React.FC<UserModalProps> = ({
           mobile_number: user.mobile_number,
           gender: user.gender,
           role_id: user.role_id,
-        });
+        }
+
+        setFormData(fetchedData);
+        setInitialFormData(fetchedData);
       } else {
         setFormData({
           first_name: "",
@@ -60,21 +79,39 @@ const UserModal: React.FC<UserModalProps> = ({
           role_id: null,
           otp: "",
         });
-      }
-    } else {
-      setErrors({});
-    }
-  }, [isOpen, user]);
+        setInitialFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+          mobile_number: "",
+          gender: null,
+          role_id: null,
+          otp: "",
+        });
+        setErrors({});
+      }  
+  }, [isOpen, user, user_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    
     e.preventDefault();
+
     try {
       const schema = userSchema(!!user_id);
-
       await schema.validate(formData, {
         abortEarly: false,
       });
+
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
+          return formData[key] !== initialFormData[key];
+        });
+      };
+
+      if (!isDataChanged()) {             
+        onClose();
+        return; 
+      }
 
       if (user_id) {
         await updateUser(user_id, formData);
@@ -126,7 +163,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 type="text"
                 id="first_name"
                 name="first_name"
-                value={formData.first_name}
+                value={formData.first_name || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, first_name: e.target.value })
                 }
@@ -145,7 +182,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 type="text"
                 id="last_name"
                 name="last_name"
-                value={formData.last_name}
+                value={formData.last_name || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, last_name: e.target.value })
                 }
@@ -166,7 +203,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 type="text"
                 id="email"
                 name="email"
-                value={formData.email}
+                value={formData.email || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
@@ -183,7 +220,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 type="text"
                 id="mobile_number"
                 name="mobile_number"
-                value={formData.mobile_number}
+                value={formData.mobile_number || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, mobile_number: e.target.value })
                 }
@@ -204,7 +241,7 @@ const UserModal: React.FC<UserModalProps> = ({
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }

@@ -5,15 +5,16 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useDeleteBanner, useGetBanner, useGetUsers } from "../../hooks";
+import { useDeleteBanner, useGetBanners, } from "../../hooks";
 import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import TableShimmer from "../shimmer/TableShimmer";
+import { BannerType } from "../../../types/enums";
 
 interface BannerTableProps {
   search: string;
-  setEditBanner: (banner: any) => void;
+  setEditBanner: (banner_id: number) => void;
   isSubmit: boolean;
   setIsSubmit: (value : boolean) => void;
 }
@@ -34,7 +35,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
   const pageFromParams = searchParams.get("page");
   const perPageFromParams = searchParams.get("perPage");
 
-  const { banners, fetchBanners, totalBanners, loading } = useGetBanner(
+  const { banners, fetchBanners, totalBanners, loading } = useGetBanners(
     currentPage,
     perPage,
     search,
@@ -254,6 +255,30 @@ const BannerTable: React.FC<BannerTableProps> = ({
                         </div>
                       </div>
                     </th>
+                    <th className="w-[160px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("banner_type")}
+                      >
+                        Banner type
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "banner_type" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "banner_type" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th>
                     <th className="w-[125px]">Actions</th>
                   </tr>
                 </thead>
@@ -275,9 +300,16 @@ const BannerTable: React.FC<BannerTableProps> = ({
                           {banner.description}
                         </td>
                         <td>
+                          {
+                            BannerType[
+                              banner.banner_type as unknown as keyof typeof BannerType
+                            ]
+                          }
+                        </td>
+                        <td>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditBanner(banner)}
+                            onClick={() => setEditBanner(banner.banner_id)}
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>

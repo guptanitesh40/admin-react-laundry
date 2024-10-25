@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
-  useFetchCoupons,
   useGetAddress,
   useGetCategories,
+  useGetCoupons,
   useGetPrice,
   useGetProductsOnId,
   useGetServicesOnId,
@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGetSingleOrder from "../../hooks/order/useGetSingleOrder";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 
 interface item {
   category_id: number;
@@ -55,7 +56,6 @@ const OrderForm: React.FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [users, setUsers] = useState([]);
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const { id } = useParams<{ id: string }>();
@@ -69,8 +69,8 @@ const OrderForm: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
-  const { fetchCustomers } = useGetCustomer();
-  const { coupons } = useFetchCoupons(pageNumber, perPage);
+  const { users, fetchUsersByRole } = useGetUsersByRole();
+  const { coupons } = useGetCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
   const { address, fetchAddress } = useGetAddress();
 
@@ -104,6 +104,11 @@ const OrderForm: React.FC = () => {
     ],
   });
 
+  const [retrivedData, setRetrivedData] = useState<FormData | null>(null);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+
   useEffect(() => {
     const fetchData = async () => {
       if (formData.user_id) {
@@ -118,16 +123,11 @@ const OrderForm: React.FC = () => {
     fetchCategories();
   }, [fetchCategories, formData.user_id, isSubmit]);
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (userSearch && isSearchMode) {
-        const userData = await fetchCustomers(userSearch);
-        setUsers(userData);
-      } else {
-        setUsers([]);
-      }
+        await fetchUsersByRole(5,userSearch);
+      } 
     };
     fetchUserData();
   }, [userSearch, isSearchMode]);
@@ -167,41 +167,9 @@ const OrderForm: React.FC = () => {
       };
 
       const calculatedSubTotal = calculateSubTotal(initialFormData);
-
-      setFormData({
-        ...initialFormData,
-        sub_total: calculatedSubTotal,
-      });
-    } else {
-      const initialFormData: FormData = {
-        coupon_code: "",
-        coupon_discount: null,
-        express_delivery_charges: null,
-        shipping_charges: null,
-        payment_type: null,
-        order_status: 1,
-        payment_status: null,
-        sub_total: null,
-        paid_amount: null,
-        transaction_id: "",
-        address_id: null,
-        username: "",
-        user_id: null,
-        items: [
-          {
-            category_id: null,
-            product_id: null,
-            service_id: null,
-            description: null,
-            price: null,
-            quantity: 1,
-            item_Total: null,
-            showDescription: false,
-          },
-        ],
-      };
-      setFormData(initialFormData);
-    }
+      setFormData({...initialFormData,sub_total: calculatedSubTotal});
+      setRetrivedData({ ...initialFormData, sub_total: calculatedSubTotal });
+      }
   }, [order]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -229,10 +197,21 @@ const OrderForm: React.FC = () => {
         order_status: Number(formData.order_status),
         items: formattedItems,
       };
-
-      let success;
+     
       await orderSchema.validate(dataToValidate, { abortEarly: false });
 
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {  
+          return formData[key] !== retrivedData[key];
+        });
+      };
+
+      if (!isDataChanged()) { 
+        navigate("/orders"); 
+        return;
+      }
+
+      let success;
       if (order) {
         success = await updateOrder(order_id, dataToValidate);
       } else {
@@ -255,7 +234,7 @@ const OrderForm: React.FC = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserSearch(e.target.value);
     setIsSearchMode(true);
   };
@@ -434,7 +413,7 @@ const OrderForm: React.FC = () => {
                 type="text"
                 id="username"
                 value={userSearch || ""}
-                onChange={handleInputChange}
+                onChange={handleSearchChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
                 placeholder="Search User..."
               />

@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../utils/authSlice";
 
+const user = JSON.parse(localStorage.getItem("user"));
+
 export const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -86,13 +88,13 @@ export const Header: React.FC = () => {
                     />
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-800 font-semibold leading-none">
-                        Cody Fisher
+                        {user.first_name} {user.last_name}
                       </span>
-                      <a
-                        className="text-xs text-gray-600 hover:text-primary font-medium leading-none"
+                      <span
+                        className="text-xs text-gray-600 font-medium leading-none"
                       >
-                        c.fisher@gmail.com
-                      </a>
+                        {user.email}
+                      </span>
                     </div>
                   </div>
                 </div>

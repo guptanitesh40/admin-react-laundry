@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { useAddBanner, useUpdateBanner } from "../../hooks";
+import { useAddBanner, useGetBanner, useUpdateBanner } from "../../hooks";
 import { bannerSchema } from "../../validation/bannerSchema";
 import * as Yup from "yup";
 
 interface BannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  bannerData?: {
-    title: string;
-    description: string;
-    image: string;
-  };
   banner_id?: number;
   setIsSubmit: (value: boolean) => void;
 }
@@ -19,40 +14,62 @@ interface BannerModalProps {
 const BannerModal: React.FC<BannerModalProps> = ({
   isOpen,
   onClose,
-  bannerData,
   banner_id,
   setIsSubmit,
 }) => {
   const { addBanner, loading: adding } = useAddBanner();
   const { updateBanner, loading: updating } = useUpdateBanner();
+  const { banner, fetchBanner } = useGetBanner();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     image: "" as string | File,
+    banner_type:null,
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
+    title: "",
+    description: "",
+    image: "" as string | File,
+    banner_type: null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isOpen) {
-      if (bannerData) {
-        setFormData({
-          title: bannerData.title,
-          description: bannerData.description,
-          image: bannerData.image,
-        });
-      } else {
-        setFormData({
-          title: "",
-          description: "",
-          image: "",
-        });
-      }
+    if (isOpen && banner_id) {
+      fetchBanner(banner_id);
+    }
+  }, [isOpen, banner_id]);
+
+  useEffect(() => {
+    if (isOpen && banner && banner_id) {
+      const fetchedData = {
+        title: banner.title,
+        description: banner.description,
+        image: banner.image,
+        banner_type: banner.banner_type,
+      };
+  
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
     } else {
+      setFormData({
+        title: "",
+        description: "",
+        image: "",
+        banner_type: null,
+      });
+      setInitialFormData({
+        title: "",
+        description: "",
+        image: "",
+        banner_type: null,
+      });
       setErrors({});
     }
-  }, [isOpen, bannerData]);
+  }, [isOpen, banner, banner_id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -93,12 +110,27 @@ const BannerModal: React.FC<BannerModalProps> = ({
         abortEarly: false,
       });
 
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
+          if (key === "image") {
+            return formData.image instanceof File || formData.image !== initialFormData.image;
+          }
+          return formData[key] !== initialFormData[key];
+        });
+      };
+            
+      if (!isDataChanged()) {             
+        onClose();
+        return; 
+      }
+
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
       if (formData.image instanceof File) {
         formDataObj.append("image", formData.image);
       }
+      formDataObj.append("banner_type", formData.banner_type);
 
       if (banner_id) {
         await updateBanner(banner_id, formDataObj);
@@ -131,7 +163,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -192,6 +224,68 @@ const BannerModal: React.FC<BannerModalProps> = ({
               {errors.image ? errors.image : "\u00A0"}
             </p>
           </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold">
+                Banner type
+              </label>
+              <div className="flex space-x-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="banner_type"
+                    value={1}
+                    checked={formData.banner_type === 1}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        banner_type: parseInt(e.target.value),
+                      })
+                    }
+                    className="radio radio-primary"
+                  />
+                  <span className="text-sm">Website</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="banner_type"
+                    value={2}
+                    checked={formData.banner_type === 2}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        banner_type: parseInt(e.target.value),
+                      })
+                    }
+                    className="radio radio-primary"
+                  />
+                  <span className="text-sm">App</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="banner_type"
+                    value={3}
+                    checked={formData.banner_type === 3}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        banner_type: parseInt(e.target.value),
+                      })
+                    }
+                    className="radio radio-primary"
+                  />
+                  <span className="text-sm">Both</span>
+                </label>
+              </div>
+              <p className="text-red-500 text-sm">
+                {errors.banner_type || "\u00A0"}
+              </p>
+            </div>            
+          </div>
+          
 
           <div className="flex gap-4 mt-4">
             <button

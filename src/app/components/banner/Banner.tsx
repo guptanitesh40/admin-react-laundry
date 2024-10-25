@@ -21,9 +21,9 @@ const Banner: React.FC = () => {
     setCurrentBanner(null);
   };
 
-  const handleEditBanner = (banner: any) => {
+  const handleEditBanner = (banner_id: number) => {
     setEditMode(true);
-    setCurrentBanner(banner);
+    setCurrentBanner(banner_id);
     setModalIsOpen(true);
   };
 
@@ -75,8 +75,7 @@ const Banner: React.FC = () => {
         setIsSubmit={setIsSubmit}
         isOpen={modalIsOpen}
         onClose={() => setModalIsOpen(false)}
-        bannerData={currentBanner}
-        banner_id={currentBanner?.banner_id}
+        banner_id={currentBanner}
       />
     </div>
   );

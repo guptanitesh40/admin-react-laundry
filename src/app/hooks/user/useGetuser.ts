@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface User {
@@ -11,12 +11,11 @@ interface User {
   role_id: number;
 }
 
-const useGetUser = (user_id: number) => {
+const useGetUser = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUser = async (user_id: number) => {
       const token = localStorage.getItem("authToken");
       const GET_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/${user_id}`;
 
@@ -48,9 +47,8 @@ const useGetUser = (user_id: number) => {
         setLoading(false);
       }
     };
-    fetchUser();
-  }, [user_id]);
-  return { user, loading };
+
+  return { user, loading, fetchUser };
 };
 
 export default useGetUser;

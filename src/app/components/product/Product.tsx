@@ -19,9 +19,9 @@ const Product: React.FC = () => {
     setCurrentProduct(null);
   };
 
-  const handleEditProduct = (product: any) => {
+  const handleEditProduct = (product_id: number) => {
     setEditMode(true);
-    setCurrentProduct(product);
+    setCurrentProduct(product_id);
     setModalIsOpen(true);
   };
 
@@ -87,8 +87,7 @@ const Product: React.FC = () => {
         setIsSubmit={setIsSubmit}
         isOpen={modalIsOpen}
         onClose={() => setModalIsOpen(false)}
-        productData={currentProduct}
-        product_id={currentProduct?.product_id}
+        product_id={currentProduct}
       />
     </div>
   );

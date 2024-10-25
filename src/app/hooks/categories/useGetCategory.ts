@@ -12,6 +12,7 @@ const useGetCategory = (category_id: number) => {
 
   useEffect(() => {
     const fetchCategory = async () => {
+      
       if (!category_id) {
         setCategory(null);
         return;
@@ -50,6 +51,7 @@ const useGetCategory = (category_id: number) => {
     };
     fetchCategory();
   }, [category_id]);
+
   return { category, loading };
 };
 

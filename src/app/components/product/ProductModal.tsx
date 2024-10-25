@@ -3,14 +3,11 @@ import toast from "react-hot-toast";
 import { useAddProduct, useUpdateProduct } from "../../hooks";
 import { productSchema } from "../../validation/productSchema";
 import * as Yup from "yup";
+import useGetProduct from "../../hooks/products/useGetProduct";
 
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productData?: {
-    name: string;
-    image: string;
-  };
   product_id?: number;
   setIsSubmit: (value: boolean) => void;
 }
@@ -18,14 +15,20 @@ interface ProductModalProps {
 const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
   onClose,
-  productData,
   product_id,
   setIsSubmit,
 }) => {
   const { addProduct, loading: adding } = useAddProduct();
   const { updateProduct, loading: updating } = useUpdateProduct();
 
+  const { product, fetchProduct } = useGetProduct();
+
   const [formData, setFormData] = useState({
+    name: "",
+    image: "" as string | File,
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
     name: "",
     image: "" as string | File,
   });
@@ -33,22 +36,32 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isOpen) {
-      if (productData) {
-        setFormData({
-          name: productData.name,
-          image: productData.image,
-        });
+    if (isOpen && product_id) {
+      fetchProduct(product_id);
+    }
+  }, [isOpen, product_id]);
+
+  useEffect(() => {
+    if (isOpen && product && product_id) {
+        const fetchedData = {
+          name: product.name,
+          image: product.image,
+        }
+
+        setFormData(fetchedData);
+        setInitialFormData(fetchedData);
       } else {
         setFormData({
           name: "",
           image: "",
         });
-      }
-    } else {
+        setInitialFormData({
+          name: "",
+          image: "",
+        });
       setErrors({});
-    }
-  }, [isOpen, productData]);
+    } 
+  }, [isOpen, product, product_id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
@@ -72,6 +85,20 @@ const ProductModal: React.FC<ProductModalProps> = ({
     try {
       const schema = productSchema(!!product_id);
       await schema.validate(formData, { abortEarly: false });
+
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
+          if (key === "image") {
+            return formData.image instanceof File || formData.image !== initialFormData.image;
+          }
+          return formData[key] !== initialFormData[key];
+        });
+      };
+
+      if (!isDataChanged()) {             
+        onClose();
+        return; 
+      }
 
       const formDataObj = new FormData();
       formDataObj.append("name", formData.name);

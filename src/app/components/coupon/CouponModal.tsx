@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useAddCoupon, useUpdateCoupon } from "../../hooks";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAddCoupon, useGetCoupon, useUpdateCoupon } from "../../hooks";
 import toast from "react-hot-toast";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -10,13 +10,29 @@ import * as Yup from "yup";
 import { couponSchema } from "../../validation/couponSchema";
 
 const CouponModal: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { coupon } = location.state || {};
+  const { addCoupon, loading: addingCoupon } = useAddCoupon();
+  const { updateCoupon, loading: updatingCoupon } = useUpdateCoupon();
+  const { coupon, fetchCoupon } = useGetCoupon();
 
-  const [startDate, setStartDate] = useState<Dayjs | null>();
+  const { id } = useParams<{ id: string }>();
+  const coupon_id = Number(id);
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    code: null,
+    title: "",
+    description: "",
+    discount_value: null,
+    discount_type: null,
+    start_time: dayjs(),
+    end_time: dayjs(),
+    maximum_usage_count_per_user: null,
+    total_usage_count: null,
+    coupon_type: null,
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
     code: null,
     title: "",
     description: "",
@@ -32,20 +48,30 @@ const CouponModal: React.FC = () => {
   const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
+    const fetchCompanyData = async () => {
+      await fetchCoupon(coupon_id);
+    };
+    fetchCompanyData();
+  }, [coupon_id]);
+
+  useEffect(() => {
     if (coupon) {
-      setFormData({
+      const fetchedData = {
         code: coupon.code,
         title: coupon.title,
         description: coupon.description,
-        discount_value: coupon.discount_value.toString(),
-        discount_type: coupon.discount_type.toString(),
+        discount_value: coupon.discount_value,
+        discount_type: coupon.discount_type,
         start_time: dayjs(coupon.start_time),
         end_time: dayjs(coupon.end_time),
         maximum_usage_count_per_user:
           coupon.maximum_usage_count_per_user.toString(),
         total_usage_count: coupon.total_usage_count.toString(),
         coupon_type: coupon.coupon_type.toString(),
-      });
+      }
+
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
     }
   }, [coupon]);
 
@@ -55,7 +81,6 @@ const CouponModal: React.FC = () => {
 
   const handleStartTimeChange = (newValue: Dayjs | null) => {
     if (newValue) {
-      setStartDate(newValue);
       setFormData((prev) => ({ ...prev, start_time: newValue }));
     }
   };
@@ -66,35 +91,47 @@ const CouponModal: React.FC = () => {
     }
   };
 
-  const { addCoupon, loading: addingCoupon } = useAddCoupon();
-  const { updateCoupon, loading: updatingCoupon } = useUpdateCoupon();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const dataToValidate = {
       ...formData,
-      discount_type: parseInt(formData.discount_type, 10),
-      coupon_type: parseInt(formData.coupon_type, 10),
-      discount_value: parseInt(formData.discount_value, 10),
-      maximum_usage_count_per_user: parseInt(
-        formData.maximum_usage_count_per_user,
-        10
+      discount_type: Number(formData.discount_type),
+      coupon_type: Number(formData.coupon_type),
+      discount_value: Number(formData.discount_value),
+      maximum_usage_count_per_user: Number(
+        formData.maximum_usage_count_per_user
       ),
-      total_usage_count: parseInt(formData.total_usage_count, 10),
+      total_usage_count: Number(formData.total_usage_count),
       start_time: formData.start_time.toISOString(),
       end_time: formData.end_time.toISOString(),
     };
 
     try {
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
+          return formData[key] !== initialFormData[key];
+        });
+      };
+
+      if (!isDataChanged()) { 
+        navigate("/coupon"); 
+        return;
+      }
+
+      let success;
       await couponSchema.validate(dataToValidate, { abortEarly: false });
 
       if (coupon?.coupon_id) {
-        const success = await updateCoupon(coupon.coupon_id, dataToValidate);
+         success = await updateCoupon(coupon.coupon_id, dataToValidate);
       } else {
-        const success = await addCoupon(dataToValidate);
-      }      
-      navigate("/coupon");
+         success = await addCoupon(dataToValidate);
+      }
+      if (success) {
+        navigate("/coupon");
+      }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const formErrors: any = {};
@@ -130,7 +167,7 @@ const CouponModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={formData.code}
+                value={formData.code ?? ""}
                 onChange={(e) =>
                   setFormData({ ...formData, code: e.target.value })
                 }
@@ -147,7 +184,7 @@ const CouponModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={formData.title}
+                value={formData.title ?? ""}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
@@ -161,11 +198,11 @@ const CouponModal: React.FC = () => {
                 Description
               </label>
               <textarea
-                value={formData.description}
+                value={formData.description ?? ""}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="input border border-gray-300 rounded-md p-2 w-full"
+                className="h-20 input border border-gray-300 rounded-md p-2 w-full"
               />
               <p className="text-red-500 text-sm">
                 {errors.description || "\u00A0"}
@@ -180,20 +217,22 @@ const CouponModal: React.FC = () => {
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                 value={formData.discount_type ?? ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, discount_type: e.target.value })
+                  setFormData({
+                    ...formData,
+                    discount_type: Number(e.target.value),
+                  })
                 }
               >
                 <option value="" disabled>
                   Select Discount Type
                 </option>
-                <option value="1">Percentage</option>
-                <option value="2">Flat</option>
+                <option value={2}>Flat</option>
+                <option value={1}>Percentage</option>
               </select>
               <p className="text-red-500 text-sm">
                 {errors.discount_type || "\u00A0"}
               </p>
             </div>
-
 
             <div className="mb-4 col-span-1">
               <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -201,7 +240,7 @@ const CouponModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={formData.discount_value}
+                value={formData.discount_value ?? ""}
                 onChange={(e) =>
                   setFormData({ ...formData, discount_value: e.target.value })
                 }
@@ -211,7 +250,7 @@ const CouponModal: React.FC = () => {
                 {errors.discount_value || "\u00A0"}
               </p>
             </div>
-           
+
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <div className="mb-4 col-span-1 w-[320px]">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -220,6 +259,7 @@ const CouponModal: React.FC = () => {
                 <DateTimePicker
                   value={formData.start_time}
                   onChange={handleStartTimeChange}
+                  format="DD-MM-YYYY hh:mm:ss A"
                   slotProps={{
                     textField: {
                       fullWidth: true,
@@ -239,12 +279,13 @@ const CouponModal: React.FC = () => {
                 <DateTimePicker
                   value={formData.end_time}
                   onChange={handleEndTimeChange}
+                  format="DD-MM-YYYY hh:mm:ss A"
                   slotProps={{
                     textField: {
                       fullWidth: true,
                     },
                   }}
-                  
+                  minDateTime={formData.start_time} 
                 />
                 <p className="text-red-500 text-sm">
                   {errors.end_time || "\u00A0"}
@@ -258,7 +299,7 @@ const CouponModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={formData.maximum_usage_count_per_user}
+                value={formData.maximum_usage_count_per_user ?? ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -278,7 +319,7 @@ const CouponModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                value={formData.total_usage_count}
+                value={formData.total_usage_count ?? ""}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -300,15 +341,15 @@ const CouponModal: React.FC = () => {
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                 value={formData.coupon_type ?? ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, coupon_type: e.target.value })
+                  setFormData({ ...formData, coupon_type: Number(e.target.value )})
                 }
               >
                 <option value="" disabled>
                   Select Coupon Type
                 </option>
-                <option value="1">Web</option>
-                <option value="2">Mobile</option>
-                <option value="3">Both</option>
+                <option value={1}>Web</option>
+                <option value={2}>Mobile</option>
+                <option value={3}>Both</option>
               </select>
               <p className="text-red-500 text-sm">
                 {errors.coupon_type || "\u00A0"}

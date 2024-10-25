@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 const useUpdateCompany = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateCompany = async (company_id: string, formData: any): Promise<boolean> => {
+  const updateCompany = async (company_id: number, formData: any): Promise<boolean> => {
     const token = localStorage.getItem("authToken");
 
     const UPDATE_COMPANY_URL = `${import.meta.env.VITE_BASE_URL}/companies/${company_id}`;
