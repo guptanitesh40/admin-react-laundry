@@ -38,4 +38,5 @@ export const bannerSchema = (editMode: boolean): Yup.ObjectSchema<any, any, any>
         return true; 
       })
       .nullable(),
+      banner_type: Yup.number().required("Please select banner type"),
   });

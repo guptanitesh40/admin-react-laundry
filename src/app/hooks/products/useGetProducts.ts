@@ -11,10 +11,10 @@ interface Product {
 }
 
 const useGetProducts = (
-  pageNumber: number = 1, 
+  pageNumber: number = 1,
   perPage: number = 10,
-  search: string = '', 
-  sortColumn?: string, 
+  search: string = "",
+  sortColumn?: string,
   sortOrder?: string
 ) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,7 @@ const useGetProducts = (
     if (pageNumber) queryParams.append('page_number', pageNumber.toString());
     if (perPage) queryParams.append('per_page', perPage.toString());
     if (search) queryParams.append('search', search);
-    if (sortColumn) queryParams.append('sortBy', sortColumn);
+    if (sortColumn) queryParams.append('sort_by', sortColumn);
     if (sortOrder) queryParams.append('order', sortOrder);
 
     const url = `${GET_PRODUCT_URL}?${queryParams}`;

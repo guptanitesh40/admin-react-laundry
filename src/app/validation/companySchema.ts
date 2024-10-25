@@ -2,7 +2,8 @@ import * as Yup from "yup";
 
 type FileValue = File | null;
 
-export const companySchema = Yup.object().shape({
+export const companySchema  = (isEdit: boolean = false) => {
+  return Yup.object().shape({
   company_name: Yup.string()
     .required("Company name is required")
     .test("required", "Company name is required", (value) => !!value),
@@ -21,11 +22,11 @@ export const companySchema = Yup.object().shape({
 
   zip_code: Yup.string()
     .test("required", "Zip Code is required", (value) => {
-      if (value === null || value === '') return false; 
-      return true; 
+      if (value === null || value === "") return false;
+      return true;
     })
     .test("format", "Zip Code must be a 6 digit number", (value) => {
-      if (value === null || value === '') return true;
+      if (value === null || value === "") return true;
       return /^[0-9]{6}$/.test(value);
     }),
 
@@ -36,11 +37,11 @@ export const companySchema = Yup.object().shape({
   phone_number: Yup.string()
     .nullable()
     .test("format", "Phone Number must be a 10-digit number", (value) => {
-      if (value === null || value === '') return true; 
+      if (value === null || value === "") return true;
       return /^[0-9]{10}$/.test(value);
     })
     .test("required", "Phone Number is required", (value) => {
-      if (value === null || value === '') return false; 
+      if (value === null || value === "") return false;
       return true;
     }),
 
@@ -49,7 +50,7 @@ export const companySchema = Yup.object().shape({
     .matches(/^[0-9]{10}$/, "Mobile Number must be a 10-digit number")
     .test("required", "Mobile Number is required", (value) => !!value)
     .test("format", "Mobile Number must be a 10-digit number", (value) => {
-      if (!value) return true; 
+      if (!value) return true;
       return /^[0-9]{10}$/.test(value);
     }),
 
@@ -58,20 +59,29 @@ export const companySchema = Yup.object().shape({
     .email("Enter a valid email")
     .test("required", "Email is required", (value) => !!value),
 
-    logo: Yup.mixed<FileValue>()
+  website: Yup.string()
     .nullable()
-    .required("Logo is required")
+    .url("Please enter a valid website URL")
+    .test("required", "Website URL is required", (value) => !!value),
+
+  logo: Yup.mixed<FileValue>()
+    .nullable()
     .test("fileSize", "Logo file is too large", (value) => {
       if (!value) return true;
       if (value instanceof File) {
-        return value.size <= 2000000; 
+        return value.size <= 2000000;
       }
       return true;
     })
     .test("fileType", "Unsupported logo format", (value) => {
-      if (!value) return true; 
+      if (!value) return true;
       if (value instanceof File) {
         return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
+      }
+      return true;
+    }) .test("required", "Logo is required", (value) => {
+      if (!isEdit) {
+        return !!value;
       }
       return true;
     }),
@@ -91,12 +101,13 @@ export const companySchema = Yup.object().shape({
     .test("required", "GSTIN is required", (value) => !!value),
 
   company_ownedby: Yup.string()
+    .nullable()
     .test("required", "Company Owned By is required", (value) => {
-      if (value === null || value === '') return false; 
-      return true; 
+      if (value === null || value === "") return false;
+      return true;
     })
     .test("format", "Company Owned By must be a number", (value) => {
-      if (value === null || value === '') return true;
+      if (value === null || value === "") return true;
       return /^[0-9]+$/.test(value);
     }),
 
@@ -105,7 +116,7 @@ export const companySchema = Yup.object().shape({
     .test("fileSize", "File is too large", (value) => {
       if (!value) return true;
       if (value instanceof File) {
-        return value.size <= 5000000; 
+        return value.size <= 5000000;
       }
       return true;
     })
@@ -115,5 +126,7 @@ export const companySchema = Yup.object().shape({
         return ["application/pdf"].includes(value.type);
       }
       return true;
-    })
+    }),
 });
+
+}

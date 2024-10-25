@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDeleteCoupon, useFetchCoupons } from "../../hooks";
+import { useDeleteCoupon, useGetCoupons } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
@@ -25,7 +25,7 @@ const CouponTable: React.FC<CouponTableProps> = ({ search }) => {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
-  const { coupons, fetchCoupons, loading, totalCoupons } = useFetchCoupons(
+  const { coupons, fetchCoupons, loading, totalCoupons } = useGetCoupons(
     currentPage,
     perPage,
     search,
@@ -469,14 +469,14 @@ const CouponTable: React.FC<CouponTableProps> = ({ search }) => {
 
                         <td>
                           <div className="flex flex-col">
-                            {dayjs(coupon.start_time).format("YYYY-MM-DD")}
+                            {dayjs(coupon.start_time).format("DD-MM-YYYY")}
                             <br />
                             {dayjs(coupon.start_time).format("hh:mm:ss A")}
                           </div>
                         </td>
                         <td>
                           <div className="flex flex-col">
-                            {dayjs(coupon.end_time).format("YYYY-MM-DD")}
+                            {dayjs(coupon.end_time).format("DD-MM-YYYY")}
                             <br />
                             {dayjs(coupon.end_time).format("hh:mm:ss A")}
                           </div>

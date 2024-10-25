@@ -19,9 +19,9 @@ const Service: React.FC = () => {
     setCurrentService(null);
   };
 
-  const handleEditService = (service: any) => {
+  const handleEditService = (service_id: number) => {
     setEditMode(true);
-    setCurrentService(service);
+    setCurrentService(service_id);
     setModalIsOpen(true);
   };
 
@@ -86,8 +86,7 @@ const Service: React.FC = () => {
         setIsSubmit={setIsSubmit}
         isOpen={modalIsOpen}
         onClose={() => setModalIsOpen(false)}
-        serviceData={currentService}
-        service_id={currentService?.service_id}
+        service_id={currentService}
       />
     </div>
   );

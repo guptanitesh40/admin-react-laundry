@@ -3,14 +3,11 @@ import toast from "react-hot-toast";
 import { useAddService, useUpdateService } from "../../hooks";
 import { productSchema } from "../../validation/productSchema";
 import * as Yup from "yup";
+import useGetService from "../../hooks/services/useGetService";
 
 interface ServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  serviceData?: {
-    name: string;
-    image: string;
-  };
   service_id?: number;
   setIsSubmit: (value: boolean) => void;
 }
@@ -18,14 +15,20 @@ interface ServiceModalProps {
 const ServiceModal: React.FC<ServiceModalProps> = ({
   isOpen,
   onClose,
-  serviceData,
   service_id,
   setIsSubmit,
 }) => {
   const { addService, loading: adding } = useAddService();
   const { updateService, loading: updating } = useUpdateService();
 
+  const { service, fetchService } = useGetService();
+
   const [formData, setFormData] = useState({
+    name: "",
+    image: "" as string | File,
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
     name: "",
     image: "" as string | File,
   });
@@ -33,22 +36,32 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (isOpen) {
-      if (serviceData) {
-        setFormData({
-          name: serviceData.name,
-          image: serviceData.image,
-        });
+    if (isOpen && service_id) {
+      fetchService(service_id);
+    }
+  }, [isOpen, service_id]);
+
+  useEffect(() => {
+    if (isOpen && service && service_id) {
+      const fetchedData = {
+          name: service.name,
+          image: service.image,
+      }
+
+        setFormData(fetchedData);
+        setInitialFormData(fetchedData);
       } else {
         setFormData({
           name: "",
           image: "",
         });
+        setInitialFormData({
+          name: "",
+          image: "",
+        });
+        setErrors({});
       }
-    } else {
-      setErrors({});
-    }
-  }, [isOpen, serviceData]);
+  }, [isOpen, service]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
@@ -72,6 +85,20 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     try {
       const schema = productSchema(!!service_id);
       await schema.validate(formData, { abortEarly: false });
+
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
+          if (key === "image") {
+            return formData.image instanceof File || formData.image !== initialFormData.image;
+          }
+          return formData[key] !== initialFormData[key];
+        });
+      };
+
+      if (!isDataChanged()) {             
+        onClose();
+        return; 
+      }
 
       const formDataObj = new FormData();
       formDataObj.append("name", formData.name);

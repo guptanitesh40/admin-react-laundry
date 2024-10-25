@@ -1,31 +1,29 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-interface Banner {
-  banner_id: number;
-  title: string;
-  description: string;
+interface Service {
+  service_id: number;
+  name: string;
   image: string;
-  banner_type: number;
 }
 
-const useGetBanner = () => {
+const useGetService = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [banner, setBanner] = useState<Banner | null>(null);
+  const [service, setService] = useState<Service | null>(null);
 
-    const fetchBanner = async (banner_id: number) => {
-      if (!banner_id) {
-        setBanner(null);
+    const fetchService = async (service_id: number) => {
+    if (!service_id) {
+        setService(null);
         return;
       }
 
       const token = localStorage.getItem("authToken");
-      const GET_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners/${banner_id}`;
+      const GET_SERVICE_URL = `${import.meta.env.VITE_BASE_URL}/admin/services/${service_id}`;
 
-      setLoading(true);
+      setLoading(false);
 
       try {
-        const response = await fetch(GET_BANNER_URL, {
+        const response = await fetch(GET_SERVICE_URL, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -41,15 +39,15 @@ const useGetBanner = () => {
         }
 
         const data = await response.json();
-        setBanner(data?.data?.banner);
+        setService(data?.data?.service);
       } catch (error) {
         toast.error("Network error: Failed to fetch.");
       } finally {
         setLoading(false);
       }
     };
-
-  return { banner, loading, fetchBanner };
+  
+  return { service, loading, fetchService };
 };
 
-export default useGetBanner;
+export default useGetService;

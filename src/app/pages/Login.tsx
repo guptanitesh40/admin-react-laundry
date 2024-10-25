@@ -13,7 +13,9 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: any) => state.auth.isAuthenticated
+  );
   const dispatch = useDispatch();
   const { login, loading } = useLogin();
   const navigate = useNavigate();
@@ -28,19 +30,34 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     if (username.length > 50) {
-      toast.error("Username must be 50 characters or fewer.", { position: "top-center" });
+      toast.error("Username must be 50 characters or fewer.", {
+        position: "top-center",
+      });
       return;
     }
 
     if (password.length > 50) {
-      toast.error("Password must be 50 characters or fewer.", { position: "top-center" });
+      toast.error("Password must be 50 characters or fewer.", {
+        position: "top-center",
+      });
       return;
     }
-    
-    const success = await login(username, password, 1, device_type, device_token);
-  
+
+    const success = await login(
+      username,
+      password,
+      1,
+      device_type,
+      device_token
+    );
+
     if (success) {
-      dispatch(loginAction({ isAuthenticated: true, token: localStorage.getItem('authToken') }));
+      dispatch(
+        loginAction({
+          isAuthenticated: true,
+          token: localStorage.getItem("authToken"),
+        })
+      );
       navigate("/dashboard");
     } else {
       dispatch(loginAction({ isAuthenticated: false, token: null }));
@@ -64,19 +81,22 @@ const Login: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="form-label text-gray-900">Email</label>
+                <label className="form-label text-gray-900" htmlFor="username">
+                  Email or Mobile no
+                </label>
                 <input
+                  id="username"
                   className="input border border-gray-300 rounded-md p-2"
-                  placeholder="email@example.com"
+                  placeholder="Enter your email or mobile number"
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
+                  onChange={(e) => setUsername(e.target.value)}                  
                 />
               </div>
+
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between gap-1">
-                  <label className="form-label text-gray-900">Password</label>
+                  <label className="form-label text-gray-900" htmlFor="password">Password</label>
                   <Link
                     className="text-2sm link shrink-0"
                     to="/forgot-password"
@@ -86,6 +106,7 @@ const Login: React.FC = () => {
                 </div>
                 <div className="relative">
                   <input
+                    id="password"
                     className="input border border-gray-300 rounded-md p-2"
                     name="user_password"
                     placeholder="Enter Password"
@@ -96,7 +117,7 @@ const Login: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <button
                 type="submit"
                 className="btn btn-primary flex justify-center grow"

@@ -54,6 +54,10 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const { prices, loading, fetchPrices } = useGetPrice();
   const { addPrice } = useAddPrice();
 
+  const [allPrices, setAllPrices] = useState<{ [key: string]: number }>(
+    {}
+  );
+
   const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
     {}
   );
@@ -64,9 +68,12 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
   useEffect(() => {
+    const fetchData = async () => {
     fetchCategories();
     fetchProducts();
     fetchServices();
+  }
+    fetchData();
   },[fetchCategories, fetchProducts, fetchServices])
 
   const getCombinations = useCallback(
@@ -146,32 +153,42 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   useEffect(() => {
     if (isSave) {
-      const updatedData = filteredCombinations
-        .filter((combination) => {
-          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-
-          return updatedPrices[key] !== undefined || combination.price > 0;
-        })
-        .map((combination) => ({
-          category_id: combination.category.category_id,
-          product_id: combination.product.product_id,
-          service_id: combination.service.service_id,
-          price:
-            updatedPrices[
-              `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`
-            ] || combination.price,
-        }));
-
+      const updatedData = { ...allPrices }; 
+  
+      filteredCombinations.forEach((combination) => {
+        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+  
+        if (updatedPrices[key] !== undefined) {
+          updatedData[key] = updatedPrices[key];  
+        } else {
+          updatedData[key] = combination.price;
+        }
+      });
+  
+      const payload = Object.keys(updatedData).map((key) => {
+        const [category_id, product_id, service_id] = key.split("_");
+        return {
+          category_id: parseInt(category_id, 10),
+          product_id: parseInt(product_id, 10),
+          service_id: parseInt(service_id, 10),
+          price: updatedData[key], 
+        };
+      });
+  
       try {
-        addPrice(updatedData);
+        addPrice(payload);
         fetchPrices();
-        setEditing(new Set());
+        setEditing(new Set()); 
+        setAllPrices(updatedData); 
       } catch (error) {
         toast.error("Failed to save prices.");
       }
+  
+      setIsSave(false); 
     }
-    setIsSave(false);
-  }, [isSave]);
+  }, [isSave, updatedPrices, allPrices, addPrice, fetchPrices, setIsSave]);
+  
+  
 
   const handleInputBlur = (key: string) => {
     setEditing((prev) => {

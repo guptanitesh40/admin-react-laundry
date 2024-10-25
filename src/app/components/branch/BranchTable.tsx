@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDeleteBranch, useGetBranch, useGetCompany } from "../../hooks";
+import {
+  useDeleteBranch,
+  useGetBranches,
+} from "../../hooks";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import {
   FaChevronLeft,
@@ -23,14 +26,13 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-  const { branches, fetchBranches, totalBranches, loading } = useGetBranch(
+  const { branches, fetchBranches, totalBranches, loading } = useGetBranches(
     currentPage,
     perPage,
     search,
     sortColumn,
     sortOrder
   );
-  const { companies } = useGetCompany();
 
   const navigate = useNavigate();
 
@@ -38,8 +40,8 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
 
   const { deleteBranch } = useDeleteBranch();
 
-  const handleUpdateBranch = (branch: any) => {
-    navigate(`/branch/edit/${branch.branch_id}`, { state: { branch } });
+  const handleUpdateBranch = (branch_id: number) => {
+    navigate(`/branch/edit/${branch_id}`);
   };
 
   const handleDeleteBranch = async (branch_id: number) => {
@@ -73,7 +75,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
         } else {
           Swal.fire(message);
         }
-      } 
+      }
     } catch (error: any) {
       Swal.fire({
         title: "Error",
@@ -106,15 +108,12 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchBranches();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBranches]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -157,10 +156,11 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
       <div className="grid gap-5 lg:gap-4.5">
         <div className="card card-grid min-w-full">
           <div className="card-body">
+          <div className="scrollable-x-auto">
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="w-[100px]">
+                  <th className="min-w-[90px]">
                     <div
                       className="flex justify-between"
                       onClick={() => handleSort("branch_id")}
@@ -183,7 +183,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                         />
                       </div>
                     </div>
-                  </th>
+                  </th>                  
                   <th className="min-w-[200px]">
                     <div
                       className="flex justify-between"
@@ -213,32 +213,98 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                       className="flex justify-between"
                       onClick={() => handleSort("branch_address")}
                     >
-                      Address
+                      Branch Address
                       <div className="flex cursor-pointer">
-                        <span>
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "branch_address" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </span>
-                        <span>
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "branch_address" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </span>
+                        <FaArrowDownLong
+                          color={
+                            sortColumn === "branch_address" && sortOrder === "ASC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                        <FaArrowUpLong
+                          color={
+                            sortColumn === "branch_address" && sortOrder === "DESC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
                       </div>
                     </div>
                   </th>
-                  <th className="min-w-[100px]">
+                  <th className="min-w-[200px]">
+                    <div
+                      className="flex justify-between"
+                      onClick={() => handleSort("branch_email")}
+                    >
+                      Branch Email
+                      <div className="flex cursor-pointer">
+                        <FaArrowDownLong
+                          color={
+                            sortColumn === "branch_email" && sortOrder === "ASC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                        <FaArrowUpLong
+                          color={
+                            sortColumn === "branch_email" && sortOrder === "DESC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                      </div>
+                    </div>
+                  </th>
+                  <th className="min-w-[200px]">
+                    <div
+                      className="flex justify-between"
+                      onClick={() => handleSort("branch_phone_number")}
+                    >
+                      Branch Phone no
+                      <div className="flex cursor-pointer">
+                        <FaArrowDownLong
+                          color={
+                            sortColumn === "branch_phone_number" && sortOrder === "ASC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                        <FaArrowUpLong
+                          color={
+                            sortColumn === "branch_phone_number" && sortOrder === "DESC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                      </div>
+                    </div>
+                  </th>
+                  <th className="min-w-[230px]">
+                    <div
+                      className="flex justify-between"
+                      onClick={() => handleSort("branch_manager")}
+                    >
+                      Branch Manager Name
+                      <div className="flex cursor-pointer">
+                        <FaArrowDownLong
+                          color={
+                            sortColumn === "branch_manager" && sortOrder === "ASC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                        <FaArrowUpLong
+                          color={
+                            sortColumn === "branch_manager" && sortOrder === "DESC"
+                              ? "gray"
+                              : "lightgray"
+                          }
+                        />
+                      </div>
+                    </div>
+                  </th>
+                  <th className="min-w-[190px]">
                     <div
                       className="flex justify-between"
                       onClick={() => handleSort("company_name")}
@@ -267,7 +333,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                         </span>
                       </div>
                     </div>
-                  </th>
+                  </th>                 
                   <th className="w-[50px]">Actions</th>
                 </tr>
               </thead>
@@ -289,17 +355,14 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                         </span>
                       </td>
                       <td>{branch.branch_address}</td>
-
-                      <td>
-                        {companies.find(
-                          (company) => company.company_id === branch.company_id
-                        )?.company_name || "Not Available"}
-                      </td>
-
+                      <td>{branch.branch_email}</td>
+                      <td>{branch.branch_phone_number}</td>
+                      <td>{branch.branchManager.first_name} {branch.branchManager.last_name}</td>
+                      <td>{branch.company.company_name}</td>
                       <td>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleUpdateBranch(branch)}
+                            onClick={() => handleUpdateBranch(branch.branch_id)}
                             className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
                           >
                             <FaPencilAlt className="text-yellow-600" />
@@ -325,6 +388,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                 </tbody>
               )}
             </table>
+          </div>
           </div>
         </div>
       </div>

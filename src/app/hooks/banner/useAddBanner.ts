@@ -6,7 +6,7 @@ const ADD_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners`;
 const useAddBanner = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addBanner = async (formData: FormData) => {
+  const addBanner = async (formData: any) => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
   

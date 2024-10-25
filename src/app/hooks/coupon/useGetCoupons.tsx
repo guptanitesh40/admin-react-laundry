@@ -3,8 +3,6 @@ import { toast } from 'react-hot-toast';
 
 const FETCH_COUPON_URL = `${import.meta.env.VITE_BASE_URL}/admin/coupon`;
 
-const token = localStorage.getItem('authToken');
-
 interface Coupon {
   coupon_id: number;
   code: string;
@@ -19,7 +17,7 @@ interface Coupon {
   total_usage_count: number;
 }
 
-const useFetchCoupons = (
+const useGetCoupons = (
   pageNumber: number,
   perPage: number,
   search: string = '',
@@ -41,17 +39,17 @@ const useFetchCoupons = (
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
 
-    const url = `${FETCH_COUPON_URL}?${queryParams}`;
 
     setLoading(true);
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${FETCH_COUPON_URL}?${queryParams}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
+      
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message, { position: 'top-center' });
@@ -73,11 +71,7 @@ const useFetchCoupons = (
     }
   }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
-  useEffect(() => {
-    fetchCoupons();
-  }, [fetchCoupons]);
-
-  return { coupons, totalCoupons, loading,fetchCoupons };
+  return { coupons, totalCoupons, loading, fetchCoupons };
 };
 
-export default useFetchCoupons;
+export default useGetCoupons;

@@ -6,14 +6,8 @@ export const branchSchema = Yup.object().shape({
   branch_address: Yup.string().required("Branch address is required"),
 
   branch_manager_id: Yup.string()
-    .test("required", "branch manager id is required", (value) => {
-      if (value === null || value === "") return false;
-      return true;
-    })
-    .test("format", "branch manager id must be a number", (value) => {
-      if (value === null || value === "") return true;
-      return /^[0-9]+$/.test(value);
-    }),
+  .required("Please select branch manager")
+  .test("required", "Please select branch manager", (value) => !!value),
 
   branch_phone_number: Yup.string()
     .nullable()

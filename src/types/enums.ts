@@ -1,14 +1,13 @@
-
 export enum CouponType {
   "Website" = 1,
   "App" = 2,
   "Both" = 3,
 }
+
 export enum DiscountType {
   "Amount" = 1,
   "Percentage" = 2,
 }
-
 
 export enum OrderStatus {
     "Pending" = 1,
@@ -42,6 +41,19 @@ export enum OrderStatus {
     "Female" = 2,
     "Others" = 3,
   }
+
+  export enum BannerType {
+    "Website" = 1,
+    "App" = 2,
+    "Both" = 3,
+  }
+
+  export enum CompanyOwed {
+    "Own" = 1,
+    "Other company" = 2,
+  }
+  
+  
   
 
   

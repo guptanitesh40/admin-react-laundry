@@ -2,40 +2,33 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Branch {
-  branchManager: {
-    first_name: string;
-    last_name: string;
-  };
-  branch_name: string;
   branch_id: number;
+  branch_name: string;
   branch_address: string;
-  branch_manager_id: number;
   branch_phone_number: string;
   branch_email: string;
   branch_registration_number: string;
-  company: {
-    company_name: string;
-  };
   company_id: number;
+  branch_manager_id: string;
 }
 
-const useGetBranch = () => {
+const useGetBranchesOnId = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [branch, setBranch] = useState<Branch | null>(null);
+  const [branches, setBranches] = useState<Branch | any>(null);
 
-    const fetchBranch = async (branch_id: number) => {
-    if (!branch_id) {
-      setBranch(null);
+  const fetchBranchesOnId = async (company_id: number) => {
+    if (!company_id) {
+      setBranches(null);
       return;
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches/${branch_id}`;
+    const GET_BRANCHES_URL = `${import.meta.env.VITE_BASE_URL}/branches/company/${company_id}`;
 
     setLoading(true);
 
     try {
-      const response = await fetch(GET_BRANCH_URL, {
+      const response = await fetch(GET_BRANCHES_URL, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +44,7 @@ const useGetBranch = () => {
       }
 
       const data = await response.json();
-      setBranch(data?.data?.result);
+      setBranches(data?.data);
     } catch (error) {
       toast.error("Network error: Failed to fetch.");
     } finally {
@@ -59,7 +52,7 @@ const useGetBranch = () => {
     }
   };
 
-  return { branch, loading, fetchBranch };
+  return { branches, loading, fetchBranchesOnId };
 };
 
-export default useGetBranch;
+export default useGetBranchesOnId;

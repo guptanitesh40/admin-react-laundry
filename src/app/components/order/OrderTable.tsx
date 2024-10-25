@@ -703,12 +703,12 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
 
                         <td>
                         <div className="flex flex-col">
-                          {dayjs(order.estimated_delivery_time).format("YYYY-MM-DD")}                          
+                          {dayjs(order.estimated_delivery_time).format("DD-MM-YYYY")}                          
                         </div>
                         </td>
                         <td>
                         <div className="flex flex-col">
-                          {dayjs(order.estimated_pickup_time).format("YYYY-MM-DD")}                          
+                          {dayjs(order.estimated_pickup_time).format("DD-MM-YYYY")}                          
                         </div>
                         </td>
                         <td>{order.shipping_charges}</td>

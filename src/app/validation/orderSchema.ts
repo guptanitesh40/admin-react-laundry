@@ -2,18 +2,30 @@ import * as Yup from "yup";
 
 const itemSchema = Yup.object().shape({
   category_id: Yup.number()
-  .required("Please select a category")
-  .test("required", "Please select a category", (value) => !!value),
+    .nullable()
+    .required("Please select a category")
+    .test("required", "Please select a category", (value) => !!value),
+
   product_id: Yup.number()
-  .required("Please select a product")
-  .test("required", "Please select a product", (value) => !!value),
+    .nullable()
+    .required("Please select a product")
+    .test("required", "Please select a product", (value) => !!value),
+
   service_id: Yup.number()
-  .required("Please select a service")
-  .test("required", "Please select a service", (value) => !!value),
+    .nullable()
+    .required("Please select a service")
+    .test("required", "Please select a service", (value) => !!value),
+
   price: Yup.number()
-    .required("Price is not available for the combination, please add a price")
-    .test("required", "Price is not available for the combination, please add a price", (value) => !!value)
-},);
+    .nullable() 
+    .when(['category_id', 'product_id', 'service_id'], 
+      ([category_id, product_id, service_id]: [number | null, number | null, number | null], schema: Yup.NumberSchema) => {
+        return category_id && product_id && service_id
+          ? schema.required("Price is not available for the combination, please add a price")
+          : schema.nullable();
+      }
+    ),
+});
 
 export const orderSchema = Yup.object().shape({
   username: Yup.string().required("Please enter username"),

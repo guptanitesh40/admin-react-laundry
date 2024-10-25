@@ -1,23 +1,21 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
-interface Product {
-  product_product_id: number;
-  product_name: string;
-  image: string;
-}
-
-const useGetProductsOnId = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+const useGetUsersByRole = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [users, setUsers] = useState<any | null>(null);
 
-  const fetchProductsOnId = async (category_id: number) => {
+  const fetchUsersByRole = async (role_id: number, search: string) => {
     const token = localStorage.getItem("authToken");
+    const GET_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/by-role?role_id=${role_id}`;
 
-    const GET_PRODUCT_URL = `${import.meta.env.VITE_BASE_URL}/category/${category_id}/product`;
+    const queryParams = new URLSearchParams();
+    if (search) queryParams.append("search", search);
+
+    setLoading(true);
 
     try {
-      const response = await fetch(GET_PRODUCT_URL, {
+      const response = await fetch(`${GET_USER_URL}&${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -28,12 +26,12 @@ const useGetProductsOnId = () => {
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.message, { position: "top-center" });
+        setLoading(false);
         return;
       }
 
       const data = await response.json();
-      const productsData = data?.data || [];
-      setProducts(productsData);
+      setUsers(data?.data);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -43,7 +41,7 @@ const useGetProductsOnId = () => {
     }
   };
 
-  return { products, loading, fetchProductsOnId };
+  return { users, loading, fetchUsersByRole };
 };
 
-export default useGetProductsOnId;
+export default useGetUsersByRole;

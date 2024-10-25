@@ -8,7 +8,7 @@ import TableShimmer from "../shimmer/TableShimmer";
 
 interface ServiceTableProps {
   search: string;
-  setEditService: (service: any) => void;
+  setEditService: (service_id: number) => void;
   isSubmit: boolean;
   setIsSubmit: (value:boolean) => void;
 }
@@ -235,7 +235,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
                         <td>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditService(service)}
+                            onClick={() => setEditService(service.service_id)}
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>

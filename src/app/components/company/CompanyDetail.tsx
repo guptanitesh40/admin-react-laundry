@@ -1,4 +1,5 @@
 import React from "react";
+import { CompanyOwed } from "../../../types/enums";
 
 interface CompanyDetailProps {
   company: any;
@@ -14,18 +15,26 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company }) => {
 
         <div className="card-table scrollable-x-auto pb-3">
           <table className="table align-middle text-sm text-gray-500">
-            <tbody> 
+            <tbody>
               <tr>
                 <td className="py-2">Company Name</td>
                 <td className="py-2 text-gray-700">{company.company_name}</td>
               </tr>
               <tr>
                 <td className="py-2">Company Owner</td>
-                <td className="py-2 text-gray-700">{company.company_owner_name}</td>
+                <td className="py-2 text-gray-700">
+                  {company.company_owner_name}
+                </td>
               </tr>
               <tr>
-                <td className="py-2">No of Owner</td>
-                <td className="py-2 text-gray-700">{company.company_ownedby}</td>
+                <td className="py-2">Company owned by </td>
+                <td className="py-2 text-gray-700">
+                  {
+                    CompanyOwed[
+                      company.company_ownedby as unknown as keyof typeof CompanyOwed
+                    ]
+                  }
+                </td>
               </tr>
               <tr>
                 <td className="py-2">Address</td>
@@ -43,7 +52,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company }) => {
                 <td className="py-2">Zip Code</td>
                 <td className="py-2 text-gray-700">{company.zip_code}</td>
               </tr>
-            </tbody> 
+            </tbody>
           </table>
         </div>
       </div>

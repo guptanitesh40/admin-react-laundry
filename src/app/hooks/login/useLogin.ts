@@ -32,6 +32,7 @@ const useLogin = () => {
 
         if (statusCode === 200 && authToken) {
           localStorage.setItem('authToken', authToken);
+          localStorage.setItem('user', JSON.stringify(data?.user));
           toast.success(message, { position: 'top-center' });
           return true;
         }

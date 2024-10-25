@@ -7,31 +7,49 @@ import {
   useAddBranch,
   useUpdateBranch,
   useGetBranch,
-  useGetCompany,
+  useGetCompanies,
 } from "../../hooks";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 
 interface FormData {
   branch_name: string;
   branch_address: string;
-  branch_manager_id: string;
+  branch_manager_id: number;
   branch_phone_number: string;
   branch_email: string;
   branch_registration_number: string;
-  company_id: string | null;
+  company_id: number;
 }
 
 const BranchForm: React.FC = () => {
   const { addBranch, loading: adding } = useAddBranch();
   const { updateBranch, loading: updating } = useUpdateBranch();
+
   const { id } = useParams<{ id: string }>();
-  const { branches, fetchBranches } = useGetBranch();
-  const { companies, fetchCompanies } = useGetCompany();
+  const branch_id = Number(id);
+  const perPage = 1000;
+  const pageNumber = 1;
+
+  const { branch, fetchBranch } = useGetBranch();
+  const { companies, fetchCompanies } = useGetCompanies(pageNumber, perPage);
+  const { users, fetchUsersByRole } = useGetUsersByRole();
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
     branch_name: "",
     branch_address: "",
-    branch_manager_id: "",
+    branch_manager_id: null,
+    branch_phone_number: "",
+    branch_email: "",
+    branch_registration_number: "",
+    company_id: null,
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
+    branch_name: "",
+    branch_address: "",
+    branch_manager_id: null,
     branch_phone_number: "",
     branch_email: "",
     branch_registration_number: "",
@@ -39,40 +57,31 @@ const BranchForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedCompanyName, setSelectedCompanyName] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        await fetchBranches();
-        await fetchCompanies();
-      } catch (error) {
-        toast.error("Failed to fetch branch or company data.");
-      }
+      await fetchBranch(branch_id);
+      await fetchUsersByRole(3,"");
     };
-
     fetchData();
-  }, [fetchBranches, fetchCompanies]);
+  }, [branch_id]);
 
   useEffect(() => {
-    if (branches.length > 0 && id) {
-      const branch = branches.find((b) => b.branch_id === parseInt(id));
-      if (branch) {
-        setFormData({
-          branch_name: branch.branch_name || "",
-          branch_address: branch.branch_address || "",
-          branch_manager_id: branch.branch_manager_id || "",
-          branch_phone_number: branch.branch_phone_number || "",
-          branch_email: branch.branch_email || "",
-          branch_registration_number: branch.branch_registration_number || "",
-          company_id: branch.company_id || null,
-        });
-        setIsEditMode(true);
-      }
+    if (branch) {
+      const fetchedData = {
+        branch_name: branch.branch_name,
+        branch_address: branch.branch_address,
+        branch_manager_id: branch.branch_manager_id,
+        branch_phone_number: branch.branch_phone_number,
+        branch_email: branch.branch_email,
+        branch_registration_number: branch.branch_registration_number,
+        company_id: branch.company_id,
+      };
+
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
     }
-  }, [branches, id]);
+  }, [branch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,38 +91,32 @@ const BranchForm: React.FC = () => {
     }));
   };
 
-  const handleDropdownChange = (id: number, name: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      company_id: String(id),
-    }));
-    setSelectedCompanyName(name);
-    setIsDropdownOpen(false);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await branchSchema.validate(formData, { abortEarly: false });
-      if (isEditMode && id) {
-        const success = await updateBranch(id, formData);
-        if (success) {
-          setFormData({
-            branch_name: "",
-            branch_address: "",
-            branch_manager_id: "",
-            branch_phone_number: "",
-            branch_email: "",
-            branch_registration_number: "",
-            company_id: null,
-          });
-          navigate("/branches");
-        }
+
+      const isDataChanged = () => {
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            return formData[key] !== initialFormData[key];
+          }
+        );
+      };
+
+      if (!isDataChanged()) {
+        navigate("/branches");
+        return;
+      }
+
+      let success;
+      if (branch_id) {
+        success = await updateBranch(id, formData);
       } else {
-        const success = await addBranch(formData);
-        if (success) {
-          navigate("/branches");
-        }
+        success = await addBranch(formData);
+      }
+      if (success) {
+        navigate("/branches");
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -131,15 +134,83 @@ const BranchForm: React.FC = () => {
   const handleCancel = () => {
     navigate("/branches");
   };
-  
+
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
       <h1 className="text-2xl font-bold mb-6">
-        {isEditMode ? "Edit Branch" : "Add Branch"}
+        {branch_id ? "Edit Branch" : "Add Branch"}
       </h1>
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col">
+            <label className="mb-2 font-semibold" htmlFor="company_id">
+              Company
+            </label>
+            <select
+              id="company_id"
+              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+              value={formData.company_id || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  company_id: e.target.value ? Number(e.target.value) : null,
+                })
+              }
+            >
+              <option value="" disabled>
+                Select Company
+              </option>
+              {companies.length > 0 ? (
+                companies.map((company) => (
+                  <option key={company.company_id} value={company.company_id}>
+                    {company.company_name}
+                  </option>
+                ))
+              ) : (
+                <option>No Data available</option>
+              )}
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.company_id || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="mb-2 font-semibold" htmlFor="role_id">
+              Branch Manager
+            </label>
+            <select
+              id="role_id"
+              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+              value={formData.branch_manager_id || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  branch_manager_id: e.target.value
+                    ? Number(e.target.value)
+                    : null,
+                })
+              }
+            >
+              <option value="" disabled>
+                Select Branch Manager
+              </option>
+              {users ? (
+                users.map((user: any) => (
+                  <option key={user.user_id} value={user.user_id}>
+                    {user.first_name} {user.last_name}
+                  </option>
+                ))
+              ) : (
+                <option>No Data available</option>
+              )}
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.branch_manager_id || "\u00A0"}
+            </p>
+          </div>
+
           <div className="flex flex-col">
             <label className="mb-2 font-semibold" htmlFor="branch_name">
               Branch Name
@@ -148,7 +219,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_name"
               name="branch_name"
-              value={formData.branch_name}
+              value={formData.branch_name || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
@@ -165,29 +236,12 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_address"
               name="branch_address"
-              value={formData.branch_address}
+              value={formData.branch_address || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
             <p className="text-red-500 text-sm">
               {errors.branch_address || "\u00A0"}
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_manager_id">
-              Branch Manager Id
-            </label>
-            <input
-              type="text"
-              id="branch_manager_id"
-              name="branch_manager_id"
-              value={formData.branch_manager_id}
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">
-              {errors.branch_manager_id || "\u00A0"}
             </p>
           </div>
 
@@ -199,7 +253,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_phone_number"
               name="branch_phone_number"
-              value={formData.branch_phone_number}
+              value={formData.branch_phone_number || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
@@ -216,7 +270,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_email"
               name="branch_email"
-              value={formData.branch_email}
+              value={formData.branch_email || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
@@ -236,61 +290,12 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_registration_number"
               name="branch_registration_number"
-              value={formData.branch_registration_number}
+              value={formData.branch_registration_number || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
             />
             <p className="text-red-500 text-sm">
               {errors.branch_registration_number || "\u00A0"}
-            </p>
-          </div>
-
-          <div className="flex flex-col relative">
-            <label className="mb-2 font-semibold" htmlFor="company_id">
-              Company
-            </label>
-
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-300 w-full text-left flex justify-between items-center"
-            >
-              <span>
-                {companies.find(
-                  (company) =>
-                    company.company_id === Number(formData.company_id)
-                )?.company_name || "Select Company"}
-              </span>
-              <span className="ml-2">&#9662;</span>
-            </button>
-
-            {isDropdownOpen && (
-              <ul className="dropdown-menu scrollable-menu absolute z-10 mt-[73px] w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                {companies.map((company) => (
-                  <li
-                    key={company.company_id}
-                    className={`cursor-pointer hover:bg-gray-100 ${
-                      company.company_id === Number(formData.company_id)
-                        ? "bg-gray-200"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      handleDropdownChange(
-                        company.company_id,
-                        company.company_name
-                      )
-                    }
-                  >
-                    <div className="block px-4 py-2 text-sm">
-                      {company.company_name}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <p className="text-red-500 text-sm">
-              {errors.company_id || "\u00A0"}
             </p>
           </div>
         </div>
@@ -312,7 +317,7 @@ const BranchForm: React.FC = () => {
                 ></span>
                 <span className="ml-2">Saving...</span>
               </>
-            ) : isEditMode ? (
+            ) : branch_id ? (
               "Update Branch"
             ) : (
               "Add Branch"

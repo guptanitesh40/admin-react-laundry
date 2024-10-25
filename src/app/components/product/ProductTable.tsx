@@ -13,7 +13,7 @@ import TableShimmer from "../shimmer/TableShimmer";
 
 interface ProductTableProps {
   search: string;
-  setEditProduct: (product: any) => void;
+  setEditProduct: (product_id: number) => void;
   isSubmit: boolean;
   setIsSubmit: (value: boolean) => void;
 }
@@ -33,11 +33,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   const perPageParams = searchParams.get("perPage");
 
   const { products, totalProducts, loading, fetchProducts } = useGetProducts(
-    currentPage,
-    perPage,
-    search,
-    sortColumn,
-    sortOrder
+    currentPage, perPage, search, sortColumn, sortOrder
   );
 
   const totalPages = Math.ceil(totalProducts / perPage);
@@ -249,7 +245,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                         <td>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditProduct(product)}
+                            onClick={() => setEditProduct(product.product_id)}
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>
