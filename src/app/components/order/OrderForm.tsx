@@ -70,7 +70,7 @@ const OrderForm: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const { users, fetchUsersByRole } = useGetUsersByRole();
-  const { coupons } = useGetCoupons(pageNumber, perPage);
+  const { coupons, fetchCoupons } = useGetCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
   const { address, fetchAddress } = useGetAddress();
 
@@ -119,9 +119,10 @@ const OrderForm: React.FC = () => {
         setIsSubmit(false);
       }
     };
+    fetchCoupons();
     fetchData();
     fetchCategories();
-  }, [fetchCategories, formData.user_id, isSubmit]);
+  }, [fetchCategories,fetchCoupons, formData.user_id, isSubmit]);
 
   useEffect(() => {
     const fetchUserData = async () => {

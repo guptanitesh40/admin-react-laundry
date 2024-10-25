@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import BannerTable from "./BannerTable";
 import BannerModal from "./BannerModal";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 
 const Banner: React.FC = () => {
   const [search, setSearch] = useState<string>("");
@@ -9,10 +11,19 @@ const Banner: React.FC = () => {
   const [currentBanner, setCurrentBanner] = useState<any>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit,setIsSubmit] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearch(searchInput);
+    try {
+      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]); 
+      }
+    }
   };
 
   const handleAddBanner = () => {
@@ -30,7 +41,7 @@ const Banner: React.FC = () => {
   return (
     <div className="container-fixed relative">
 
-      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-5">
+      <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
         <h1 className="text-xl font-semibold leading-none text-gray-900">
           Banners
         </h1>
@@ -68,6 +79,7 @@ const Banner: React.FC = () => {
           </svg>
         </button>
       </form>
+      <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
       </div>
 
       <BannerTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setEditBanner={handleEditBanner} />

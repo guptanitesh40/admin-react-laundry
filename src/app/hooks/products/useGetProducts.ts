@@ -65,10 +65,6 @@ const useGetProducts = (
     }
   }, [pageNumber, perPage, sortOrder, sortColumn, search]);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []); 
-
   return { products, loading,totalProducts, fetchProducts };
 };
 

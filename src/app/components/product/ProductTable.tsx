@@ -113,6 +113,10 @@ const ProductTable: React.FC<ProductTableProps> = ({
     }
   }, [search]);
 
+  useEffect(() => {
+    fetchProducts();
+  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchProducts]);
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");

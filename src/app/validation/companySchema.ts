@@ -101,6 +101,7 @@ export const companySchema  = (isEdit: boolean = false) => {
     .test("required", "GSTIN is required", (value) => !!value),
 
   company_ownedby: Yup.string()
+    .nullable()
     .test("required", "Company Owned By is required", (value) => {
       if (value === null || value === "") return false;
       return true;
