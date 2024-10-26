@@ -1,12 +1,12 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const SEND_OTP_URL = `${import.meta.env.VITE_BASE_URL}/auth/forgot-password`;
+const SEND_OTP_URL = `${import.meta.env.VITE_BASE_URL}/user/validate`;
 
-const useSendOtp = () => {
+const useValidateOtp = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const sendOtp = async (mobile_number: any) => {
+  const validateOtp = async (mobile_number: number, otp: number) => {
     setLoading(true);
 
     try {
@@ -15,7 +15,7 @@ const useSendOtp = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ mobile_number }),
+        body: JSON.stringify({ mobile_number, otp }),
       });
 
       if (!response.ok) {
@@ -25,16 +25,14 @@ const useSendOtp = () => {
         return false;
       }
 
-      const data = await response.json();
-      toast.success(data.message, { position: "top-center" });
       return true;
     } catch {
-      toast.error("Error sending otp try again later", { position: "top-center" });
+      toast.error("Failed to validate otp!");
     } finally {
       setLoading(false);
     }
   };
-  return { sendOtp, loading };
+  return { validateOtp, loading };
 };
 
-export default useSendOtp;
+export default useValidateOtp;

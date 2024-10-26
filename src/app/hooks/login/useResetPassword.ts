@@ -6,8 +6,7 @@ const RESET_PASSWORD_URL = `${import.meta.env.VITE_BASE_URL}/auth/reset-password
 const useResetPassword = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const resetPassword = async (formData: any) => {
-    const token = localStorage.getItem("authToken");
+  const resetPassword = async (mobile_number: number, otp: number, new_password: string) => {
     setLoading(true);
 
     try {
@@ -15,9 +14,8 @@ const useResetPassword = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({mobile_number, otp, new_password }),
       });
 
       if (!response.ok) {
