@@ -17,8 +17,9 @@ export const couponSchema = Yup.object().shape({
   description: Yup.string()
     .required("Description is required")
     .max(255, "Max description length exceeded by 255 characters"),
-  discount_type: Yup.number().required("Please choose a discount type")
-  .test("required", "Please choose discount type", (value) => !!value),
+  discount_type: Yup.number()
+    .required("Please choose a discount type")
+    .test("required", "Please choose discount type", (value) => !!value),
 
   discount_value: Yup.number()
     .nullable()
@@ -27,13 +28,13 @@ export const couponSchema = Yup.object().shape({
       then: (schema) =>
         schema
           .typeError("Discount value must be a number")
-          .max(100, "Maximum discount is 100%")
-          .test("required", "Please enter discount value", (value) => !!value)
-          .required("Discount value is required"),
+          .max(1000, "Maximum flat discount is 1000"),
       otherwise: (schema) =>
         schema
           .typeError("Discount value must be a number")
-          .max(1000, "Maximum flat discount is 1000"),
+          .max(100, "Maximum discount is 100%")
+          .test("required", "Please enter discount value", (value) => !!value)
+          .required("Discount value is required"),
     }),
 
   start_time: Yup.date()

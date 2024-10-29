@@ -55,7 +55,12 @@ const Banner: React.FC = () => {
         <input
           type="search"
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => {
+          setSearchInput(e.target.value)
+          if(e.target.value === ""){
+            setSearch("");
+          }
+        }}
           className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] text-gray-700 outline-none focus:border-primary focus:bg-white border-primary"
           placeholder="Search"
         />

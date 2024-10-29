@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "react-hot-toast";
 
 const GET_PRICE_URL = `${import.meta.env.VITE_BASE_URL}/prices`;
 
@@ -9,39 +9,35 @@ interface Price {
 
 const useGetPrice = () => {
   const [prices, setPrices] = useState<Price[]>([]);
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchPrices = async () => {
-    const token = localStorage.getItem('authToken');
+  const fetchPrices = useCallback(async () => {
+    const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
       const response = await fetch(GET_PRICE_URL, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message, { position: "top-center" });
         return;
       }
 
       const data = await response.json();
       setPrices(data?.data || []);
     } catch (error) {
-      toast.error('Network error: Failed to fetch prices.');
+      toast.error("Network error: Failed to fetch.");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchPrices();
-  }, []); 
+  }, []);
 
   return { prices, loading, fetchPrices };
 };

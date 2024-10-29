@@ -10,7 +10,7 @@ const Product: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [currentProduct, setCurrentProduct] = useState<any>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [isSubmit,setIsSubmit] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleAddProduct = () => {
@@ -28,16 +28,18 @@ const Product: React.FC = () => {
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
       setSearch(searchInput);
       setErrorMessage("");
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        setErrorMessage(error.errors[0]); 
+        setErrorMessage(error.errors[0]);
       }
     }
   };
-
 
   return (
     <div className="container-fixed relative">
@@ -55,7 +57,12 @@ const Product: React.FC = () => {
           <input
             type="search"
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            onChange={(e) => {
+              setSearchInput(e.target.value);
+              if (e.target.value === "") {
+                setSearch("");
+              }
+            }}
             className="peer block min-h-[auto] w-full rounded border bg-transparent px-3 py-[0.32rem] leading-[1.6] text-gray-700 outline-none focus:border-gray-500 focus:bg-white border-gray-500"
             placeholder="Search"
           />
@@ -78,10 +85,17 @@ const Product: React.FC = () => {
             </svg>
           </button>
         </form>
-        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
+        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">
+          {errorMessage || "\u00A0"}
+        </p>
       </div>
 
-      <ProductTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setEditProduct={handleEditProduct}/>
+      <ProductTable
+        search={search}
+        isSubmit={isSubmit}
+        setIsSubmit={setIsSubmit}
+        setEditProduct={handleEditProduct}
+      />
 
       <ProductModal
         setIsSubmit={setIsSubmit}

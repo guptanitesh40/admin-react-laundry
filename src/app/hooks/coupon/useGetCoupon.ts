@@ -47,7 +47,6 @@ const useGetCoupon = () => {
       }
 
       const data = await response.json();
-      console.log("single coupon get in api",data?.data);
       setCoupon(data?.data);
     } catch (error) {
       toast.error("Network error: Failed to fetch.");

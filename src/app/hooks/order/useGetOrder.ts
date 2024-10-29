@@ -5,6 +5,8 @@ const GET_ORDER_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders`;
 const token = localStorage.getItem("authToken");
 
 interface Order {
+    address_details: string | null;
+    gst: number;
     estimated_pickup_time: string;
     estimated_delivery_time: string;
     user: any;
