@@ -5,7 +5,7 @@ const useGetUsersByRole = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [users, setUsers] = useState<any | null>(null);
 
-  const fetchUsersByRole = async (role_id: number, search: string) => {
+  const fetchUsersByRole = async (role_id: number, search: string = "") => {
     const token = localStorage.getItem("authToken");
     const GET_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/by-role?role_id=${role_id}`;
 

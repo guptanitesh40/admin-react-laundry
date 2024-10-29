@@ -5,13 +5,26 @@ import "../../style.css";
 import { login as loginAction } from "../utils/authSlice";
 import toast from "react-hot-toast";
 import useLogin from "../hooks/login/useLogin";
+import * as Yup from "yup";
 
 const device_type = "sasas";
 const device_token = "sdlknoin";
 
+const validationSchema = Yup.object({
+  username: Yup.string()
+    .required("Email is required")
+    .email("Enter a valid email")
+    .test("required", "Email is required", (value) => !!value),
+
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters long")
+    .required("password is required"),
+});
+
 const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const isAuthenticated = useSelector(
     (state: any) => state.auth.isAuthenticated
@@ -29,38 +42,51 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (username.length > 50) {
-      toast.error("Username must be 50 characters or fewer.", {
-        position: "top-center",
-      });
-      return;
-    }
+    try {
 
-    if (password.length > 50) {
-      toast.error("Password must be 50 characters or fewer.", {
-        position: "top-center",
-      });
-      return;
-    }
+      await validationSchema.validate({ username, password }, { abortEarly: false });
 
-    const success = await login(
-      username,
-      password,
-      1,
-      device_type,
-      device_token
-    );
+      if (username.length > 50) {
+        toast.error("Username must be 50 characters or fewer.", {
+          position: "top-center",
+        });
+        return;
+      }
 
-    if (success) {
-      dispatch(
-        loginAction({
-          isAuthenticated: true,
-          token: localStorage.getItem("authToken"),
-        })
+      if (password.length > 50) {
+        toast.error("Password must be 50 characters or fewer.", {
+          position: "top-center",
+        });
+        return;
+      }
+
+      const success = await login(
+        username,
+        password,
+        1,
+        device_type,
+        device_token
       );
-      navigate("/dashboard");
-    } else {
-      dispatch(loginAction({ isAuthenticated: false, token: null }));
+
+      if (success) {
+        dispatch(
+          loginAction({
+            isAuthenticated: true,
+            token: localStorage.getItem("authToken"),
+          })
+        );
+        navigate("/dashboard");
+      } else {
+        dispatch(loginAction({ isAuthenticated: false, token: null }));
+      }
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const formErrors: Record<string, string> = {};
+        error.inner.forEach((err) => {
+          formErrors[err.path || ""] = err.message;
+        });
+        setErrors(formErrors);
+      }
     }
   };
 
@@ -82,21 +108,29 @@ const Login: React.FC = () => {
 
               <div className="flex flex-col gap-1">
                 <label className="form-label text-gray-900" htmlFor="username">
-                  Email or Mobile no
+                  Email or Mobile Number
                 </label>
                 <input
                   id="username"
                   className="input border border-gray-300 rounded-md p-2"
-                  placeholder="Enter your email or mobile number"
+                  placeholder="email@example.com"
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}                  
+                  onChange={(e) => setUsername(e.target.value)}
                 />
+                <p className="right-[0.2rem] text-red-500 text-sm w-80">
+                  {errors.username || "\u00A0"}
+                </p>
               </div>
 
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between gap-1">
-                  <label className="form-label text-gray-900" htmlFor="password">Password</label>
+                  <label
+                    className="form-label text-gray-900"
+                    htmlFor="password"
+                  >
+                    Password
+                  </label>
                   <Link
                     className="text-2sm link shrink-0"
                     to="/forgot-password"
@@ -113,9 +147,11 @@ const Login: React.FC = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                   />
                 </div>
+                <p className="right-[0.2rem] text-red-500 text-sm w-80">
+                  {errors.password || "\u00A0"}
+                </p>
               </div>
 
               <button

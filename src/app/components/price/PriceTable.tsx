@@ -72,9 +72,10 @@ const PriceTable: React.FC<PriceTableProps> = ({
     fetchCategories();
     fetchProducts();
     fetchServices();
+    fetchPrices();
   }
     fetchData();
-  },[fetchCategories, fetchProducts, fetchServices])
+  },[fetchCategories, fetchProducts, fetchServices, fetchPrices])
 
   const getCombinations = useCallback(
     (
@@ -153,40 +154,33 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   useEffect(() => {
     if (isSave) {
-      const updatedData = { ...allPrices }; 
+      const updatedData = combinations
+        .map((combination) => {
+          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
   
-      filteredCombinations.forEach((combination) => {
-        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-  
-        if (updatedPrices[key] !== undefined) {
-          updatedData[key] = updatedPrices[key];  
-        } else {
-          updatedData[key] = combination.price;
-        }
-      });
-  
-      const payload = Object.keys(updatedData).map((key) => {
-        const [category_id, product_id, service_id] = key.split("_");
-        return {
-          category_id: parseInt(category_id, 10),
-          product_id: parseInt(product_id, 10),
-          service_id: parseInt(service_id, 10),
-          price: updatedData[key], 
-        };
-      });
+          return {
+            category_id: combination.category.category_id,
+            product_id: combination.product.product_id,
+            service_id: combination.service.service_id,
+            price:
+              updatedPrices[key] !== undefined
+                ? updatedPrices[key]
+                : combination.price,
+          };
+        })
+        .filter((combination) => combination.price > 0); 
   
       try {
-        addPrice(payload);
+        addPrice(updatedData);
         fetchPrices();
-        setEditing(new Set()); 
-        setAllPrices(updatedData); 
+        setEditing(new Set());
       } catch (error) {
         toast.error("Failed to save prices.");
       }
-  
-      setIsSave(false); 
     }
-  }, [isSave, updatedPrices, allPrices, addPrice, fetchPrices, setIsSave]);
+    setIsSave(false);
+  }, [isSave, addPrice, fetchPrices, combinations, updatedPrices]);
+  
   
   
 

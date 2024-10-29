@@ -54,8 +54,6 @@ const OrderForm: React.FC = () => {
   const { products, fetchProductsOnId } = useGetProductsOnId();
   const { services, fetchServicesOnId } = useGetServicesOnId();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const { id } = useParams<{ id: string }>();
@@ -82,7 +80,7 @@ const OrderForm: React.FC = () => {
     express_delivery_charges: null,
     shipping_charges: null,
     payment_type: null,
-    order_status: null,
+    order_status: 1,
     payment_status: null,
     sub_total: null,
     paid_amount: null,
@@ -104,10 +102,35 @@ const OrderForm: React.FC = () => {
     ],
   });
 
-  const [retrivedData, setRetrivedData] = useState<FormData | null>(null);
+  const [retrivedData, setRetrivedData] = useState({
+    coupon_code: "",
+    coupon_discount: null,
+    express_delivery_charges: null,
+    shipping_charges: null,
+    payment_type: null,
+    order_status: 1,
+    payment_status: null,
+    sub_total: null,
+    paid_amount: null,
+    transaction_id: "",
+    address_id: null,
+    username: "",
+    user_id: null,
+    items: [
+      {
+        category_id: null,
+        product_id: null,
+        service_id: null,
+        description: null,
+        price: null,
+        quantity: 1,
+        item_Total: null,
+        showDescription: false,
+      },
+    ],
+  });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,15 +143,16 @@ const OrderForm: React.FC = () => {
       }
     };
     fetchCoupons();
+    fetchPrices();
     fetchData();
     fetchCategories();
-  }, [fetchCategories,fetchCoupons, formData.user_id, isSubmit]);
+  }, [fetchCategories, fetchPrices, fetchCoupons, formData.user_id, isSubmit]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (userSearch && isSearchMode) {
-        await fetchUsersByRole(5,userSearch);
-      } 
+        await fetchUsersByRole(5, userSearch);
+      }
     };
     fetchUserData();
   }, [userSearch, isSearchMode]);
@@ -168,9 +192,9 @@ const OrderForm: React.FC = () => {
       };
 
       const calculatedSubTotal = calculateSubTotal(initialFormData);
-      setFormData({...initialFormData,sub_total: calculatedSubTotal});
+      setFormData({ ...initialFormData, sub_total: calculatedSubTotal });
       setRetrivedData({ ...initialFormData, sub_total: calculatedSubTotal });
-      }
+    }
   }, [order]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -198,7 +222,7 @@ const OrderForm: React.FC = () => {
         order_status: Number(formData.order_status),
         items: formattedItems,
       };
-     
+
       await orderSchema.validate(dataToValidate, { abortEarly: false });
 
       const isDataChanged = () => {
@@ -207,8 +231,8 @@ const OrderForm: React.FC = () => {
         });
       };
 
-      if (!isDataChanged()) { 
-        navigate("/orders"); 
+      if (!isDataChanged()) {
+        navigate("/orders");
         return;
       }
 
@@ -347,7 +371,6 @@ const OrderForm: React.FC = () => {
       const newSubTotal = calculateSubTotal(updatedFormData);
       return { ...updatedFormData, sub_total: newSubTotal };
     });
-    setIsDropdownOpen(false);
   };
 
   const handleChargeChange = (field: string, value: any) => {
@@ -406,7 +429,7 @@ const OrderForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="flex gap-6">
             <div className="relative flex flex-col flex-[0_0_40%]">
-              <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
                 User Name
               </label>
 
@@ -419,10 +442,10 @@ const OrderForm: React.FC = () => {
                 placeholder="Search User..."
               />
 
-              {userSearch && isSearchMode && (
+              {users && userSearch && isSearchMode && (
                 <ul className="absolute mt-20 bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm">
                   {users.length > 0 ? (
-                    users.map((user) => (
+                    users.map((user: any) => (
                       <li
                         key={user.user_id}
                         className="p-2 hover:bg-gray-100 cursor-pointer"
@@ -444,7 +467,7 @@ const OrderForm: React.FC = () => {
 
             <div className="grow flex">
               <div className="grow flex flex-col">
-                <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
+              <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
                   Address Details
                 </label>
                 <select
@@ -489,7 +512,7 @@ const OrderForm: React.FC = () => {
                 className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
               >
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
                     Category
                   </label>
                   <select
@@ -515,7 +538,7 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label htmlFor="product" className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="product" className="block text-gray-700 text-sm font-bold mb-2">
                     Product
                   </label>
                   <select
@@ -544,7 +567,7 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                  <label htmlFor="service" className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="service" className="block text-gray-700 text-sm font-bold mb-2">
                     Service
                   </label>
                   <select
@@ -629,7 +652,7 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col md:mb-0">
-                  <label htmlFor="description_checkbox" className="block text-gray-700 text-sm font-bold mb-2">
+                <label htmlFor="description_checkbox" className="block text-gray-700 text-sm font-bold mb-2">
                     Description
                   </label>
                   <input
@@ -674,7 +697,7 @@ const OrderForm: React.FC = () => {
               {item.showDescription && (
                 <div>
                   <div className="flex flex-col w-80 mb-8">
-                    <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
+                  <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
                       Description
                     </label>
                     <textarea
@@ -700,39 +723,38 @@ const OrderForm: React.FC = () => {
           </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col relative">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold" htmlFor="coupon_code">
                 Coupon Code
               </label>
-
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-gray-200 border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-300 w-full text-left flex justify-between items-center"
+              <select
+                id="coupon_code"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={formData.coupon_code || ""}
+                onChange={(e) => {
+                  const selectedCoupon = coupons.find(
+                    (coupon) => coupon.code === e.target.value
+                  );
+                  handleDropdownChange(
+                    selectedCoupon?.code,
+                    selectedCoupon?.discount_value
+                  );
+                }}
               >
-                <span>{formData.coupon_code || "Select Coupon code"}</span>
-                <span className="ml-2">&#9662;</span>
-              </button>
-
-              {isDropdownOpen && (
-                <ul className="dropdown-menu scrollable-menu absolute z-10 mt-[73px] w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                  {coupons.map((coupon) => (
-                    <li
-                      key={coupon.coupon_id}
-                      className="cursor-pointer hover:bg-gray-100"
-                      onClick={() =>
-                        handleDropdownChange(coupon.code, coupon.discount_value)
-                      }
-                    >
-                      <div className="block px-4 py-2 text-sm">
-                        {coupon.code}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              <p className="w-full text-red-500 text-sm">
+                <option value="" disabled>
+                  Select Coupon Code
+                </option>
+                {coupons && coupons.length > 0 ? (
+                  coupons.map((coupon) => (
+                    <option key={coupon.coupon_id} value={coupon.code}>
+                      {coupon.code}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Coupons available</option>
+                )}
+              </select>
+              <p className="text-red-500 text-sm">
                 {errors.coupon_code || "\u00A0"}
               </p>
             </div>
@@ -753,7 +775,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="express_delivery_charges" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="express_delivery_charges" className="block text-gray-700 text-sm font-bold mb-2">
                 Express Delivery Charges
               </label>
               <input
@@ -772,7 +794,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="shipping_charges" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="shipping_charges" className="block text-gray-700 text-sm font-bold mb-2">
                 Shipping Charges
               </label>
               <input
@@ -806,7 +828,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="paid_amount" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="paid_amount" className="block text-gray-700 text-sm font-bold mb-2">
                 Paid amount
               </label>
               <input
@@ -829,7 +851,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="payment_method" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="payment_method" className="block text-gray-700 text-sm font-bold mb-2">
                 Payment Method
               </label>
               <select
@@ -855,7 +877,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="payment_status" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="payment_status" className="block text-gray-700 text-sm font-bold mb-2">
                 Payment Status
               </label>
               <select
@@ -882,7 +904,7 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="transaction_id" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="transaction_id" className="block text-gray-700 text-sm font-bold mb-2">
                 Transaction ID
               </label>
               <input

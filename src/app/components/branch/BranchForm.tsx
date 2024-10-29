@@ -31,7 +31,7 @@ const BranchForm: React.FC = () => {
   const pageNumber = 1;
 
   const { branch, fetchBranch } = useGetBranch();
-  const { companies, fetchCompanies } = useGetCompanies(pageNumber, perPage);
+  const { companies } = useGetCompanies(pageNumber, perPage);
   const { users, fetchUsersByRole } = useGetUsersByRole();
 
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ const BranchForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchBranch(branch_id);
-      await fetchUsersByRole(3,"");
+      await fetchUsersByRole(3);
     };
     fetchData();
   }, [branch_id]);
@@ -177,11 +177,11 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="role_id">
+            <label className="mb-2 font-semibold" htmlFor="branch_manager_id">
               Branch Manager
             </label>
             <select
-              id="role_id"
+              id="branch_manager_id"
               className="select border border-gray-300 rounded-md p-2 w-full text-sm"
               value={formData.branch_manager_id || ""}
               onChange={(e) =>
