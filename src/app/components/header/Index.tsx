@@ -24,6 +24,8 @@ export const Header: React.FC = () => {
     navigate("/login");
   };
 
+  if(!user) return;
+
   return (
     <header
       className="header fixed top-0 z-10 left-0 right-0 flex items-stretch shrink-0 bg-[#fefefe] dark:bg-coal-500"

@@ -3648,6 +3648,30 @@ video {
   border-color: var(--tw-dark-clarity);
 }
 
+.badge-pending {
+  color: var(--tw-warning);
+  background-color: var(--tw-warning-light);
+  border-color: var(--tw-warning-clarity);
+}
+
+.badge-in-process {
+  color: var(--tw-primary);
+  background-color: var(--tw-primary-light);
+  border-color: var(--tw-primary-clarity);
+}
+
+.badge-ready-to-deliver {
+  color: var(--tw-success);
+  background-color: var(--tw-success-light);
+  border-color: var(--tw-success-clarity);
+}
+
+.badge-delivery-complete {
+  color: var(--tw-gray-700);
+  background-color: var(--tw-gray-300);
+  border-color: var(--tw-gray-400);
+}
+
 .rating {
   display: inline-flex;
   align-items: stretch;
