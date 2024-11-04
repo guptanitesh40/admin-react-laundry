@@ -62,3 +62,5 @@ export { default as useSendOtp } from './login/useSendOtp';
 export { default as useResetPassword } from './login/useResetPassword';
 export { default as useValidateOtp } from './login/useValidateOtp';
 
+export { default as useGetOrdersData } from './report/useGetOrdersData';
+

@@ -13,7 +13,7 @@ interface Order {
     username: string;
     order_id: number; 
     user_id: number; 
-    order_status: string; 
+    order_status: number; 
     shipping_charge: number;
     express_delivery_charges: number;
     coupon_code: string; 
@@ -22,7 +22,7 @@ interface Order {
     address_id: number | null; 
     paid_amount: number;
     payment_type: string;
-    payment_status: string; 
+    payment_status: number; 
     kasar_amount: number; 
     items: any[];
     sub_total: number;

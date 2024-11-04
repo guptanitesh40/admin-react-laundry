@@ -77,7 +77,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
         } else {
           Swal.fire(message);
         }
-      } 
+      }
     } catch (error: any) {
       Swal.fire({
         title: "Error",
@@ -144,6 +144,34 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
+  };
+
+  const getOrderStatusLabel = (status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.Pending:
+        return "badge badge-pending";
+      case OrderStatus["In Process"]:
+        return "badge badge-in-process";
+      case OrderStatus["Ready to delivery"]:
+        return "badge badge-ready-to-deliver";
+      case OrderStatus["Delivery complete"]:
+        return "badge badge-delivery-complete";
+      default:
+        return "badge";
+    }
+  };
+
+  const getPaymentStatusLabel = (status: PaymentStatus) => {
+    switch (status) {
+      case PaymentStatus.Pending:
+        return "badge badge-pending";
+      case PaymentStatus["Partial received"]:
+        return "badge badge-ready-to-deliver";
+      case PaymentStatus["Received"]:
+        return "badge badge-delivery-complete";
+      default:
+        return "badge";
+    }
   };
 
   return (
@@ -525,16 +553,14 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                         <div className="flex cursor-pointer mt-2">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "gst" &&
-                              sortOrder === "ASC"
+                              sortColumn === "gst" && sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "gst" &&
-                              sortOrder === "DESC"
+                              sortColumn === "gst" && sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -681,85 +707,108 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                   <TableShimmer />
                 ) : orders.length !== null ? (
                   <tbody>
-                    {orders.map((order) => (
-                      <tr key={order.order_id}>
-                        <td>{order.order_id}</td>
-                        <td>
-                          {order.user.first_name + " " + order.user.last_name}
-                        </td>
-                        <td>{order.user.email}</td>
-                        <td>{order.user.mobile_number}</td>
-                        <td>{order.address_details}</td>
-                        <td>{order.description}</td>
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
-                        <td>
-                          {
-                            OrderStatus[
-                              order.order_status as unknown as keyof typeof OrderStatus
-                            ]
-                          }
-                        </td>
+                    {orders.map((order) => {
+                      const orderStatusLabel =
+                        OrderStatus[
+                          order.order_status as unknown as keyof typeof OrderStatus
+                        ];
+                      const orderStatusClass = getOrderStatusLabel(
+                        order.order_status
+                      );
 
-                        <td>
-                        <div className="flex flex-col">
-                          {dayjs(order.estimated_delivery_time).format("DD-MM-YYYY")}                          
-                        </div>
-                        </td>
-                        <td>
-                        <div className="flex flex-col">
-                          {dayjs(order.estimated_pickup_time).format("DD-MM-YYYY")}                          
-                        </div>
-                        </td>
-                        <td>{order.shipping_charges}</td>
-                        <td>{order.express_delivery_charges}</td>
-                        <td>{order.gst}</td>
-                        <td>{order.kasar_amount}</td>
-                        <td>{order.sub_total}</td>
-                        <td>{order.total}</td>
-                        <td>
-                          {
-                            PaymentType[
-                              order.payment_type as unknown as keyof typeof PaymentType
-                            ]
-                          }
-                        </td>
+                      const paymentStatusLabel =
+                        PaymentStatus[
+                          order.payment_status as unknown as keyof typeof PaymentStatus
+                        ];
+                      const paymentStatusClass = getPaymentStatusLabel(
+                        order.payment_status
+                      );
 
-                        <td>
-                          {
-                            PaymentStatus[
-                              order.payment_status as unknown as keyof typeof PaymentStatus
-                            ]
-                          }
-                        </td>
-
-                        <td>
-                          <div className="flex">
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                              onClick={() => handleViewOrder(order.order_id)}
+                      return (
+                        <tr key={order.order_id}>
+                          <td>{order.order_id}</td>
+                          <td>
+                            {order.user.first_name + " " + order.user.last_name}
+                          </td>
+                          <td>{order.user.email}</td>
+                          <td>{order.user.mobile_number}</td>
+                          <td>{order.address_details}</td>
+                          <td>{order.description}</td>
+                          <td>{order.coupon_code}</td>
+                          <td>{order.coupon_discount}</td>
+                          <td>
+                            <span
+                              className={`${orderStatusClass} badge-outline rounded-[30px]`}
                             >
-                              <BsFillInfoCircleFill
-                                size={18}
-                                className="text-yellow-600"
-                              />
-                            </button>
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                              onClick={() => handleUpdateOrder(order.order_id)}
+                              {orderStatusLabel}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="flex flex-col">
+                              {dayjs(order.estimated_delivery_time).format(
+                                "DD-MM-YYYY"
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="flex flex-col">
+                              {dayjs(order.estimated_pickup_time).format(
+                                "DD-MM-YYYY"
+                              )}
+                            </div>
+                          </td>
+                          <td>{order.shipping_charges}</td>
+                          <td>{order.express_delivery_charges}</td>
+                          <td>{order.gst}</td>
+                          <td>{order.kasar_amount}</td>
+                          <td>{order.sub_total}</td>
+                          <td>{order.total}</td>
+                          <td>
+                            {
+                              PaymentType[
+                                order.payment_type as keyof typeof PaymentType
+                              ]
+                            }
+                          </td>
+                          <td>
+                            <span
+                              className={`${paymentStatusClass} badge-outline rounded-[30px]`}
                             >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                              onClick={() => handleDeleteOrder(order.order_id)}
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                              {paymentStatusLabel}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="flex">
+                              <button
+                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                                onClick={() => handleViewOrder(order.order_id)}
+                              >
+                                <BsFillInfoCircleFill
+                                  size={18}
+                                  className="text-yellow-600"
+                                />
+                              </button>
+                              <button
+                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                onClick={() =>
+                                  handleUpdateOrder(order.order_id)
+                                }
+                              >
+                                <FaPencilAlt className="text-yellow-600" />
+                              </button>
+                              <button
+                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                onClick={() =>
+                                  handleDeleteOrder(order.order_id)
+                                }
+                              >
+                                <FaTrash className="text-red-500" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 ) : (
                   <tbody>
