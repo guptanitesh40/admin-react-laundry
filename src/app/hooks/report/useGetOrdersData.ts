@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface OrderData {
-  map(): any;
   day: string;
   count: number;
 }
