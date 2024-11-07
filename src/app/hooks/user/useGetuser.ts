@@ -9,6 +9,7 @@ interface User {
   password: string;
   gender: number;
   role_id: number;
+  image: string;
 }
 
 const useGetUser = () => {
@@ -16,6 +17,12 @@ const useGetUser = () => {
   const [user, setUser] = useState<User | null>(null);
 
     const fetchUser = async (user_id: number) => {
+
+      if (!user_id) {
+        setUser(null); 
+        return;
+      }
+
       const token = localStorage.getItem("authToken");
       const GET_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/${user_id}`;
 

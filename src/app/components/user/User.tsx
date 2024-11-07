@@ -1,27 +1,18 @@
 import React, { useState } from "react";
 import UserTable from "./UserTable";
-import UserModal from "./UserModal";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
+import { useNavigate } from "react-router-dom";
 
 const User: React.FC = () => {
+  const navigate = useNavigate();
+
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [editMode, setEditMode] = useState<boolean>(false);
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleEditUser = (user_id:number) => {
-    setEditMode(true);
-    setCurrentUser(user_id);
-    setModalIsOpen(true);
-  }
-
   const handleAddUser = () => {
-    setModalIsOpen(true);
-    setCurrentUser(null);
+    navigate("/user/add");
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,19 +75,7 @@ const User: React.FC = () => {
         <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
       </div>
 
-      <UserTable
-        search={search}
-        isSubmit={isSubmit}
-        setIsSubmit={setIsSubmit}
-        setEditUser={handleEditUser}
-      />
-
-      <UserModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        user_id={currentUser}
-      />
+      <UserTable search={search}/>      
     </div>
   );
 };

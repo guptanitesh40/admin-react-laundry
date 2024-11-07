@@ -44,8 +44,10 @@ const LineChart = () => {
 
   return (
     <div className="container-fixed">
+      <div className="w-96">
       <h2>Orders</h2>      
       <Line data={formattedData} options={options} />
+      </div>
     </div>
   );
 };

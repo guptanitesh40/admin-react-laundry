@@ -8,23 +8,15 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
 
 interface UserTableProps {
   search: string;
-  isSubmit: boolean;
-  setIsSubmit: (value: boolean) => void;
-  setEditUser: (user: any) => void;
 }
 
-const UserTable: React.FC<UserTableProps> = ({
-  search,
-  isSubmit,
-  setIsSubmit,
-  setEditUser
-}) => {
+const UserTable: React.FC<UserTableProps> = ({search}) => {
   const { deleteUser } = useDeleteUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -43,14 +35,13 @@ const UserTable: React.FC<UserTableProps> = ({
     sortOrder
   );
 
+  const navigate = useNavigate();
+
   const totalPages = Math.ceil(totalUsers / perPage);
 
-  useEffect(() => {
-    if (isSubmit) {
-      fetchUsers();
-      setIsSubmit(false);
-    }
-  }, [isSubmit, fetchUsers]);
+  const handleUpdateUser = (user_id: number) => {
+    navigate(`/user/edit/${user_id}`);
+  }
 
   useEffect(() => {
     if (pageParams) {
@@ -75,9 +66,6 @@ const UserTable: React.FC<UserTableProps> = ({
         perPage: perPage.toString(),
       });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchUsers();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchUsers]);
 
@@ -349,7 +337,7 @@ const UserTable: React.FC<UserTableProps> = ({
                         <td>
                           <button 
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => setEditUser(user.user_id)}
+                          onClick={() => handleUpdateUser(user.user_id)}
                           >
                             <FaPencilAlt
                               className="text-yellow-600"                              
