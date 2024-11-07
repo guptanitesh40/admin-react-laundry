@@ -12,6 +12,19 @@ import useGetUser from "../../hooks/user/useGetuser";
 import { useNavigate, useParams } from "react-router-dom";
 import MultiSelect from "multiselect-react-dropdown";
 
+interface FormData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  mobile_number: string;
+  gender: number | null;
+  role_id: number | null;
+  image: string | File;
+  companies: any[];
+  branches: any[];
+}
+
 const UserForm: React.FC = () => {
   const { addUser, loading: adding } = useAddUser();
   const { updateUser, loading: updating } = useUpdateUser();
@@ -29,7 +42,7 @@ const UserForm: React.FC = () => {
   const { branches, fetchBranches } = useGetBranches();
   const [branchOptions, setBranchOptions] = useState([]);
 
-  const [formData, setFormData] = useState({
+  const formDataState: FormData = {
     first_name: "",
     last_name: "",
     email: "",
@@ -40,21 +53,10 @@ const UserForm: React.FC = () => {
     image: "" as string | File,
     companies: [],
     branches: [],
-  });
+  };
 
-  const [initialFormData, setInitialFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    mobile_number: "",
-    gender: null,
-    role_id: null,
-    image: "" as string | File,
-    companies: [],
-    branches: [],
-  });
-
+  const [formData, setFormData] = useState(formDataState);
+  const [initialFormData, setInitialFormData] = useState(formDataState);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -102,30 +104,8 @@ const UserForm: React.FC = () => {
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
     } else {
-      setFormData({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        mobile_number: "",
-        gender: null,
-        role_id: null,
-        companies: [],
-        image: "" as string | File,
-        branches: [],
-      });
-      setInitialFormData({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        mobile_number: "",
-        gender: null,
-        role_id: null,
-        image: "",
-        companies: [],
-        branches: [],
-      });
+      setFormData(formDataState);
+      setInitialFormData(formDataState);
       setErrors({});
     }
   }, [user]);
@@ -329,7 +309,7 @@ const UserForm: React.FC = () => {
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  role_id: e.target.value ? parseInt(e.target.value) : "",
+                  role_id: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
             >
@@ -383,36 +363,40 @@ const UserForm: React.FC = () => {
             </div>
           )}
 
-          {(formData.role_id === 2 || formData.role_id === 3) && (<div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="role_id">
-              Branch
-            </label>
-            <MultiSelect
-              options={branchOptions}
-              displayValue="branch_name"
-              selectedValues={formData.branches.map((branch_id) =>
-                branchOptions.find((option) => option.branch_id === branch_id)
-              )}
-              onSelect={(selectedList) => {
-                setFormData({
-                  ...formData,
-                  branches: selectedList.map(
-                    (branch: { branch_id: any }) => branch.branch_id
-                  ),
-                });
-              }}
-              onRemove={(selectedList) => {
-                setFormData({
-                  ...formData,
-                  branches: selectedList.map(
-                    (branch: { branch_id: any }) => branch.branch_id
-                  ),
-                });
-              }}
-              isObject={true}
-            />
-            <p className="text-red-500 text-sm">{errors.branches || "\u00A0"}</p>
-          </div>)}
+          {(formData.role_id === 2 || formData.role_id === 3) && (
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold" htmlFor="role_id">
+                Branch
+              </label>
+              <MultiSelect
+                options={branchOptions}
+                displayValue="branch_name"
+                selectedValues={formData.branches.map((branch_id) =>
+                  branchOptions.find((option) => option.branch_id === branch_id)
+                )}
+                onSelect={(selectedList) => {
+                  setFormData({
+                    ...formData,
+                    branches: selectedList.map(
+                      (branch: { branch_id: any }) => branch.branch_id
+                    ),
+                  });
+                }}
+                onRemove={(selectedList) => {
+                  setFormData({
+                    ...formData,
+                    branches: selectedList.map(
+                      (branch: { branch_id: any }) => branch.branch_id
+                    ),
+                  });
+                }}
+                isObject={true}
+              />
+              <p className="text-red-500 text-sm">
+                {errors.branches || "\u00A0"}
+              </p>
+            </div>
+          )}
 
           <div className="flex flex-col">
             <label className="mb-2 font-semibold">Gender</label>
