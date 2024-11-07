@@ -54,7 +54,7 @@ const BranchProfile: React.FC = () => {
                   Manager:
                 </td>
                 <td className="text-sm font-medium text-gray-800 pb-3">
-                  {branch.branch_manager_id}
+                  {branch.branchManager.first_name} {branch.branchManager.last_name}
                 </td>
               </tr>
               <tr>
@@ -83,10 +83,10 @@ const BranchProfile: React.FC = () => {
               </tr>
               <tr>
                 <td className="text-sm font-medium text-gray-500 pb-3 pe-4 lg:pe-10">
-                  Company ID:
+                  Company :
                 </td>
                 <td className="text-sm font-medium text-gray-800 pb-3">
-                  {branch.company_id}
+                  {branch.company.company_name}
                 </td>
               </tr>
             </tbody>

@@ -14,8 +14,5 @@ export const userSchema = (isEdit: boolean = false) => {
       .required("Mobile number is required"),
     gender: Yup.number().required("Gender is required"),
     role_id: Yup.number().required("Role is required"),
-    otp: isEdit
-      ? Yup.string()
-      : Yup.string().required("OTP is required"),
   });
 };

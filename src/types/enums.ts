@@ -34,6 +34,7 @@ export enum Role {
   "Delivery Boy" = 4,
   "Customer" = 5,
   "Workshop Manager" = 6,
+  "Vendor" = 7,
 }
 
 export enum Gender {

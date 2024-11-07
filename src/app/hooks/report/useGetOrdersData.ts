@@ -11,7 +11,7 @@ const useGetOrdersData = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchOrdersData = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken");
     const GET_ORDERDATA_URL = `${import.meta.env.VITE_BASE_URL}/report/total-orders`;
 
     setLoading(true);
@@ -20,7 +20,7 @@ const useGetOrdersData = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
