@@ -78,10 +78,6 @@ const useGetCompany = (
       setLoading(false);
     }
   }, [pageNumber, perPage, sortOrder, sortColumn, search]);
-
-  useEffect(() => {
-    fetchCompanies();
-  },[])
   
   return { companies, loading, totalCount, fetchCompanies };
 };

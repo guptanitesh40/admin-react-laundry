@@ -12,9 +12,11 @@ export enum DiscountType {
 export enum OrderStatus {
   "Pending" = 1,
   "In Process" = 2,
-  "Ready to delivery" = 3,
-  "Delivery complete" = 4,
+  "Work in Progress" = 3,
+  "Ready to delivery" = 4,
+  "Delivery complete" = 5,
 }
+
 
 export enum PaymentStatus {
   "Pending" = 1,

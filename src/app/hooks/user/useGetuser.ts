@@ -10,6 +10,8 @@ interface User {
   gender: number;
   role_id: number;
   image: string;
+  branch_ids: [];
+  company_ids: [];
 }
 
 const useGetUser = () => {

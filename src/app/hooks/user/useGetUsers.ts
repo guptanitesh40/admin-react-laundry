@@ -11,6 +11,8 @@ interface User {
   mobile_number: string;
   gender: string;
   role_id: number;
+  branch_ids: [];
+  company_ids: [];
 }
 
 const useGetUsers = (
