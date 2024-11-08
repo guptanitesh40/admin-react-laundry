@@ -136,7 +136,6 @@ const UserForm: React.FC = () => {
     };
 
     try {
-      console.log(user_id);
       const schema = userSchema(!!user_id);
       await schema.validate(formData, {
         abortEarly: false,
