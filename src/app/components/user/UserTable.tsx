@@ -16,7 +16,7 @@ interface UserTableProps {
   search: string;
 }
 
-const UserTable: React.FC<UserTableProps> = ({search}) => {
+const UserTable: React.FC<UserTableProps> = ({ search }) => {
   const { deleteUser } = useDeleteUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -41,7 +41,7 @@ const UserTable: React.FC<UserTableProps> = ({search}) => {
 
   const handleUpdateUser = (user_id: number) => {
     navigate(`/user/edit/${user_id}`);
-  }
+  };
 
   useEffect(() => {
     if (pageParams) {
@@ -57,11 +57,6 @@ const UserTable: React.FC<UserTableProps> = ({search}) => {
       setCurrentPage(1);
       setSearchParams({
         search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    } else {
-      setSearchParams({
         page: "1",
         perPage: perPage.toString(),
       });

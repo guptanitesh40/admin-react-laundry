@@ -31,7 +31,7 @@ const BranchForm: React.FC = () => {
   const pageNumber = 1;
 
   const { branch, fetchBranch } = useGetBranch();
-  const { companies } = useGetCompanies(pageNumber, perPage);
+  const { companies, fetchCompanies } = useGetCompanies(pageNumber, perPage);
   const { users, fetchUsersByRole } = useGetUsersByRole();
 
   const navigate = useNavigate();
@@ -61,6 +61,7 @@ const BranchForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchBranch(branch_id);
+      await fetchCompanies();
       await fetchUsersByRole(3);
     };
     fetchData();

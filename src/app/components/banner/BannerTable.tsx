@@ -146,7 +146,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPerPage = Number(e.target.value);
-    setPerPage(newPerPage);
+    setPerPage(newPerPage); 
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };

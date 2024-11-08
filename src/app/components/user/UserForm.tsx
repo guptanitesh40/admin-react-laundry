@@ -95,7 +95,7 @@ const UserForm: React.FC = () => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        password: user.password,
+        password: "",
         mobile_number: user.mobile_number,
         gender: user.gender,
         role_id: user.role_id,
@@ -363,7 +363,7 @@ const UserForm: React.FC = () => {
             </div>
           )}
 
-          {(formData.role_id === 2 || formData.role_id === 3) && (
+          {formData.role_id === 3 && (
             <div className="flex flex-col">
               <label className="mb-2 font-semibold" htmlFor="role_id">
                 Branch
