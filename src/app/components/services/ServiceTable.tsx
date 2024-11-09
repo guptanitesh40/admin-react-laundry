@@ -80,6 +80,14 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
   };
 
   useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
     fetchServices();
   }, [currentPage, perPage, search, sortColumn, sortOrder, fetchServices]);
 
@@ -91,24 +99,6 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
       setPerPage(Number(perPageParams));
     }
   }, [pageParams, perPageParams]);
-
-  useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1", 
-        perPage: perPage.toString()      
-      });
-    }
-    else
-    {
-      setSearchParams({
-        page: "1", 
-        perPage: perPage.toString()      
-      });
-    }
-  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

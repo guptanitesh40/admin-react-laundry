@@ -1,5 +1,5 @@
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import { useDeleteUser, useGetOrder, useGetUsers } from "../../hooks";
+import { useDeleteUser, useGetBranches, useGetCompanies, useGetOrder, useGetUsers } from "../../hooks";
 import TableShimmer from "../shimmer/TableShimmer";
 import { useEffect, useState } from "react";
 import {
@@ -16,16 +16,21 @@ interface UserTableProps {
   search: string;
 }
 
+interface User {
+  company_ids: number[];
+  branch_ids: number[];
+}
+
 const UserTable: React.FC<UserTableProps> = ({ search }) => {
-  const { deleteUser } = useDeleteUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
-
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
+  const perPageForList = 1000;
+  const pageNumberForList = 1;
 
   const { users, fetchUsers, totalUsers, loading } = useGetUsers(
     currentPage,
@@ -34,6 +39,9 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
     sortColumn,
     sortOrder
   );
+  const { deleteUser } = useDeleteUser();
+  const { companies, fetchCompanies } = useGetCompanies(pageNumberForList, perPageForList);
+  const { branches, fetchBranches } = useGetBranches(pageNumberForList, perPageForList);
 
   const navigate = useNavigate();
 
@@ -42,6 +50,14 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
   const handleUpdateUser = (user_id: number) => {
     navigate(`/user/edit/${user_id}`);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchCompanies();
+      await fetchBranches();
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (pageParams) {
@@ -255,31 +271,6 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                       </div>
                     </th>
 
-                    <th className="min-w-[170px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("role_id")}
-                      >
-                        Role
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-
                     <th className="min-w-[150px]">
                       <div
                         className="flex justify-between cursor-pointer"
@@ -304,6 +295,39 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         </div>
                       </div>
                     </th>
+
+                    <th className="min-w-[170px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("role_id")}
+                      >
+                        Role
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "role_id" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "role_id" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th> 
+                    
+                    <th className="min-w-[250px]">
+                      Companies
+                    </th>
+                    <th className="min-w-[250px]">
+                      Branches
+                    </th>                         
+
                     <th className="min-w-[140px]">Actions</th>
                   </tr>
                 </thead>
@@ -320,15 +344,23 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         <td>{user.email}</td>
                         <td>{user.mobile_number}</td>
                         <td>
-                          {Role[user.role_id as unknown as keyof typeof Role]}
-                        </td>
-                        <td>
                           {
                             Gender[
                               user.gender as unknown as keyof typeof Gender
                             ]
                           }
                         </td>
+                        <td>
+                          {Role[user.role_id as unknown as keyof typeof Role]}
+                        </td>
+                        <td>{companies
+                        .filter((company) => (user.company_ids as number[]).includes(company.company_id))
+                        .map((company) => company.company_name)
+                        .join(", ")}</td>
+                        <td>{branches
+                        .filter((branch) => (user.branch_ids as number[]).includes(branch.branch_id))
+                        .map((branch) => branch.branch_name)  
+                        .join(", ")}</td>                    
                         <td>
                           <button 
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"

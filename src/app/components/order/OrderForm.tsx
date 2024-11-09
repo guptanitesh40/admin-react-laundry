@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
+  useApplyCoupon,
   useGetAddress,
   useGetCategories,
   useGetCoupons,
@@ -71,6 +72,7 @@ const OrderForm: React.FC = () => {
   const { coupons, fetchCoupons } = useGetCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
   const { address, fetchAddress } = useGetAddress();
+  const { applyCoupon } = useApplyCoupon();
 
   const navigate = useNavigate();
 
@@ -361,12 +363,16 @@ const OrderForm: React.FC = () => {
     return prices[key] || 0;
   };
 
-  const handleDropdownChange = (code: string, discount_value: number) => {
+  const handleDropdownChange = (code: string) => {
+
     setFormData((prev) => {
+      
+      const couponDiscount = applyCoupon(formData.user_id, formData.sub_total, code);
+
       const updatedFormData = {
         ...prev,
         coupon_code: code,
-        coupon_discount: discount_value,
+        coupon_discount: couponDiscount
       };
       const newSubTotal = calculateSubTotal(updatedFormData);
       return { ...updatedFormData, sub_total: newSubTotal };
@@ -737,7 +743,6 @@ const OrderForm: React.FC = () => {
                   );
                   handleDropdownChange(
                     selectedCoupon?.code,
-                    selectedCoupon?.discount_value
                   );
                 }}
               >

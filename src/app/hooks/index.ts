@@ -23,6 +23,7 @@ export { default as useGetCoupon } from './coupon/useGetCoupon';
 export { default as useAddCoupon } from './coupon/useAddCoupon';
 export { default as useDeleteCoupon } from './coupon/useDeleteCoupon';
 export { default as useUpdateCoupon } from './coupon/useUpdateCoupon';
+export { default as useApplyCoupon } from './coupon/useApplyCoupon';
 
 export { default as useGetPrice } from './price/useGetPrice';
 export { default as useAddPrice } from './price/useAddPrice';

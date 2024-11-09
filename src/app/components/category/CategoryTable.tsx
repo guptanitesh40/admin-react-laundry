@@ -148,13 +148,12 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   useEffect(() => {
     if (search) {
       setCurrentPage(1);
-      setSearchParams({ search, page: "1", perPage: perPage.toString() });
-    } else {
-      setSearchParams({ page: "1", perPage: perPage.toString() });
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchCategories();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchCategories]);
 

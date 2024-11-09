@@ -105,15 +105,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         page: "1",
         perPage: perPage.toString(),
       });
-    } else {
-      setSearchParams({
-        page: "1",
-        perPage: perPage.toString(),
-      });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchProducts();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchProducts]);
 

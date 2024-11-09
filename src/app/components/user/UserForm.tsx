@@ -21,9 +21,9 @@ interface FormData {
   gender: number | null;
   role_id: number | null;
   image: string | File;
-  companies: any[];
-  branches: any[];
-}
+  company_ids: any[];
+  branch_ids: any[];
+} 
 
 const UserForm: React.FC = () => {
   const { addUser, loading: adding } = useAddUser();
@@ -39,7 +39,7 @@ const UserForm: React.FC = () => {
   const { companies, fetchCompanies } = useGetCompanies(pageNumber, perPage);
   const { user, fetchUser } = useGetUser();
   const [companyOptions, setCompanyOptions] = useState([]);
-  const { branches, fetchBranches } = useGetBranches();
+  const { branches, fetchBranches } = useGetBranches(pageNumber, perPage);
   const [branchOptions, setBranchOptions] = useState([]);
 
   const formDataState: FormData = {
@@ -51,8 +51,8 @@ const UserForm: React.FC = () => {
     gender: null,
     role_id: null,
     image: "" as string | File,
-    companies: [],
-    branches: [],
+    company_ids: [],
+    branch_ids: [],
   };
 
   const [formData, setFormData] = useState(formDataState);
@@ -99,8 +99,9 @@ const UserForm: React.FC = () => {
         mobile_number: user.mobile_number,
         gender: user.gender,
         role_id: user.role_id,
+        branch_ids: user.branch_ids,
+        company_ids: user.company_ids,
       };
-
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
     } else {
@@ -128,12 +129,6 @@ const UserForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const formattedData = {
-      ...formData,
-      company_ids: formData.companies,
-      branch_ids: formData.branches,
-    };
 
     try {
       const schema = userSchema(!!user_id);
@@ -163,18 +158,18 @@ const UserForm: React.FC = () => {
       let success;
       if (user_id) {
         const formDataToSend = new FormData();
-        (Object.keys(formattedData) as (keyof typeof formattedData)[]).forEach(
+        (Object.keys(formData) as (keyof typeof formData)[]).forEach(
           (key) => {
             if (key === "image" && formData.image instanceof File) {
               formDataToSend.append(key, formData.image);
             } else {
-              formDataToSend.append(key, formattedData[key] as string | Blob);
+              formDataToSend.append(key, formData[key] as string | Blob);
             }
           }
         );
-        success = await updateUser(user_id, formattedData);
+        success = await updateUser(user_id, formData);
       } else {
-        success = await addUser(formattedData);
+        success = await addUser(formData);
       }
 
       if (success) {
@@ -334,23 +329,21 @@ const UserForm: React.FC = () => {
               <MultiSelect
                 options={companyOptions}
                 displayValue="company_name"
-                selectedValues={formData.companies.map((company_id) =>
-                  companyOptions.find(
-                    (option) => option.company_id === company_id
-                  )
+                selectedValues={companyOptions.filter((option) =>
+                  formData.company_ids.includes(option.company_id)
                 )}
                 onSelect={(selectedList) => {
                   setFormData({
                     ...formData,
-                    companies: selectedList.map(
-                      (comapany: { company_id: any }) => comapany.company_id
+                    company_ids: selectedList.map(
+                      (company: { company_id: any }) => company.company_id
                     ),
                   });
                 }}
                 onRemove={(selectedList) => {
                   setFormData({
                     ...formData,
-                    companies: selectedList.map(
+                    company_ids: selectedList.map(
                       (company: { company_id: any }) => company.company_id
                     ),
                   });
@@ -358,7 +351,7 @@ const UserForm: React.FC = () => {
                 isObject={true}
               />
               <p className="text-red-500 text-sm">
-                {errors.companies || "\u00A0"}
+                {errors.company_ids || "\u00A0"}
               </p>
             </div>
           )}
@@ -371,13 +364,13 @@ const UserForm: React.FC = () => {
               <MultiSelect
                 options={branchOptions}
                 displayValue="branch_name"
-                selectedValues={formData.branches.map((branch_id) =>
-                  branchOptions.find((option) => option.branch_id === branch_id)
+                selectedValues={branchOptions.filter((option) =>
+                  formData.branch_ids.includes(option.branch_id)
                 )}
                 onSelect={(selectedList) => {
                   setFormData({
                     ...formData,
-                    branches: selectedList.map(
+                    branch_ids: selectedList.map(
                       (branch: { branch_id: any }) => branch.branch_id
                     ),
                   });
@@ -385,7 +378,7 @@ const UserForm: React.FC = () => {
                 onRemove={(selectedList) => {
                   setFormData({
                     ...formData,
-                    branches: selectedList.map(
+                    branch_ids: selectedList.map(
                       (branch: { branch_id: any }) => branch.branch_id
                     ),
                   });
@@ -393,7 +386,7 @@ const UserForm: React.FC = () => {
                 isObject={true}
               />
               <p className="text-red-500 text-sm">
-                {errors.branches || "\u00A0"}
+                {errors.branch_ids || "\u00A0"}
               </p>
             </div>
           )}
