@@ -24,7 +24,7 @@ export const userSchema = (isEdit: boolean) => {
       .required("Mobile number is required"),
     gender: Yup.number().required("Please select gender"),
     role_id: Yup.number().required("Please select role"),
-    companies: Yup.array().when("role_id", {
+    company_ids: Yup.array().when("role_id", {
       is: (value: number) => value === 2,
       then: (schema) =>
         schema
@@ -32,7 +32,7 @@ export const userSchema = (isEdit: boolean) => {
           .required("Please select a company"),
       otherwise: (schema) => schema,
     }),
-    branches: Yup.array().when("role_id", {
+    branch_ids: Yup.array().when("role_id", {
       is: (value: number) => value === 3,
       then: (schema) =>
         schema

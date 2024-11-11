@@ -101,15 +101,7 @@ const CouponTable: React.FC<CouponTableProps> = ({ search }) => {
         page: "1",
         perPage: perPage.toString(),
       });
-    } else {
-      setSearchParams({
-        page: "1",
-        perPage: perPage.toString(),
-      });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchCoupons();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchCoupons]);
 

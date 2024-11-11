@@ -103,11 +103,6 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
         page: "1",
         perPage: perPage.toString(),
       });
-    } else {
-      setSearchParams({
-        page: "1",
-        perPage: perPage.toString(),
-      });
     }
     fetchCompanies();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchCompanies]);

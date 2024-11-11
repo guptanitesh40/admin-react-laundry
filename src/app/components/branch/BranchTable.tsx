@@ -102,11 +102,6 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
         page: "1",
         perPage: perPage.toString(),
       });
-    } else {
-      setSearchParams({
-        page: "1",
-        perPage: perPage.toString(),
-      });
     }
     fetchBranches();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBranches]);

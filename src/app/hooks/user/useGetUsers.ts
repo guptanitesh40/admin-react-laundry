@@ -54,7 +54,7 @@ const useGetUsers = (
       }
 
       const data = await response.json();
-      const usersData = data?.data?.result || [];
+      const usersData = data?.data?.users || [];
       const totalUsers = data?.data?.count || 0;
 
       setUsers(usersData);

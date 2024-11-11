@@ -67,20 +67,10 @@ const BannerTable: React.FC<BannerTableProps> = ({
       setCurrentPage(1);
       setSearchParams({
         search: search,
-        page: "1", 
-        perPage: perPage.toString()      
+        page: "1",
+        perPage: perPage.toString(),
       });
     }
-    else
-    {
-      setSearchParams({
-        page: "1", 
-        perPage: perPage.toString()      
-      });
-    }
-  }, [search]);
-
-  useEffect(() => {
     fetchBanners();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBanners]);
 

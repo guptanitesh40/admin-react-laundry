@@ -108,15 +108,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
         page: "1",
         perPage: perPage.toString(),
       });
-    } else {
-      setSearchParams({
-        page: "1",
-        perPage: perPage.toString(),
-      });
     }
-  }, [search]);
-
-  useEffect(() => {
     fetchOrders();
   }, [perPage, currentPage, search, sortColumn, sortOrder, fetchOrders]);
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
+  useApplyCoupon,
   useGetAddress,
   useGetCategories,
   useGetCoupons,
@@ -45,6 +46,7 @@ interface FormData {
   username: string;
   user_id: number;
   items: item[];
+  total: number;
 }
 
 const OrderForm: React.FC = () => {
@@ -71,10 +73,11 @@ const OrderForm: React.FC = () => {
   const { coupons, fetchCoupons } = useGetCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
   const { address, fetchAddress } = useGetAddress();
+  const { applyCoupon } = useApplyCoupon();
 
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     coupon_code: "",
     coupon_discount: null,
     express_delivery_charges: null,
@@ -82,7 +85,7 @@ const OrderForm: React.FC = () => {
     payment_type: null,
     order_status: 1,
     payment_status: null,
-    sub_total: null,
+    sub_total: 0,
     paid_amount: null,
     transaction_id: "",
     address_id: null,
@@ -100,9 +103,10 @@ const OrderForm: React.FC = () => {
         showDescription: false,
       },
     ],
+    total: 0,
   });
 
-  const [retrivedData, setRetrivedData] = useState({
+  const [retrivedData, setRetrivedData] = useState<FormData>({
     coupon_code: "",
     coupon_discount: null,
     express_delivery_charges: null,
@@ -110,7 +114,7 @@ const OrderForm: React.FC = () => {
     payment_type: null,
     order_status: 1,
     payment_status: null,
-    sub_total: null,
+    sub_total: 0,
     paid_amount: null,
     transaction_id: "",
     address_id: null,
@@ -128,6 +132,7 @@ const OrderForm: React.FC = () => {
         showDescription: false,
       },
     ],
+    total: 0,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -171,29 +176,40 @@ const OrderForm: React.FC = () => {
         payment_type: order.payment_type || null,
         order_status: order.order_status || null,
         payment_status: order.payment_status || null,
-        sub_total: null,
+        sub_total: order.sub_total || 0,
         paid_amount: order.paid_amount || null,
         transaction_id: order.transaction_id || "",
         address_id: order.address_id,
         username: fullName,
         user_id: order.user_id || null,
-        items: order.items.map(
-          (item: any): item => ({
-            category_id: item.category_id,
-            product_id: item.product_id,
-            service_id: item.service_id,
+        items: order.items.map((item: any) => {
+          const category_id = item.category.category_id;
+          const product_id = item.product?.product_id || null;
+          const service_id = item.service?.service_id || null;
+
+          if (category_id) fetchProductsOnId(category_id);
+          if (product_id && category_id)
+            fetchServicesOnId(category_id, product_id);
+
+          return {
+            category_id,
+            product_id,
+            service_id,
             description: item.description || null,
             price: item.price,
             quantity: item.quantity,
             item_Total: item.price * item.quantity,
             showDescription: !!item.description,
-          })
-        ),
+          };
+        }),
+        total:
+          (order.sub_total || 0) +
+          (order.express_delivery_charges || 0) +
+          (order.shipping_charges || 0),
       };
 
-      const calculatedSubTotal = calculateSubTotal(initialFormData);
-      setFormData({ ...initialFormData, sub_total: calculatedSubTotal });
-      setRetrivedData({ ...initialFormData, sub_total: calculatedSubTotal });
+      setFormData(initialFormData);
+      setRetrivedData(initialFormData);
     }
   }, [order]);
 
@@ -226,9 +242,11 @@ const OrderForm: React.FC = () => {
       await orderSchema.validate(dataToValidate, { abortEarly: false });
 
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {  
-          return formData[key] !== retrivedData[key];
-        });
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            return formData[key] !== retrivedData[key];
+          }
+        );
       };
 
       if (!isDataChanged()) {
@@ -302,13 +320,24 @@ const OrderForm: React.FC = () => {
   const handleRemoveItem = (index: number) => {
     setFormData((prev) => {
       const updatedItems = prev.items.filter((_, i) => i !== index);
-      const newFormData = { ...prev, items: updatedItems };
-      const newSubTotal = calculateSubTotal(newFormData);
-      return { ...newFormData, sub_total: newSubTotal };
+      const newFormData = {
+        ...prev,
+        items: updatedItems,
+        coupon_code: "",
+        coupon_discount: 0,
+      };
+
+      const newSubTotal = calculateItemTotal(newFormData);
+      const newTotal =
+        newSubTotal +
+        Number(formData.express_delivery_charges || 0) +
+        Number(formData.shipping_charges || 0);
+
+      return { ...newFormData, sub_total: newSubTotal, total: newTotal };
     });
   };
 
-  const handleItemChange = (index: number, field: string, value: any) => {
+  const handleItemChange = async (index: number, field: string, value: any) => {
     setFormData((prev) => {
       const updatedItems = prev.items.map((item, i) => {
         if (i === index) {
@@ -346,9 +375,19 @@ const OrderForm: React.FC = () => {
         return item;
       });
 
-      const newFormData = { ...prev, items: updatedItems };
-      const newSubTotal = calculateSubTotal(newFormData);
-      return { ...newFormData, sub_total: newSubTotal };
+      const newFormData = {
+        ...prev,
+        items: updatedItems,
+        coupon_code: "",
+        coupon_discount: 0,
+      };
+      const newSubTotal = calculateItemTotal(newFormData);
+      const newTotal =
+        newSubTotal +
+        Number(formData.express_delivery_charges || 0) +
+        Number(formData.shipping_charges || 0);
+
+      return { ...newFormData, sub_total: newSubTotal, total: newTotal };
     });
   };
 
@@ -361,52 +400,50 @@ const OrderForm: React.FC = () => {
     return prices[key] || 0;
   };
 
-  const handleDropdownChange = (code: string, discount_value: number) => {
-    setFormData((prev) => {
-      const updatedFormData = {
+  const handleDropdownChange = async (code: string) => {
+    const newSubTotal = calculateItemTotal(formData);
+    const couponData = await applyCoupon(formData.user_id, newSubTotal, code);
+
+    const newTotal =
+      Number(couponData.finalTotal || 0) +
+      Number(formData.express_delivery_charges || 0) +
+      Number(formData.shipping_charges || 0);
+
+    if (couponData) {
+      setFormData((prev) => ({
         ...prev,
         coupon_code: code,
-        coupon_discount: discount_value,
-      };
-      const newSubTotal = calculateSubTotal(updatedFormData);
-      return { ...updatedFormData, sub_total: newSubTotal };
-    });
+        coupon_discount: couponData.discountAmount,
+        sub_total: couponData.finalTotal,
+        total: newTotal,
+      }));
+    }
   };
 
-  const handleChargeChange = (field: string, value: any) => {
+  const calculateItemTotal = (data: typeof formData) => {
+    return data.items.reduce((acc, item) => acc + (item.item_Total || 0), 0);
+  };
+
+  const handleChargeChange = (field: string, value: string) => {
     setFormData((prev) => {
       const updatedFormData = {
         ...prev,
-        [field]: value,
+        [field]: Number(value),
       };
-      const newSubTotal = calculateSubTotal(updatedFormData);
-      return { ...updatedFormData, sub_total: newSubTotal };
+      const newTotal =
+        Number(updatedFormData.sub_total || 0) +
+        Number(updatedFormData.express_delivery_charges || 0) +
+        Number(updatedFormData.shipping_charges || 0);
+
+      return { ...updatedFormData, total: newTotal };
     });
-  };
-
-  const calculateSubTotal = (updatedFormData: typeof formData) => {
-    const itemsTotal = updatedFormData.items.reduce(
-      (acc, item) => acc + (item.item_Total || 0),
-      0
-    );
-
-    const expressCharges =
-      parseFloat(updatedFormData.express_delivery_charges as any) || 0;
-    const shippingCharges =
-      parseFloat(updatedFormData.shipping_charges as any) || 0;
-    const couponDiscount =
-      parseFloat(updatedFormData.coupon_discount as any) || 0;
-
-    const finalSubTotal =
-      itemsTotal + expressCharges + shippingCharges - couponDiscount;
-    return finalSubTotal;
   };
 
   const handleAddressChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedAddressId = event.target.value;
     setFormData((prev) => ({
       ...prev,
-      address_id: selectedAddressId,
+      address_id: Number(selectedAddressId),
     }));
   };
 
@@ -429,7 +466,10 @@ const OrderForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="flex gap-6">
             <div className="relative flex flex-col flex-[0_0_40%]">
-            <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="username"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 User Name
               </label>
 
@@ -467,7 +507,10 @@ const OrderForm: React.FC = () => {
 
             <div className="grow flex">
               <div className="grow flex flex-col">
-              <label htmlFor="address" className="block text-gray-700 text-sm font-bold mb-2">
+                <label
+                  htmlFor="address"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
                   Address Details
                 </label>
                 <select
@@ -512,7 +555,10 @@ const OrderForm: React.FC = () => {
                 className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
               >
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
+                  <label
+                    htmlFor="category"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
                     Category
                   </label>
                   <select
@@ -538,7 +584,10 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label htmlFor="product" className="block text-gray-700 text-sm font-bold mb-2">
+                  <label
+                    htmlFor="product"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
                     Product
                   </label>
                   <select
@@ -567,7 +616,10 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col flex-1 mb-4 md:mb-0">
-                <label htmlFor="service" className="block text-gray-700 text-sm font-bold mb-2">
+                  <label
+                    htmlFor="service"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
                     Service
                   </label>
                   <select
@@ -652,7 +704,10 @@ const OrderForm: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col md:mb-0">
-                <label htmlFor="description_checkbox" className="block text-gray-700 text-sm font-bold mb-2">
+                  <label
+                    htmlFor="description_checkbox"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
                     Description
                   </label>
                   <input
@@ -697,7 +752,10 @@ const OrderForm: React.FC = () => {
               {item.showDescription && (
                 <div>
                   <div className="flex flex-col w-80 mb-8">
-                  <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
+                    <label
+                      htmlFor="description"
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                    >
                       Description
                     </label>
                     <textarea
@@ -735,10 +793,7 @@ const OrderForm: React.FC = () => {
                   const selectedCoupon = coupons.find(
                     (coupon) => coupon.code === e.target.value
                   );
-                  handleDropdownChange(
-                    selectedCoupon?.code,
-                    selectedCoupon?.discount_value
-                  );
+                  handleDropdownChange(selectedCoupon?.code);
                 }}
               >
                 <option value="" disabled>
@@ -775,7 +830,10 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="express_delivery_charges" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="express_delivery_charges"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Express Delivery Charges
               </label>
               <input
@@ -794,7 +852,10 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="shipping_charges" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="shipping_charges"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Shipping Charges
               </label>
               <input
@@ -828,7 +889,22 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="paid_amount" className="block text-gray-700 text-sm font-bold mb-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Total
+              </label>
+              <input
+                type="text"
+                value={formData.total || ""}
+                readOnly
+                className="input border border-gray-300 rounded-md p-2"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="paid_amount"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Paid amount
               </label>
               <input
@@ -838,7 +914,7 @@ const OrderForm: React.FC = () => {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    paid_amount: e.target.value,
+                    paid_amount: Number(e.target.value),
                   })
                 }
                 className="input border border-gray-300 rounded-md p-2"
@@ -851,7 +927,10 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="payment_method" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="payment_method"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Payment Method
               </label>
               <select
@@ -877,7 +956,10 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="payment_status" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="payment_status"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Payment Status
               </label>
               <select
@@ -887,7 +969,7 @@ const OrderForm: React.FC = () => {
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    payment_status: e.target.value,
+                    payment_status: Number(e.target.value),
                   })
                 }
               >
@@ -904,7 +986,10 @@ const OrderForm: React.FC = () => {
             </div>
 
             <div className="flex flex-col">
-            <label htmlFor="transaction_id" className="block text-gray-700 text-sm font-bold mb-2">
+              <label
+                htmlFor="transaction_id"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
                 Transaction ID
               </label>
               <input
