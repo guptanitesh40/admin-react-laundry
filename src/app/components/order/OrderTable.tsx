@@ -401,7 +401,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                       </div>
                     </th>
 
-                    <th className="min-w-[130px]">
+                    <th className="min-w-[145px]">
                       <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("order_statue")}
