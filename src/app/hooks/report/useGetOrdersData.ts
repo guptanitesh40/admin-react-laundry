@@ -10,17 +10,22 @@ const useGetOrdersData = () => {
   const [orderData, setOrderData] = useState<OrderData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchOrdersData = async () => {
+  const fetchOrdersData = async (start_date?: string, end_date?: string) => {
     const token = localStorage.getItem("authToken");
+    const queryParams = new URLSearchParams();
+
+    if (start_date) queryParams.append("startDate", start_date);
+    if (end_date) queryParams.append("endDate", end_date);
+
     const GET_ORDERDATA_URL = `${import.meta.env.VITE_BASE_URL}/report/total-orders`;
 
     setLoading(true);
     try {
-      const response = await fetch(GET_ORDERDATA_URL, {
+      const response = await fetch(`${GET_ORDERDATA_URL}?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -39,10 +44,6 @@ const useGetOrdersData = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchOrdersData()
-  },[]);
 
   return { orderData, loading, fetchOrdersData };
 };
