@@ -30,6 +30,10 @@ const itemSchema = Yup.object().shape({
 export const orderSchema = Yup.object().shape({
   username: Yup.string().required("Please enter username"),
 
+  address_id: Yup.number()
+    .required("Please select address")
+    .test("required", "Please select address", (value) => !!value),
+
   express_delivery_charges: Yup.number()
     .typeError("Express delivery charges must be a number")
     .min(0, "Express delivery charges must be a positive number"),

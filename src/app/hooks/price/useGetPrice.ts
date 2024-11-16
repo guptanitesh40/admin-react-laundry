@@ -11,10 +11,10 @@ const useGetPrice = () => {
   const [prices, setPrices] = useState<Price[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchPrices = useCallback(async () => {
+  const fetchPrices = async () => {
     const token = localStorage.getItem("authToken");
-    setLoading(true);
 
+    setLoading(true);
     try {
       const response = await fetch(GET_PRICE_URL, {
         method: "GET",
@@ -37,6 +37,10 @@ const useGetPrice = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchPrices();
   }, []);
 
   return { prices, loading, fetchPrices };

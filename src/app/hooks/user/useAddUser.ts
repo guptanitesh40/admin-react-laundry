@@ -27,7 +27,12 @@ const useAddUser = () => {
       }
 
       const data = await response.json();
-      toast.success(data.message, { position: "top-center" });
+      if(formData.role_id === 5)
+      {
+      toast.success("Customer added successfully", { position: "top-center" });
+      }else{
+        toast.success(data.message, { position: "top-center" });
+      }
       return true;
     } catch (error: any) {
       toast.error(error?.message || "Error adding banner", {

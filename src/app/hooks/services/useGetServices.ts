@@ -20,7 +20,7 @@ const useGetServices = (
   const [totalServices, setTotalServices] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchServices = useCallback(async () => {
+  const fetchServices = async () => {
     const token = localStorage.getItem("authToken");
 
     const queryParams = new URLSearchParams();
@@ -61,7 +61,11 @@ const useGetServices = (
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
   return { services, totalServices, fetchServices, loading };
 };

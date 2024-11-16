@@ -97,10 +97,10 @@ const Login: React.FC = () => {
           <div className="card max-w-[450px] w-full">
             <form
               onSubmit={handleSubmit}
-              className="card-body flex flex-col gap-5 p-10 w-[370px]"
+              className="card-body flex flex-col gap-3 p-10 w-[370px]"
               id="log_in_form"
             >
-              <div className="text-center mb-2.5">
+              <div className="text-center">
                 <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
                   Log in
                 </h3>
@@ -108,7 +108,7 @@ const Login: React.FC = () => {
 
               <div className="flex flex-col gap-1">
                 <label className="form-label text-gray-900" htmlFor="username">
-                  Email or Mobile Number
+                  Email 
                 </label>
                 <input
                   id="username"

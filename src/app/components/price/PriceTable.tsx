@@ -48,15 +48,11 @@ const PriceTable: React.FC<PriceTableProps> = ({
   isSave,
   setIsSave,
 }) => {
-  const { categories, fetchCategories } = useGetCategories();
-  const { products, fetchProducts } = useGetProducts();
-  const { services, fetchServices } = useGetServices();
+  const { categories } = useGetCategories();
+  const { products } = useGetProducts();
+  const { services } = useGetServices();
   const { prices, loading, fetchPrices } = useGetPrice();
   const { addPrice } = useAddPrice();
-
-  const [allPrices, setAllPrices] = useState<{ [key: string]: number }>(
-    {}
-  );
 
   const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
     {}
@@ -66,16 +62,6 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-    fetchCategories();
-    fetchProducts();
-    fetchServices();
-    fetchPrices();
-  }
-    fetchData();
-  },[fetchCategories, fetchProducts, fetchServices, fetchPrices])
 
   const getCombinations = useCallback(
     (
@@ -180,9 +166,6 @@ const PriceTable: React.FC<PriceTableProps> = ({
     }
     setIsSave(false);
   }, [isSave, addPrice, fetchPrices, combinations, updatedPrices]);
-  
-  
-  
 
   const handleInputBlur = (key: string) => {
     setEditing((prev) => {

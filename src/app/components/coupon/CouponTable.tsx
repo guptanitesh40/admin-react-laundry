@@ -102,8 +102,7 @@ const CouponTable: React.FC<CouponTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-    fetchCoupons();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchCoupons]);
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

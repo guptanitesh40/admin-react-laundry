@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
-const useUpdateCategory = (refetchCategories: () => void) => {
+const useUpdateCategory = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateCategory = async (category_id: number, newName: string): Promise<boolean> => {
@@ -22,7 +22,6 @@ const useUpdateCategory = (refetchCategories: () => void) => {
       if (response.ok) {
         const result = await response.json();
         toast.success(result.message, { position: 'top-center' });
-        refetchCategories();
         return true;
       } else {
         const errorData = await response.json();
