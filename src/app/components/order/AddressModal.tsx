@@ -97,7 +97,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         <h2 className="text-2xl font-bold mb-6">Add New Address</h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="mb-4">
+            <div>
               <label htmlFor="building_number" className="block text-gray-700 font-semibold">
                 Building Number
               </label>
@@ -116,7 +116,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="area" className="block text-gray-700 font-semibold">Area</label>
               <input
                 type="text"
@@ -133,7 +133,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="landmark" className="block text-gray-700 font-semibold">
                 Landmark
               </label>
@@ -152,7 +152,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="pincode" className="block text-gray-700 font-semibold">
                 Pin code
               </label>
@@ -172,7 +172,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               <p className="text-red-500 text-sm">{error || "\u00A0"}</p>
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="city" className="block text-gray-700 font-semibold">City</label>
               <input
                 type="text"
@@ -189,7 +189,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="state" className="block text-gray-700 font-semibold">State</label>
               <input
                 type="text"
@@ -206,7 +206,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
             </div>
 
-            <div className="mb-4">
+            <div>
               <label htmlFor="country" className="block text-gray-700 font-semibold">
                 Country
               </label>

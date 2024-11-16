@@ -88,8 +88,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ search, isSubmit, setIsSubm
         perPage: perPage.toString(),
       });
     }
-    fetchServices();
-  }, [currentPage, perPage, search, sortColumn, sortOrder, fetchServices]);
+  }, [search]);
 
   useEffect(() => {
     if (pageParams) {

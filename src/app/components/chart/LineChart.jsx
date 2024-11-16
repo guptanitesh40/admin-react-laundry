@@ -35,13 +35,18 @@ const LineChart = () => {
   const { orderData, fetchOrdersData } = useGetOrdersData();
 
   useEffect(() => {
-    fetchOrdersData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+
+      fetchOrdersData(formData.start_time, formData.end_time);
+    } else {
+      fetchOrdersData();
+    }
+  }, [formData]);
 
   const handleDateChange = (newDate, field) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: newDate ? newDate.format("MM-DD-YYYY") : "",
+      [field]: newDate ? newDate.format("DD-MM-YYYY") : "",
     }));
   };
 
@@ -72,7 +77,7 @@ const LineChart = () => {
             <DatePicker
               value={
                 formData.start_time
-                  ? dayjs(formData.start_time, "MM-DD-YYYY")
+                  ? dayjs(formData.start_time, "DD-MM-YYYY")
                   : null
               }
               onChange={(newDate) => handleDateChange(newDate, "start_time")}
@@ -94,7 +99,7 @@ const LineChart = () => {
             <DatePicker
               value={
                 formData.end_time
-                  ? dayjs(formData.end_time, "MM-DD-YYYY")
+                  ? dayjs(formData.end_time, "DD-MM-YYYY")
                   : null
               }
               onChange={(newDate) => handleDateChange(newDate, "end_time")}
@@ -113,7 +118,7 @@ const LineChart = () => {
               }}
               minDate={
                 formData.start_time
-                  ? dayjs(formData.start_time, "MM-DD-YYYY")
+                  ? dayjs(formData.start_time, "DD-MM-YYYY")
                   : dayjs()
               }
             />

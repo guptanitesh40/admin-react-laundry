@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 const GET_CATEGORIES_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
@@ -17,10 +17,10 @@ const useGetCategories = (
   sortOrder?: string
 ) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [totalCategories, setTotalCategories] = useState(0);
+  const [totalCategories,setTotalCategories] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = async () => {
     const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
@@ -40,30 +40,28 @@ const useGetCategories = (
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to fetch categories.", {
-          position: "top-center",
-        });
+        toast.error(data.message, { position: "top-center" });
+        setLoading(false);
         return;
       }
 
-      const data = await response.json();
-      const categoriesData = data?.data?.result || [];
-      const totalCategories = data?.data?.count || 0;
-
-      setCategories(categoriesData);
-      setTotalCategories(totalCategories);
-    } catch (error: any) {
-      toast.error(error?.message || "Network error: Failed to fetch categories.", {
-        position: "top-center",
-      });
+      setCategories(data?.data?.result || []);
+      setTotalCategories(data?.data?.count);
+    } catch {
+      toast.error("Network error: Failed to fetch categories.");
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  };
 
-  return { categories, totalCategories, loading, fetchCategories };
+  useEffect(() => {
+    fetchCategories();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+
+  return { categories, loading, totalCategories, fetchCategories };
 };
 
 export default useGetCategories;

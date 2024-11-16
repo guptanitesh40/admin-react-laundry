@@ -106,8 +106,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         perPage: perPage.toString(),
       });
     }
-    fetchProducts();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchProducts]);
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

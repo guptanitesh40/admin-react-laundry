@@ -53,7 +53,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
 
   const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
-  const { updateCategory } = useUpdateCategory(fetchCategories);
+  const { updateCategory } = useUpdateCategory();
 
   const totalPages = Math.ceil(totalCategories / perPage);
 
@@ -154,8 +154,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         perPage: perPage.toString(),
       });
     }
-    fetchCategories();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchCategories]);
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

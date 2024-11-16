@@ -21,7 +21,7 @@ const useGetProducts = (
   const [totalProducts,setTotalProducts] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = async () => {
     const token = localStorage.getItem('authToken');
     const queryParams = new URLSearchParams();
 
@@ -31,12 +31,9 @@ const useGetProducts = (
     if (sortColumn) queryParams.append('sort_by', sortColumn);
     if (sortOrder) queryParams.append('order', sortOrder);
 
-    const url = `${GET_PRODUCT_URL}?${queryParams}`;
-
     setLoading(true);
-
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${GET_PRODUCT_URL}?${queryParams}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -63,9 +60,13 @@ const useGetProducts = (
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  };
 
-  return { products, loading,totalProducts, fetchProducts };
+  useEffect(() => {
+    fetchProducts();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+
+  return { products, loading, totalProducts, fetchProducts };
 };
 
 export default useGetProducts;

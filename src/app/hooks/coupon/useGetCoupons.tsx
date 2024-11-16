@@ -28,9 +28,8 @@ const useGetCoupons = (
   const [loading, setLoading] = useState<boolean>(false);
   const [totalCoupons,setTotalCoupons] = useState(0);
 
-  const fetchCoupons = useCallback(async () => {
+  const fetchCoupons = async () => {
     const token = localStorage.getItem("authToken");
-
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
@@ -38,7 +37,6 @@ const useGetCoupons = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-
 
     setLoading(true);
     try {
@@ -69,7 +67,11 @@ const useGetCoupons = (
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
   return { coupons, totalCoupons, loading, fetchCoupons };
 };

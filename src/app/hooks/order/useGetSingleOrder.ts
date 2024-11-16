@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
+  address_details: string;
   estimated_pickup_time: string | number | Date;
   estimated_delivery_time: string | number | Date;
   user: any;

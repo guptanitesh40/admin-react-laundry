@@ -12,18 +12,20 @@ import {
   useUpdateOrder,
 } from "../../hooks";
 import * as Yup from "yup";
-import useGetCustomer from "../../hooks/customer/useGetCustomer";
 import { FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetSingleOrder from "../../hooks/order/useGetSingleOrder";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import CustomerModal from "./CustomerModal";
 
 interface item {
   category_id: number;
   product_id: number;
+  product_name: string;
   service_id: number;
+  service_name: string;
   description: string | null;
   price: number;
   quantity: number;
@@ -50,9 +52,8 @@ interface FormData {
 }
 
 const OrderForm: React.FC = () => {
-  const { prices, fetchPrices } = useGetPrice();
-  const { categories, fetchCategories } = useGetCategories();
-
+  const { prices } = useGetPrice();
+  const { categories } = useGetCategories();
   const { products, fetchProductsOnId } = useGetProductsOnId();
   const { services, fetchServicesOnId } = useGetServicesOnId();
 
@@ -67,10 +68,11 @@ const OrderForm: React.FC = () => {
   const pageNumber = 1;
 
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [userModalIsOpen, setUserModalIsOpen] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const { users, fetchUsersByRole } = useGetUsersByRole();
-  const { coupons, fetchCoupons } = useGetCoupons(pageNumber, perPage);
+  const { coupons } = useGetCoupons(pageNumber, perPage);
   const { order } = useGetSingleOrder(order_id);
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
@@ -96,6 +98,8 @@ const OrderForm: React.FC = () => {
         category_id: null,
         product_id: null,
         service_id: null,
+        product_name: "",
+        service_name: "",
         description: null,
         price: null,
         quantity: 1,
@@ -125,6 +129,8 @@ const OrderForm: React.FC = () => {
         category_id: null,
         product_id: null,
         service_id: null,
+        product_name: "",
+        service_name: "",
         description: null,
         price: null,
         quantity: 1,
@@ -147,11 +153,8 @@ const OrderForm: React.FC = () => {
         setIsSubmit(false);
       }
     };
-    fetchCoupons();
-    fetchPrices();
     fetchData();
-    fetchCategories();
-  }, [fetchCategories, fetchPrices, fetchCoupons, formData.user_id, isSubmit]);
+  }, [formData.user_id, isSubmit]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -187,14 +190,15 @@ const OrderForm: React.FC = () => {
           const product_id = item.product?.product_id || null;
           const service_id = item.service?.service_id || null;
 
-          if (category_id) fetchProductsOnId(category_id);
-          if (product_id && category_id)
-            fetchServicesOnId(category_id, product_id);
+          const product_name = item.product?.name || "";
+          const service_name = item.service?.name || "";
 
           return {
             category_id,
             product_id,
             service_id,
+            product_name,
+            service_name,
             description: item.description || null,
             price: item.price,
             quantity: item.quantity,
@@ -306,7 +310,9 @@ const OrderForm: React.FC = () => {
         {
           category_id: null,
           product_id: null,
+          product_name: "",
           service_id: null,
+          service_name: "",
           description: null,
           price: null,
           quantity: 1,
@@ -338,56 +344,68 @@ const OrderForm: React.FC = () => {
   };
 
   const handleItemChange = async (index: number, field: string, value: any) => {
+    if (
+      ["category_id", "product_id", "service_id", "price", "quantity"].includes(
+        field
+      )
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        coupon_code: "",
+        coupon_discount: 0,
+      }));
+    }
     setFormData((prev) => {
       const updatedItems = prev.items.map((item, i) => {
         if (i === index) {
           const updatedItem = { ...item, [field]: value };
-
           if (field === "showDescription") {
             updatedItem.showDescription = value;
           }
-
           const category_id = Number(updatedItem.category_id);
           const product_id = Number(updatedItem.product_id);
           const service_id = Number(updatedItem.service_id);
           const quantity = Number(updatedItem.quantity) || 1;
 
-          if (field === "category_id" || field === "product_id") {
+          if (["category_id", "product_id"].includes(field)) {
             if (category_id) fetchProductsOnId(category_id);
             if (product_id && category_id)
               fetchServicesOnId(category_id, product_id);
           }
 
-          if (category_id && product_id && service_id) {
-            const price = getPriceForCombination(
-              category_id,
-              product_id,
-              service_id
-            );
-            updatedItem.price = price;
-            updatedItem.item_Total = price * quantity;
-          } else {
-            updatedItem.price = null;
-            updatedItem.item_Total = null;
+          if (["category_id", "product_id", "service_id"].includes(field)) {
+            if (category_id && product_id && service_id) {
+              const price = getPriceForCombination(
+                category_id,
+                product_id,
+                service_id
+              );
+              updatedItem.price = price;
+              updatedItem.item_Total = price * quantity;
+            } else {
+              updatedItem.price = null;
+              updatedItem.item_Total = null;
+            }
+          } else if (field === "price") {
+            updatedItem.item_Total = value * quantity;
+          } else if (field === "quantity") {
+            updatedItem.item_Total = updatedItem.price * Number(value);
           }
           return updatedItem;
         }
         return item;
       });
 
-      const newFormData = {
-        ...prev,
-        items: updatedItems,
-        coupon_code: "",
-        coupon_discount: 0,
-      };
+      const newFormData = { ...prev, items: updatedItems };
       const newSubTotal = calculateItemTotal(newFormData);
-      const newTotal =
-        newSubTotal +
-        Number(formData.express_delivery_charges || 0) +
-        Number(formData.shipping_charges || 0);
+      const updatedSubTotal = newSubTotal - prev.coupon_discount;
 
-      return { ...newFormData, sub_total: newSubTotal, total: newTotal };
+      const newTotal =
+        updatedSubTotal +
+        Number(prev.express_delivery_charges || 0) +
+        Number(prev.shipping_charges || 0);
+
+      return { ...newFormData, sub_total: updatedSubTotal, total: newTotal };
     });
   };
 
@@ -428,7 +446,7 @@ const OrderForm: React.FC = () => {
     setFormData((prev) => {
       const updatedFormData = {
         ...prev,
-        [field]: Number(value),
+        [field]: value,
       };
       const newTotal =
         Number(updatedFormData.sub_total || 0) +
@@ -456,6 +474,11 @@ const OrderForm: React.FC = () => {
     }
   };
 
+  const handleAddUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    setUserModalIsOpen(true);
+  };
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -464,22 +487,21 @@ const OrderForm: React.FC = () => {
         </h1>
 
         <form onSubmit={handleSubmit}>
-          <div className="flex gap-6">
+          <div className="flex gap-2">
             <div className="relative flex flex-col flex-[0_0_40%]">
               <label
                 htmlFor="username"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                User Name
+                Customer Name
               </label>
-
               <input
                 type="text"
                 id="username"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
-                placeholder="Search User..."
+                placeholder="Search customer..."
               />
 
               {users && userSearch && isSearchMode && (
@@ -505,13 +527,22 @@ const OrderForm: React.FC = () => {
               </p>
             </div>
 
+            <div className="flex flex-col self-center">
+              <button
+                className="btn btn-primary w-[88px]"
+                onClick={handleAddUser}
+              >
+                New Customer
+              </button>
+            </div>
+
             <div className="grow flex">
               <div className="grow flex flex-col">
                 <label
                   htmlFor="address"
                   className="block text-gray-700 text-sm font-bold mb-2"
                 >
-                  Address Details
+                  Customer Address
                 </label>
                 <select
                   id="address"
@@ -522,13 +553,20 @@ const OrderForm: React.FC = () => {
                   <option value="" disabled>
                     Select Address
                   </option>
-                  {address.map((addr) => (
-                    <option key={addr.address_id} value={addr.address_id}>
-                      {addr.building_number}, {addr.area}, {addr.landmark},{" "}
-                      {addr.city}, {addr.state},{addr.country}, {addr.pincode}
-                    </option>
-                  ))}
+                  {address.length > 0 ? (
+                    address.map((addr) => (
+                      <option key={addr.address_id} value={addr.address_id}>
+                        {addr.building_number}, {addr.area}, {addr.landmark},{" "}
+                        {addr.city}, {addr.state},{addr.country}, {addr.pincode}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No Address available</option>
+                  )}
                 </select>
+                <p className="w-full text-red-500 text-sm">
+                  {errors.address_id || "\u00A0"}
+                </p>
               </div>
 
               <div className="flex flex-col self-center">
@@ -601,17 +639,28 @@ const OrderForm: React.FC = () => {
                     <option value="" disabled>
                       Select Product
                     </option>
-                    {products.map((prod) => (
-                      <option
-                        key={prod.product_product_id}
-                        value={prod.product_product_id}
-                      >
-                        {prod.product_name}
-                      </option>
-                    ))}
+                    {products && products.length > 0
+                      ? products.map((prod) => (
+                          <option
+                            key={prod.product_product_id}
+                            value={prod.product_product_id}
+                          >
+                            {prod.product_name}
+                          </option>
+                        ))
+                      : item.product_id && (
+                          <option key={item.product_id} value={item.product_id}>
+                            {item.product_name}
+                          </option>
+                        )}
                   </select>
                   <p className="w-full text-red-500 text-sm">
                     {errors[`items[${index}].product_id`] || "\u00A0"}
+                    <br />
+                  </p>
+                  <p className="w-full text-red-500 text-sm">
+                    {"\u00A0"}
+                    <br />
                   </p>
                 </div>
 
@@ -633,14 +682,20 @@ const OrderForm: React.FC = () => {
                     <option value="" disabled>
                       Select Service
                     </option>
-                    {services?.map((serv) => (
-                      <option
-                        key={serv?.service_service_id}
-                        value={serv?.service_service_id}
-                      >
-                        {serv.service_name}
-                      </option>
-                    ))}
+                    {services && services.length > 0
+                      ? services.map((serv) => (
+                          <option
+                            key={serv.service_service_id}
+                            value={serv.service_service_id}
+                          >
+                            {serv.service_name}
+                          </option>
+                        ))
+                      : item.service_id && (
+                          <option key={item.service_id} value={item.service_id}>
+                            {item.service_name}
+                          </option>
+                        )}
                   </select>
                   <p className="w-full text-red-500 text-sm">
                     {errors[`items[${index}].service_id`] || "\u00A0"}
@@ -662,8 +717,12 @@ const OrderForm: React.FC = () => {
                     onChange={(e) =>
                       handleItemChange(index, "price", e.target.value)
                     }
-                    className="input border border-gray-300 rounded-md p-2 w-full"
-                    readOnly
+                    className={`input border rounded-md p-2 w-full ${
+                      isNaN(order_id)
+                        ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
+                        : "border-gray-300"
+                    }`}
+                    readOnly={isNaN(order_id)}
                   />
                   <p className="w-full text-red-500 text-sm">
                     {errors[`items[${index}].price`] || "\u00A0"}
@@ -695,10 +754,10 @@ const OrderForm: React.FC = () => {
                     onChange={(e) =>
                       handleItemChange(index, "item_Total", e.target.value)
                     }
-                    className="input border border-gray-300 rounded-md p-2"
                     min="0"
                     step="0.01"
                     readOnly
+                    className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
                   />
                   <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
                 </div>
@@ -711,7 +770,7 @@ const OrderForm: React.FC = () => {
                     Description
                   </label>
                   <input
-                    className="checkbox checkbox-lg m-auto"
+                    className="checkbox checkbox-lg m-auto mt-2"
                     id="description_checkbox"
                     data-datatable-check="true"
                     type="checkbox"
@@ -782,7 +841,7 @@ const OrderForm: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="coupon_code">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
                 Coupon Code
               </label>
               <select
@@ -822,7 +881,7 @@ const OrderForm: React.FC = () => {
                 type="text"
                 value={formData.coupon_discount || ""}
                 readOnly
-                className="input border border-gray-300 rounded-md p-2"
+                className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.coupon_discount || "\u00A0"}
@@ -881,7 +940,7 @@ const OrderForm: React.FC = () => {
                 type="text"
                 value={formData.sub_total || ""}
                 readOnly
-                className="input border border-gray-300 rounded-md p-2"
+                className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.sub_total || "\u00A0"}
@@ -896,7 +955,7 @@ const OrderForm: React.FC = () => {
                 type="text"
                 value={formData.total || ""}
                 readOnly
-                className="input border border-gray-300 rounded-md p-2"
+                className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
               />
             </div>
 
@@ -911,12 +970,12 @@ const OrderForm: React.FC = () => {
                 type="text"
                 id="paid_amount"
                 value={formData.paid_amount || ""}
-                onChange={(e) =>
+                onChange={(e) => {
                   setFormData({
                     ...formData,
                     paid_amount: Number(e.target.value),
-                  })
-                }
+                  });
+                }}
                 className="input border border-gray-300 rounded-md p-2"
                 min="0"
                 step="0.01"
@@ -1027,6 +1086,11 @@ const OrderForm: React.FC = () => {
           setIsSubmit={setIsSubmit}
           onClose={() => setModalIsOpen(false)}
           userId={formData.user_id}
+        />
+        <CustomerModal
+          isOpen={userModalIsOpen}
+          setIsSubmit={setIsSubmit}
+          onClose={() => setUserModalIsOpen(false)}
         />
       </div>
     </div>
