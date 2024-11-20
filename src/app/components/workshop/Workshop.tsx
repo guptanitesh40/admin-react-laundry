@@ -80,10 +80,8 @@ const Workshop: React.FC = () => {
               />
             </svg>
           </button>
+          <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">{errorMessage || "\u00A0"}</p>
         </form>
-        <p className="absolute top-8 right-[0.2rem] mt-2 text-red-500 text-sm w-80">
-          {"\u00A0"}
-        </p>
       </div>
 
       <WorkshopTable search={search} isSubmit={isSubmit} setIsSubmit={setIsSubmit} setUpdateWorkshop={handleUpdateWorkshop}/>
