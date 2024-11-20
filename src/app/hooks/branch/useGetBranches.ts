@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
+const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
+
 interface Branch {
   branchManager:{
     first_name: string;
@@ -19,8 +21,6 @@ interface Branch {
   company_id:number;
 }
 
-const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
-
 const useGetBranches = (
   pageNumber: number = 1, 
   perPage: number = 10,
@@ -32,9 +32,8 @@ const useGetBranches = (
   const [totalBranches, setTotalBranches] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchBranches = useCallback(async () => {
-    const token = localStorage.getItem("authToken");
-   
+  const fetchBranches = async () => {
+    const token = localStorage.getItem("authToken");   
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append('page_number', pageNumber.toString());
@@ -53,26 +52,25 @@ const useGetBranches = (
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, {
-          position: "top-center",
-        });
+        toast.error(data.message, {position: "top-center",});
         return;
       }
 
-      const data = await response.json();
-      const allBranches = data?.data?.result || [];
-      const totalCount = data?.data?.count || 0;
-
-      setBranches(allBranches);
-      setTotalBranches(totalCount);
+      setBranches(data?.data?.result || []);
+      setTotalBranches(data?.data?.count || 0);
     } catch (error) {
       toast.error("An error occurred while fetching data");
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder,sortColumn, search]);
+  }
+
+  useEffect(() => {
+    fetchBranches();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
   return { branches, totalBranches, loading, fetchBranches };
 };

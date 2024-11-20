@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums"; // Ensure these enums are defined
-import useGetSingleOrder from "../../hooks/order/useGetSingleOrder";
+import useGetOrder from "../../hooks/order/useGetOrder";
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const order_id = Number(id);
 
-  const { order } = useGetSingleOrder(order_id);
+  const { order, fetchOrder } = useGetOrder();
+
+  useEffect(() => {
+    fetchOrder(order_id);
+  },[order_id])
 
   if(!order) return;
 
@@ -39,9 +43,6 @@ const OrderDetails: React.FC = () => {
           <div className="bg-white p-6 rounded-md shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Order Items</h2>
-              <button className="flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                <i className="ki-filled ki-credit-cart mr-2"></i> Add New
-              </button>
             </div>
             <div className="space-y-4">
               {order.items.map((item: any) => (
@@ -68,17 +69,9 @@ const OrderDetails: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-5">
-                    <span className="badge badge-sm badge-success badge-outline">
+                    <span className="badge badge-lg badge-success badge-outline">
                       Service: {item.service.name}
-                    </span>
-                    <div className="flex gap-0.5">
-                      <button className="btn btn-sm btn-icon btn-clear btn-light">
-                        <i className="ki-filled ki-notepad-edit"></i>
-                      </button>
-                      <button className="btn btn-sm btn-icon btn-clear btn-light">
-                        <i className="ki-filled ki-trash"></i>
-                      </button>
-                    </div>
+                    </span>                    
                   </div>
                 </div>
               ))}

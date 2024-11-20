@@ -47,6 +47,7 @@ export { default as useAddBanner} from './banner/useAddBanner';
 export { default as useDeleteBanner } from './banner/useDeleteBanner';
 export { default as useUpdateBanner } from './banner/useUpdateBanner';
 
+export { default as useGetOrders} from './order/useGetOrders';
 export { default as useGetOrder} from './order/useGetOrder';
 export { default as useAddOrder} from './order/useAddOrder';
 export { default as useDeleteOrder } from './order/useDeleteOrder';

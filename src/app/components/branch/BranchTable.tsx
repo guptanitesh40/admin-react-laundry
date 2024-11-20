@@ -103,8 +103,7 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-    fetchBranches();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBranches]);
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {

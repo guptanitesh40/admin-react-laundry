@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useDeleteOrder, useGetOrder } from "../../hooks";
+import { useDeleteOrder, useGetOrders } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaEye,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -11,7 +12,6 @@ import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import TableShimmer from "../shimmer/TableShimmer";
 import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
-import { BsFillInfoCircleFill } from "react-icons/bs";
 import dayjs from "dayjs";
 
 interface OrderTableProps {
@@ -28,7 +28,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-  const { orders, loading, totalOrders, fetchOrders } = useGetOrder(
+  const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
@@ -109,8 +109,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-    fetchOrders();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchOrders]);
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -401,13 +400,13 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                       </div>
                     </th>
 
-                    <th className="min-w-[145px]">
+                    <th className="min-w-[160px]">
                       <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("order_statue")}
                       >
                         Order Status
-                        <div className="flex cursor-pointer mt-2">
+                        <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
                               sortColumn === "order_status" &&
@@ -536,13 +535,13 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                       </div>
                     </th>
 
-                    <th className="min-w-[180px]">
+                    <th className="min-w-[100px]">
                       <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("gst")}
                       >
                         GST
-                        <div className="flex cursor-pointer mt-2">
+                        <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
                               sortColumn === "gst" && sortOrder === "ASC"
@@ -718,7 +717,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
 
                       return (
                         <tr key={order.order_id}>
-                          <td>{order.order_id}</td>
+                          <td>#{order.order_id}</td>
                           <td>
                             {order.user.first_name + " " + order.user.last_name}
                           </td>
@@ -775,9 +774,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                                 className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
                                 onClick={() => handleViewOrder(order.order_id)}
                               >
-                                <BsFillInfoCircleFill
+                                <FaEye
                                   size={18}
-                                  className="text-yellow-600"
+                                  className="text-gray-600"
                                 />
                               </button>
                               <button

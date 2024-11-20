@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const GET_COMPANY_URL = `${import.meta.env.VITE_BASE_URL}/companies`;
-const token = localStorage.getItem("authToken");
 
 interface Company {
-  gst_number: string;
   email: string;
   company_id: number;
   company_name: string;
@@ -37,9 +35,8 @@ const useGetCompany = (
   const [loading, setLoading] = useState<boolean>(false);
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  const fetchCompanies = useCallback(async () => {
+  const fetchCompanies = async () => {
     const token = localStorage.getItem("authToken");
-
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
@@ -58,27 +55,26 @@ const useGetCompany = (
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, {
-          position: "top-center",
-        });
+        toast.error(data.message, {position: "top-center",});
         return;
       }
 
-      const data = await response.json();
-      const allCompany = data?.data?.result || [];
-      const totalCount = data?.data?.count || 0;
-
-      setCompanies(allCompany);
-      setTotalCount(totalCount);
+      setCompanies(data?.data?.result || []);
+      setTotalCount(data?.data?.count || 0);
     } catch (error) {
       toast.error("An error occurred while fetching data");
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  }
   
+  useEffect(() => {
+    fetchCompanies();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+
   return { companies, loading, totalCount, fetchCompanies };
 };
 
