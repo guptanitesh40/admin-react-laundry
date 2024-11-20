@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
-import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
+import { FaProductHunt, FaBuilding, FaImages, FaChessBishop } from "react-icons/fa";
 import { BiSolidCoupon } from 'react-icons/bi';
 import { RiBuilding2Fill } from "react-icons/ri";
 import { LiaUserCircle } from "react-icons/lia";
 import { HiMiniPencilSquare } from "react-icons/hi2";
+import { CiShop } from "react-icons/ci";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -198,6 +199,19 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
+            <Link to="/workshops" onClick={() => handleItemClick('workshops')}>
+              <div className={`menu-item transition-colors duration-200 ${getItemClass('workshops')}`}>
+                <div className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]" tabIndex={0}>
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <CiShop size={33}/>
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Workshops
+                  </span>
+                </div>
+              </div>
+            </Link>
+            
           </div>
         </div>
       </div>

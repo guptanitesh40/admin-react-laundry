@@ -32,6 +32,7 @@ const PrivateRoutes: React.FC = () => {
   const OrderDetail = lazy(() => import("../components/order/OrderDetail"));
   const User = lazy(() => import("../components/user/User"));
   const UserForm = lazy(() => import("../components/user/UserForm"));
+  const Workshop = lazy(() => import("../components/workshop/Workshop"));
 
   return (
     <Routes>
@@ -234,6 +235,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Shimmer />}>
               <UserForm />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/workshops"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <Workshop/>
             </Suspense>
           }
         />

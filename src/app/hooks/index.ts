@@ -66,3 +66,8 @@ export { default as useValidateOtp } from './login/useValidateOtp';
 export { default as useGetOrdersData } from './report/useGetOrdersData';
 export { default as useGetPaymentData } from './report/useGetPaymentData';
 
+export { default as useGetWorkshops } from './workshop/useGetWorkshops';
+export { default as useGetWorkshop } from './workshop/useGetWorkshop';
+export { default as useAddWorkshop } from './workshop/useAddWorkshop';
+export { default as useDeleteWorkshop } from './workshop/useDeleteWorkshop';
+export { default as useUpdateWorkshop } from './workshop/useUpdateWorkshop';
