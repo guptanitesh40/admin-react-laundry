@@ -36,10 +36,10 @@ const UserForm: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { companies, fetchCompanies } = useGetCompanies(pageNumber, perPage);
+  const { companies } = useGetCompanies(pageNumber, perPage);
   const { user, fetchUser } = useGetUser();
   const [companyOptions, setCompanyOptions] = useState([]);
-  const { branches, fetchBranches } = useGetBranches(pageNumber, perPage);
+  const { branches } = useGetBranches(pageNumber, perPage);
   const [branchOptions, setBranchOptions] = useState([]);
 
   const formDataState: FormData = {
@@ -62,8 +62,6 @@ const UserForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       await fetchUser(user_id);
-      await fetchCompanies();
-      await fetchBranches();
     };
     fetchData();
   }, [user_id]);

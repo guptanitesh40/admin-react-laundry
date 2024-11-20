@@ -69,7 +69,7 @@ const LineChart = () => {
   const options = {};
 
   return (
-    <div className="card w-[990px]">
+    <div className="card w-[950px]">
       <div className="card-header">
         <h3 className="card-title">Orders</h3>
         <div className="flex gap-3">

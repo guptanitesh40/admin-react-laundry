@@ -6,11 +6,9 @@ import Shimmer from "../components/shimmer/Shimmer";
 import ListShimmer from "../components/shimmer/ListShimmer";
 import ProfileShimmer01 from "../components/shimmer/ProfileShimmer";
 import ProfileShimmer02 from "../components/shimmer/ProfileShimmer01";
-import Banner from "../components/banner/Banner";
-import BannerShimmer from "../components/shimmer/BannerShimmer";
-import Category from "../components/category/Category";
 
 const PrivateRoutes: React.FC = () => {
+  const Category = lazy(() => import("../components/category/Category"))
   const Profile = lazy(() => import("../components/profile/Index"));
   const Product = lazy(() => import("../components/product/Product"));
   const Service = lazy(() => import("../components/services/Service"));
@@ -27,6 +25,7 @@ const PrivateRoutes: React.FC = () => {
   const BranchProfile = lazy(
     () => import("../components/branch/BranchProfile")
   );
+  const Banner = lazy(() => import("../components/banner/Banner"))
   const Order = lazy(() => import("../components/order/Order"));
   const OrderForm = lazy(() => import("../components/order/OrderForm"));
   const OrderDetail = lazy(() => import("../components/order/OrderDetail"));
@@ -39,7 +38,14 @@ const PrivateRoutes: React.FC = () => {
       <Route element={<MasterLayout />}>
         <Route path="/dashboard" element={<DashBoard />} />
 
-        <Route path="/category" element={<Category />} />
+        <Route
+          path="/category"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <Category />
+            </Suspense>
+          }
+        />
 
         <Route
           path="/product"
@@ -170,7 +176,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/banner"
           element={
-            <Suspense fallback={<BannerShimmer />}>
+            <Suspense fallback={<ListShimmer />}>
               <Banner />
             </Suspense>
           }

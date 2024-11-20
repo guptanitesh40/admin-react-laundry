@@ -4,8 +4,10 @@ import {
   useAddOrder,
   useApplyCoupon,
   useGetAddress,
+  useGetBranches,
   useGetCategories,
   useGetCoupons,
+  useGetOrder,
   useGetPrice,
   useGetProductsOnId,
   useGetServicesOnId,
@@ -14,7 +16,7 @@ import {
 import * as Yup from "yup";
 import { FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import useGetSingleOrder from "../../hooks/order/useGetSingleOrder";
+import useGetSingleOrder from "../../hooks/order/useGetOrder";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
@@ -49,6 +51,7 @@ interface FormData {
   user_id: number;
   items: item[];
   total: number;
+  branch_id: number;
 }
 
 const OrderForm: React.FC = () => {
@@ -73,7 +76,8 @@ const OrderForm: React.FC = () => {
 
   const { users, fetchUsersByRole } = useGetUsersByRole();
   const { coupons } = useGetCoupons(pageNumber, perPage);
-  const { order } = useGetSingleOrder(order_id);
+  const { branches } = useGetBranches(pageNumber, perPage);
+  const { order, fetchOrder } = useGetOrder();
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
 
@@ -108,6 +112,7 @@ const OrderForm: React.FC = () => {
       },
     ],
     total: 0,
+    branch_id: null,
   });
 
   const [retrivedData, setRetrivedData] = useState<FormData>({
@@ -139,9 +144,17 @@ const OrderForm: React.FC = () => {
       },
     ],
     total: 0,
+    branch_id: null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchOrder(order_id);
+    };
+    fetchData();
+  }, [order_id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -210,6 +223,7 @@ const OrderForm: React.FC = () => {
           (order.sub_total || 0) +
           (order.express_delivery_charges || 0) +
           (order.shipping_charges || 0),
+          branch_id: order.branch_id,
       };
 
       setFormData(initialFormData);
@@ -1060,6 +1074,39 @@ const OrderForm: React.FC = () => {
                 }
                 className="input border border-gray-300 rounded-md p-2"
               />
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="payment_status"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+              Select Branch
+              </label>
+              <select
+              id="company_id"
+              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+              value={formData.branch_id || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  branch_id: e.target.value ? Number(e.target.value) : null,
+                })
+              }
+              >
+              <option value="" disabled>
+                Select Branch
+              </option>
+              {branches.length > 0 ? (
+                branches.map((branch) => (
+                  <option key={branch.branch_id} value={branch.branch_id}>
+                    {branch.branch_name}
+                  </option>
+                ))
+              ) : (
+                <option>No Data Available</option>
+              )}
+              </select>
             </div>
           </div>
 

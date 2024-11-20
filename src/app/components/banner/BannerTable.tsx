@@ -46,12 +46,14 @@ const BannerTable: React.FC<BannerTableProps> = ({
   const totalPages = Math.ceil(totalBanners / perPage);
 
   useEffect(() => {
-    if (isSubmit) {
-      fetchBanners();
-      setIsSubmit(false);
-    }
-
-  }, [isSubmit,fetchBanners]);
+    const refetchData = async () => {
+      if (isSubmit) {
+        fetchBanners();
+        setIsSubmit(false);
+      }
+    };
+    refetchData();
+  }, [isSubmit]);
 
   useEffect(() => {
     if (pageFromParams) {
@@ -71,8 +73,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
         perPage: perPage.toString(),
       });
     }
-    fetchBanners();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchBanners]);
+  }, [search]);
 
   const handleDeleteBanner = async (banner_id: number) => {
     try {

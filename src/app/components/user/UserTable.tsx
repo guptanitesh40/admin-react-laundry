@@ -40,8 +40,8 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
     sortOrder
   );
   const { deleteUser } = useDeleteUser();
-  const { companies, fetchCompanies } = useGetCompanies(pageNumberForList, perPageForList);
-  const { branches, fetchBranches } = useGetBranches(pageNumberForList, perPageForList);
+  const { companies } = useGetCompanies(pageNumberForList, perPageForList);
+  const { branches } = useGetBranches(pageNumberForList, perPageForList);
 
   const navigate = useNavigate();
 
@@ -50,14 +50,6 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
   const handleUpdateUser = (user_id: number) => {
     navigate(`/user/edit/${user_id}`);
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchCompanies();
-      await fetchBranches();
-    };
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (pageParams) {
