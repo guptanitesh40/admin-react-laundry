@@ -1,63 +1,94 @@
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import { useDeleteUser, useGetBranches, useGetCompanies, useGetOrder, useGetUsers } from "../../hooks";
+import React, { useEffect, useState } from "react";
 import TableShimmer from "../shimmer/TableShimmer";
-import { useEffect, useState } from "react";
+import { useDeleteWorkshop, useGetWorkshops } from "../../hooks";
+import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import { useSearchParams } from "react-router-dom";
 import {
   FaChevronLeft,
   FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
 
-interface UserTableProps {
+interface WorkshopTableProps {
   search: string;
+  isSubmit: boolean;
+  setIsSubmit: (value: boolean) => void;
+  setUpdateWorkshop: (workshop_id: number) => void;
 }
 
-interface User {
-  company_ids: number[];
-  branch_ids: number[];
-}
-
-const UserTable: React.FC<UserTableProps> = ({ search }) => {
+const WorkshopTable: React.FC<WorkshopTableProps> = ({
+  search,
+  isSubmit,
+  setIsSubmit,
+  setUpdateWorkshop,
+}) => {
+  const { deleteWorkshop } = useDeleteWorkshop();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
-  const perPageForList = 1000;
-  const pageNumberForList = 1;
 
-  const { users, fetchUsers, totalUsers, loading } = useGetUsers(
-    currentPage,
-    perPage,
-    search,
-    sortColumn,
-    sortOrder
-  );
-  const { deleteUser } = useDeleteUser();
-  const { companies, fetchCompanies } = useGetCompanies(pageNumberForList, perPageForList);
-  const { branches, fetchBranches } = useGetBranches(pageNumberForList, perPageForList);
+  const { workshops, totalWorkshops, loading, fetchWorkshops } =
+    useGetWorkshops(currentPage, perPage, search, sortColumn, sortOrder);
 
-  const navigate = useNavigate();
-
-  const totalPages = Math.ceil(totalUsers / perPage);
-
-  const handleUpdateUser = (user_id: number) => {
-    navigate(`/user/edit/${user_id}`);
-  };
+  const totalPages = Math.ceil(totalWorkshops / perPage);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchCompanies();
-      await fetchBranches();
+    const refetchData = async () => {
+      if (isSubmit) {
+        fetchWorkshops();
+        setIsSubmit(false);
+      }
     };
-    fetchData();
-  }, []);
+    refetchData();
+  }, [isSubmit]);
+
+  const handleDeleteWorkshop = async (workshop_id: number) => {
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (isConfirmed) {
+        const { success, message } = await deleteWorkshop(workshop_id);
+        if (success) {
+          const updatedWorkshops = workshops.filter(
+            (workshop) => workshop.workshop_id !== workshop_id
+          );
+          if (updatedWorkshops.length === 0 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+            setSearchParams({
+              page: (currentPage - 1).toString(),
+              perPage: perPage.toString(),
+            });
+          }
+          await fetchWorkshops();
+          Swal.fire(message);
+        } else {
+          Swal.fire(message);
+        }
+      }
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  };
 
   useEffect(() => {
     if (pageParams) {
@@ -77,51 +108,11 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-    fetchUsers();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchUsers]);
-
-  const handleDeleteUser = async (user_id: number) => {
-    try {
-      const { isConfirmed } = await Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#dc3545",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-      });
-
-      if (isConfirmed) {
-        const { success, message } = await deleteUser(user_id);
-        if (success) {
-          const updatedUsers = users.filter((user) => user.user_id !== user_id);
-          if (updatedUsers.length === 0 && currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-            setSearchParams({
-              page: (currentPage - 1).toString(),
-              perPage: perPage.toString(),
-            });
-          }
-          await fetchUsers();
-          Swal.fire(message);
-        } else {
-          Swal.fire(message);
-        }
-      }
-    } catch (error: any) {
-      Swal.fire({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
-    }
-  };
+  }, [search]);
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
+      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -162,30 +153,32 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-7.5">
+      <div className="grid gap-5 lg:gap-5.5">
         <div className="card card-grid min-w-full">
           <div className="card-body">
             <div className="scrollable-x-auto">
               <table className="table table-auto table-border">
                 <thead>
                   <tr>
-                    <th className="min-w-[100px]">
+                    <th className="min-w-[90px]">
                       <div
                         className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("user_id")}
+                        onClick={() => handleSort("workshop_id")}
                       >
                         Id
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "user_id" && sortOrder === "ASC"
+                              sortColumn === "workshop_id" &&
+                              sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "user_id" && sortOrder === "DESC"
+                              sortColumn === "workshop_id" &&
+                              sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -193,24 +186,25 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         </div>
                       </div>
                     </th>
-
-                    <th className="min-w-[165px]">
+                    <th className="min-w-[200px]">
                       <div
                         className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("first_name")}
+                        onClick={() => handleSort("workshop_name")}
                       >
-                        User name
+                        Workshop name
                         <div className="flex cursor-pointer">
                           <FaArrowDownLong
                             color={
-                              sortColumn === "first_name" && sortOrder === "ASC"
+                              sortColumn === "workshop_name" &&
+                              sortOrder === "ASC"
                                 ? "gray"
                                 : "lightgray"
                             }
                           />
                           <FaArrowUpLong
                             color={
-                              sortColumn === "first_name" && sortOrder === "DESC"
+                              sortColumn === "workshop_name" &&
+                              sortOrder === "DESC"
                                 ? "gray"
                                 : "lightgray"
                             }
@@ -218,7 +212,31 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         </div>
                       </div>
                     </th>
-
+                    <th className="min-w-[230px]">Workshop manager</th>
+                    <th className="min-w-[230px]">
+                      <div
+                        className="flex justify-between cursor-pointer"
+                        onClick={() => handleSort("address")}
+                      >
+                        Address
+                        <div className="flex cursor-pointer">
+                          <FaArrowDownLong
+                            color={
+                              sortColumn === "address" && sortOrder === "ASC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                          <FaArrowUpLong
+                            color={
+                              sortColumn === "address" && sortOrder === "DESC"
+                                ? "gray"
+                                : "lightgray"
+                            }
+                          />
+                        </div>
+                      </div>
+                    </th>
                     <th className="min-w-[250px]">
                       <div
                         className="flex justify-between cursor-pointer"
@@ -243,7 +261,6 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         </div>
                       </div>
                     </th>
-
                     <th className="min-w-[165px]">
                       <div
                         className="flex justify-between cursor-pointer"
@@ -270,109 +287,39 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                         </div>
                       </div>
                     </th>
-
-                    <th className="min-w-[150px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("gender")}
-                      >
-                        Gender
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "gender" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "gender" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-
-                    <th className="min-w-[170px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("role_id")}
-                      >
-                        Role
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th> 
-                    
-                    <th className="min-w-[250px]">
-                      Companies
-                    </th>
-                    <th className="min-w-[250px]">
-                      Branches
-                    </th>                         
-
                     <th className="min-w-[125px]">Actions</th>
                   </tr>
                 </thead>
                 {loading ? (
                   <TableShimmer />
-                ) : users.length > 0 ? (
+                ) : workshops ? (
                   <tbody>
-                    {users.map((user) => (
-                      <tr key={user.user_id}>
-                        <td>{user.user_id}</td>
+                    {workshops.map((workshop) => (
+                      <tr key={workshop.workshop_id}>
+                        <td>{workshop.workshop_id}</td>
+                        <td>{workshop.workshop_name}</td>
                         <td>
-                          {user.first_name} {user.last_name}
+                          {workshop.workshop_managers
+                            .map((manager: any) => manager.full_name)
+                            .join(", ")}
                         </td>
-                        <td>{user.email}</td>
-                        <td>{user.mobile_number}</td>
+                        <td>{workshop.address}</td>
+                        <td>{workshop.email}</td>
+                        <td>{workshop.mobile_number}</td>
                         <td>
-                          {
-                            Gender[
-                              user.gender as unknown as keyof typeof Gender
-                            ]
-                          }
-                        </td>
-                        <td>
-                          {Role[user.role_id as unknown as keyof typeof Role]}
-                        </td>
-                        <td>{companies
-                        .filter((company) => (user.company_ids as number[]).includes(company.company_id))
-                        .map((company) => company.company_name)
-                        .join(", ")}</td>
-                        <td>{branches
-                        .filter((branch) => (user.branch_ids as number[]).includes(branch.branch_id))
-                        .map((branch) => branch.branch_name)  
-                        .join(", ")}</td>                    
-                        <td>
-                          <button 
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => handleUpdateUser(user.user_id)}
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            onClick={() =>
+                              setUpdateWorkshop(workshop.workshop_id)
+                            }
                           >
-                            <FaPencilAlt
-                              className="text-yellow-600"                              
-                            />
+                            <FaPencilAlt className="text-yellow-600" />
                           </button>
                           <button
                             className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteUser(user.user_id)}
+                            onClick={() =>
+                              handleDeleteWorkshop(workshop.workshop_id)
+                            }
                           >
                             <FaTrash className="text-red-500" />
                           </button>
@@ -384,7 +331,7 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
                   <tbody>
                     <tr>
                       <td colSpan={5} className="text-center">
-                        No users available
+                        No workshops available
                       </td>
                     </tr>
                   </tbody>
@@ -395,10 +342,10 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
         </div>
       </div>
 
-      {totalUsers > perPage && (
+      {totalWorkshops > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">
-            Showing {users.length} of {totalUsers} Users
+            Showing {workshops.length} of {totalWorkshops} Branches
           </span>
           <div className="pagination" data-datatable-pagination="true">
             <button
@@ -431,4 +378,4 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
   );
 };
 
-export default UserTable;
+export default WorkshopTable;

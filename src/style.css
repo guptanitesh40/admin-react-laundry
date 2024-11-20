@@ -8378,3 +8378,15 @@ label.rating-label {
   text-align: center;
 }
 
+.multiSelectContainer ul {
+  max-height: 150px !important;
+  overflow-y: auto !important;
+}
+
+.optionContainer {
+  max-height: 50px; 
+  overflow-y: scroll; 
+  border: 1px solid #ccc;
+  padding: 10px; 
+  z-index: 1000;
+}
