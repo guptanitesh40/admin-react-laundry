@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums"; // Ensure these enums are defined
-import useGetSingleOrder from "../../hooks/order/useGetOrder";
 import useGetOrder from "../../hooks/order/useGetOrder";
 
 const OrderDetails: React.FC = () => {
@@ -13,7 +12,7 @@ const OrderDetails: React.FC = () => {
 
   useEffect(() => {
     fetchOrder(order_id);
-  },[])
+  },[order_id])
 
   if(!order) return;
 
