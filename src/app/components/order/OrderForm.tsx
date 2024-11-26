@@ -16,7 +16,6 @@ import {
 import * as Yup from "yup";
 import { FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import useGetSingleOrder from "../../hooks/order/useGetOrder";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
@@ -1081,7 +1080,7 @@ const OrderForm: React.FC = () => {
                 htmlFor="payment_status"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-              Select Branch
+              Branch
               </label>
               <select
               id="company_id"
@@ -1095,7 +1094,7 @@ const OrderForm: React.FC = () => {
               }
               >
               <option value="" disabled>
-                Select Branch
+              Select Branch
               </option>
               {branches.length > 0 ? (
                 branches.map((branch) => (
@@ -1107,21 +1106,33 @@ const OrderForm: React.FC = () => {
                 <option>No Data Available</option>
               )}
               </select>
+              <p className="w-full text-red-500 text-sm">
+                {errors.branch_id || "\u00A0"}
+              </p>
             </div>
           </div>
 
-          <div className="flex justify-start mt-6">
+          <div className="mt-6 flex gap-4">
             <button
               type="submit"
-              className="btn btn-primary mr-4"
+              className={`btn btn-primary ${
+                adding || updating ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               disabled={adding || updating}
             >
-              {order ? "Update Order" : "Add Order"}
+              {adding || updating
+                ? adding
+                  ? "Adding..."
+                  : "Updating..."
+                : order_id
+                ? "Update Order"
+                : "Add Order"}
             </button>
             <button
               type="button"
               onClick={handleCancel}
               className="btn btn-secondary"
+              disabled={adding || updating}
             >
               Cancel
             </button>

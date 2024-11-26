@@ -364,7 +364,7 @@ const CouponModal: React.FC = () => {
               >
                 {isLoading
                   ? "Saving..."
-                  : coupon
+                  : coupon_id
                   ? "Update Coupon"
                   : "Add Coupon"}
               </button>

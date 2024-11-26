@@ -696,7 +696,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                 </thead>
                 {loading ? (
                   <TableShimmer />
-                ) : orders.length !== null ? (
+                ) : orders.length > 0 ? (
                   <tbody>
                     {orders.map((order) => {
                       const orderStatusLabel =
@@ -805,7 +805,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
                   <tbody>
                     <tr>
                       <td colSpan={5} className="text-center">
-                        No banners available
+                        No Orders available
                       </td>
                     </tr>
                   </tbody>

@@ -72,3 +72,6 @@ export { default as useGetWorkshop } from './workshop/useGetWorkshop';
 export { default as useAddWorkshop } from './workshop/useAddWorkshop';
 export { default as useDeleteWorkshop } from './workshop/useDeleteWorkshop';
 export { default as useUpdateWorkshop } from './workshop/useUpdateWorkshop';
+
+export { default as useAddNote } from './notes/useAddNote';
+export { default as useDeleteNote } from './notes/useDeleteNote';

@@ -54,6 +54,10 @@ export const orderSchema = Yup.object().shape({
     .typeError("Paid amount must be a number")
     .min(0, "Paid amount must be a positive number"),
 
+  branch_id: Yup.number()
+    .required("Please select branch")
+    .test("required", "Please select branch", (value) => !!value),
+    
   items: Yup.array().of(itemSchema),
 });
 
