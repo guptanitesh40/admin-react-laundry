@@ -261,7 +261,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                         </div>
                       </div>
                     </th>
-                    <th className="min-w-[165px]">
+                    <th className="min-w-[155px]">
                       <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("mobile_number")}

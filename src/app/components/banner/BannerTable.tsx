@@ -166,7 +166,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
               <table className="table table-auto table-border">
                 <thead>
                   <tr>
-                    <th className="w-[100px]">
+                    <th className="min-w-[100px]">
                       <div
                         className="flex justify-between cursor-pointer"
                         onClick={() => handleSort("banner_id")}

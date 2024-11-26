@@ -2,6 +2,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
+  order_status_name: string;
+  notes: any [];
   address_details: string;
   estimated_pickup_time: string | number | Date;
   estimated_delivery_time: string | number | Date;
@@ -40,9 +42,9 @@ const useGetOrder = () => {
         setOrder(null); 
         return;
       }
-  
+      
       const token = localStorage.getItem("authToken");
-      const GET_ORDER_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders/${order_id}`;
+      const GET_ORDER_URL = `${import.meta.env.VITE_BASE_URL}/admin/order/${order_id}`;
   
       setLoading(true);
       try {
@@ -62,7 +64,7 @@ const useGetOrder = () => {
           return;
         }
   
-        setOrder(data?.data); 
+        setOrder(data?.data?.orders);
       } catch (error: any) {
         toast.error(error?.message || "Network error: Failed to fetch.", {
           position: "top-center",

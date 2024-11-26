@@ -69,8 +69,7 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
         perPage: perPage.toString(),
       });
     }
-    fetchUsers();
-  }, [perPage, currentPage, search, sortColumn, sortOrder, fetchUsers]);
+  }, [search]);
 
   const handleDeleteUser = async (user_id: number) => {
     try {

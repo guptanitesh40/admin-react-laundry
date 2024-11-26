@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const GET_USERS_URL = `${import.meta.env.VITE_BASE_URL}/user`;
@@ -26,7 +26,7 @@ const useGetUsers = (
   const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = async () => {
     const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
@@ -37,7 +37,6 @@ const useGetUsers = (
     if (sortOrder) queryParams.append("order", sortOrder);
 
     setLoading(true);
-
     try {
       const response = await fetch(`${GET_USERS_URL}?${queryParams}`, {
         method: "GET",
@@ -47,18 +46,15 @@ const useGetUsers = (
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, { position: "top-center" });
+        toast.error(data.message, { position: "top-center" });
         return;
       }
 
-      const data = await response.json();
-      const usersData = data?.data?.users || [];
-      const totalUsers = data?.data?.count || 0;
-
-      setUsers(usersData);
-      setTotalUsers(totalUsers);
+      setUsers(data?.data?.users || []);
+      setTotalUsers(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -66,7 +62,11 @@ const useGetUsers = (
     } finally {
       setLoading(false);
     }
-  }, [pageNumber, perPage, sortOrder, sortColumn, search]);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
   return { users, totalUsers, loading, fetchUsers };
 };
