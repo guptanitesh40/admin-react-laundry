@@ -8383,6 +8383,10 @@ label.rating-label {
   overflow-y: auto !important;
 }
 
+.multiselect {
+  width: 225px !important;
+}
+
 .optionContainer {
   max-height: 50px; 
   overflow-y: scroll; 
@@ -8390,3 +8394,54 @@ label.rating-label {
   padding: 10px; 
   z-index: 1000;
 }
+
+.multiselect-chip {
+  background: #1e90ff;
+  color: #fff;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin: 2px;
+  max-width: fit-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multiselect-options {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.multiselect-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.multiselect-option:hover {
+  background-color: #f0f8ff;
+  color: #1e90ff;
+}
+
+.multiselect-search {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header-space {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  }

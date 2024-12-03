@@ -2,24 +2,23 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDeleteProduct, useGetProducts } from "../../hooks";
 import Swal from "sweetalert2";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import {
   FaChevronLeft,
   FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
+import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
+import { searchSchema } from "../../validation/searchSchema";
 
 interface ProductTableProps {
-  search: string;
   setEditProduct: (product_id: number) => void;
   isSubmit: boolean;
   setIsSubmit: (value: boolean) => void;
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({
-  search,
   setEditProduct,
   isSubmit,
   setIsSubmit,
@@ -32,8 +31,16 @@ const ProductTable: React.FC<ProductTableProps> = ({
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const { products, totalProducts, loading, fetchProducts } = useGetProducts(
-    currentPage, perPage, search, sortColumn, sortOrder
+    currentPage,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder
   );
 
   const totalPages = Math.ceil(totalProducts / perPage);
@@ -108,6 +115,19 @@ const ProductTable: React.FC<ProductTableProps> = ({
     }
   }, [search]);
 
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate({ search: search }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
@@ -136,169 +156,181 @@ const ProductTable: React.FC<ProductTableProps> = ({
 
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
-          <select
-            className="select select-sm w-16"
-            value={perPage}
-            onChange={handlePerPageChange}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-          per page
+      <div className="card-header card-header-space flex-wrap">
+        <div className="justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm mb-2 font-medium">
+          <div className="flex items-center gap-2 order-2 md:order-1">
+            Show
+            <select
+              className="select select-sm w-16"
+              data-datatable-size="true"
+              name="perpage"
+              value={perPage}
+              onChange={handlePerPageChange}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+            per page
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 lg:gap-5">
+          <div className="flex flex-col">
+            <form onSubmit={onSearchSubmit} className="flex flex-col">
+              <label className="input input-sm h-10 flex items-center">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search product"
+                  className="w-[275px]"
+                />
+                <button type="submit">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+              <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
+            </form>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-7.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="w-[100px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("product_id")}
-                      >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "product_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "product_id" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[165px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("name")}
-                      >
-                        Product name
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "name" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "name" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[100px]">
-                      <div className="flex justify-between">
-                        Image
-                        <div className="flex "></div>
-                      </div>
-                    </th>
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
+          <div className="scrollable-x-auto">
+            <table
+              className="table table-auto table-border"
+              data-datatable-table="true"
+            >
+              <thead>
+                <tr>
+                  <th className="w-[30px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "product_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("product_id")}
+                    >
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="w-[125px]">Actions</th>
-                  </tr>
-                </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : products.length > 0 ? (
-                  <tbody>
-                    {products.map((product) => (
-                      <tr key={product.product_id}>
-                        <td>{product.product_id}</td>
-                        <td>{product.name}</td>
-                        <td>
-                          <img
-                            alt={product.name}
-                            className="rounded-lg size-20 shrink-0"
-                            src={product.image}
-                          />
-                        </td>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("name")}
+                    >
+                      <span className="sort-label">Product name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                        <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditProduct(product.product_id)}
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() =>
-                              handleDeleteProduct(product.product_id)
-                            }
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center">
-                        No products available
+                  <th className="w-[130px]">Actions</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <TableShimmer />
+              ) : products.length > 0 ? (
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.product_id}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {product.product_id}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          {product.name}
+                        </div>
+                      </td>
+                      <td>
+                        <button
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          onClick={() => setEditProduct(product.product_id)}
+                        >
+                          <FaPencilAlt className="text-yellow-600" />
+                        </button>
+                        <button
+                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                          onClick={() =>
+                            handleDeleteProduct(product.product_id)
+                          }
+                        >
+                          <FaTrash className="text-red-500" />
+                        </button>
                       </td>
                     </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No users available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
           </div>
+
+          {totalProducts > perPage && (
+            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700">
+                  Showing {products.length} of {totalProducts} Users
+                </span>
+                <div className="pagination" data-datatable-pagination="true">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`btn ${
+                        currentPage === index + 1 ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`btn ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {totalProducts > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {products.length} of {totalProducts} Branches
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };
