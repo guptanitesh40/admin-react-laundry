@@ -20,7 +20,11 @@ const useGetUsers = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  gender?: number[],
+  role?: number[],
+  company?: number[],
+  branch?: number[]
 ) => {
   const [users, setUsers] = useState<User[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -35,6 +39,18 @@ const useGetUsers = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
+    if (gender) {
+      gender.forEach((g) => queryParams.append("gender", g.toString()));
+    }
+    if (role) {
+      role.forEach((r) => queryParams.append("role", r.toString()));
+    }
+    if (company) {
+      company.forEach((c) => queryParams.append("company_id", c.toString()));
+    }
+    if (branch) {
+      branch.forEach((b) => queryParams.append("branch", b.toString()));
+    }
 
     setLoading(true);
     try {
@@ -66,7 +82,7 @@ const useGetUsers = (
 
   useEffect(() => {
     fetchUsers();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber,perPage,search,sortColumn,sortOrder,gender,role,company,branch]);
 
   return { users, totalUsers, loading, fetchUsers };
 };

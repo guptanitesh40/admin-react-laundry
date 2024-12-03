@@ -1,5 +1,9 @@
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
-import { useDeleteUser, useGetBranches, useGetCompanies, useGetOrder, useGetUsers } from "../../hooks";
+import {
+  useDeleteUser,
+  useGetBranches,
+  useGetCompanies,
+  useGetUsers,
+} from "../../hooks";
 import TableShimmer from "../shimmer/TableShimmer";
 import { useEffect, useState } from "react";
 import {
@@ -11,17 +15,20 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
-
-interface UserTableProps {
-  search: string;
-}
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
+import Multiselect from "multiselect-react-dropdown";
 
 interface User {
   company_ids: number[];
   branch_ids: number[];
 }
 
-const UserTable: React.FC<UserTableProps> = ({ search }) => {
+interface UserTableProps {
+  filter: boolean;
+}
+
+const UserTable: React.FC<UserTableProps> = ({ filter }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,12 +39,25 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
   const perPageForList = 1000;
   const pageNumberForList = 1;
 
+  const [genderFilter, setGenderFilter] = useState<number[]>([]);
+  const [roleFilter, setRoleFilter] = useState<number[]>([]);
+  const [companyFilter, setCompanyFilter] = useState<number[]>([]);
+  const [branchFilter, setBranchFilter] = useState<number[]>([]);
+
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const { users, fetchUsers, totalUsers, loading } = useGetUsers(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    genderFilter,
+    roleFilter,
+    companyFilter,
+    branchFilter
   );
   const { deleteUser } = useDeleteUser();
   const { companies } = useGetCompanies(pageNumberForList, perPageForList);
@@ -46,6 +66,14 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalUsers / perPage);
+
+  const genderOptions = Object.entries(Gender)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
+
+  const roleOptions = Object.entries(Role)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
 
   const handleUpdateUser = (user_id: number) => {
     navigate(`/user/edit/${user_id}`);
@@ -70,6 +98,19 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
       });
     }
   }, [search]);
+
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate({ search: search }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
 
   const handleDeleteUser = async (user_id: number) => {
     try {
@@ -138,286 +179,347 @@ const UserTable: React.FC<UserTableProps> = ({ search }) => {
 
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
-          <select
-            className="select select-sm w-16"
-            value={perPage}
-            onChange={handlePerPageChange}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-          per page
+      {filter ? (
+        <div className="card-header flex-wrap gap-2 ">
+          <div className="flex flex-wrap gap-2.5">
+            <Multiselect
+              options={genderOptions}
+              displayValue="label"
+              selectedValues={genderOptions.filter((option) =>
+                genderFilter.includes(option.value)
+              )}
+              placeholder="Gender"
+              onSelect={(selectedList) => {
+                setGenderFilter(selectedList.map((item: any) => item.value));
+              }}
+              onRemove={(selectedList) => {
+                setGenderFilter(selectedList.map((item: any) => item.value));
+              }}
+              className="multiselect-container multiselect"
+            />
+            <Multiselect
+              options={roleOptions}
+              displayValue="label"
+              selectedValues={roleOptions.filter((option) =>
+                roleFilter.includes(option.value)
+              )}
+              placeholder="Role"
+              onSelect={(selectedList) => {
+                setRoleFilter(selectedList.map((item: any) => item.value));
+              }}
+              onRemove={(selectedList) => {
+                setRoleFilter(selectedList.map((item: any) => item.value));
+              }}
+              className="multiselect-container multiselect"
+            />
+            <Multiselect
+              options={companies?.map((company) => ({
+                company_id: company.company_id,
+                company_name: company.company_name,
+              }))}
+              displayValue="company_name"
+              selectedValues={companies.filter((option) =>
+                companyFilter.includes(option.company_id)
+              )}
+              placeholder="Company"
+              onSelect={(selectedList) => {
+                setCompanyFilter(
+                  selectedList.map((item: any) => item.company_id)
+                );
+              }}
+              onRemove={(selectedList) => {
+                setCompanyFilter(
+                  selectedList.map((item: any) => item.company_id)
+                );
+              }}
+              className="multiselect-container multiselect"
+            />
+            <Multiselect
+              options={branches?.map((branch) => ({
+                branch_id: branch.branch_id,
+                branch_name: branch.branch_name,
+              }))}
+              displayValue="branch_name"
+              selectedValues={branches.filter((option) =>
+                branchFilter.includes(option.branch_id)
+              )}
+              placeholder="Branch"
+              onSelect={(selectedList) => {
+                setBranchFilter(
+                  selectedList.map((item: any) => item.branch_id)
+                );
+              }}
+              onRemove={(selectedList) => {
+                setBranchFilter(
+                  selectedList.map((item: any) => item.branch_id)
+                );
+              }}
+              className="multiselect-container multiselect"
+            />
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+      <div className="card-header card-header-space flex-wrap">
+        <div className="justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm mb-2 font-medium">
+          <div className="flex items-center gap-2 order-2 md:order-1">
+            Show
+            <select
+              className="select select-sm w-16"
+              data-datatable-size="true"
+              name="perpage"
+              value={perPage}
+              onChange={handlePerPageChange}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+            per page
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 lg:gap-5">
+          <div className="flex flex-col">
+            <form onSubmit={onSearchSubmit} className="flex flex-col">
+              <label className="input input-sm h-10 flex items-center">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search user by Name, Email, Mobile number"
+                  className="w-[275px]"
+                />
+                <button type="submit">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+              <p className="text-red-500 text-sm">
+                {errorMessage || "\u00A0"}
+              </p>
+            </form>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-7.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="min-w-[100px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("user_id")}
-                      >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "user_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "user_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
+          <div className="scrollable-x-auto">
+            <table
+              className="table table-auto table-border"
+              data-datatable-table="true"
+            >
+              <thead>
+                <tr>
+                  <th className="min-w-[70px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("id")}
+                    >
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[165px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("first_name")}
-                      >
-                        User name
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "first_name" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "first_name" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">User name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[250px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("email")}
-                      >
-                        Email
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "email" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "email" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
+                    >
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[165px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("mobile_number")}
-                      >
-                        Mobile no
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[190px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
+                    >
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[150px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("gender")}
-                      >
-                        Gender
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "gender" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "gender" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[80px]">
+                    <span className="sort">
+                      <span className="sort-label">Gender</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[170px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("role_id")}
-                      >
-                        Role
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "role_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th> 
-                    
-                    <th className="min-w-[250px]">
-                      Companies
-                    </th>
-                    <th className="min-w-[250px]">
-                      Branches
-                    </th>                         
+                  <th className="min-w-[140px]">
+                    <span className="sort">
+                      <span className="sort-label">Role</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[125px]">Actions</th>
-                  </tr>
-                </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : users.length > 0 ? (
-                  <tbody>
-                    {users.map((user) => (
-                      <tr key={user.user_id}>
-                        <td>{user.user_id}</td>
-                        <td>
+                  <th className="min-w-[250px]">
+                    <span className="sort-label">Companies</span>
+                  </th>
+                  <th className="min-w-[250px]">
+                    <span className="sort-label">Branches</span>
+                  </th>
+                  <th className="min-w-[130px]">Actions</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <TableShimmer />
+              ) : users.length > 0 ? (
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.user_id}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {user.user_id}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
                           {user.first_name} {user.last_name}
-                        </td>
-                        <td>{user.email}</td>
-                        <td>{user.mobile_number}</td>
-                        <td>
-                          {
-                            Gender[
-                              user.gender as unknown as keyof typeof Gender
-                            ]
-                          }
-                        </td>
-                        <td>
-                          {Role[user.role_id as unknown as keyof typeof Role]}
-                        </td>
-                        <td>{companies
-                        .filter((company) => (user.company_ids as number[]).includes(company.company_id))
-                        .map((company) => company.company_name)
-                        .join(", ")}</td>
-                        <td>{branches
-                        .filter((branch) => (user.branch_ids as number[]).includes(branch.branch_id))
-                        .map((branch) => branch.branch_name)  
-                        .join(", ")}</td>                    
-                        <td>
-                          <button 
+                        </div>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          {user.mobile_number}
+                        </div>
+                      </td>
+                      <td>
+                        {Gender[user.gender as unknown as keyof typeof Gender]}
+                      </td>
+                      <td>
+                        {Role[user.role_id as unknown as keyof typeof Role]}
+                      </td>
+                      <td>
+                        {companies
+                          .filter((company) =>
+                            (user.company_ids as number[]).includes(
+                              company.company_id
+                            )
+                          )
+                          .map((company) => company.company_name)
+                          .join(", ")}
+                      </td>
+                      <td>
+                        {branches
+                          .filter((branch) =>
+                            (user.branch_ids as number[]).includes(
+                              branch.branch_id
+                            )
+                          )
+                          .map((branch) => branch.branch_name)
+                          .join(", ")}{" "}
+                      </td>
+                      <td>
+                        <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           onClick={() => handleUpdateUser(user.user_id)}
-                          >
-                            <FaPencilAlt
-                              className="text-yellow-600"                              
-                            />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteUser(user.user_id)}
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center">
-                        No users available
+                        >
+                          <FaPencilAlt className="text-yellow-600" />
+                        </button>
+                        <button
+                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                          onClick={() => handleDeleteUser(user.user_id)}
+                        >
+                          <FaTrash className="text-red-500" />
+                        </button>
                       </td>
                     </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No users available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
           </div>
+          
+          {totalUsers > perPage && (
+            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700">
+                  Showing {users.length} of {totalUsers} Users
+                </span>
+                <div className="pagination" data-datatable-pagination="true">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`btn ${
+                        currentPage === index + 1 ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`btn ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {totalUsers > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {users.length} of {totalUsers} Users
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };

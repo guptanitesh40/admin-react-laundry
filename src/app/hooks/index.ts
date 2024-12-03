@@ -75,3 +75,6 @@ export { default as useUpdateWorkshop } from './workshop/useUpdateWorkshop';
 
 export { default as useAddNote } from './notes/useAddNote';
 export { default as useDeleteNote } from './notes/useDeleteNote';
+
+export { default as useAssignPickupBoy } from './orderstatus/useAssignPickupBoy';
+

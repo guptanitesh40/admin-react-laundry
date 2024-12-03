@@ -9,6 +9,7 @@ import { useAddNote, useDeleteNote } from "../../hooks";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import PickupBoyModal from "./PickupBoyModal";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -29,13 +30,15 @@ const OrderDetails: React.FC = () => {
     images: [] as (string | File)[],
   });
 
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [assigned, setAssigned] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchOrder(order_id);
-  }, []);
+  }, [assigned]);
 
   useEffect(() => {
     if (order) {
@@ -142,6 +145,12 @@ const OrderDetails: React.FC = () => {
     }
   };
 
+  const handleStatusClick = () => {
+    if (order?.order_status_name === "Assign Pickup Boy") {
+      setModalOpen(true);
+    }
+  };
+
   if (!order) return null;
 
   return (
@@ -150,9 +159,12 @@ const OrderDetails: React.FC = () => {
         <h1 className="text-xl font-semibold leading-none text-gray-900">
           Order Details - #{order_id}
         </h1>
-        <span className="px-4 py-2 rounded-full text-white bg-orange-500">
+        <button
+          className="px-4 py-2 rounded-full text-white bg-orange-500"
+          onClick={handleStatusClick}
+        >
           {order.order_status_name}
-        </span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -535,6 +547,13 @@ const OrderDetails: React.FC = () => {
           })}
         </ul>
       </div>
+
+      <PickupBoyModal
+        modelOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        orderId={formData.order_id}
+        setAssigned={setAssigned}
+      />
     </div>
   );
 };
