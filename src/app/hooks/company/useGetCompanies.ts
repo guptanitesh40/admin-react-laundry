@@ -27,9 +27,10 @@ interface Company {
 const useGetCompany = (
   pageNumber: number = 1,
   perPage: number = 10,
-  search: string = '',
+  search: string = "",
   sortColumn?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  company_ownedby?: number
 ) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -44,6 +45,8 @@ const useGetCompany = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
+    if (company_ownedby)
+      queryParams.append("company_ownedby", company_ownedby.toString());
 
     setLoading(true);
     try {
@@ -51,14 +54,14 @@ const useGetCompany = (
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message, {position: "top-center",});
+        toast.error(data.message, { position: "top-center" });
         return;
       }
 
@@ -69,11 +72,11 @@ const useGetCompany = (
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
+
   useEffect(() => {
     fetchCompanies();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_ownedby]);
 
   return { companies, loading, totalCount, fetchCompanies };
 };

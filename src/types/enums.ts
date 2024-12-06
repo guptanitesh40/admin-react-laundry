@@ -10,13 +10,16 @@ export enum DiscountType {
 }
 
 export enum OrderStatus {
-  "Pending" = 1,
-  "In Process" = 2,
-  "Work in Progress" = 3,
-  "Ready to delivery" = 4,
-  "Delivery complete" = 5,
+  "Pickup Pending" = 1,
+  "Items Received by Pickupboy" = 2,
+  "Items Received at Branch" = 3,
+  "Workshop Received Items" = 4,
+  "Workshop Moved to in Process" = 5,
+  "Workshop Marks as Completed" = 6,
+  "Branch Received Items" = 7,
+  "Branch Assigned Deliveryboy" = 8,
+  "Deliveryboy Marks as Completed" = 9,
 }
-
 
 export enum PaymentStatus {
   "Pending" = 1,
