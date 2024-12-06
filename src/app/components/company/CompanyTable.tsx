@@ -8,21 +8,24 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import dayjs from "dayjs";
+import { searchSchema } from "../../validation/searchSchema";
+import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CompanyOwed } from "../../../types/enums";
-import dayjs from "dayjs";
 
-interface CompanyTableProps {
-  search: string;
-}
-
-const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
+const CompanyTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const [ownershipFilter, setOwnershipFilter] = useState<number>();
 
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
@@ -32,7 +35,8 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    ownershipFilter
   );
 
   const navigate = useNavigate();
@@ -106,6 +110,19 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
     }
   }, [search]);
 
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate({ search: search }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
@@ -133,263 +150,260 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
   };
 
   return (
-    <div>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
+    <>
+      <div className="card-header card-header-space flex-wrap">
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
           <select
             className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
             value={perPage}
             onChange={handlePerPageChange}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
-          per page
+          <span>per page</span>
+        </div>
+
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-wrap gap-2.5 mb-6">
+            <button className="btn btn-lg btn-outline btn-primary flex-shrink-0">
+              <i className="ki-filled ki-setting-4"></i>
+              Filter
+            </button>
+            <select
+              className="select select-lg w-[200px] text-sm"
+              value={ownershipFilter}
+              onChange={(e) => {
+                setOwnershipFilter(Number(e.target.value));
+              }}
+            >
+              <option value="" disabled selected>
+               Select Ownership
+              </option>
+              <option value={1}>Own</option>
+              <option value={2}>Other Company</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="w-[275px] flex-grow"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
+          </div>
         </div>
       </div>
-      <div className="grid gap-5 lg:gap-7.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="min-w-[90px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("company_id")}
-                      >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "company_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "company_id" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
+
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
+          <div className="scrollable-x-auto">
+            <table
+              className="table table-auto table-border"
+              data-datatable-table="true"
+            >
+              <thead>
+                <tr>
+                  <th className="w-[30px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "company_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("company_id")}
+                    >
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "company_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("company_name")}
+                    >
+                      <span className="sort-label">Company name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "company_owner_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("company_owner_name")}
+                    >
+                      <span className="sort-label">Company owner name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "company_ownedby"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("company_ownedby")}
+                    >
+                      <span className="sort-label">Company Ownership</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "address"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("address")}
+                    >
+                      <span className="sort-label">Address</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[120px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
+                    >
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[215px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
+                    >
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[180px]">Company Website</th>
+
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "registration_date"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("registration_date")}
+                    >
+                      <span className="sort-label">Registration Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[125px]">Actions</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <TableShimmer />
+              ) : companies.length > 0 ? (
+                <tbody>
+                  {companies.map((company) => (
+                    <tr key={company.company_id}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.company_id}
                         </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[230px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("company_name")}
-                      >
-                        Company Name
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "company_name" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "company_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.company_name}
                         </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[237px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("company_owner_name")}
-                      >
-                        Company Owner Name
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "company_owner_name" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "company_owner_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.company_owner_name}
                         </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[220px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("company_ownedby")}
-                      >
-                        Company Ownership
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "company_ownedby" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "company_ownedby" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[200px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("address")}
-                      >
-                        Company Address
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "address" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "address" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[120px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("email")}
-                      >
-                        Company Email
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "email" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "email" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[180px]">Company Website</th>
-                    <th className="min-w-[215px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("mobile_number")}
-                      >
-                        Company Mobile no
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[193px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("registration_date")}
-                      >
-                        Registration Date
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "registration_date" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "registration_date" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="w-[50px]">Actions</th>
-                  </tr>
-                </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : companies.length > 0 ? (
-                  <tbody>
-                    {companies.map((company) => (
-                      <tr key={company.company_id}>
-                        <td>{company.company_id}</td>
-                        <td>
-                          <span
-                            className="cursor-pointer hover:text-primary"
-                            onClick={() =>
-                              navigate(`/company-profile/${company.company_id}`)
-                            }
-                          >
-                            {company.company_name}
-                          </span>
-                        </td>
-                        <td>{company.company_owner_name}</td>
-                        <td>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
                           {
                             CompanyOwed[
                               company.company_ownedby as unknown as keyof typeof CompanyOwed
                             ]
                           }
-                        </td>
-                        <td>{company.address}</td>
-                        <td>{company.email}</td>
-                        <td>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.address}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.email}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.mobile_number}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
                           <a
                             className="text-gray-600 hover:text-primary"
                             href={company.website}
@@ -398,87 +412,90 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ search }) => {
                           >
                             {company.website}
                           </a>
-                        </td>
-                        <td>{company.mobile_number}</td>
-                        <td>
-                        {dayjs(company.registration_date).format("DD-MM-YYYY")}                          
-                        </td>
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() =>
-                                handleUpdateCompany(company.company_id)
-                              }
-                              className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
-                            >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteCompany(company.company_id)
-                              }
-                              className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={4} className="text-center">
-                        No companies available.
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {dayjs(company.registration_date).format(
+                            "DD-MM-YYYY"
+                          )}
+                        </div>
+                      </td>
+
+                      <td>
+                        <button
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          onClick={() =>
+                            handleUpdateCompany(company.company_id)
+                          }
+                        >
+                          <FaPencilAlt className="text-yellow-600" />
+                        </button>
+                        <button
+                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                          onClick={() =>
+                            handleDeleteCompany(company.company_id)
+                          }
+                        >
+                          <FaTrash className="text-red-500" />
+                        </button>
                       </td>
                     </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No users available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
           </div>
+
+          {totalCount > perPage && (
+            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700">
+                  Showing {companies.length} of {totalCount} Companies
+                </span>
+                <div className="pagination" data-datatable-pagination="true">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`btn ${
+                        currentPage === index + 1 ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`btn ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-
-        {totalCount > perPage && (
-          <div className="flex items-center gap-4 mt-4">
-            <span className="text-gray-700">
-              Showing {companies.length} of {totalCount} Companies
-            </span>
-
-            <div className="pagination" data-datatable-pagination="true">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-                className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <FaChevronLeft />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => handlePageChange(currentPage + 1)}
-                className={`btn ${
-                  currentPage === totalPages ? "disabled" : ""
-                }`}
-              >
-                <FaChevronRight />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 

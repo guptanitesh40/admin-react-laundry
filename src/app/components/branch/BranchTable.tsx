@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  useDeleteBranch,
-  useGetBranches,
-} from "../../hooks";
+import { useDeleteBranch, useGetBranches, useGetCompanies } from "../../hooks";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import {
   FaChevronLeft,
@@ -13,11 +10,12 @@ import {
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import TableShimmer from "../shimmer/TableShimmer";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
+import Multiselect from "multiselect-react-dropdown";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 
-interface BranchTableProps {
-  search: string;
-}
-const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
+const BranchTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,20 +23,59 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
+  const perPageForList = 1000;
+  const pageNumberForList = 1;
+
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const [companyFilter, setCompanyFilter] = useState<number[]>([]);
+  const [branchManagerFilter, setBranchManagerFilter] = useState<number[]>([]);
 
   const { branches, fetchBranches, totalBranches, loading } = useGetBranches(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    companyFilter,
+    branchManagerFilter
   );
+  const { deleteBranch } = useDeleteBranch();
+  const { companies } = useGetCompanies(pageNumberForList, perPageForList);
+  const { users, fetchUsersByRole } = useGetUsersByRole();
 
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalBranches / perPage);
 
-  const { deleteBranch } = useDeleteBranch();
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchUsersByRole(3);
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (pageParams) {
+      setCurrentPage(Number(pageParams));
+    }
+    if (perPageParams) {
+      setPerPage(Number(perPageParams));
+    }
+  }, [pageParams, perPageParams]);
+
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
 
   const handleUpdateBranch = (branch_id: number) => {
     navigate(`/branch/edit/${branch_id}`);
@@ -85,25 +122,21 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
     }
   };
 
-  useEffect(() => {
-    if (pageParams) {
-      setCurrentPage(Number(pageParams));
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
     }
-    if (perPageParams) {
-      setPerPage(Number(perPageParams));
-    }
-  }, [pageParams, perPageParams]);
-
-  useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    }
-  }, [search]);
+  };
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -131,203 +164,242 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (!users || !companies) return;
+
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
+      <div className="card-header card-header-space flex-wrap">
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
           <select
             className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
             value={perPage}
             onChange={handlePerPageChange}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
-          per page
+          <span>per page</span>
+        </div>
+
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-wrap gap-2.5 mb-6">
+            <div className="flex items-center gap-3">
+              <Multiselect
+                options={companies?.map((company) => ({
+                  company_id: company.company_id,
+                  company_name: company.company_name,
+                }))}
+                displayValue="company_name"
+                selectedValues={companies.filter((option) =>
+                  companyFilter.includes(option.company_id)
+                )}
+                placeholder="Company"
+                onSelect={(selectedList) => {
+                  setCompanyFilter(
+                    selectedList.map((item: any) => item.company_id)
+                  );
+                }}
+                onRemove={(selectedList) => {
+                  setCompanyFilter(
+                    selectedList.map((item: any) => item.company_id)
+                  );
+                }}
+                className="multiselect-container multiselect min-w-[130px] max-w-[190px]"
+              />
+              <Multiselect
+                options={users?.map(
+                  (user: {
+                    user_id: any;
+                    first_name: string;
+                    last_name: string;
+                  }) => ({
+                    user_id: user.user_id,
+                    user_name: `${user.first_name} ${user.last_name}`,
+                  })
+                )}
+                displayValue="user_name"
+                selectedValues={users
+                  .filter((user: { user_id: number }) =>
+                    branchManagerFilter.includes(user.user_id)
+                  )
+                  .map(
+                    (user: {
+                      user_id: any;
+                      first_name: string;
+                      last_name: string;
+                    }) => ({
+                      user_id: user.user_id,
+                      user_name: `${user.first_name} ${user.last_name}`,
+                    })
+                  )}
+                placeholder="Branch Manager"
+                onSelect={(selectedList) => {
+                  setBranchManagerFilter(
+                    selectedList.map((item: any) => item.user_id)
+                  );
+                }}
+                onRemove={(selectedList) => {
+                  setBranchManagerFilter(
+                    selectedList.map((item: any) => item.user_id)
+                  );
+                }}
+                className="multiselect-container multiselect min-w-[140px] max-w-[200px]"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start">
+              <form
+                onSubmit={onSearchSubmit}
+                className="flex items-center gap-2"
+              >
+                <label className="input input-sm h-10 flex items-center gap-2">
+                  <input
+                    type="search"
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value);
+                      if (e.target.value === "") {
+                        setSearch("");
+                      }
+                    }}
+                    placeholder="Search..."
+                    className="w-[275px] flex-grow"
+                  />
+                  <button type="submit" className="btn btn-sm btn-icon">
+                    <i className="ki-filled ki-magnifier"></i>
+                  </button>
+                </label>
+              </form>
+              <p className="text-red-500 text-sm mt-1">
+                {errorMessage || "\u00A0"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="grid gap-5 lg:gap-4.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
+
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
           <div className="scrollable-x-auto">
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="min-w-[90px]">
-                    <div
-                      className="flex justify-between"
+                  <th className="w-[30px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "branch_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
                       onClick={() => handleSort("branch_id")}
                     >
-                      Id
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_id" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_id" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
-                  </th>                  
-                  <th className="min-w-[200px]">
-                    <div
-                      className="flex justify-between"
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "branch_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
                       onClick={() => handleSort("branch_name")}
                     >
-                      Branch Name
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_name" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_name" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
+                      <span className="sort-label">Branch name</span>
+                      <span className="sort-icon"></span>
+                    </span>
                   </th>
+
                   <th className="min-w-[200px]">
-                    <div
-                      className="flex justify-between"
-                      onClick={() => handleSort("branch_address")}
+                    <span
+                      className={`sort ${
+                        sortColumn === "address"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("address")}
                     >
-                      Branch Address
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_address" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_address" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
+                      <span className="sort-label">Address</span>
+                      <span className="sort-icon"></span>
+                    </span>
                   </th>
+
                   <th className="min-w-[200px]">
-                    <div
-                      className="flex justify-between"
-                      onClick={() => handleSort("branch_email")}
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
                     >
-                      Branch Email
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_email" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_email" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
                   </th>
+
                   <th className="min-w-[200px]">
-                    <div
-                      className="flex justify-between"
-                      onClick={() => handleSort("branch_phone_number")}
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
                     >
-                      Branch Phone no
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_phone_number" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_phone_number" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
                   </th>
+
                   <th className="min-w-[230px]">
-                    <div
-                      className="flex justify-between"
+                    <span
+                      className={`sort ${
+                        sortColumn === "branch_manager"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
                       onClick={() => handleSort("branch_manager")}
                     >
-                      Branch Manager Name
-                      <div className="flex cursor-pointer">
-                        <FaArrowDownLong
-                          color={
-                            sortColumn === "branch_manager" && sortOrder === "ASC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                        <FaArrowUpLong
-                          color={
-                            sortColumn === "branch_manager" && sortOrder === "DESC"
-                              ? "gray"
-                              : "lightgray"
-                          }
-                        />
-                      </div>
-                    </div>
+                      <span className="sort-label">Branch Manager Name</span>
+                      <span className="sort-icon"></span>
+                    </span>
                   </th>
+
                   <th className="min-w-[190px]">
-                    <div
-                      className="flex justify-between"
+                    <span
+                      className={`sort ${
+                        sortColumn === "company_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
                       onClick={() => handleSort("company_name")}
                     >
-                      Company Name
-                      <div className="flex cursor-pointer">
-                        <span>
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "company_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </span>
-                        <span>
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "company_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </span>
-                      </div>
-                    </div>
-                  </th>                 
+                      <span className="sort-label">Company Name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
                   <th className="w-[50px]">Actions</th>
                 </tr>
               </thead>
@@ -337,22 +409,47 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
                 <tbody>
                   {branches.map((branch) => (
                     <tr key={branch.branch_id}>
-                      <td>{branch.branch_id}</td>
                       <td>
-                        <span
-                          className="cursor-pointer hover:text-primary"
+                        <div className="flex items-center gap-2.5">
+                          {branch.branch_id}
+                        </div>
+                      </td>
+                      <td>
+                        <div
+                          className="flex items-center gap-2.5 cursor-pointer hover:text-primary"
                           onClick={() =>
                             navigate(`/branch-profile/${branch.branch_id}`)
                           }
                         >
                           {branch.branch_name}
-                        </span>
+                        </div>
                       </td>
-                      <td>{branch.branch_address}</td>
-                      <td>{branch.branch_email}</td>
-                      <td>{branch.branch_phone_number}</td>
-                      <td>{branch.branchManager.first_name} {branch.branchManager.last_name}</td>
-                      <td>{branch.company.company_name}</td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.branch_address}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.branch_email}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.branch_phone_number}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.branchManager.first_name}{" "}
+                          {branch.branchManager.last_name}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.company.company_name}
+                        </div>
+                      </td>
                       <td>
                         <div className="flex gap-2">
                           <button
@@ -383,41 +480,47 @@ const BranchTable: React.FC<BranchTableProps> = ({ search }) => {
               )}
             </table>
           </div>
-          </div>
+
+          {totalBranches > perPage && (
+            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700">
+                  Showing {branches.length} of {totalBranches} Companies
+                </span>
+                <div className="pagination" data-datatable-pagination="true">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`btn ${
+                        currentPage === index + 1 ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`btn ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      {totalBranches > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {branches.length} of {totalBranches} Branches
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };

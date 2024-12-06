@@ -8,17 +8,29 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import TableShimmer from "../shimmer/TableShimmer";
 import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
+import Multiselect from "multiselect-react-dropdown";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import Select, { MultiValue } from "react-select";
 
 interface OrderTableProps {
-  search: string;
+  filters: {
+    paymentStatusFilter: number[];
+    orderStatusFilter: number[];
+    paymentTypeFilter: number | undefined;
+    customerFilter: number[];
+    pickupBoyFilter: number[];
+    deliveryBoyFilter: number[];
+    branchFilter: number[];
+  };
 }
 
-const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
+const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,19 +40,49 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    filters.orderStatusFilter,
+    filters.customerFilter,
+    filters.branchFilter,
+    filters.pickupBoyFilter,
+    filters.deliveryBoyFilter,
+    filters.paymentTypeFilter,
+    filters.paymentStatusFilter
   );
+  const { deleteOrder } = useDeleteOrder();
 
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalOrders / perPage);
 
-  const { deleteOrder } = useDeleteOrder();
+  useEffect(() => {
+    if (pageParams) {
+      setCurrentPage(Number(pageParams));
+    }
+    if (perPageParams) {
+      setPerPage(Number(perPageParams));
+    }
+  }, [pageParams, perPageParams]);
+
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`);
@@ -91,25 +133,21 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
     navigate(`/order/edit/${order_id}`);
   };
 
-  useEffect(() => {
-    if (pageParams) {
-      setCurrentPage(Number(pageParams));
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
     }
-    if (perPageParams) {
-      setPerPage(Number(perPageParams));
-    }
-  }, [pageParams, perPageParams]);
-
-  useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    }
-  }, [search]);
+  };
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -167,687 +205,538 @@ const OrderTable: React.FC<OrderTableProps> = ({ search }) => {
 
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
+      <div className="card-header card-header-space flex-wrap">
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
           <select
             className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
             value={perPage}
             onChange={handlePerPageChange}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
-          per page
+          <span>per page</span>
+        </div>
+
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="w-[275px] flex-grow"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-5.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="min-w-[90px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("order_id")}
-                      >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "order_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "order_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
+          <div className="scrollable-x-auto">
+            <table
+              className="table table-auto table-border"
+              data-datatable-table="true"
+            >
+              <thead>
+                <tr>
+                  <th className="min-w-[90px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "order_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("order_id")}
+                    >
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[140px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("first_name")}
-                      >
-                        Customer
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "first_name" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "first_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[240px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">Customer</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[140px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("email")}
-                      >
-                        Email
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "email" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "email" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[140px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
+                    >
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[140px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("mobile_number")}
-                      >
-                        Mobile no
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[140px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
+                    >
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[230px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("address_details")}
-                      >
-                        Shipping Address
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "address_details" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "address_details" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "address_details"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("address_details")}
+                    >
+                      <span className="sort-label">Shipping Address</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[230px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("description")}
-                      >
-                        Description
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "description" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "description" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[230px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "description"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("description")}
+                    >
+                      <span className="sort-label">Description</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[130px]">
-                      <div
-                        className="flex justify-between cursor-pointer "
-                        onClick={() => handleSort("coupon_code")}
-                      >
-                        Coupon code
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "coupon_code" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "coupon_code" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "coupon_code"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("coupon_code")}
+                    >
+                      <span className="sort-label">Coupon code</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[130px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("coupon_discount")}
-                      >
-                        Coupon discount
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "coupon_discount" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "coupon_discount" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "coupon_discount"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("coupon_discount")}
+                    >
+                      <span className="sort-label">Coupon discount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[160px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("order_statue")}
-                      >
-                        Order Status
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "order_status" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "order_status" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[160px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "order_statue"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("order_statue")}
+                    >
+                      <span className="sort-label">Order Status</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[200px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("estimated_delivery_time")}
-                      >
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "estimated_delivery_time"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("estimated_delivery_time")}
+                    >
+                      <span className="sort-label">
                         Estimated delivery time
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "order_status" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "estimated_delivery_time" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                      </span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[200px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("estimated_pickup_time")}
-                      >
-                        Estimated pickup time
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "order_status" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "estimated_pickup_time" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "estimated_pickup_time"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("estimated_pickup_time")}
+                    >
+                      <span className="sort-label">Estimated pickup time</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[140px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("shipping_charges")}
-                      >
-                        Shipping charge
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "shipping_charges" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "shipping_charges" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[140px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "shipping_charges"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("shipping_charges")}
+                    >
+                      <span className="sort-label">Shipping charge</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[180px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("express_delivery_charges")}
-                      >
+                  <th className="min-w-[180px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "express_delivery_charges"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("express_delivery_charges")}
+                    >
+                      <span className="sort-label">
                         Express delivery charges
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "express_delivery_charges" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "express_delivery_charges" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                      </span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[100px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("gst")}
-                      >
-                        GST
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "gst" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "gst" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[100px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "gst"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("gst")}
+                    >
+                      <span className="sort-label">GST</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[130px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("kasar_amount")}
-                      >
-                        Kasar amount
-                        <div className="flex cursor-pointer mt-2">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "kasar_amount" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "kasar_amount" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "kasar_amount"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("kasar_amount")}
+                    >
+                      <span className="sort-label">Kasar amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[130px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("sub_total")}
-                      >
-                        Sub total
-                        <div className="flex cursor-pointer ">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "sub_total" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "sub_total" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "sub_total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("sub_total")}
+                    >
+                      <span className="sort-label">Sub total</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[105px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("total")}
-                      >
-                        Total
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "total" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "total" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[105px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("total")}
+                    >
+                      <span className="sort-label">Total</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[165px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("payment_type")}
-                      >
-                        Payment type
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "payment_type" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "payment_type" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[165px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "payment_type"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("payment_type")}
+                    >
+                      <span className="sort-label">Payment type</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="min-w-[175px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("payment_status")}
-                      >
-                        Payment Status
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "payment_status" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "payment_status" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
+                  <th className="min-w-[175px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "payment_status"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("payment_status")}
+                    >
+                      <span className="sort-label">Payment Status</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "branch_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("branch_id")}
+                    >
+                      <span className="sort-label">Assigned Branch</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
-                    <th className="w-[170px]">Actions</th>
+                  <th className="w-[170px]">Actions</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <TableShimmer />
+              ) : orders.length > 0 ? (
+                <tbody>
+                  {orders.map((order) => {
+                    const orderStatusLabel =
+                      OrderStatus[
+                        order.order_status as unknown as keyof typeof OrderStatus
+                      ];
+                    const orderStatusClass = getOrderStatusLabel(
+                      order.order_status
+                    );
+
+                    const paymentStatusLabel =
+                      PaymentStatus[
+                        order.payment_status as unknown as keyof typeof PaymentStatus
+                      ];
+                    const paymentStatusClass = getPaymentStatusLabel(
+                      order.payment_status
+                    );
+
+                    return (
+                      <tr key={order.order_id}>
+                        <td>#{order.order_id}</td>
+                        <td>
+                          {order.user.first_name + " " + order.user.last_name}
+                        </td>
+                        <td>{order.user.email}</td>
+                        <td>{order.user.mobile_number}</td>
+                        <td>{order.address_details}</td>
+                        <td>{order.description}</td>
+                        <td>{order.coupon_code}</td>
+                        <td>{order.coupon_discount}</td>
+                        <td>
+                          <span
+                            className={`${orderStatusClass} badge-outline rounded-[30px]`}
+                          >
+                            {orderStatusLabel}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="flex flex-col">
+                            {dayjs(order.estimated_delivery_time).format(
+                              "DD-MM-YYYY"
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex flex-col">
+                            {dayjs(order.estimated_pickup_time).format(
+                              "DD-MM-YYYY"
+                            )}
+                          </div>
+                        </td>
+                        <td>{order.shipping_charges}</td>
+                        <td>{order.express_delivery_charges}</td>
+                        <td>{order.gst}</td>
+                        <td>{order.kasar_amount}</td>
+                        <td>{order.sub_total}</td>
+                        <td>{order.total}</td>
+                        <td>
+                          {
+                            PaymentType[
+                              order.payment_type as keyof typeof PaymentType
+                            ]
+                          }
+                        </td>
+                        <td>
+                          <span
+                            className={`${paymentStatusClass} badge-outline rounded-[30px]`}
+                          >
+                            {paymentStatusLabel}
+                          </span>
+                        </td>
+                        <td>{order?.branch?.branch_name}</td>
+                        <td>
+                          <div className="flex">
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                              onClick={() => handleViewOrder(order.order_id)}
+                            >
+                              <FaEye size={18} className="text-gray-600" />
+                            </button>
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                              onClick={() => handleUpdateOrder(order.order_id)}
+                            >
+                              <FaPencilAlt className="text-yellow-600" />
+                            </button>
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() => handleDeleteOrder(order.order_id)}
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={5} className="text-center">
+                      No Orders available
+                    </td>
                   </tr>
-                </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : orders.length > 0 ? (
-                  <tbody>
-                    {orders.map((order) => {
-                      const orderStatusLabel =
-                        OrderStatus[
-                          order.order_status as unknown as keyof typeof OrderStatus
-                        ];
-                      const orderStatusClass = getOrderStatusLabel(
-                        order.order_status
-                      );
-
-                      const paymentStatusLabel =
-                        PaymentStatus[
-                          order.payment_status as unknown as keyof typeof PaymentStatus
-                        ];
-                      const paymentStatusClass = getPaymentStatusLabel(
-                        order.payment_status
-                      );
-
-                      return (
-                        <tr key={order.order_id}>
-                          <td>#{order.order_id}</td>
-                          <td>
-                            {order.user.first_name + " " + order.user.last_name}
-                          </td>
-                          <td>{order.user.email}</td>
-                          <td>{order.user.mobile_number}</td>
-                          <td>{order.address_details}</td>
-                          <td>{order.description}</td>
-                          <td>{order.coupon_code}</td>
-                          <td>{order.coupon_discount}</td>
-                          <td>
-                            <span
-                              className={`${orderStatusClass} badge-outline rounded-[30px]`}
-                            >
-                              {orderStatusLabel}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="flex flex-col">
-                              {dayjs(order.estimated_delivery_time).format(
-                                "DD-MM-YYYY"
-                              )}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="flex flex-col">
-                              {dayjs(order.estimated_pickup_time).format(
-                                "DD-MM-YYYY"
-                              )}
-                            </div>
-                          </td>
-                          <td>{order.shipping_charges}</td>
-                          <td>{order.express_delivery_charges}</td>
-                          <td>{order.gst}</td>
-                          <td>{order.kasar_amount}</td>
-                          <td>{order.sub_total}</td>
-                          <td>{order.total}</td>
-                          <td>
-                            {
-                              PaymentType[
-                                order.payment_type as keyof typeof PaymentType
-                              ]
-                            }
-                          </td>
-                          <td>
-                            <span
-                              className={`${paymentStatusClass} badge-outline rounded-[30px]`}
-                            >
-                              {paymentStatusLabel}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="flex">
-                              <button
-                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                                onClick={() => handleViewOrder(order.order_id)}
-                              >
-                                <FaEye
-                                  size={18}
-                                  className="text-gray-600"
-                                />
-                              </button>
-                              <button
-                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                                onClick={() =>
-                                  handleUpdateOrder(order.order_id)
-                                }
-                              >
-                                <FaPencilAlt className="text-yellow-600" />
-                              </button>
-                              <button
-                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                                onClick={() =>
-                                  handleDeleteOrder(order.order_id)
-                                }
-                              >
-                                <FaTrash className="text-red-500" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center">
-                        No Orders available
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+                </tbody>
+              )}
+            </table>
           </div>
+
+          {totalOrders > perPage && (
+            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+              <div className="flex items-center gap-4">
+                <span className="text-gray-700">
+                  Showing {orders.length} of {totalOrders} Users
+                </span>
+                <div className="pagination" data-datatable-pagination="true">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <button
+                      key={index}
+                      className={`btn ${
+                        currentPage === index + 1 ? "active" : ""
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={`btn ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {totalOrders > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {orders.length} of {totalOrders} Orders
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };

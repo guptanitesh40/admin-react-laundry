@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import toast from 'react-hot-toast';
+import { useState, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
 
 const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
 
 interface Branch {
-  branchManager:{
+  branchManager: {
     first_name: string;
     last_name: string;
   };
@@ -15,32 +15,44 @@ interface Branch {
   branch_phone_number: string;
   branch_email: string;
   branch_registration_number: string;
-  company:{
+  company: {
     company_name: string;
   };
-  company_id:number;
+  company_id: number;
 }
 
 const useGetBranches = (
-  pageNumber: number = 1, 
+  pageNumber: number = 1,
   perPage: number = 10,
-  search: string = '', 
-  sortColumn?: string, 
-  sortOrder?: string
+  search: string = "",
+  sortColumn?: string,
+  sortOrder?: string,
+  company_id?: number[],
+  branch_manager_id?: number[]
 ) => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [totalBranches, setTotalBranches] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchBranches = async () => {
-    const token = localStorage.getItem("authToken");   
+    const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
-    if (pageNumber) queryParams.append('page_number', pageNumber.toString());
-    if (perPage) queryParams.append('per_page', perPage.toString());
-    if (search) queryParams.append('search', search);
-    if (sortColumn) queryParams.append('sortBy', sortColumn);
-    if (sortOrder) queryParams.append('order', sortOrder);
+    if (pageNumber) queryParams.append("page_number", pageNumber.toString());
+    if (perPage) queryParams.append("per_page", perPage.toString());
+    if (search) queryParams.append("search", search);
+    if (sortColumn) queryParams.append("sortBy", sortColumn);
+    if (sortOrder) queryParams.append("order", sortOrder);
+    if (company_id) {
+      company_id.forEach((c) =>
+        queryParams.append("company_id", c.toString())
+      );
+    }
+    if (branch_manager_id) {
+      branch_manager_id.forEach((b) =>
+        queryParams.append("branch_manager_id", b.toString())
+      );
+    }
 
     setLoading(true);
     try {
@@ -48,14 +60,14 @@ const useGetBranches = (
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message, {position: "top-center",});
+        toast.error(data.message, { position: "top-center" });
         return;
       }
 
@@ -66,11 +78,11 @@ const useGetBranches = (
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchBranches();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_id, branch_manager_id]);
 
   return { branches, totalBranches, loading, fetchBranches };
 };

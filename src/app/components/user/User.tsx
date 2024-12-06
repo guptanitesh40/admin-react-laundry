@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import UserTable from "./UserTable";
 import { useNavigate } from "react-router-dom";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";

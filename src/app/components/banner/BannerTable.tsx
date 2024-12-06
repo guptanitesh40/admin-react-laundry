@@ -5,25 +5,25 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useDeleteBanner, useGetBanners, } from "../../hooks";
+import { useDeleteBanner, useGetBanners } from "../../hooks";
 import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import * as Yup from "yup";
+import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
+import Multiselect from "multiselect-react-dropdown";
 
 interface BannerTableProps {
-  search: string;
   setEditBanner: (banner_id: number) => void;
   isSubmit: boolean;
-  setIsSubmit: (value : boolean) => void;
+  setIsSubmit: (value: boolean) => void;
 }
 
 const BannerTable: React.FC<BannerTableProps> = ({
-  search,
   setEditBanner,
   isSubmit,
-  setIsSubmit
+  setIsSubmit,
 }) => {
   const { deleteBanner } = useDeleteBanner();
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,15 +32,22 @@ const BannerTable: React.FC<BannerTableProps> = ({
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const pageFromParams = searchParams.get("page");
   const perPageFromParams = searchParams.get("perPage");
+
+  const [bannerTypeFilter, setBannerTypeFilter] = useState<number[]>([]);
 
   const { banners, fetchBanners, totalBanners, loading } = useGetBanners(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    bannerTypeFilter
   );
 
   const totalPages = Math.ceil(totalBanners / perPage);
@@ -93,7 +100,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
         if (success) {
           const updatedBanners = banners.filter(
             (banner) => banner.banner_id !== banner_id
-          );         
+          );
           if (updatedBanners.length === 0 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
             setSearchParams({
@@ -116,9 +123,22 @@ const BannerTable: React.FC<BannerTableProps> = ({
     }
   };
 
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate({ search: search }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC")
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
     } else {
       setSortColumn(column);
       setSortOrder("ASC");
@@ -137,194 +157,216 @@ const BannerTable: React.FC<BannerTableProps> = ({
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPerPage = Number(e.target.value);
-    setPerPage(newPerPage); 
+    setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const bannerTypeOptions = Object.entries(BannerType)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
+
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
+      <div className="card-header card-header-space flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
           <select
             className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
             value={perPage}
             onChange={handlePerPageChange}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
-          per page
+          <span>per page</span>
+        </div>
+
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex items-center mb-6">
+            <button className="btn btn-lg btn-outline btn-primary flex-shrink-0">
+              <i className="ki-filled ki-setting-4"></i>
+              Filter
+            </button>
+          </div>
+
+          <div className="flex items-center mb-6">
+            <Multiselect
+              options={bannerTypeOptions}
+              displayValue="label"
+              selectedValues={bannerTypeOptions.filter((option) =>
+                bannerTypeFilter.includes(option.value)
+              )}
+              placeholder="Banner Type"
+              onSelect={(selectedList) => {
+                setBannerTypeFilter(
+                  selectedList.map((item: any) => item.value)
+                );
+              }}
+              onRemove={(selectedList) => {
+                setBannerTypeFilter(
+                  selectedList.map((item: any) => item.value)
+                );
+              }}
+              className="multiselect-container multiselect min-w-[200px] max-w-[300px]"
+            />
+          </div>
+
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="w-[275px] flex-grow"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-7.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="min-w-[100px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("banner_id")}
-                      >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "banner_id" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "banner_id" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
+      <div className="card-body">
+        <div data-datatable="true" data-datatable-page-size="10">
+          <div className="scrollable-x-auto">
+            <table
+              className="table table-auto table-border"
+              data-datatable-table="true"
+            >
+              <thead>
+                <tr>
+                  <th className="w-[30px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "banner_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("banner_id")}
+                    >
+                      <span className="sort-label">Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[115px]">Image</th>
+
+                  <th className="min-w-[160px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "title"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("title")}
+                    >
+                      <span className="sort-label">Title</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[205px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "description"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("description")}
+                    >
+                      <span className="sort-label">Description</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="w-[125px]">Banner type</th>
+
+                  <th className="w-[125px]">Actions</th>
+                </tr>
+              </thead>
+              {loading ? (
+                <TableShimmer />
+              ) : banners.length > 0 ? (
+                <tbody>
+                  {banners.map((banner) => (
+                    <tr key={banner.banner_id}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {banner.banner_id}
                         </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[200px]">
-                      <div className="flex justify-between">
-                        Image
-                        <div className="flex "></div>
-                      </div>
-                    </th>
-                    <th className="min-w-[165px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("title")}
-                      >
-                        Title
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "title" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "title" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
+                      </td>
+                      <td>
+                        <img
+                          alt={banner.image}
+                          className="rounded-lg size-20 shrink-0"
+                          src={banner.image}
+                        />
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          {banner.title}
                         </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[205px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("description")}
-                      >
-                        Description
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "description" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "description" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="w-[160px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("banner_type")}
-                      >
-                        Banner type
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "banner_type" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "banner_type" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="w-[125px]">Actions</th>
-                  </tr>
-                </thead>
-                {loading ? (<TableShimmer/>
-                ):
-                banners.length > 0 ? (
-                  <tbody>
-                    {banners.map((banner) => (
-                      <tr key={banner.banner_id}>
-                        <td>{banner.banner_id}</td>
-                        <td>
-                          <img
-                            className="rounded-lg size-20 shrink-0"
-                            src={banner.image}
-                          />
-                        </td>
-                        <td>{banner.title}</td>
-                        <td className="max-w-[105px] break-words overflow-hidden">
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
                           {banner.description}
-                        </td>
-                        <td>
-                          {
-                            BannerType[
-                              banner.banner_type as unknown as keyof typeof BannerType
-                            ]
-                          }
-                        </td>
-                        <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => setEditBanner(banner.banner_id)}
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteBanner(banner.banner_id)}
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center">
-                        No banners available
+                        </div>
+                      </td>
+                      <td>
+                        {
+                          BannerType[
+                            banner.banner_type as unknown as keyof typeof BannerType
+                          ]
+                        }
+                      </td>
+                      <td>
+                        <button
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          onClick={() => setEditBanner(banner.banner_id)}
+                        >
+                          <FaPencilAlt className="text-yellow-600" />
+                        </button>
+                        <button
+                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                          onClick={() => handleDeleteBanner(banner.banner_id)}
+                        >
+                          <FaTrash className="text-red-500" />
+                        </button>
                       </td>
                     </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No users available
+                    </td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
           </div>
         </div>
       </div>

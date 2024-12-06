@@ -32,6 +32,7 @@ const useGetUsersByRole = () => {
 
       const data = await response.json();
       setUsers(data?.data);
+      return data?.data;
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
