@@ -565,6 +565,21 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "branch_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("branch_id")}
+                    >
+                      <span className="sort-label">Assigned Branch</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
                   <th className="w-[170px]">Actions</th>
                 </tr>
@@ -643,6 +658,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                             {paymentStatusLabel}
                           </span>
                         </td>
+                        <td>{order?.branch?.branch_name}</td>
                         <td>
                           <div className="flex">
                             <button

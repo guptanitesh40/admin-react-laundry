@@ -27,8 +27,8 @@ const useGetBranches = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  company_name?: number[],
-  branch_manager?: number[]
+  company_id?: number[],
+  branch_manager_id?: number[]
 ) => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [totalBranches, setTotalBranches] = useState(0);
@@ -43,14 +43,14 @@ const useGetBranches = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (company_name) {
-      company_name.forEach((c) =>
-        queryParams.append("company_name", c.toString())
+    if (company_id) {
+      company_id.forEach((c) =>
+        queryParams.append("company_id", c.toString())
       );
     }
-    if (branch_manager) {
-      branch_manager.forEach((b) =>
-        queryParams.append("branch_manager", b.toString())
+    if (branch_manager_id) {
+      branch_manager_id.forEach((b) =>
+        queryParams.append("branch_manager_id", b.toString())
       );
     }
 
@@ -82,7 +82,7 @@ const useGetBranches = (
 
   useEffect(() => {
     fetchBranches();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_name, branch_manager]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_id, branch_manager_id]);
 
   return { branches, totalBranches, loading, fetchBranches };
 };
