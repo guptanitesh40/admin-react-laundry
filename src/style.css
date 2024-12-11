@@ -9022,8 +9022,8 @@ label.rating-label {
 }
 
 .custom-select-container {
-  width:50%;
-  min-width: 95%;
+  width:430px;
+  min-width: 200px;
 }
 
 .custom-select__control {

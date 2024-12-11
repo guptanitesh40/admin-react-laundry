@@ -1,36 +1,26 @@
 import { useEffect, useState } from "react";
-import { useDeleteOrder, useGetOrders } from "../../hooks";
+import { useGetWorkshopOrders } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaEye,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
 import TableShimmer from "../shimmer/TableShimmer";
-import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums";
-import Swal from "sweetalert2";
+import { PaymentStatus, PaymentType } from "../../../types/enums";
 import dayjs from "dayjs";
+import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import Multiselect from "multiselect-react-dropdown";
-import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
-import Select, { MultiValue } from "react-select";
 
-interface OrderTableProps {
+interface WorkshopOrderTableProps {
   filters: {
     paymentStatusFilter: number[];
-    orderStatusFilter: number[];
+    workshopOrderStatusFilter: number[];
     paymentTypeFilter: number | undefined;
     customerFilter: number[];
-    pickupBoyFilter: number[];
-    deliveryBoyFilter: number[];
     branchFilter: number[];
+    workshopFilter: number[];
+    workshopManagerFilter: number[];
   };
 }
 
-const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
+const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,25 +34,24 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
+  const { workshopOrders, loading, count } = useGetWorkshopOrders(
     currentPage,
     perPage,
     search,
     sortColumn,
     sortOrder,
-    filters.orderStatusFilter,
+    filters.workshopOrderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
-    filters.pickupBoyFilter,
-    filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter
+    filters.paymentStatusFilter,
+    filters.workshopFilter,
+    filters.workshopManagerFilter
   );
-  const { deleteOrder } = useDeleteOrder();
 
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(totalOrders / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     if (pageParams) {
@@ -73,64 +62,8 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     }
   }, [pageParams, perPageParams]);
 
-  useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    }
-  }, [search]);
-
   const handleViewOrder = (order_id: number) => {
-    navigate(`/order/${order_id}`, { state: { from : 'OrderTable'}});
-  };
-
-  const handleDeleteOrder = async (order_id: number) => {
-    try {
-      const { isConfirmed } = await Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#dc3545",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-      });
-
-      if (isConfirmed) {
-        const { success, message } = await deleteOrder(order_id);
-        if (success) {
-          const updatedOrders = orders.filter(
-            (order) => order.order_id !== order_id
-          );
-          if (updatedOrders.length === 0 && currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-            setSearchParams({
-              page: (currentPage - 1).toString(),
-              perPage: perPage.toString(),
-            });
-          }
-          await fetchOrders();
-          Swal.fire(message);
-        } else {
-          Swal.fire(message);
-        }
-      }
-    } catch (error: any) {
-      Swal.fire({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
-    }
-  };
-
-  const handleUpdateOrder = (order_id: number) => {
-    navigate(`/order/edit/${order_id}`);
+    navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -173,21 +106,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
-  };
-
-  const getOrderStatusLabel = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.Pending:
-        return "badge badge-pending";
-      case OrderStatus["In Process"]:
-        return "badge badge-in-process";
-      case OrderStatus["Ready to delivery"]:
-        return "badge badge-ready-to-deliver";
-      case OrderStatus["Delivery complete"]:
-        return "badge badge-delivery-complete";
-      default:
-        return "badge";
-    }
   };
 
   const getPaymentStatusLabel = (status: PaymentStatus) => {
@@ -258,7 +176,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
             >
               <thead>
                 <tr>
-                  <th className="min-w-[90px]">
+                  <th className="min-w-[115px]">
                     <span
                       className={`sort ${
                         sortColumn === "order_id"
@@ -269,7 +187,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Id</span>
+                      <span className="sort-label">Order Id</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -290,7 +208,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[140px]">
+                  <th className="min-w-[250px]">
                     <span
                       className={`sort ${
                         sortColumn === "email"
@@ -317,26 +235,12 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("mobile_number")}
                     >
-                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-label">Mobile No</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[230px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "address_details"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("address_details")}
-                    >
-                      <span className="sort-label">Shipping Address</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>                  
+                  <th className="min-w-[280px]">Shipping address</th>
 
                   <th className="min-w-[130px]">
                     <span
@@ -370,21 +274,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[160px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "order_statue"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("order_statue")}
-                    >
-                      <span className="sort-label">Order Status</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[220px]">Order Status</th>
 
                   <th className="min-w-[200px]">
                     <span
@@ -518,37 +408,10 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "payment_type"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("payment_type")}
-                    >
-                      <span className="sort-label">Payment type</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[165px]">Payment type</th>
 
-                  <th className="min-w-[175px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "payment_status"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("payment_status")}
-                    >
-                      <span className="sort-label">Payment Status</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[175px]">Payment status</th>
+
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
@@ -560,27 +423,37 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("branch_id")}
                     >
-                      <span className="sort-label">Assigned Branch</span>
+                      <span className="sort-label">Branch</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="w-[170px]">Actions</th>
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "workshop_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("workshop_name")}
+                    >
+                      <span className="sort-label">Workshop name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[200px]">Workshop Manager</th>
+
+                  <th className="min-w-[50px]">Action</th>
                 </tr>
               </thead>
               {loading ? (
                 <TableShimmer />
-              ) : orders.length > 0 ? (
+              ) : workshopOrders?.length > 0 ? (
                 <tbody>
-                  {orders.map((order) => {
-                    const orderStatusLabel =
-                      OrderStatus[
-                        order.order_status as unknown as keyof typeof OrderStatus
-                      ];
-                    const orderStatusClass = getOrderStatusLabel(
-                      order.order_status
-                    );
-
+                  {workshopOrders.map((order) => {
                     const paymentStatusLabel =
                       PaymentStatus[
                         order.payment_status as unknown as keyof typeof PaymentStatus
@@ -593,7 +466,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <tr key={order.order_id}>
                         <td>#{order.order_id}</td>
                         <td>
-                          {order.user.first_name + " " + order.user.last_name}
+                          {order.user.first_name} {order.user.last_name}
                         </td>
                         <td>{order.user.email}</td>
                         <td>{order.user.mobile_number}</td>
@@ -601,10 +474,8 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         <td>{order.coupon_code}</td>
                         <td>{order.coupon_discount}</td>
                         <td>
-                          <span
-                            className={`${orderStatusClass} badge-outline rounded-[30px]`}
-                          >
-                            {orderStatusLabel}
+                          <span className="badge badge-outline rounded-[30px]">
+                            {order.workshop_status_name}
                           </span>
                         </td>
                         <td>
@@ -641,28 +512,24 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                             {paymentStatusLabel}
                           </span>
                         </td>
-                        <td>{order?.branch?.branch_name}</td>
+                        <td>{order.branch.branch_name}</td>
+                        <td>{order.workshop.workshop_name}</td>
                         <td>
-                          <div className="flex">
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                              onClick={() => handleViewOrder(order.order_id)}
-                            >
-                              <FaEye size={18} className="text-gray-600" />
-                            </button>
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                              onClick={() => handleUpdateOrder(order.order_id)}
-                            >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                              onClick={() => handleDeleteOrder(order.order_id)}
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </div>
+                          {order.workshop.workshopManagerMappings
+                            .map(
+                              (mapping: any) =>
+                                `${mapping.user.first_name} ${mapping.user.last_name}`
+                            )
+                            .join(", ")}
+                        </td>
+
+                        <td>
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                            onClick={() => handleViewOrder(order.order_id)}
+                          >
+                            <FaEye size={18} className="text-gray-600" />
+                          </button>
                         </td>
                       </tr>
                     );
@@ -680,11 +547,11 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
             </table>
           </div>
 
-          {totalOrders > perPage && (
+          {count > perPage && (
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {orders.length} of {totalOrders} Orders
+                  Showing {workshopOrders.length} of {count} Workshop order
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button
@@ -724,4 +591,4 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   );
 };
 
-export default OrderTable;
+export default WorkshopOrderTable;

@@ -210,7 +210,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                   selectedList.map((item: any) => item.value)
                 );
               }}
-              className="multiselect-container multiselect min-w-[200px] max-w-[300px]"
+              className="multiselect-container multiselect min-w-[250px] max-w-[350px]"
             />
           </div>
 

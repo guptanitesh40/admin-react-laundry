@@ -98,6 +98,7 @@ const CouponModal: React.FC = () => {
 
     const dataToValidate = {
       ...formData,
+      code: formData.code.toUpperCase(),
       discount_type: Number(formData.discount_type),
       coupon_type: Number(formData.coupon_type),
       discount_value: Number(formData.discount_value),
@@ -171,7 +172,7 @@ const CouponModal: React.FC = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, code: e.target.value })
                 }
-                className="input border border-gray-300 rounded-md p-2 w-full"
+                className="uppercase input border border-gray-300 rounded-md p-2 w-full"
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.code || "\u00A0"}
@@ -267,9 +268,6 @@ const CouponModal: React.FC = () => {
                   }}
                   disablePast
                 />
-                <p className="text-red-500 text-sm">
-                  {errors.start_time || "\u00A0"}
-                </p>
               </div>
 
               <div className="mb-4 col-span-1 w-[320px]">
@@ -287,9 +285,6 @@ const CouponModal: React.FC = () => {
                   }}
                   minDateTime={formData.start_time} 
                 />
-                <p className="text-red-500 text-sm">
-                  {errors.end_time || "\u00A0"}
-                </p>
               </div>
             </LocalizationProvider>
 
@@ -348,7 +343,7 @@ const CouponModal: React.FC = () => {
                   Select Coupon Type
                 </option>
                 <option value={1}>Web</option>
-                <option value={2}>Mobile</option>
+                <option value={2}>App</option>
                 <option value={3}>Both</option>
               </select>
               <p className="text-red-500 text-sm">

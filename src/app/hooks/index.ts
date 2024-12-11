@@ -77,4 +77,7 @@ export { default as useAddNote } from './notes/useAddNote';
 export { default as useDeleteNote } from './notes/useDeleteNote';
 
 export { default as useAssignPickupBoy } from './orderstatus/useAssignPickupBoy';
+export { default as useUpdateOrderStatus } from './orderstatus/useUpdateStatus';
+export { default as useAssignWorkshop } from './orderstatus/useAssignWorkshop';
 
+export { default as useGetWorkshopOrders } from './workshop/useGetWorkshopOrders';
