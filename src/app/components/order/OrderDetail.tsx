@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PaymentStatus, PaymentType } from "../../../types/enums"; // Ensure these enums are defined
 import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
-import { useAddNote, useDeleteNote } from "../../hooks";
+import { useAddNote, useDeleteNote, useUpdateOrderStatus } from "../../hooks";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import PickupBoyModal from "./PickupBoyModal";
+import WorkshopModal from "./AssignWorkshopModal";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -22,6 +23,7 @@ const OrderDetails: React.FC = () => {
   const { order, fetchOrder } = useGetOrder();
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
+  const { updateOrderStatus } = useUpdateOrderStatus();
 
   const [formData, setFormData] = useState({
     user_id: null,
@@ -31,13 +33,16 @@ const OrderDetails: React.FC = () => {
   });
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [workshopModalOpen, setWorkshopModalOpen] = useState<boolean>(false);
   const [assigned, setAssigned] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchOrder(order_id);
+    setAssigned(false);
   }, [assigned]);
 
   useEffect(() => {
@@ -145,9 +150,73 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const handleStatusClick = () => {
-    if (order?.order_status_name === "Assign Pickup Boy") {
-      setModalOpen(true);
+  const handleStatusClick = async () => {
+    const updateAndFetchOrder = async (status: any) => {
+      const success = await updateOrderStatus(order_id, status);
+      if (success) {
+        await fetchOrder(order_id);
+      }
+    };
+
+    const handleOrderTableStatus = async () => {
+      switch (order?.order_status_name) {
+        case "Assign Pickup Boy":
+        case "Assign Delivery Boy":
+          setModalOpen(true);
+          break;
+        case "Received By Pickup Boy":
+          await updateAndFetchOrder(3);
+          break;
+        case "Work Completed":
+          await updateAndFetchOrder(7);
+          break;
+        case "Items Received At Branch":
+        case "Pickup Complete":
+          await updateAndFetchOrder(4);
+          break;
+        case "Ready For Delivery":
+          await updateAndFetchOrder(10);
+          break;
+        case "Assign Workshop":
+          setWorkshopModalOpen(true);
+          break;
+        case "Branch Received Items":
+          await updateAndFetchOrder(8);
+          break;
+        default:
+          break;
+      }
+    };
+
+    const handleWorkshopStatus = async () => {
+      switch (order?.workshop_status_name) {
+        case "Order Received":
+          await updateAndFetchOrder(5);
+          break;
+        case "In Progress":
+          await updateAndFetchOrder(6);
+          break;
+        case "Completed":
+          await updateOrderStatus(order_id, 7);
+          navigate("/workshop-order");
+          break;
+        default:
+          break;
+      }
+    };
+
+    if (location?.state?.from === "OrderTable") {
+      await handleOrderTableStatus();
+    } else {
+      await handleWorkshopStatus();
+    }
+  };
+
+  const getOrderStatusLabel = () => {
+    if (location.state?.from === "OrderTable") {
+      return order?.order_status_name;
+    } else {
+      return order?.workshop_status_name;
     }
   };
 
@@ -163,7 +232,7 @@ const OrderDetails: React.FC = () => {
           className="px-4 py-2 rounded-full text-white bg-orange-500"
           onClick={handleStatusClick}
         >
-          {order.order_status_name}
+          {getOrderStatusLabel()}
         </button>
       </div>
 
@@ -333,7 +402,6 @@ const OrderDetails: React.FC = () => {
                         {order.user.first_name} {order.user.last_name}
                       </td>
                     </tr>
-
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Email:
@@ -342,7 +410,6 @@ const OrderDetails: React.FC = () => {
                         {order.user.email}
                       </td>
                     </tr>
-
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Mobile Number:
@@ -356,6 +423,48 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {order.branch && (
+            <div className="card rounded-xl">
+              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="card-title">Branch Information</h3>
+                    </div>
+                    <div className="text-2sm font-medium text-gray-700">
+                      {order.branch.branch_name}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {order.pickup_boy && (
+            <div className="card rounded-xl">
+              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="card-title">Pickup Boy Information</h3>
+                    </div>
+                    <div className="text-2sm font-medium text-gray-700">
+                      {order.pickup_boy.pickup_boy_name}
+                    </div>
+                    {order.pickup_comment && (
+                      <div className="mt-2 p-3 bg-gray-100 rounded-md">
+                        <p className="text-sm text-gray-600">
+                          {order.pickup_comment}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="card rounded-xl">
             <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
               <div className="flex items-center gap-4">
@@ -384,13 +493,12 @@ const OrderDetails: React.FC = () => {
                   <tbody>
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Payment Type::
+                        Payment Type:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
                         {PaymentType[order.payment_type]}
                       </td>
                     </tr>
-
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Payment Status:
@@ -399,7 +507,6 @@ const OrderDetails: React.FC = () => {
                         {PaymentStatus[order.payment_status]}
                       </td>
                     </tr>
-
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Transaction ID:
@@ -549,9 +656,22 @@ const OrderDetails: React.FC = () => {
       </div>
 
       <PickupBoyModal
+        orderStatus={
+          order?.order_status_name === "Assign Pickup Boy" ||
+          order?.order_status_name === "Assign Delivery Boy"
+            ? order?.order_status_name
+            : undefined
+        }
         modelOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        orderId={formData.order_id}
+        orderId={order_id}
+        setAssigned={setAssigned}
+      />
+
+      <WorkshopModal
+        orderId={order_id}
+        workshopModalOpen={workshopModalOpen}
+        onClose={() => setWorkshopModalOpen(false)}
         setAssigned={setAssigned}
       />
     </div>

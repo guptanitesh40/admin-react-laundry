@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { useAssignPickupBoy } from "../../hooks";
+import useAssignDeliveryBoy from "../../hooks/orderstatus/useAssignDeliveryBoy";
 
 interface PickupBoyModalProps {
   orderId: number;
   modelOpen: boolean;
   onClose: () => void;
-  setAssigned : (value: boolean) => void;
+  setAssigned: (value: boolean) => void;
+  orderStatus: string;
 }
 
 const schema = Yup.object().shape({
-  pickup_boy_id: Yup.number().required("Delivery boy is required"),
+  pickup_boy_id: Yup.number().required("Please enter name to assign"),
 });
 
 const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
@@ -19,8 +21,10 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
   modelOpen,
   onClose,
   setAssigned,
+  orderStatus,
 }) => {
-  const { assignPickupBoy, loading } = useAssignPickupBoy();
+  const { assignPickupBoy } = useAssignPickupBoy();
+  const { assignDeliveryBoy } = useAssignDeliveryBoy();
   const { users, fetchUsersByRole } = useGetUsersByRole();
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
@@ -78,7 +82,16 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
     try {
       await schema.validate(formData, { abortEarly: false });
 
-      await assignPickupBoy(formData);
+      if (orderStatus === "Assign Delivery Boy") {
+        const formattedData = {
+          order_id: formData.order_id,
+          delivery_boy_id: formData.pickup_boy_id,
+        };
+
+        await assignDeliveryBoy(formattedData);
+      } else {
+        await assignPickupBoy(formData);
+      }
 
       setAssigned(true);
       onClose();
@@ -105,14 +118,14 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <h2 className="text-2xl font-bold mb-6">Assign Pickup Boy</h2>
+        <h2 className="text-2xl font-bold mb-6">{orderStatus}</h2>
         <form onSubmit={handleSubmit}>
           <div className="relative flex flex-col flex-[0_0_40%]">
             <label
               htmlFor="username"
               className="block text-gray-700 text-sm font-bold mb-1"
             >
-              Delivery Boy Name
+              Name
             </label>
             <input
               type="text"
@@ -120,7 +133,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
               value={userSearch || ""}
               onChange={handleSearchChange}
               className="input border border-gray-300 rounded-md p-2 w-full"
-              placeholder="Search delivery boy..."
+              placeholder="Search name..."
             />
 
             {users && userSearch && isSearchMode && (
@@ -144,32 +157,32 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
               {errorMessage || "\u00A0"}
             </p>
           </div>
-
-          <div className="flex flex-col">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-1"
-              htmlFor="comment"
-            >
-              Comment
-            </label>
-            <textarea
-              id="comment"
-              name="comment"
-              className="h-20 input border border-gray-300 rounded-md p-2"
-              rows={5}
-              value={formData.comment}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  comment: e.target.value,
-                })
-              }
-            />
-          </div>
-
+          {orderStatus === "Assign Pickup Boy" && (
+            <div className="flex flex-col">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-1"
+                htmlFor="comment"
+              >
+                Comment
+              </label>
+              <textarea
+                id="comment"
+                name="comment"
+                className="h-20 input border border-gray-300 rounded-md p-2"
+                rows={5}
+                value={formData.comment}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    comment: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
           <div className="flex mt-4">
             <button type="submit" className="btn btn-primary mr-2">
-              Apply
+              Assign
             </button>
             <button type="button" onClick={onClose} className="btn btn-light">
               Cancel

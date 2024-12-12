@@ -21,6 +21,12 @@ export enum OrderStatus {
   "Deliveryboy Marks as Completed" = 9,
 }
 
+export enum WorkshopOrderStatus {
+  "Order Received" = 4,
+  "In Progress" = 5,
+  "Completed" = 6,
+}
+
 export enum PaymentStatus {
   "Pending" = 1,
   "Received" = 2,

@@ -14,9 +14,6 @@ export const couponSchema = Yup.object().shape({
   title: Yup.string()
     .required("Please enter title value")
     .max(50, "Max title length exceeded by 50 characters"),
-  description: Yup.string()
-    .required("Description is required")
-    .max(255, "Max description length exceeded by 255 characters"),
   discount_type: Yup.number()
     .required("Please choose a discount type")
     .test("required", "Please choose discount type", (value) => !!value),
@@ -36,42 +33,6 @@ export const couponSchema = Yup.object().shape({
           .test("required", "Please enter discount value", (value) => !!value)
           .required("Discount value is required"),
     }),
-
-  start_time: Yup.date()
-    .required("Start date is required")
-    .typeError("Invalid start date format")
-    .test("is-valid-date", "Invalid start date", (value) => {
-      return value instanceof Date && !isNaN(value.getTime());
-    })
-    .test("is-not-past", "Please enter a valid start date", (value) => {
-      if (!(value instanceof Date)) return false;
-      const now = new Date();
-      const startOfToday = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate()
-      );
-      return value >= startOfToday;
-    }),
-  end_time: Yup.date()
-    .required("End date is required")
-    .typeError("Invalid end date format")
-    .test("is-valid-date", "Invalid end date", (value) => {
-      return value instanceof Date && !isNaN(value.getTime());
-    })
-    .test(
-      "is-after-start",
-      "End date must be after start date",
-      function (value) {
-        const { start_time } = this.parent;
-        return (
-          !start_time ||
-          (value instanceof Date &&
-            start_time instanceof Date &&
-            value > start_time)
-        );
-      }
-    ),
   maximum_usage_count_per_user: Yup.number()
     .required("Maximum usage per user is required")
     .typeError("Maximum usage per user must be a number")
