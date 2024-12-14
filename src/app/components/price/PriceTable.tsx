@@ -143,7 +143,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
       const updatedData = combinations
         .map((combination) => {
           const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-  
+
           return {
             category_id: combination.category.category_id,
             product_id: combination.product.product_id,
@@ -154,8 +154,8 @@ const PriceTable: React.FC<PriceTableProps> = ({
                 : combination.price,
           };
         })
-        .filter((combination) => combination.price > 0); 
-  
+        .filter((combination) => combination.price > 0);
+
       try {
         addPrice(updatedData);
         fetchPrices();
@@ -210,111 +210,67 @@ const PriceTable: React.FC<PriceTableProps> = ({
                     >
                       <thead>
                         <tr>
-                          <th className="w-[100px]">Id</th>
-                          <th className="min-w-[200px]">
-                            <div
-                              className="flex justify-between cursor-pointer"
+                          <th className="min-w-[40px]">Id</th>
+                          <th className="min-w-[250px]">
+                            <span
+                              className={`sort ${
+                                sortColumn === "category"
+                                  ? sortOrder === "ASC"
+                                    ? "asc"
+                                    : "desc"
+                                  : ""
+                              }`}
                               onClick={() => handleSort("category")}
                             >
-                              Category
-                              <div className="flex cursor-pointer">
-                                <FaArrowDownLong
-                                  color={
-                                    sortColumn === "category" &&
-                                    sortOrder === "ASC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                                <FaArrowUpLong
-                                  color={
-                                    sortColumn === "category" &&
-                                    sortOrder === "DESC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                              </div>
-                            </div>{" "}
+                              <span className="sort-label">Category</span>
+                              <span className="sort-icon"></span>
+                            </span>
                           </th>
-                          <th className="min-w-[200px]">
-                            <div
-                              className="flex justify-between cursor-pointer"
+                          <th className="min-w-[250px]">
+                            <span
+                              className={`sort ${
+                                sortColumn === "product"
+                                  ? sortOrder === "ASC"
+                                    ? "asc"
+                                    : "desc"
+                                  : ""
+                              }`}
                               onClick={() => handleSort("product")}
                             >
-                              Product
-                              <div className="flex cursor-pointer">
-                                <FaArrowDownLong
-                                  color={
-                                    sortColumn === "product" &&
-                                    sortOrder === "ASC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                                <FaArrowUpLong
-                                  color={
-                                    sortColumn === "product" &&
-                                    sortOrder === "DESC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                              </div>
-                            </div>
+                              <span className="sort-label">Product</span>
+                              <span className="sort-icon"></span>
+                            </span>
                           </th>
-                          <th className="min-w-[200px]">
-                            <div
-                              className="flex justify-between cursor-pointer"
+                          <th className="min-w-[250px]">
+                            <span
+                              className={`sort ${
+                                sortColumn === "service"
+                                  ? sortOrder === "ASC"
+                                    ? "asc"
+                                    : "desc"
+                                  : ""
+                              }`}
                               onClick={() => handleSort("service")}
                             >
-                              Service
-                              <div className="flex cursor-pointer">
-                                <FaArrowDownLong
-                                  color={
-                                    sortColumn === "service" &&
-                                    sortOrder === "ASC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                                <FaArrowUpLong
-                                  color={
-                                    sortColumn === "service" &&
-                                    sortOrder === "DESC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                              </div>
-                            </div>
+                              <span className="sort-label">Service</span>
+                              <span className="sort-icon"></span>
+                            </span>
                           </th>
-                          
+
                           <th className="min-w-[200px]">
-                            <div
-                              className="flex justify-between cursor-pointer"
+                            <span
+                              className={`sort ${
+                                sortColumn === "price"
+                                  ? sortOrder === "ASC"
+                                    ? "asc"
+                                    : "desc"
+                                  : ""
+                              }`}
                               onClick={() => handleSort("price")}
                             >
-                              Price
-                              <div className="flex cursor-pointer">
-                                <FaArrowDownLong
-                                  color={
-                                    sortColumn === "price" &&
-                                    sortOrder === "ASC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                                <FaArrowUpLong
-                                  color={
-                                    sortColumn === "price" &&
-                                    sortOrder === "DESC"
-                                      ? "gray"
-                                      : "lightgray"
-                                  }
-                                />
-                              </div>
-                            </div>
+                              <span className="sort-label">Price</span>
+                              <span className="sort-icon"></span>
+                            </span>
                           </th>
                         </tr>
                       </thead>
@@ -325,7 +281,12 @@ const PriceTable: React.FC<PriceTableProps> = ({
                             const isEditing = editing.has(key);
 
                             return (
-                              <tr key={index}>
+                              <tr
+                                key={index}
+                                className={`font-semibold ${
+                                  combination.price ? "" : "text-red-500"
+                                }`}
+                              >
                                 <td>{index + 1}</td>
                                 <td>{combination.category.name}</td>
                                 <td>{combination.product.name}</td>

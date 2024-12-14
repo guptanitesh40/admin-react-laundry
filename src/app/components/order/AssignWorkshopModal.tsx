@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { useAssignWorkshop, useGetWorkshops } from "../../hooks";
+import {
+  useAssignBranch,
+  useAssignWorkshop,
+  useGetBranches,
+  useGetWorkshops,
+} from "../../hooks";
 import * as Yup from "yup";
 
 interface WorkshopModalProps {
@@ -7,10 +12,11 @@ interface WorkshopModalProps {
   workshopModalOpen: boolean;
   onClose: () => void;
   setAssigned: (value: boolean) => void;
+  orderStatus: string;
 }
 
 const schema = Yup.object().shape({
-  workshop_id: Yup.number().required("Please select workshop to assign"),
+  option: Yup.number().required("Please select option"),
 });
 
 const WorkshopModal: React.FC<WorkshopModalProps> = ({
@@ -18,19 +24,22 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
   workshopModalOpen,
   onClose,
   setAssigned,
+  orderStatus,
 }) => {
-  const perNumber = 1;
+  const pageNumber = 1;
   const perPage = 1000;
 
-  const { workshops } = useGetWorkshops(perNumber, perPage);
+  const { workshops } = useGetWorkshops(pageNumber, perPage);
+  const { branches } = useGetBranches(pageNumber, perPage);
   const { assignWorkshop } = useAssignWorkshop();
-  const [workshop, setWorkshop] = useState<number | null>();
+  const { assignBranch } = useAssignBranch();
+  const [selectedOption, setSelectedOption] = useState<number | null>();
 
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     if (!workshopModalOpen) {
-      setWorkshop(null);
+      setSelectedOption(null);
       setErrorMessage("");
     }
   }, [workshopModalOpen, orderId]);
@@ -39,15 +48,15 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
     e.preventDefault();
 
     try {
-      await schema.validate({ workshop_id: workshop }, { abortEarly: false });
+      await schema.validate({ option: selectedOption }, { abortEarly: false });
 
-      if (workshop !== null) {
-        const success = await assignWorkshop(orderId, workshop);
-        if (success) {
-          onClose();
-          setAssigned(true);
-        }
+      if (orderStatus === "Assign Workshop") {
+        await assignWorkshop(orderId, selectedOption);
+      } else {
+        await assignBranch(orderId, selectedOption);
       }
+      onClose();
+      setAssigned(true);
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         setErrorMessage(error.errors[0]);
@@ -71,38 +80,73 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <h2 className="text-2xl font-bold mb-6">Assign Workshop</h2>
+
+        <h2 className="text-2xl font-bold mb-6">
+          {orderStatus === "Assign Workshop"
+            ? "Assign Workshop"
+            : "Assign Branch"}
+        </h2>
         <form onSubmit={handleSubmit}>
-          <div className="relative flex flex-col flex-[0_0_40%]">
-            <label className="mb-2 font-semibold" htmlFor="company_id">
-              Workshop
-            </label>
-            <select
-              id="workshop_id"
-              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-              value={workshop ?? ""}
-              onChange={(e) => setWorkshop(Number(e.target.value))}
-            >
-              <option value="" disabled selected>
-                Select Workshop
-              </option>
-              {workshops?.length > 0 ? (
-                workshops.map((workshop) => (
-                  <option
-                    key={workshop.workshop_id}
-                    value={workshop.workshop_id}
-                  >
-                    {workshop.workshop_name}
-                  </option>
-                ))
-              ) : (
-                <option>No Data available</option>
-              )}
-            </select>
-            <p className="text-red-500 text-sm mt-1">
-              {errorMessage || "\u00A0"}
-            </p>
-          </div>
+          {orderStatus === "Assign Workshop" ? (
+            <div className="relative flex flex-col flex-[0_0_40%]">
+              <label className="mb-2 font-semibold" htmlFor="workshop_id">
+                Workshop
+              </label>
+              <select
+                id="workshop_id"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={selectedOption ?? ""}
+                onChange={(e) => setSelectedOption(Number(e.target.value))}
+              >
+                <option value="" disabled selected>
+                  Select Workshop
+                </option>
+                {workshops?.length > 0 ? (
+                  workshops.map((workshop) => (
+                    <option
+                      key={workshop.workshop_id}
+                      value={workshop.workshop_id}
+                    >
+                      {workshop.workshop_name}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Data available</option>
+                )}
+              </select>
+              <p className="text-red-500 text-sm mt-1">
+                {errorMessage || "\u00A0"}
+              </p>
+            </div>
+          ) : (
+            <div className="relative flex flex-col flex-[0_0_40%]">
+              <label className="mb-2 font-semibold" htmlFor="branch_id">
+                Branch
+              </label>
+              <select
+                id="branch_id"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={selectedOption ?? ""}
+                onChange={(e) => setSelectedOption(Number(e.target.value))}
+              >
+                <option value="" disabled selected>
+                  Select Branch
+                </option>
+                {branches?.length > 0 ? (
+                  branches.map((branch) => (
+                    <option key={branch.branch_id} value={branch.branch_id}>
+                      {branch.branch_name}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Data available</option>
+                )}
+              </select>
+              <p className="text-red-500 text-sm mt-1">
+                {errorMessage || "\u00A0"}
+              </p>
+            </div>
+          )}
 
           <div className="flex mt-4">
             <button type="submit" className="btn btn-primary mr-2">

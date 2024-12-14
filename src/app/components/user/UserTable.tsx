@@ -177,6 +177,27 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  function getRoleClass(roleId: number) {
+    switch (roleId) {
+      case Role["Super Admin"]:
+        return "role-super-admin";
+      case Role["Sub Admin"]:
+        return "role-sub-admin";
+      case Role["Branch Manager"]:
+        return "role-branch-manager";
+      case Role["Delivery Boy"]:
+        return "role-delivery-boy";
+      case Role["Customer"]:
+        return "role-customer";
+      case Role["Workshop Manager"]:
+        return "role-workshop-manager";
+      case Role["Vendor"]:
+        return "role-vendor";
+      default:
+        return "role-default";
+    }
+  }
+
   return (
     <>
       {filter ? (
@@ -299,9 +320,7 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                   <i className="ki-filled ki-magnifier"></i>
                 </button>
               </label>
-              <p className="text-red-500 text-sm">
-                {errorMessage || "\u00A0"}
-              </p>
+              <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
             </form>
           </div>
         </div>
@@ -343,10 +362,12 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                       }`}
                       onClick={() => handleSort("first_name")}
                     >
-                      <span className="sort-label">User name</span>
+                      <span className="sort-label">Full name</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="min-w-[200px]">Role</th>
 
                   <th className="min-w-[250px]">
                     <span
@@ -380,23 +401,12 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[80px]">
-                    <span className="sort">
-                      <span className="sort-label">Gender</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[140px]">
-                    <span className="sort">
-                      <span className="sort-label">Role</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[80px]">Gender</th>
 
                   <th className="min-w-[250px]">
                     <span className="sort-label">Companies</span>
                   </th>
+
                   <th className="min-w-[250px]">
                     <span className="sort-label">Branches</span>
                   </th>
@@ -419,6 +429,15 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                           {user.first_name} {user.last_name}
                         </div>
                       </td>
+                      <td>
+                        <span
+                          className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
+                            user.role_id
+                          )}`}
+                        >
+                          {Role[user.role_id as unknown as keyof typeof Role]}
+                        </span>
+                      </td>
                       <td>{user.email}</td>
                       <td>
                         <div className="flex items-center gap-1.5">
@@ -427,10 +446,7 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                       </td>
                       <td>
                         {Gender[user.gender as unknown as keyof typeof Gender]}
-                      </td>
-                      <td>
-                        {Role[user.role_id as unknown as keyof typeof Role]}
-                      </td>
+                      </td>                      
                       <td>
                         {companies
                           .filter((company) =>
@@ -479,7 +495,6 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
               )}
             </table>
           </div>
-          
           {totalUsers > perPage && (
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
