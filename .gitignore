@@ -15,9 +15,6 @@ yarn-error.log
 # Build output
 build/
 
-dist/media/app/
-dist/media/images/
-
 # Dependency directories
 jspm_packages/
 
