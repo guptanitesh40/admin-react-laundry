@@ -212,7 +212,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
               selectedList.map((item: any) => item.workshop_manager_id)
             );
           }}
-          className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
+          className="multiselect-container multiselect min-w-[430px] h-[10px] max-w-[480px]"
         />
       </div>
       <select
@@ -222,7 +222,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           handleFilterChange("paymentTypeFilter", Number(e.target.value));
         }}
       >
-        <option value="" disabled selected>
+        <option value="" selected>
           Payment type
         </option>
         <option value={1}>Cash on Delivery</option>

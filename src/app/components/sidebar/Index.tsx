@@ -194,6 +194,29 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
+            <Link
+              to="/price-content"
+              onClick={() => handleItemClick("/price-content")}
+            >
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "/price-content"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <BiSolidCoupon color="gray" size={32} />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Price Content
+                  </span>
+                </div>
+              </div>
+            </Link>
+
             <Link to="/companies" onClick={() => handleItemClick("companies")}>
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(

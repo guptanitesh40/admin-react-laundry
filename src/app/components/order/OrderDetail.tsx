@@ -36,6 +36,7 @@ const OrderDetails: React.FC = () => {
   const [workshopModalOpen, setWorkshopModalOpen] = useState<boolean>(false);
   const [assigned, setAssigned] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [confirm, setConfirm] = useState<boolean>(false);
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -150,61 +151,95 @@ const OrderDetails: React.FC = () => {
     }
   };
 
+  const handleSweetAlertOpen = async () => {
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        text: "Want to change order status!",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      });
+      return isConfirmed;
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+      return false;
+    }
+  };
+
+  const updateAndFetchOrder = async (status: number) => {
+    const success = await updateOrderStatus(order_id, status);
+    if (success) {
+      await fetchOrder(order_id);
+    }
+  };
+
+  const handleStatusChange = async (status: number) => {
+    const success = await handleSweetAlertOpen();
+    if (success) {
+      await updateAndFetchOrder(status);
+    }
+  };
+
+  const handleOrderTableStatus = async () => {
+    switch (order?.order_status_name) {
+      case "Assign Pickup Boy":
+      case "Assign Delivery Boy":
+        setModalOpen(true);
+        break;
+      case "Received By Pickup Boy":
+        await handleStatusChange(3);
+        break;
+      case "Work Completed":
+        await handleStatusChange(7);
+        break;
+      case "Items Received At Branch":
+      case "Pickup Complete":
+        await handleStatusChange(4);
+        break;
+      case "Ready For Delivery":
+        await handleStatusChange(10);
+        break;
+      case "Assign Workshop":
+      case "Assign Branch":
+        setWorkshopModalOpen(true);
+        break;
+      case "Branch Received Items":
+        await handleStatusChange(8);
+        setConfirm(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleWorkshopStatus = async () => {
+    switch (order?.workshop_status_name) {
+      case "Order Received":
+        await handleStatusChange(5);
+        setConfirm(false);
+        break;
+      case "In Progress":
+        await handleStatusChange(6);
+        setConfirm(false);
+        break;
+      case "Completed":
+        await handleStatusChange(7);
+        setConfirm(false);
+        navigate("/workshop-order");
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleStatusClick = async () => {
-    const updateAndFetchOrder = async (status: any) => {
-      const success = await updateOrderStatus(order_id, status);
-      if (success) {
-        await fetchOrder(order_id);
-      }
-    };
-
-    const handleOrderTableStatus = async () => {
-      switch (order?.order_status_name) {
-        case "Assign Pickup Boy":
-        case "Assign Delivery Boy":
-          setModalOpen(true);
-          break;
-        case "Received By Pickup Boy":
-          await updateAndFetchOrder(3);
-          break;
-        case "Work Completed":
-          await updateAndFetchOrder(7);
-          break;
-        case "Items Received At Branch":
-        case "Pickup Complete":
-          await updateAndFetchOrder(4);
-          break;
-        case "Ready For Delivery":
-          await updateAndFetchOrder(10);
-          break;
-        case "Assign Workshop":
-          setWorkshopModalOpen(true);
-          break;
-        case "Branch Received Items":
-          await updateAndFetchOrder(8);
-          break;
-        default:
-          break;
-      }
-    };
-
-    const handleWorkshopStatus = async () => {
-      switch (order?.workshop_status_name) {
-        case "Order Received":
-          await updateAndFetchOrder(5);
-          break;
-        case "In Progress":
-          await updateAndFetchOrder(6);
-          break;
-        case "Completed":
-          await updateOrderStatus(order_id, 7);
-          navigate("/workshop-order");
-          break;
-        default:
-          break;
-      }
-    };
-
     if (location?.state?.from === "OrderTable") {
       await handleOrderTableStatus();
     } else {
@@ -213,21 +248,32 @@ const OrderDetails: React.FC = () => {
   };
 
   const getOrderStatusLabel = () => {
-    if (location.state?.from === "OrderTable") {
-      return order?.order_status_name;
-    } else {
-      return order?.workshop_status_name;
-    }
+    return location.state?.from === "OrderTable"
+      ? order?.order_status_name
+      : order?.workshop_status_name;
+  };
+
+  const handleEditOrder = () => {
+    navigate(`/order/edit/${order_id}`);
   };
 
   if (!order) return null;
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center bg-gray-100 p-6 rounded-md shadow">
-        <h1 className="text-xl font-semibold leading-none text-gray-900">
-          Order Details - #{order_id}
-        </h1>
+      <div className="flex items-center justify-between bg-gray-100 p-7 rounded-md shadow">
+        <div className="flex">
+          <h1 className="mt-2 text-xl font-semibold leading-none text-gray-900">
+            Order Details - #{order_id}
+          </h1>
+          <button
+            className="btn btn-primary ml-3 bg-blue-200 rounded-md"
+            onClick={handleEditOrder}
+          >
+            <i className="ki-filled ki-pencil mr-1"></i>Edit Order
+          </button>
+        </div>
+
         <button
           className="px-4 py-2 rounded-full text-white bg-orange-500"
           onClick={handleStatusClick}
@@ -241,36 +287,48 @@ const OrderDetails: React.FC = () => {
           <div className="bg-white p-6 rounded-md shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Order Items</h2>
+              <span className="text-gray-700 text-sm font-semibold px-3 py-1 rounded-lg ">
+                Total Items: {order.items.length}
+              </span>
             </div>
             <div className="space-y-4">
               {order.items.map((item: any) => (
                 <div
                   key={item.item_id}
-                  className="flex items-center justify-between border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-secondary-clarity"
+                  className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
                 >
-                  <div className="flex items-center gap-3.5">
-                    <img
-                      alt={item.product.name}
-                      className="w-10 shrink-0 object-cover rounded"
-                      src={item.product.image}
-                    />
-                    <div className="flex flex-col">
-                      <a
-                        className="text-sm font-semibold text-gray-900 hover:text-primary-active mb-px"
-                        href="#"
-                      >
-                        {item.product.name}
-                      </a>
-                      <span className="text-2sm font-medium text-gray-600">
-                        Category: {item.category.name}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3.5">
+                      <img
+                        alt={item.product.name}
+                        className="w-10 shrink-0 object-cover rounded"
+                        src={item.product.image}
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-gray-900 mb-px">
+                          {item.product.name}
+                        </span>
+                        <span className="text-2sm font-medium text-gray-600">
+                          Category: {item.category.name}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-5">
+                      <span className="badge badge-lg badge-success badge-outline text-xs font-medium mr-2 px-2.5">
+                        Service: {item.service.name}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-5">
-                    <span className="badge badge-lg badge-success badge-outline">
-                      Service: {item.service.name}
-                    </span>
-                  </div>
+                  {item.description && (
+                    <div className="mt-2 p-3 bg-gray-100 rounded-md">
+                      <p className="text-sm text-gray-600">
+                        <span className="text-sm font-medium text-gray-600">
+                          Description :
+                        </span>{" "}
+                        {item.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -669,6 +727,12 @@ const OrderDetails: React.FC = () => {
       />
 
       <WorkshopModal
+        orderStatus={
+          order?.order_status_name === "Assign Branch" ||
+          order?.order_status_name === "Assign Workshop"
+            ? order?.order_status_name
+            : undefined
+        }
         orderId={order_id}
         workshopModalOpen={workshopModalOpen}
         onClose={() => setWorkshopModalOpen(false)}

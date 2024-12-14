@@ -167,7 +167,7 @@ const CompanyForm: React.FC = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
           <div className="flex flex-col">
             <label className="mb-2 font-semibold" htmlFor="company_name">
               Company Name

@@ -180,7 +180,7 @@ const CompanyTable: React.FC = () => {
                 setOwnershipFilter(Number(e.target.value));
               }}
             >
-              <option value="" disabled selected>
+              <option value="" selected>
                Select Ownership
               </option>
               <option value={1}>Own</option>

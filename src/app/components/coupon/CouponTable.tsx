@@ -206,7 +206,7 @@ const CouponTable: React.FC = () => {
                   setDicountTypeFilter(Number(e.target.value));
                 }}
               >
-                <option value="" disabled selected>
+                <option value="" selected>
                   Discount type
                 </option>
                 <option value={1}>Amount</option>

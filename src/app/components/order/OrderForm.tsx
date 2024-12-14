@@ -14,7 +14,7 @@ import {
   useUpdateOrder,
 } from "../../hooks";
 import * as Yup from "yup";
-import { FaTrash } from "react-icons/fa";
+import { FaEye, FaTrash } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
@@ -40,7 +40,6 @@ interface FormData {
   express_delivery_charges: number;
   shipping_charges: number;
   payment_type: number;
-  order_status: number;
   payment_status: number;
   sub_total: number;
   paid_amount: number;
@@ -51,6 +50,7 @@ interface FormData {
   items: item[];
   total: number;
   branch_id: number;
+  order_status: number | null;
 }
 
 const OrderForm: React.FC = () => {
@@ -88,7 +88,6 @@ const OrderForm: React.FC = () => {
     express_delivery_charges: null,
     shipping_charges: null,
     payment_type: null,
-    order_status: 1,
     payment_status: null,
     sub_total: 0,
     paid_amount: null,
@@ -112,6 +111,7 @@ const OrderForm: React.FC = () => {
     ],
     total: 0,
     branch_id: null,
+    order_status: null,
   });
 
   const [retrivedData, setRetrivedData] = useState<FormData>({
@@ -120,7 +120,6 @@ const OrderForm: React.FC = () => {
     express_delivery_charges: null,
     shipping_charges: null,
     payment_type: null,
-    order_status: 1,
     payment_status: null,
     sub_total: 0,
     paid_amount: null,
@@ -144,6 +143,7 @@ const OrderForm: React.FC = () => {
     ],
     total: 0,
     branch_id: null,
+    order_status: null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -189,7 +189,6 @@ const OrderForm: React.FC = () => {
         express_delivery_charges: order.express_delivery_charges || null,
         shipping_charges: order.shipping_charges || null,
         payment_type: order.payment_type || null,
-        order_status: order.order_status || null,
         payment_status: order.payment_status || null,
         sub_total: order.sub_total || 0,
         paid_amount: order.paid_amount || null,
@@ -222,7 +221,8 @@ const OrderForm: React.FC = () => {
           (order.sub_total || 0) +
           (order.express_delivery_charges || 0) +
           (order.shipping_charges || 0),
-          branch_id: order.branch_id,
+        branch_id: order.branch_id,
+        order_status: null,
       };
 
       setFormData(initialFormData);
@@ -252,7 +252,6 @@ const OrderForm: React.FC = () => {
         express_delivery_charges: Number(formData.express_delivery_charges),
         payment_type: Number(formData.payment_type),
         payment_status: Number(formData.payment_status),
-        order_status: Number(formData.order_status),
         items: formattedItems,
       };
 
@@ -492,13 +491,27 @@ const OrderForm: React.FC = () => {
     setUserModalIsOpen(true);
   };
 
+  const handleViewOrder = () => {
+    navigate(`/order/${order_id}`);
+  };
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
-        <h1 className="text-2xl font-bold mb-6">
-          {order ? "Edit Order" : "Add Order"}
-        </h1>
-
+        <div className="flex">
+          <h1 className="text-2xl font-bold mb-6">
+            {order ? "Edit Order" : "Add Order"}
+          </h1>
+          {!isNaN(order_id) && (
+            <button
+              className="btn bg-gray-200 ml-4 text-gray-700 text-sm font-bold rounded-md"
+              onClick={handleViewOrder}
+            >
+              <FaEye size={20} />
+              View Order
+            </button>
+          )}
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="flex gap-2">
             <div className="relative flex flex-col flex-[0_0_40%]">
@@ -605,7 +618,7 @@ const OrderForm: React.FC = () => {
                 key={index}
                 className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
               >
-                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                <div className="flex flex-col flex-1 md:mb-0">
                   <label
                     htmlFor="category"
                     className="block text-gray-700 text-sm font-bold mb-2"
@@ -630,11 +643,11 @@ const OrderForm: React.FC = () => {
                     ))}
                   </select>
                   <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].category_id`] || "\u00A0"}
+                    {errors[`items[${index}].category_id`]}
                   </p>
                 </div>
 
-                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                <div className="flex flex-col flex-1 md:mb-0">
                   <label
                     htmlFor="product"
                     className="block text-gray-700 text-sm font-bold mb-2"
@@ -668,16 +681,11 @@ const OrderForm: React.FC = () => {
                         )}
                   </select>
                   <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].product_id`] || "\u00A0"}
-                    <br />
-                  </p>
-                  <p className="w-full text-red-500 text-sm">
-                    {"\u00A0"}
-                    <br />
-                  </p>
+                    {errors[`items[${index}].product_id`]}
+                  </p>                 
                 </div>
 
-                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                <div className="flex flex-col flex-1 md:mb-0">
                   <label
                     htmlFor="service"
                     className="block text-gray-700 text-sm font-bold mb-2"
@@ -711,12 +719,7 @@ const OrderForm: React.FC = () => {
                         )}
                   </select>
                   <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].service_id`] || "\u00A0"}
-                    <br />
-                  </p>
-                  <p className="w-full text-red-500 text-sm">
-                    {"\u00A0"}
-                    <br />
+                    {errors[`items[${index}].service_id`]}
                   </p>
                 </div>
 
@@ -738,11 +741,11 @@ const OrderForm: React.FC = () => {
                     readOnly={isNaN(order_id)}
                   />
                   <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].price`] || "\u00A0"}
+                    {errors[`items[${index}].price`]}
                   </p>
                 </div>
 
-                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                <div className="flex flex-col flex-1 md:mb-0">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
                     Quantity
                   </label>
@@ -754,10 +757,9 @@ const OrderForm: React.FC = () => {
                     }
                     className="input border border-gray-300 rounded-md p-2 w-full"
                   />
-                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
                 </div>
 
-                <div className="flex flex-col flex-1 mb-4 md:mb-0">
+                <div className="flex flex-col flex-1 md:mb-0">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
                     Item total
                   </label>
@@ -772,7 +774,6 @@ const OrderForm: React.FC = () => {
                     readOnly
                     className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
                   />
-                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
                 </div>
 
                 <div className="flex flex-col md:mb-0">
@@ -823,7 +824,7 @@ const OrderForm: React.FC = () => {
 
               {item.showDescription && (
                 <div>
-                  <div className="flex flex-col w-80 mb-8">
+                  <div className="flex flex-col w-[500px] mb-8">
                     <label
                       htmlFor="description"
                       className="block text-gray-700 text-sm font-bold mb-2"
@@ -836,7 +837,7 @@ const OrderForm: React.FC = () => {
                       onChange={(e) =>
                         handleItemChange(index, "description", e.target.value)
                       }
-                      className="input border border-gray-300 rounded-md p-2 w-full"
+                      className="h-20 input border border-gray-300 rounded-md p-2 w-full"
                     />
                   </div>
                 </div>
@@ -1080,36 +1081,64 @@ const OrderForm: React.FC = () => {
                 htmlFor="payment_status"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-              Branch
+                Branch
               </label>
               <select
-              id="company_id"
-              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-              value={formData.branch_id || ""}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  branch_id: e.target.value ? Number(e.target.value) : null,
-                })
-              }
+                id="company_id"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={formData.branch_id || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    branch_id: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
               >
-              <option value="" disabled>
-              Select Branch
-              </option>
-              {branches.length > 0 ? (
-                branches.map((branch) => (
-                  <option key={branch.branch_id} value={branch.branch_id}>
-                    {branch.branch_name}
-                  </option>
-                ))
-              ) : (
-                <option>No Data Available</option>
-              )}
+                <option value="" disabled>
+                  Select Branch
+                </option>
+                {branches.length > 0 ? (
+                  branches.map((branch) => (
+                    <option key={branch.branch_id} value={branch.branch_id}>
+                      {branch.branch_name}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Data Available</option>
+                )}
               </select>
               <p className="w-full text-red-500 text-sm">
                 {errors.branch_id || "\u00A0"}
               </p>
             </div>
+
+            {!order_id && (
+              <div className="flex flex-col">
+                <label
+                  htmlFor="payment_method"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Item status
+                </label>
+                <select
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  id="item_status"
+                  value={formData.order_status ?? null}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      order_status: Number(e.target.value),
+                    })
+                  }
+                >
+                  <option value="" disabled selected>
+                    Select item status
+                  </option>
+                  <option value={4}>Received at branch</option>
+                  <option value={1}>Need to pickup</option>
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex gap-4">
