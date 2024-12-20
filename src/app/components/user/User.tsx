@@ -2,13 +2,25 @@ import React, { useState } from "react";
 import UserTable from "./UserTable";
 import { useNavigate } from "react-router-dom";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
+import UserFilter from "./UserFilter";
 
 const User: React.FC = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<boolean>(false);
 
+  const [filters, setFilters] = useState({
+      genderFilter: [] as number[],
+      roleFilter: [] as number[],
+      companyFilter: [] as number[],
+      branchFilter: [] as number[],
+    });
+
   const handleAddUser = () => {
     navigate("/user/add");
+  };
+
+  const updateFilters = (newFilters: any) => {
+    setFilters(newFilters);
   };
 
   return (
@@ -41,10 +53,17 @@ const User: React.FC = () => {
           </button>
         </div>
       </div>
+
       <div className="container-fixed">
         <div className="grid gap-5 lg:gap-7.5">
           <div className="card card-grid min-w-full">
-            <UserTable filter={filter} />
+            {filter && (
+              <UserFilter
+                filters={filters}
+                updateFilters={updateFilters}
+              />
+            )}{" "}
+            <UserTable filters={filters} />
           </div>
         </div>
       </div>

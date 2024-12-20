@@ -12,7 +12,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
-import Multiselect from "multiselect-react-dropdown";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 interface BannerTableProps {
   setEditBanner: (banner_id: number) => void;
@@ -40,6 +40,10 @@ const BannerTable: React.FC<BannerTableProps> = ({
   const perPageFromParams = searchParams.get("perPage");
 
   const [bannerTypeFilter, setBannerTypeFilter] = useState<number[]>([]);
+
+  const bannerTypeOptions = Object.entries(BannerType)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
 
   const { banners, fetchBanners, totalBanners, loading } = useGetBanners(
     currentPage,
@@ -162,10 +166,6 @@ const BannerTable: React.FC<BannerTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  const bannerTypeOptions = Object.entries(BannerType)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
-
   return (
     <>
       <div className="card-header card-header-space flex flex-wrap items-center justify-between gap-4">
@@ -185,32 +185,25 @@ const BannerTable: React.FC<BannerTableProps> = ({
         </div>
 
         <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex items-center mb-6">
-            <button className="btn btn-lg btn-outline btn-primary flex-shrink-0">
-              <i className="ki-filled ki-setting-4"></i>
-              Filter
-            </button>
-          </div>
-
-          <div className="flex items-center mb-6">
-            <Multiselect
+          <div className="flex items-center mb-11">             
+            <MultiSelect
               options={bannerTypeOptions}
               displayValue="label"
-              selectedValues={bannerTypeOptions.filter((option) =>
-                bannerTypeFilter.includes(option.value)
-              )}
-              placeholder="Banner Type"
-              onSelect={(selectedList) => {
+              placeholder="Select Banner Type"
+              selectedValues={bannerTypeFilter}
+              onSelect={(selectedList: any) =>
                 setBannerTypeFilter(
-                  selectedList.map((item: any) => item.value)
-                );
-              }}
-              onRemove={(selectedList) => {
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
                 setBannerTypeFilter(
-                  selectedList.map((item: any) => item.value)
-                );
-              }}
-              className="multiselect-container multiselect min-w-[250px] max-w-[350px]"
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[250px]"
+              sliceCount={3}
+              isSearchInput={false}
             />
           </div>
 

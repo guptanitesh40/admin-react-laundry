@@ -9,12 +9,11 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import dayjs from "dayjs";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CouponType, DiscountType } from "../../../types/enums";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import Multiselect from "multiselect-react-dropdown";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 const CouponTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +32,7 @@ const CouponTable: React.FC = () => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
+
   const { coupons, fetchCoupons, loading, totalCoupons } = useGetCoupons(
     currentPage,
     perPage,
@@ -40,7 +40,7 @@ const CouponTable: React.FC = () => {
     sortColumn,
     sortOrder,
     discountTypeFiter,
-    couponTypeFilter,
+    couponTypeFilter
   );
   const { deleteCoupon } = useDeleteCoupon();
 
@@ -180,25 +180,28 @@ const CouponTable: React.FC = () => {
         <div className="flex items-center gap-4 flex-1 justify-end">
           <div className="flex flex-wrap gap-2.5 mb-6">
             <div className="flex items-center gap-3">
-              <Multiselect
-                options={couponTypeOptions}
-                displayValue="label"
-                selectedValues={couponTypeOptions.filter((option) =>
-                  couponTypeFilter.includes(option.value)
-                )}
-                placeholder="Coupon type"
-                onSelect={(selectedList) => {
-                  setCouponTypeFilter(
-                    selectedList.map((item: any) => item.value)
-                  );
-                }}
-                onRemove={(selectedList) => {
-                  setCouponTypeFilter(
-                    selectedList.map((item: any) => item.value)
-                  );
-                }}
-                className="multiselect-container multiselect min-w-[120px] max-w-[180px]"
-              />
+              <div className="flex items-center mb-5">
+                <MultiSelect
+                  options={couponTypeOptions}
+                  displayValue="label"
+                  placeholder="Select Coupon Type"
+                  selectedValues={couponTypeFilter}
+                  onSelect={(selectedList: any) =>
+                    setCouponTypeFilter(
+                      selectedList.map((item: { value: any }) => item.value)
+                    )
+                  }
+                  onRemove={(selectedList: any) =>
+                    setCouponTypeFilter(
+                      selectedList.map((item: { value: any }) => item.value)
+                    )
+                  }
+                  className="min-w-[250px]"
+                  sliceCount={3}
+                  isSearchInput={false}
+                />
+              </div>
+
               <select
                 className="select select-lg w-[170px] text-sm"
                 value={discountTypeFiter}
@@ -228,7 +231,7 @@ const CouponTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
