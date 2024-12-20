@@ -17,18 +17,18 @@ import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import Multiselect from "multiselect-react-dropdown";
 
-interface User {
-  company_ids: number[];
-  branch_ids: number[];
-}
 
 interface UserTableProps {
-  filter: boolean;
+  filters: {
+    genderFilter: number[];
+    roleFilter: number[];
+    companyFilter: number[];
+    branchFilter: number[];
+  };
 }
 
-const UserTable: React.FC<UserTableProps> = ({ filter }) => {
+const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,11 +38,6 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
   const perPageParams = searchParams.get("perPage");
   const perPageForList = 1000;
   const pageNumberForList = 1;
-
-  const [genderFilter, setGenderFilter] = useState<number[]>([]);
-  const [roleFilter, setRoleFilter] = useState<number[]>([]);
-  const [companyFilter, setCompanyFilter] = useState<number[]>([]);
-  const [branchFilter, setBranchFilter] = useState<number[]>([]);
 
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
@@ -54,10 +49,10 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
     search,
     sortColumn,
     sortOrder,
-    genderFilter,
-    roleFilter,
-    companyFilter,
-    branchFilter
+    filters.genderFilter,
+    filters.roleFilter,
+    filters.companyFilter,
+    filters.branchFilter
   );
   const { deleteUser } = useDeleteUser();
   const { companies } = useGetCompanies(pageNumberForList, perPageForList);
@@ -66,14 +61,6 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalUsers / perPage);
-
-  const genderOptions = Object.entries(Gender)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
-
-  const roleOptions = Object.entries(Role)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
 
   const handleUpdateUser = (user_id: number) => {
     navigate(`/user/edit/${user_id}`);
@@ -200,110 +187,26 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
 
   return (
     <>
-      {filter ? (
-        <div className="card-header flex-wrap gap-2 ">
-          <div className="flex flex-wrap gap-2.5">
-            <Multiselect
-              options={genderOptions}
-              displayValue="label"
-              selectedValues={genderOptions.filter((option) =>
-                genderFilter.includes(option.value)
-              )}
-              placeholder="Gender"
-              onSelect={(selectedList) => {
-                setGenderFilter(selectedList.map((item: any) => item.value));
-              }}
-              onRemove={(selectedList) => {
-                setGenderFilter(selectedList.map((item: any) => item.value));
-              }}
-              className="multiselect-container multiselect"
-            />
-            <Multiselect
-              options={roleOptions}
-              displayValue="label"
-              selectedValues={roleOptions.filter((option) =>
-                roleFilter.includes(option.value)
-              )}
-              placeholder="Role"
-              onSelect={(selectedList) => {
-                setRoleFilter(selectedList.map((item: any) => item.value));
-              }}
-              onRemove={(selectedList) => {
-                setRoleFilter(selectedList.map((item: any) => item.value));
-              }}
-              className="multiselect-container multiselect"
-            />
-            <Multiselect
-              options={companies?.map((company) => ({
-                company_id: company.company_id,
-                company_name: company.company_name,
-              }))}
-              displayValue="company_name"
-              selectedValues={companies.filter((option) =>
-                companyFilter.includes(option.company_id)
-              )}
-              placeholder="Company"
-              onSelect={(selectedList) => {
-                setCompanyFilter(
-                  selectedList.map((item: any) => item.company_id)
-                );
-              }}
-              onRemove={(selectedList) => {
-                setCompanyFilter(
-                  selectedList.map((item: any) => item.company_id)
-                );
-              }}
-              className="multiselect-container multiselect"
-            />
-            <Multiselect
-              options={branches?.map((branch) => ({
-                branch_id: branch.branch_id,
-                branch_name: branch.branch_name,
-              }))}
-              displayValue="branch_name"
-              selectedValues={branches.filter((option) =>
-                branchFilter.includes(option.branch_id)
-              )}
-              placeholder="Branch"
-              onSelect={(selectedList) => {
-                setBranchFilter(
-                  selectedList.map((item: any) => item.branch_id)
-                );
-              }}
-              onRemove={(selectedList) => {
-                setBranchFilter(
-                  selectedList.map((item: any) => item.branch_id)
-                );
-              }}
-              className="multiselect-container multiselect"
-            />
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
       <div className="card-header card-header-space flex-wrap">
-        <div className="justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm mb-2 font-medium">
-          <div className="flex items-center gap-2 order-2 md:order-1">
-            Show
-            <select
-              className="select select-sm w-16"
-              data-datatable-size="true"
-              name="perpage"
-              value={perPage}
-              onChange={handlePerPageChange}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-            per page
-          </div>
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
+          <select
+            className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
+            value={perPage}
+            onChange={handlePerPageChange}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+          <span>per page</span>
         </div>
 
-        <div className="flex flex-wrap gap-2 lg:gap-5">
-          <div className="flex flex-col">
-            <form onSubmit={onSearchSubmit} className="flex flex-col">
-              <label className="input input-sm h-10 flex items-center">
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
                 <input
                   type="search"
                   value={searchInput}
@@ -313,15 +216,17 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                       setSearch("");
                     }
                   }}
-                  placeholder="Search user by Name, Email, Mobile number"
-                  className="w-[275px]"
+                  placeholder="Search..."
+                  className="w-[275px] flex-grow"
                 />
-                <button type="submit">
+                <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
                 </button>
               </label>
-              <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
             </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
           </div>
         </div>
       </div>
@@ -446,7 +351,7 @@ const UserTable: React.FC<UserTableProps> = ({ filter }) => {
                       </td>
                       <td>
                         {Gender[user.gender as unknown as keyof typeof Gender]}
-                      </td>                      
+                      </td>
                       <td>
                         {companies
                           .filter((company) =>

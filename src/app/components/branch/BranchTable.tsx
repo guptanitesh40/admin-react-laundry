@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDeleteBranch, useGetBranches, useGetCompanies } from "../../hooks";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -12,8 +11,8 @@ import Swal from "sweetalert2";
 import TableShimmer from "../shimmer/TableShimmer";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import Multiselect from "multiselect-react-dropdown";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 const BranchTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -169,84 +168,65 @@ const BranchTable: React.FC = () => {
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
-        <div className="flex items-center gap-2 mb-4">
-          <span>Show</span>
-          <select
-            className="select select-sm w-16"
-            data-datatable-size="true"
-            name="perpage"
-            value={perPage}
-            onChange={handlePerPageChange}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-          <span>per page</span>
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <span>Per Page</span>
+            <select 
+              className="select select-sm w-16"
+              data-datatable-size="true"
+              name="perpage"
+              value={perPage}
+              onChange={handlePerPageChange}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
         </div>
 
         <div className="flex items-center gap-4 flex-1 justify-end">
           <div className="flex flex-wrap gap-2.5 mb-6">
-            <div className="flex items-center gap-3">
-              <Multiselect
+            <div className="flex items-center gap-3 mb-5">
+              <MultiSelect
                 options={companies?.map((company) => ({
-                  company_id: company.company_id,
-                  company_name: company.company_name,
+                  label: company.company_name,
+                  value: company.company_id,
                 }))}
                 displayValue="company_name"
-                selectedValues={companies.filter((option) =>
-                  companyFilter.includes(option.company_id)
-                )}
-                placeholder="Company"
-                onSelect={(selectedList) => {
+                placeholder="Select Company"
+                selectedValues={companyFilter}
+                onSelect={(selectedList: any) =>
                   setCompanyFilter(
-                    selectedList.map((item: any) => item.company_id)
-                  );
-                }}
-                onRemove={(selectedList) => {
-                  setCompanyFilter(
-                    selectedList.map((item: any) => item.company_id)
-                  );
-                }}
-                className="multiselect-container multiselect min-w-[130px] max-w-[190px]"
-              />
-              <Multiselect
-                options={users?.map(
-                  (user: {
-                    user_id: any;
-                    first_name: string;
-                    last_name: string;
-                  }) => ({
-                    user_id: user.user_id,
-                    user_name: `${user.first_name} ${user.last_name}`,
-                  })
-                )}
-                displayValue="user_name"
-                selectedValues={users
-                  .filter((user: { user_id: number }) =>
-                    branchManagerFilter.includes(user.user_id)
+                    selectedList.map((item: { value: any }) => item.value)
                   )
-                  .map(
-                    (user: {
-                      user_id: any;
-                      first_name: string;
-                      last_name: string;
-                    }) => ({
-                      user_id: user.user_id,
-                      user_name: `${user.first_name} ${user.last_name}`,
-                    })
-                  )}
-                placeholder="Branch Manager"
-                onSelect={(selectedList) => {
+                } 
+                onRemove={(selectedList: any) =>
+                  setCompanyFilter(
+                    selectedList.map((item: { value: any }) => item.value)
+                  )
+                }
+                className="min-w-[250px]"
+              />
+              
+              <MultiSelect
+                options={users?.map((user: any) => ({
+                  label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+                  value: user.user_id,
+                }))}
+                displayValue="user_name"
+                placeholder="Select Branch Manager"
+                selectedValues={branchManagerFilter}
+                onSelect={(selectedList: any) =>
                   setBranchManagerFilter(
-                    selectedList.map((item: any) => item.user_id)
-                  );
-                }}
-                onRemove={(selectedList) => {
+                    selectedList.map((item: { value: any }) => item.value)
+                  )
+                }
+                onRemove={(selectedList: any) =>
                   setBranchManagerFilter(
-                    selectedList.map((item: any) => item.user_id)
-                  );
-                }}
-                className="multiselect-container multiselect min-w-[140px] max-w-[200px]"
+                    selectedList.map((item: { value: any }) => item.value)
+                  )
+                }
+                className="min-w-[300px]"
               />
             </div>
           </div>
@@ -268,7 +248,7 @@ const BranchTable: React.FC = () => {
                       }
                     }}
                     placeholder="Search..."
-                    className="w-[275px] flex-grow"
+                    className="flex-grow"
                   />
                   <button type="submit" className="btn btn-sm btn-icon">
                     <i className="ki-filled ki-magnifier"></i>

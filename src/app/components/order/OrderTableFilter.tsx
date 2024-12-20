@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Select, { MultiValue } from "react-select";
-import Multiselect from "multiselect-react-dropdown";
-import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import React, { useEffect, useState, useRef } from "react";
 import { useGetBranches } from "../../hooks";
 import { OrderStatus, PaymentStatus } from "../../../types/enums";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 interface OptionType {
   label: string;
@@ -27,29 +26,22 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   filters,
   updateFilters,
 }) => {
-  const [customerSearch, setCustomerSearch] = useState("");
-  const [pickupBoySearch, setPickBoySearch] = useState("");
-  const [deliveryBoySearch, setDeliveryBoySearch] = useState("");
-
-  const [customerOptions, setOptions] = useState<OptionType[]>([]);
+  const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
   const [pickupBoyOptions, setPickupBoyOptions] = useState<OptionType[]>([]);
   const [deliveryBoyOptions, setDeliveryBoyOptions] = useState<OptionType[]>(
     []
   );
 
+  const [customerSearch, setCustomerSearch] = useState("");
+  const { branches } = useGetBranches();
   const { fetchUsersByRole } = useGetUsersByRole();
-  const { branches, fetchBranches } = useGetBranches();
 
-  const paymentStatusOptions = Object.entries(PaymentStatus)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
   const orderStatusOptions = Object.entries(OrderStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
-
-  useEffect(() => {
-    fetchBranches();
-  }, []);
+  const paymentStatusOptions = Object.entries(PaymentStatus)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -58,7 +50,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
       }));
-      setOptions(formattedOptions);
+      setCustomerOptions(formattedOptions);
     };
     if (customerSearch) {
       fetchCustomer();
@@ -66,183 +58,206 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   }, [customerSearch]);
 
   useEffect(() => {
-    if (pickupBoySearch) {
-      const fetchPickupBoy = async () => {
-        const pickupBoys = await fetchUsersByRole(4, pickupBoySearch);
-        const formattedOptions = pickupBoys?.map((user: any) => ({
-          label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
-          value: user.user_id,
-        }));
-        setPickupBoyOptions(formattedOptions);
-      };
-      fetchPickupBoy();
-    }
-    if (deliveryBoySearch) {
-      const fetchDeliveryBoy = async () => {
-        const deliveryBoys = await fetchUsersByRole(4, deliveryBoySearch);
-        const formattedOptions = deliveryBoys?.map((user: any) => ({
-          label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
-          value: user.user_id,
-        }));
-        setDeliveryBoyOptions(formattedOptions);
-      };
-      fetchDeliveryBoy();
-    }
-  }, [pickupBoySearch, deliveryBoySearch]);
+    const fetchPickupBoy = async () => {
+      const pickupBoys = await fetchUsersByRole(4);
+      const formattedOptions = pickupBoys?.map((user: any) => ({
+        label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+        value: user.user_id,
+      }));
+      setPickupBoyOptions(formattedOptions);
+    };
 
-  const handleFilterChange = (filterName: string, value: any) => {
-    updateFilters({
-      ...filters,
-      [filterName]: value,
-    });
-  };
+    const fetchDeliveryBoy = async () => {
+      const deliveryBoys = await fetchUsersByRole(4);
+      const formattedOptions = deliveryBoys?.map((user: any) => ({
+        label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+        value: user.user_id,
+      }));
+      setDeliveryBoyOptions(formattedOptions);
+    };
+
+    fetchPickupBoy();
+    fetchDeliveryBoy();
+  }, []);
 
   return (
-    <div className="card-header flex-wrap gap-2">
-      <div className="flex flex-wrap">
-        <div className="basis-1/2 flex flex-col space-y-2">
-          <Select
-            name="customer-select"
+    <>
+      <div className="card-header flex flex-col items-start gap-4">
+        <div className="grid-template">
+          <MultiSelect
             options={customerOptions}
-            value={customerOptions?.filter((option) =>
-              filters.customerFilter?.includes(option.value)
-            )}
-            onChange={(selected: MultiValue<OptionType>) =>
-              handleFilterChange(
-                "customerFilter",
-                selected.map((option) => option.value)
-              )
-            }
-            onInputChange={(inputValue: string) =>
-              setCustomerSearch(inputValue)
-            }
-            isMulti
-            placeholder="Search and select customers"
-            className="custom-select-container"
-            classNamePrefix="custom-select"
-          />
-          <Select
-            name="pickupboy-select"
-            options={pickupBoyOptions}
-            value={pickupBoyOptions?.filter((option) =>
-              filters.pickupBoyFilter?.includes(option.value)
-            )}
-            onChange={(selected: MultiValue<OptionType>) =>
-              handleFilterChange(
-                "pickupBoyFilter",
-                selected.map((option) => option.value)
-              )
-            }
-            onInputChange={(inputValue: string) => setPickBoySearch(inputValue)}
-            isMulti
-            placeholder="Search and select pickup boys"
-            className="custom-select-container"
-            classNamePrefix="custom-select"
-          />
-          <Select
-            name="deliveryboy-select"
-            options={deliveryBoyOptions}
-            value={deliveryBoyOptions?.filter((option) =>
-              filters.deliveryBoyFilter?.includes(option.value)
-            )}
-            onChange={(selected: MultiValue<OptionType>) =>
-              handleFilterChange(
-                "deliveryBoyFilter",
-                selected.map((option) => option.value)
-              )
-            }
-            onInputChange={(inputValue: string) =>
-              setDeliveryBoySearch(inputValue)
-            }
-            isMulti
-            placeholder="Search and select delivery boys"
-            className="custom-select-container"
-            classNamePrefix="custom-select"
-          />
-        </div>
-        <div className="basis-1/2 space-y-4">
-          <Multiselect
-            options={branches?.map((branch) => ({
-              branch_id: branch.branch_id,
-              branch_name: branch.branch_name,
-            }))}
-            displayValue="branch_name"
-            selectedValues={branches?.filter((option) =>
-              filters.branchFilter?.includes(option.branch_id)
-            )}
-            placeholder="Branch"
-            onSelect={(selectedList) => {
-              handleFilterChange(
-                "branchFilter",
-                selectedList.map((item: any) => item.branch_id)
+            displayValue="label"
+            placeholder="Search Customer"
+            selectedValues={filters.customerFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                customerFilter: selectedValues,
+              });
             }}
-            onRemove={(selectedList) => {
-              handleFilterChange(
-                "branchFilter",
-                selectedList.map((item: any) => item.branch_id)
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                customerFilter: selectedValues,
+              });
             }}
-            className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
+            setSearch={setCustomerSearch}
           />
-          <Multiselect
+
+          <MultiSelect
             options={orderStatusOptions}
             displayValue="label"
-            selectedValues={orderStatusOptions?.filter((option) =>
-              filters.orderStatusFilter?.includes(option.value)
-            )}
-            placeholder="Order status"
-            onSelect={(selectedList) => {
-              handleFilterChange(
-                "orderStatusFilter",
-                selectedList.map((item: any) => item.value)
+            placeholder="Select Order Status"
+            selectedValues={filters.orderStatusFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                orderStatusFilter: selectedValues,
+              });
             }}
-            onRemove={(selectedList) => {
-              handleFilterChange(
-                "orderStatusFilter",
-                selectedList.map((item: any) => item.value)
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                orderStatusFilter: selectedValues,
+              });
             }}
-            className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
           />
-          <Multiselect
+
+          <MultiSelect
+            options={branches?.map((branch) => ({
+              label: branch.branch_name,
+              value: branch.branch_id,
+            }))}
+            displayValue="branch_name"
+            placeholder="Select Branch"
+            selectedValues={filters?.branchFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                branchFilter: selectedValues,
+              });
+            }}
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                branchFilter: selectedValues,
+              });
+            }}
+          />
+
+          <MultiSelect
+            options={deliveryBoyOptions}
+            displayValue="label"
+            placeholder="Search DeliveryBoy"
+            selectedValues={filters.deliveryBoyFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                deliveryBoyFilter: selectedValues,
+              });
+            }}
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                deliveryBoyFilter: selectedValues,
+              });
+            }}
+          />
+
+          <MultiSelect
+            options={pickupBoyOptions}
+            displayValue="label"
+            placeholder="Search PickupBoy"
+            selectedValues={filters.pickupBoyFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                pickupBoyFilter: selectedValues,
+              });
+            }}
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
+              updateFilters({
+                ...filters,
+                pickupBoyFilter: selectedValues,
+              });
+            }}
+          />
+
+          <MultiSelect
             options={paymentStatusOptions}
             displayValue="label"
-            selectedValues={paymentStatusOptions.filter((option) =>
-              filters.paymentStatusFilter?.includes(option.value)
-            )}
-            placeholder="Payment status"
-            onSelect={(selectedList) => {
-              handleFilterChange(
-                "paymentStatusFilter",
-                selectedList.map((item: any) => item.value)
+            placeholder="Select Payment Status"
+            selectedValues={filters.paymentStatusFilter}
+            onSelect={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                paymentStatusFilter: selectedValues,
+              });
             }}
-            onRemove={(selectedList) => {
-              handleFilterChange(
-                "paymentStatusFilter",
-                selectedList.map((item: any) => item.value)
+            onRemove={(selectedList: any) => {
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
               );
+              updateFilters({
+                ...filters,
+                paymentStatusFilter: selectedValues,
+              });
             }}
-            className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
+            isSearchInput={false}
           />
+
+          <select
+            className="select select-lg w-[200px] text-sm"
+            value={filters.paymentTypeFilter}
+            onChange={(e) => {
+              updateFilters({
+                ...filters,
+                paymentTypeFilter: Number(e.target.value),
+              });
+            }}
+          >
+            <option value="" selected>
+              Payment type
+            </option>
+            <option value={1}>Cash on Delivery</option>
+            <option value={2}>Online Payment</option>
+          </select>
         </div>
-        <select
-          className="select select-lg w-[200px] text-sm mt-2"
-          value={filters.paymentTypeFilter}
-          onChange={(e) => {
-            handleFilterChange("paymentTypeFilter", Number(e.target.value));
-          }}
-        >
-          <option value="" disabled selected>
-            Payment type
-          </option>
-          <option value={1}>Cash on Delivery</option>
-          <option value={2}>Online Payment</option>
-        </select>
       </div>
-    </div>
+    </>
   );
 };
 

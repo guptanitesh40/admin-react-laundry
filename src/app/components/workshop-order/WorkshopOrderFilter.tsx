@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Select, { MultiValue } from "react-select";
-import Multiselect from "multiselect-react-dropdown";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { useGetBranches, useGetWorkshops } from "../../hooks";
-import {
-  PaymentStatus,
-  WorkshopOrderStatus,
-} from "../../../types/enums";
+import { PaymentStatus, WorkshopOrderStatus } from "../../../types/enums";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 interface OptionType {
   label: string;
@@ -31,26 +27,33 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
   updateFilters,
 }) => {
   const [customerSearch, setCustomerSearch] = useState("");
-  const [customerOptions, setOptions] = useState<OptionType[]>([]);
+  const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
+  const [workshopManagers, setWorkshopManagers] = useState<OptionType[]>([]);
 
-  const { fetchUsersByRole, users } = useGetUsersByRole();
-  const { branches, fetchBranches } = useGetBranches();
-  const { fetchWorkshops, workshops } = useGetWorkshops(1, 1000);
+  const { fetchUsersByRole } = useGetUsersByRole();
+  const { branches } = useGetBranches();
+  const { workshops } = useGetWorkshops(1, 1000);
 
   const paymentStatusOptions = Object.entries(PaymentStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
+
   const orderStatusOptions = Object.entries(WorkshopOrderStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
-    
+
   useEffect(() => {
-    const fetchData = async () => {
-      fetchBranches();
-      fetchUsersByRole(6);
-      fetchWorkshops();
+    const fetchManagers = async () => {
+      const managers = await fetchUsersByRole(6);
+      if (managers) {
+        const formattedOptions = managers.map((manager: any) => ({
+          label: `${manager.first_name} ${manager.last_name} (${manager.mobile_number})`,
+          value: manager.user_id,
+        }));
+        setWorkshopManagers(formattedOptions);
+      }
     };
-    fetchData();
+    fetchManagers();
   }, []);
 
   useEffect(() => {
@@ -60,171 +63,159 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
       }));
-      setOptions(formattedOptions);
+      setCustomerOptions(formattedOptions);
     };
     if (customerSearch) {
       fetchCustomer();
     }
   }, [customerSearch]);
 
-  const handleFilterChange = (filterName: string, value: any) => {
-    updateFilters({
-      ...filters,
-      [filterName]: value,
-    });
-  };
-
   return (
-    <div className="card-header flex-wrap gap-2">
-      <div className="flex flex-wrap gap-2">
-        <Select
-          name="customer-select"
-          options={customerOptions}
-          value={customerOptions?.filter((option) =>
-            filters.customerFilter?.includes(option.value)
-          )}
-          onChange={(selected: MultiValue<OptionType>) =>
-            handleFilterChange(
-              "customerFilter",
-              selected.map((option) => option.value)
-            )
-          }
-          onInputChange={(inputValue: string) => setCustomerSearch(inputValue)}
-          isMulti
-          placeholder="Search and select customers"
-          className="custom-select-container"
-          classNamePrefix="custom-select"
-        />
-        <Multiselect
-          options={branches?.map((branch) => ({
-            branch_id: branch.branch_id,
-            branch_name: branch.branch_name,
+    <div className="card-header flex flex-col items-start gap-4">
+      <div className="custom-grid">
+        <MultiSelect
+          options={workshops?.map((workshop) => ({
+            label: workshop.workshop_name,
+            value: workshop.workshop_id,
           }))}
-          displayValue="branch_name"
-          selectedValues={branches?.filter((option) =>
-            filters.branchFilter?.includes(option.branch_id)
-          )}
-          placeholder="Branch"
-          onSelect={(selectedList) => {
-            handleFilterChange(
-              "branchFilter",
-              selectedList.map((item: any) => item.branch_id)
-            );
-          }}
-          onRemove={(selectedList) => {
-            handleFilterChange(
-              "branchFilter",
-              selectedList.map((item: any) => item.branch_id)
-            );
-          }}
-          className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
+          displayValue="label"
+          placeholder="Select Workshop"
+          selectedValues={filters.workshopFilter}
+          onSelect={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopFilter: selectedList.map((item) => item.value),
+            })
+          }
+          onRemove={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopFilter: selectedList.map((item) => item.value),
+            })
+          }
+          className="w-[240px]"
         />
-        <Multiselect
+
+        <MultiSelect
+          options={workshopManagers}
+          displayValue="label"
+          placeholder="Search Workshop Manager"
+          selectedValues={filters.workshopManagerFilter}
+          onSelect={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopManagerFilter: selectedList.map((item) => item.value),
+            })
+          }
+          onRemove={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopManagerFilter: selectedList.map((item) => item.value),
+            })
+          }
+          className="w-[320px]"
+        />
+
+        <MultiSelect
+          options={customerOptions}
+          displayValue="label"
+          placeholder="Search Customer"
+          selectedValues={filters.customerFilter}
+          onSelect={(selectedList: any) => {
+            const selectedValues = selectedList.map((item: any) => item.value);
+            updateFilters({
+              ...filters,
+              customerFilter: selectedValues,
+            });
+          }}
+          onRemove={(selectedList: any) => {
+            const selectedValues = selectedList.map((item: any) => item.value);
+            updateFilters({
+              ...filters,
+              customerFilter: selectedValues,
+            });
+          }}
+          setSearch={setCustomerSearch}
+        />
+
+        <MultiSelect
+          options={branches?.map((branch) => ({
+            label: branch.branch_name,
+            value: branch.branch_id,
+          }))}
+          displayValue="label"
+          placeholder="Select Branch"
+          selectedValues={filters.branchFilter}
+          onSelect={(selectedList) =>
+            updateFilters({
+              ...filters,
+              branchFilter: selectedList.map((item) => item.value),
+            })
+          }
+          onRemove={(selectedList) =>
+            updateFilters({
+              ...filters,
+              branchFilter: selectedList.map((item) => item.value),
+            })
+          }
+          className="w-[240px]"
+        />
+
+        <MultiSelect
           options={orderStatusOptions}
           displayValue="label"
-          selectedValues={orderStatusOptions?.filter((option) =>
-            filters.workshopOrderStatusFilter?.includes(option.value)
-          )}
-          placeholder="Order status"
-          onSelect={(selectedList) => {
-            handleFilterChange(
-              "workshopOrderStatusFilter",
-              selectedList.map((item: any) => item.value)
-            );
-          }}
-          onRemove={(selectedList) => {
-            handleFilterChange(
-              "workshopOrderStatusFilter",
-              selectedList.map((item: any) => item.value)
-            );
-          }}
-          className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
+          placeholder="Select Order Status"
+          selectedValues={filters.workshopOrderStatusFilter}
+          onSelect={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopOrderStatusFilter: selectedList.map((item) => item.value),
+            })
+          }
+          onRemove={(selectedList) =>
+            updateFilters({
+              ...filters,
+              workshopOrderStatusFilter: selectedList.map((item) => item.value),
+            })
+          }
+          isSearchInput={false}
+          sliceCount={2}
+          className="w-[320px]"
         />
-        <Multiselect
+
+        <MultiSelect
           options={paymentStatusOptions}
           displayValue="label"
-          selectedValues={paymentStatusOptions.filter((option) =>
-            filters.paymentStatusFilter?.includes(option.value)
-          )}
-          placeholder="Payment status"
-          onSelect={(selectedList) => {
-            handleFilterChange(
-              "paymentStatusFilter",
-              selectedList.map((item: any) => item.value)
-            );
-          }}
-          onRemove={(selectedList) => {
-            handleFilterChange(
-              "paymentStatusFilter",
-              selectedList.map((item: any) => item.value)
-            );
-          }}
-          className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
-        />
-        <Multiselect
-          options={workshops?.map((workshop) => ({
-            workshop_id: workshop.workshop_id,
-            workshop_name: workshop.workshop_name,
-          }))}
-          displayValue="workshop_name"
-          selectedValues={workshops?.filter((option) =>
-            filters.workshopFilter?.includes(option.workshop_id)
-          )}
-          placeholder="Workshop"
-          onSelect={(selectedList) => {
-            handleFilterChange(
-              "workshopFilter",
-              selectedList.map((item: any) => item.workshop_id)
-            );
-          }}
-          onRemove={(selectedList) => {
-            handleFilterChange(
-              "workshopFilter",
-              selectedList.map((item: any) => item.workshop_id)
-            );
-          }}
-          className="multiselect-container multiselect min-w-[430px] max-w-[480px]"
-        />
-        <Multiselect
-          options={users?.map((user: any) => ({
-            workshop_manager_id: user.user_id,
-            user_name: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
-          }))}
-          displayValue="user_name"
-          selectedValues={users
-            ?.filter((user: any) =>
-              filters.workshopManagerFilter?.includes(user.user_id)
-            )
-            .map((user: any) => ({
-              workshop_manager_id: user.user_id,
-              user_name: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
-            }))}
-          placeholder="Workshop manager name"
-          onSelect={(selectedList) => {
-            handleFilterChange(
-              "workshopManagerFilter",
-              selectedList.map((item: any) => item.workshop_manager_id)
-            );
-          }}
-          onRemove={(selectedList) => {
-            handleFilterChange(
-              "workshopManagerFilter",
-              selectedList.map((item: any) => item.workshop_manager_id)
-            );
-          }}
-          className="multiselect-container multiselect min-w-[430px] h-[10px] max-w-[480px]"
+          placeholder="Select Payment Status"
+          selectedValues={filters.paymentStatusFilter}
+          onSelect={(selectedList) =>
+            updateFilters({
+              ...filters,
+              paymentStatusFilter: selectedList.map((item) => item.value),
+            })
+          }
+          onRemove={(selectedList) =>
+            updateFilters({
+              ...filters,
+              paymentStatusFilter: selectedList.map((item) => item.value),
+            })
+          }
+          isSearchInput={false}
+          sliceCount={2}
         />
       </div>
+
       <select
-        className="select select-lg w-[200px] text-sm mt-2"
-        value={filters.paymentTypeFilter}
-        onChange={(e) => {
-          handleFilterChange("paymentTypeFilter", Number(e.target.value));
-        }}
+        className="select select-lg w-[200px] text-sm mt-4"
+        value={filters.paymentTypeFilter || ""}
+        onChange={(e) =>
+          updateFilters({
+            ...filters,
+            paymentTypeFilter: Number(e.target.value),
+          })
+        }
       >
-        <option value="" selected>
-          Payment type
-        </option>
+        <option value="">Payment type</option>
         <option value={1}>Cash on Delivery</option>
         <option value={2}>Online Payment</option>
       </select>
