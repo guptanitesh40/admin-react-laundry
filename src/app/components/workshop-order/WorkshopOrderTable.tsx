@@ -109,19 +109,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  // const getPaymentStatusLabel = (status: PaymentStatus) => {
-  //   switch (status) {
-  //     case PaymentStatus.Pending:
-  //       return "badge badge-danger";
-  //     case PaymentStatus["Partial received"]:
-  //       return "badge badge-info";
-  //     case PaymentStatus["Received"]:
-  //       return "badge badge-warning";
-  //     default:
-  //       return "badge";
-  //   }
-  // };
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">

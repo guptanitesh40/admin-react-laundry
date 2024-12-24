@@ -174,55 +174,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  // const getOrderStatusLabel = (status: any) => {
-  //   switch (status) {
-  //     case "Order Placed":
-  //       return "badge badge-order-placed";
-  //     case "Assign Branch":
-  //       return "badge badge-assign-branch";
-  //     case "Branch Assigned":
-  //       return "badge badge-branch-assigned";
-  //     case "Items Received at Branch":
-  //       return "badge badge-items-received-at-branch";
-  //     case "Assign Workshop":
-  //       return "badge badge-assign-workshop";
-  //     case "Assign Pickup Boy":
-  //       return "badge badge-assign-pickup-boy";
-  //     case "Pickup Boy Assigned ( Ready to pickup )":
-  //       return "badge badge-pickup-boy-assigned";
-  //     case "Received by pickup boy":
-  //       return "badge badge-received-by-pickup-boy";
-  //     case "Pickup Complete":
-  //       return "badge badge-pickup-complete";
-  //     case "Workshop Assigned (On the Way)":
-  //       return "badge badge-workshop-assigned";
-  //     case "Order Received at Workshop":
-  //       return "badge badge-order-received-at-workshop";
-  //     case "Workshop Marks Order In Progress":
-  //       return "badge badge-workshop-marks-order-in-progress";
-  //     case "Order Work In Progress":
-  //       return "badge badge-order-work-in-progress";
-  //     case "Work Completed by Workshop":
-  //       return "badge badge-work-completed-by-workshop";
-  //     case "Mark as Received at Branch":
-  //       return "badge badge-mark-as-received-at-branch";
-  //     case "Order Completed ( Received at branch )":
-  //       return "badge badge-order-completed";
-  //     case "Assign Delivery boy":
-  //       return "badge badge-assign-delivery-boy";
-  //     case "Ready for delivery":
-  //       return "badge badge-ready-for-delivery";
-  //     case "Delivered":
-  //       return "badge badge-delivered";
-  //     case "Delivered":
-  //       return "badge badge-cancel";
-  //       case "Cancelled":
-  //         return "badge badge-danger";
-  //     default:
-  //       return "";
-  //   }
-  // };
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">

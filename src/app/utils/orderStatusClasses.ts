@@ -8,14 +8,8 @@ export const getOrderStatusLabel = (status: string, returnTextColor = false) => 
         return "text-[#8E24AA]";
       case "Items Received at Branch":
         return "text-[#4e00ff]";
-      case "Assign Workshop":
-        return "var(--tw-assign-workshop)";
-      case "Assign Pickup Boy":
-        return "var(--tw-assign-pickup-boy)";
       case "Pickup Boy Assigned":
         return "text-[#FF5722]";
-      case "Received by pickup boy":
-        return "var(--tw-received-by-pickup-boy)";
       case "Pickup Complete":
         return "text-[#F57C00]";
       case "Workshop Assigned":
@@ -28,8 +22,6 @@ export const getOrderStatusLabel = (status: string, returnTextColor = false) => 
         return "text-[#388E3C]";
       case "Order Completed":
         return "text-[#FF9800]";
-      case "Assign Delivery boy":
-        return "var(--tw-assign-delivery-boy)";
       case "Ready for delivery":
         return "text-[#388E3C]";
       case "Delivered":
