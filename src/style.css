@@ -561,6 +561,87 @@ video {
   --tw-coal-600: #0b0c10;
   --tw-coal-black: #000000;
   --tw-coal-clarity: rgba(24, 25, 31, 0.5);
+
+--tw-order-placed: #16b015;
+--tw-order-placed-light: #d8fbdd; 
+--tw-order-placed-clarity:  #27f53f; 
+
+--tw-assign-branch: #8E24AA; 
+--tw-assign-branch-light: #f4d0fd;
+--tw-assign-branch-clarity: #d661f5; 
+
+--tw-branch-assigned: #8E24AA ;
+--tw-branch-assigned-light: #f4d0fd; 
+--tw-branch-assigned-clarity: #d661f5; 
+
+--tw-assign-workshop: #a30386; 
+--tw-assign-workshop-light: #fdd1f5; 
+--tw-assign-workshop-clarity: #d543ba; 
+
+--tw-assign-pickup-boy: #FF5722; 
+--tw-assign-pickup-boy-light: rgb(255, 243, 232, 0.5); 
+--tw-assign-pickup-boy-clarity: rgba(255, 87, 34, 0.15); 
+
+--tw-pickup-boy-assigned: #FF5722; 
+--tw-pickup-boy-assigned-light: rgb(255, 243, 232, 0.5); 
+--tw-pickup-boy-assigned-clarity: rgba(255, 87, 34, 0.15); 
+
+--tw-received-by-pickup-boy: #F57C00; 
+--tw-received-by-pickup-boy-light: rgb(255, 245, 230, 0.5); 
+--tw-received-by-pickup-boy-clarity: rgba(255, 235, 59, 0.2); 
+
+--tw-pickup-complete: #F57C00; 
+--tw-pickup-complete-light: rgb(255, 245, 230, 0.5); 
+--tw-pickup-complete-clarity: rgba(255, 235, 59, 0.2); 
+
+--tw-workshop-assigned: #a30386; 
+--tw-workshop-assigned-light: #fdd1f5; 
+--tw-workshop-assigned-clarity: #d543ba; 
+
+--tw-order-received-at-workshop: #00796B; 
+--tw-order-received-at-workshop-light: rgb(236, 249, 250, 0.5); 
+--tw-order-received-at-workshop-clarity: rgba(0, 188, 212, 0.2);
+
+--tw-workshop-marks-order-in-progress: #6B8E23; 
+--tw-workshop-marks-order-in-progress-light: rgb(245, 255, 230); 
+--tw-workshop-marks-order-in-progress-clarity: rgba(231, 251, 180, 1); 
+
+--tw-order-work-in-progress: #6B8E23; 
+--tw-order-work-in-progress-light: rgb(245, 255, 230); 
+--tw-order-work-in-progress-clarity: rgba(231, 251, 180, 1);
+
+--tw-work-completed-by-workshop: #388E3C; 
+--tw-work-completed-by-workshop-light: rgb(232, 245, 233, 0.4); 
+--tw-work-completed-by-workshop-clarity: rgba(76, 175, 80, 0.2);
+
+--tw-mark-as-received-at-branch: #FF9800; 
+--tw-mark-as-received-at-branch-light: rgb(255, 243, 210, 0.5); 
+--tw-mark-as-received-at-branch-clarity: rgba(255, 152, 0, 0.1); 
+
+--tw-order-completed: #FF9800; 
+--tw-order-completed-light: rgb(255, 243, 210, 0.5);
+--tw-order-completed-clarity: rgba(255, 152, 0, 0.1);
+
+--tw-assign-delivery-boy: #388E3C; 
+--tw-assign-delivery-boy-light: rgb(232, 245, 233, 0.4); 
+--tw-assign-delivery-boy-clarity: rgba(76, 175, 80, 0.2);
+
+--tw-ready-for-delivery: #388E3C; 
+--tw-ready-for-delivery-light: rgb(232, 245, 233, 0.4);
+--tw-ready-for-delivery-clarity: rgba(76, 175, 80, 0.2);
+
+--tw-delivered: #f6b100; 
+--tw-delivered-light: #fff1cf; 
+--tw-delivered-clarity: #f6b100;
+
+--tw-items-received-at-branch: #4e00ff;
+--tw-items-received-at-branch-light: #f1ebff; 
+--tw-items-received-at-branch-clarity: #8955dd;
+
+--tw-cancelled: #a30386; 
+--tw-cancelled-light: #fdd1f5;
+--tw-cancelled-clarity: #d543ba;
+
 }
 
 :root,
@@ -3860,9 +3941,6 @@ video {
 }
 
 .badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   line-height: 1;
   border-radius: 0.25rem;
   padding: 0.5rem 0.5rem;
@@ -3870,6 +3948,7 @@ video {
   font-weight: 500;
   font-size: 0.6875rem;
 }
+
 
 .badge.badge-pill {
   border-radius: 1.875rem;
@@ -3986,58 +4065,231 @@ video {
   border-color: var(--tw-dark-clarity);
 }
 
-.badge-pickup-pending {
-  color: var(--tw-warning);
-  background-color: var(--tw-warning-light);
-  border-color: var(--tw-warning-clarity);
+.badge-order-placed {
+  color: var(--tw-white);
+  background-color: var(--tw-order-placed);
 }
 
-.badge-items-received-by-pickupboy {
-  color: var(--tw-info);
-  background-color: var(--tw-info-light);
-  border-color: var(--tw-info-clarity);
+.badge-outline.badge-order-placed {
+  color: var(--tw-order-placed);
+  background-color: var(--tw-order-placed-light);
+  border-color: var(--tw-order-placed-clarity);
+}
+
+.badge-assign-branch {
+  color: var(--tw-white);
+  background-color: var(--tw-assign-branch);
+}
+
+.badge-outline.badge-assign-branch {
+  color: var(--tw-assign-branch);
+  background-color: var(--tw-assign-branch-light);
+  border-color: var(--tw-assign-branch-clarity);
+}
+
+.badge-branch-assigned {
+  color: var(--tw-white); 
+  background-color: var(--tw-branch-assigned); 
+}
+
+.badge-outline.badge-branch-assigned {
+  color: var(--tw-branch-assigned); 
+  background-color: var(
+    --tw-branch-assigned-light
+  );
+  border-color: var(
+    --tw-branch-assigned-clarity
+  ); 
+}
+
+.badge-assign-workshop {
+  color: var(--tw-white);
+  background-color: var(--tw-assign-workshop); 
+}
+
+.badge-outline.badge-assign-workshop {
+  color: var(--tw-assign-workshop);
+  background-color: var(--tw-assign-workshop-light); 
+  border-color: var(--tw-assign-workshop-clarity); 
+}
+
+.badge-assign-pickup-boy {
+  color: var(--tw-white);
+  background-color: var(--tw-assign-pickup-boy);
+}
+
+.badge-outline.badge-assign-pickup-boy {
+  color: var(--tw-assign-pickup-boy);
+  background-color: var(--tw-assign-pickup-boy-light);
+  border-color: var(--tw-assign-pickup-boy-clarity);
+}
+
+.badge-pickup-boy-assigned {
+  color: var(--tw-white);
+  background-color: var(--tw-pickup-boy-assigned);
+}
+
+.badge-outline.badge-pickup-boy-assigned {
+  color: var(--tw-pickup-boy-assigned);
+  background-color: var(--tw-pickup-boy-assigned-light);
+  border-color: var(--tw-pickup-boy-assigned-clarity);
 }
 
 .badge-items-received-at-branch {
-  color: var(--tw-secondary);
-  background-color: var(--tw-secondary-light);
-  border-color: var(--tw-secondary-clarity);
+  color: var(--tw-white); 
+  background-color: var(
+    --tw-items-received-at-branch
+  ); 
 }
 
-.badge-workshop-received-items {
-  color: var(--tw-primary);
-  background-color: var(--tw-primary-light);
-  border-color: var(--tw-primary-clarity);
+.badge-outline.badge-items-received-at-branch {
+  color: var(--tw-items-received-at-branch); 
+  background-color: var(
+    --tw-items-received-at-branch-light
+  ); 
+  border-color: var(
+    --tw-items-received-at-branch-clarity
+  ); 
 }
 
-.badge-workshop-moved-to-in-process {
-  color: var(--tw-primary-dark);
-  background-color: var(--tw-primary-light);
-  border-color: var(--tw-primary-clarity);
+.badge-received-by-pickup-boy {
+  color: var(--tw-white);
+  background-color: var(--tw-received-by-pickup-boy);
 }
 
-.badge-workshop-marks-as-completed {
-  color: var(--tw-success);
-  background-color: var(--tw-success-light);
-  border-color: var(--tw-success-clarity);
+.badge-outline.badge-received-by-pickup-boy {
+  color: var(--tw-received-by-pickup-boy);
+  background-color: var(--tw-received-by-pickup-boy-light);
+  border-color: var(--tw-received-by-pickup-boy-clarity);
 }
 
-.badge-branch-received-items {
-  color: var(--tw-secondary-dark);
-  background-color: var(--tw-secondary-light);
-  border-color: var(--tw-secondary-clarity);
+.badge-pickup-complete {
+  color: var(--tw-white);
+  background-color: var(--tw-pickup-complete);
 }
 
-.badge-branch-assigned-deliveryboy {
-  color: var(--tw-info-dark);
-  background-color: var(--tw-info-light);
-  border-color: var(--tw-info-clarity);
+.badge-outline.badge-pickup-complete {
+  color: var(--tw-pickup-complete);
+  background-color: var(--tw-pickup-complete-light);
+  border-color: var(--tw-pickup-complete-clarity);
 }
 
-.badge-deliveryboy-marks-as-completed {
-  color: var(--tw-gray-700);
-  background-color: var(--tw-gray-300);
-  border-color: var(--tw-gray-400);
+.badge-workshop-assigned {
+  color: var(--tw-white);
+  background-color: var(--tw-workshop-assigned);
+}
+
+.badge-outline.badge-workshop-assigned {
+  color: var(--tw-workshop-assigned);
+  background-color: var(--tw-workshop-assigned-light);
+  border-color: var(--tw-workshop-assigned-clarity);
+}
+
+.badge-order-received-at-workshop {
+  color: var(--tw-white);
+  background-color: var(--tw-order-received-at-workshop);
+}
+
+.badge-outline.badge-order-received-at-workshop {
+  color: var(--tw-order-received-at-workshop);
+  background-color: var(--tw-order-received-at-workshop-light);
+  border-color: var(--tw-order-received-at-workshop-clarity);
+}
+
+.badge-workshop-marks-order-in-progress {
+  color: var(--tw-white);
+  background-color: var(--tw-workshop-marks-order-in-progress);
+}
+
+.badge-outline.badge-workshop-marks-order-in-progress {
+  color: var(--tw-workshop-marks-order-in-progress);
+  background-color: var(--tw-workshop-marks-order-in-progress-light);
+  border-color: var(--tw-workshop-marks-order-in-progress-clarity);
+}
+
+.badge-order-work-in-progress {
+  color: var(--tw-white);
+  background-color: var(
+    --tw-order-work-in-progress
+  ); 
+}
+
+.badge-outline.badge-order-work-in-progress {
+  color: var(--tw-order-work-in-progress); 
+  background-color: var(
+    --tw-order-work-in-progress-light
+  ); 
+  border-color: var(
+    --tw-order-work-in-progress-clarity
+  ); 
+}
+
+.badge-work-completed-by-workshop {
+  color: var(--tw-white);
+  background-color: var(--tw-work-completed-by-workshop);
+}
+
+.badge-outline.badge-work-completed-by-workshop {
+  color: var(--tw-work-completed-by-workshop);
+  background-color: var(--tw-work-completed-by-workshop-light);
+  border-color: var(--tw-work-completed-by-workshop-clarity);
+}
+
+
+
+.badge-mark-as-received-at-branch {
+  color: var(--tw-white);
+  background-color: var(--tw-mark-as-received-at-branch);
+}
+
+.badge-outline.badge-mark-as-received-at-branch {
+  color: var(--tw-mark-as-received-at-branch);
+  background-color: var(--tw-mark-as-received-at-branch-light);
+  border-color: var(--tw-mark-as-received-at-branch-clarity);
+}
+
+.badge-order-completed {
+  color: var(--tw-white);
+  background-color: var(--tw-order-completed);
+}
+
+.badge-outline.badge-order-completed {
+  color: var(--tw-order-completed);
+  background-color: var(--tw-order-completed-light);
+  border-color: var(--tw-order-completed-clarity);
+}
+
+.badge-assign-delivery-boy {
+  color: var(--tw-white);
+  background-color: var(--tw-assign-delivery-boy);
+}
+
+.badge-outline.badge-assign-delivery-boy {
+  color: var(--tw-assign-delivery-boy);
+  background-color: var(--tw-assign-delivery-boy-light);
+  border-color: var(--tw-assign-delivery-boy-clarity);
+}
+
+.badge-ready-for-delivery {
+  color: var(--tw-white);
+  background-color: var(--tw-ready-for-delivery);
+}
+
+.badge-outline.badge-ready-for-delivery {
+  color: var(--tw-ready-for-delivery);
+  background-color: var(--tw-ready-for-delivery-light);
+  border-color: var(--tw-ready-for-delivery-clarity);
+}
+
+.badge-delivered {
+  color: var(--tw-white);
+  background-color: var(--tw-delivered);
+}
+
+.badge-outline.badge-delivered {
+  color: var(--tw-delivered);
+  background-color: var(--tw-delivered-light);
+  border-color: var(--tw-delivered-clarity);
 }
 
 .rating {
@@ -9278,7 +9530,7 @@ label.rating-label {
 
 .grid-template {
   display: grid;
-  grid-template-columns: 330px 320px 240px;
+  grid-template-columns: 330px 330px 230px;
   grid-template-rows: auto auto auto;
   gap: 2rem 1.7rem;
 }
@@ -9290,4 +9542,47 @@ label.rating-label {
   padding: 10px 15px;
   font-size: 14px;
   transition: background-color 0.2s ease;
+}
+
+.tooltip-custom {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-custom:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: var(--tw-info-light);
+  color: black;
+  text-align: center;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 10px;
+  position: absolute;
+  bottom: 20%;
+  left: 75%;
+  transform: translateX(-10%) translateY(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  white-space: pre-wrap;
+}
+
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
 }

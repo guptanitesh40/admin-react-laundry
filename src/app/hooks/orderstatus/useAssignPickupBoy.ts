@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ASSIGN_PICKUPBOY_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders/pickup`;
+const ASSIGN_PICKUPBOY_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders/assign-pickup`;
 
 const useAssignPickupBoy = () => {
   const [loading, setLoading] = useState<boolean>(false);

@@ -13,6 +13,7 @@ interface Order {
   username: string;
   order_id: number;
   user_id: number;
+  order_status_details: any;
   order_status: number;
   shipping_charge: number;
   express_delivery_charges: number;

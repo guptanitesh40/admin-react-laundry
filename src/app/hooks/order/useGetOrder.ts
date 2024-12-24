@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
+  order_status_details: any;
   pickup_comment: string;
   workshop_status_name: string;
   branch: any;
