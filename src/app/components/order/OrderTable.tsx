@@ -9,14 +9,13 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import TableShimmer from "../shimmer/TableShimmer";
-import { OrderStatus, PaymentStatus, PaymentType } from "../../../types/enums";
+import { PaymentStatus, PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import Multiselect from "multiselect-react-dropdown";
-import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
-import Select, { MultiValue } from "react-select";
+import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
+import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 
 interface OrderTableProps {
   filters: {
@@ -85,7 +84,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   }, [search]);
 
   const handleViewOrder = (order_id: number) => {
-    navigate(`/order/${order_id}`, { state: { from : 'OrderTable'}});
+    navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
 
   const handleDeleteOrder = async (order_id: number) => {
@@ -175,34 +174,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  const getOrderStatusLabel = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.Pending:
-        return "badge badge-pending";
-      case OrderStatus["In Process"]:
-        return "badge badge-in-process";
-      case OrderStatus["Ready to delivery"]:
-        return "badge badge-ready-to-deliver";
-      case OrderStatus["Delivery complete"]:
-        return "badge badge-delivery-complete";
-      default:
-        return "badge";
-    }
-  };
-
-  const getPaymentStatusLabel = (status: PaymentStatus) => {
-    switch (status) {
-      case PaymentStatus.Pending:
-        return "badge badge-pending";
-      case PaymentStatus["Partial received"]:
-        return "badge badge-ready-to-deliver";
-      case PaymentStatus["Received"]:
-        return "badge badge-delivery-complete";
-      default:
-        return "badge";
-    }
-  };
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -290,6 +261,10 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
+                  <th className="min-w-[280px]">Order Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
                   <th className="min-w-[140px]">
                     <span
                       className={`sort ${
@@ -336,7 +311,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <span className="sort-label">Shipping Address</span>
                       <span className="sort-icon"></span>
                     </span>
-                  </th>                  
+                  </th>
 
                   <th className="min-w-[130px]">
                     <span
@@ -366,22 +341,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       onClick={() => handleSort("coupon_discount")}
                     >
                       <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[160px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "order_statue"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("order_statue")}
-                    >
-                      <span className="sort-label">Order Status</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -534,7 +493,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[175px]">
+                  <th className="min-w-[155px]">
                     <span
                       className={`sort ${
                         sortColumn === "payment_status"
@@ -573,14 +532,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
               ) : orders.length > 0 ? (
                 <tbody>
                   {orders.map((order) => {
-                    const orderStatusLabel =
-                      OrderStatus[
-                        order.order_status as unknown as keyof typeof OrderStatus
-                      ];
-                    const orderStatusClass = getOrderStatusLabel(
-                      order.order_status
-                    );
-
                     const paymentStatusLabel =
                       PaymentStatus[
                         order.payment_status as unknown as keyof typeof PaymentStatus
@@ -589,24 +540,48 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       order.payment_status
                     );
 
+                    const adminStatusClass = getOrderStatusLabel(
+                      order.order_status_details.admin_label
+                    );
+
+                    const nextStepClass = getOrderStatusLabel(
+                      order.order_status_details.next_step
+                    );
+
                     return (
                       <tr key={order.order_id}>
                         <td>#{order.order_id}</td>
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
+                        <td>
+                          <span
+                            className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
+                          >
+                            {order.order_status_details.admin_label}
+                          </span>
+                        </td>
+
+                        <td>
+                          {order.order_status_details.next_step !== "NULL" && (
+                            <div className="tooltip-custom">
+                              <span
+                                className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
+                              >
+                                {order.order_status_details.next_step}
+                              </span>
+                              <div className="tooltip-text">
+                                {order.order_status_details.description}
+                              </div>
+                            </div>
+                          )}
+                        </td>
                         <td>{order.user.email}</td>
                         <td>{order.user.mobile_number}</td>
+
                         <td>{order.address_details}</td>
                         <td>{order.coupon_code}</td>
                         <td>{order.coupon_discount}</td>
-                        <td>
-                          <span
-                            className={`${orderStatusClass} badge-outline rounded-[30px]`}
-                          >
-                            {orderStatusLabel}
-                          </span>
-                        </td>
                         <td>
                           <div className="flex flex-col">
                             {dayjs(order.estimated_delivery_time).format(

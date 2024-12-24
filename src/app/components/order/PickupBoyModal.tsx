@@ -82,7 +82,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
     try {
       await schema.validate(formData, { abortEarly: false });
 
-      if (orderStatus === "Assign Delivery Boy") {
+      if (orderStatus === "Assign Delivery boy") {
         const formattedData = {
           order_id: formData.order_id,
           delivery_boy_id: formData.pickup_boy_id,

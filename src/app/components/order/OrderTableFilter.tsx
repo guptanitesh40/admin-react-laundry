@@ -3,6 +3,7 @@ import { useGetBranches } from "../../hooks";
 import { OrderStatus, PaymentStatus } from "../../../types/enums";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 
 interface OptionType {
   label: string;
@@ -133,6 +134,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
                 orderStatusFilter: selectedValues,
               });
             }}
+            isCustomLabel={true}
           />
 
           <MultiSelect

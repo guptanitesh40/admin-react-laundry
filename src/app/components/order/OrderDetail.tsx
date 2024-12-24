@@ -11,6 +11,7 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
+import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -188,23 +189,35 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleOrderTableStatus = async () => {
-    switch (order?.order_status_name) {
+    switch (order?.order_status_details.next_step) {
       case "Assign Pickup Boy":
-      case "Assign Delivery Boy":
+      case "Assign Delivery boy":
         setModalOpen(true);
         break;
-      case "Received By Pickup Boy":
+      case "Received by pickup boy":
         await handleStatusChange(3);
         break;
-      case "Work Completed":
+      case "Order Received at Workshop":
+        await handleStatusChange(6);
+        break;
+      case "Workshop Marks Order In Progress":
         await handleStatusChange(7);
         break;
-      case "Items Received At Branch":
+      case "Work Completed by Workshop":
+        await handleStatusChange(8);
+        break;
+      case "Mark as Received at Branch":
+        await handleStatusChange(9);
+        break;
+      case "Items Received at branch":
       case "Pickup Complete":
         await handleStatusChange(4);
         break;
       case "Ready For Delivery":
         await handleStatusChange(10);
+        break;
+      case "Delivered":
+        await handleStatusChange(11);
         break;
       case "Assign Workshop":
       case "Assign Branch":
@@ -247,9 +260,9 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const getOrderStatusLabel = () => {
+  const getOrderStatus = () => {
     return location.state?.from === "OrderTable"
-      ? order?.order_status_name
+      ? order?.order_status_details.next_step
       : order?.workshop_status_name;
   };
 
@@ -259,27 +272,58 @@ const OrderDetails: React.FC = () => {
 
   if (!order) return null;
 
+  const adminStatusLabel = getOrderStatusLabel(
+    order.order_status_details.admin_label
+  );
+
+  const nextStepLabel = getOrderStatusLabel(
+    order.order_status_details.next_step
+  );
+
   return (
     <div className="container mx-auto p-6">
-      <div className="flex items-center justify-between bg-gray-100 p-7 rounded-md shadow">
-        <div className="flex">
-          <h1 className="mt-2 text-xl font-semibold leading-none text-gray-900">
+      <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-semibold text-gray-900">
             Order Details - #{order_id}
           </h1>
           <button
-            className="btn btn-primary ml-3 bg-blue-200 rounded-md"
+            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
             onClick={handleEditOrder}
           >
-            <i className="ki-filled ki-pencil mr-1"></i>Edit Order
+            <i className="ki-filled ki-pencil mr-2"></i>Edit Order
           </button>
         </div>
 
-        <button
-          className="px-4 py-2 rounded-full text-white bg-orange-500"
-          onClick={handleStatusClick}
-        >
-          {getOrderStatusLabel()}
-        </button>
+        <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
+          <div className="flex flex-col items-center">
+            <span className="text-sm font-medium text-gray-700">
+              Current Status:
+            </span>
+            <span
+              className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+            >
+              {order.order_status_details.admin_label}
+            </span>
+          </div>
+
+          <div className="flex-1 px-6">
+            <p className="text-sm text-gray-600 mt-1">
+              {order.order_status_details.description}
+            </p>
+          </div>
+
+          {order.order_status_details.next_step !== null && (
+            <div className="flex flex-col items-center">
+              <span className="text-sm font-medium text-gray-700">
+                Next Step:
+              </span>
+              <button className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`} onClick={handleStatusClick}>
+                {order.order_status_details.next_step}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -715,9 +759,9 @@ const OrderDetails: React.FC = () => {
 
       <PickupBoyModal
         orderStatus={
-          order?.order_status_name === "Assign Pickup Boy" ||
-          order?.order_status_name === "Assign Delivery Boy"
-            ? order?.order_status_name
+          order?.order_status_details.next_step === "Assign Pickup Boy" ||
+          order?.order_status_details.next_step === "Assign Delivery boy"
+            ? order?.order_status_details.next_step
             : undefined
         }
         modelOpen={modalOpen}
@@ -728,9 +772,9 @@ const OrderDetails: React.FC = () => {
 
       <WorkshopModal
         orderStatus={
-          order?.order_status_name === "Assign Branch" ||
-          order?.order_status_name === "Assign Workshop"
-            ? order?.order_status_name
+          order?.order_status_details.next_step === "Assign Branch" ||
+          order?.order_status_details.next_step === "Assign Workshop"
+            ? order?.order_status_details.next_step
             : undefined
         }
         orderId={order_id}

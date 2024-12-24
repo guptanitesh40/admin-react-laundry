@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
+import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -106,19 +107,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
-  };
-
-  const getPaymentStatusLabel = (status: PaymentStatus) => {
-    switch (status) {
-      case PaymentStatus.Pending:
-        return "badge badge-pending";
-      case PaymentStatus["Partial received"]:
-        return "badge badge-ready-to-deliver";
-      case PaymentStatus["Received"]:
-        return "badge badge-delivery-complete";
-      default:
-        return "badge";
-    }
   };
 
   return (

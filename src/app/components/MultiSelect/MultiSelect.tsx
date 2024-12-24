@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { FcCheckmark } from "react-icons/fc";
 import { MdArrowDropDown } from "react-icons/md";
 
@@ -15,10 +16,11 @@ interface MultiSelectProps {
   onRemove: (selectedList: OptionType[]) => void;
   onSelect: (selectedList: OptionType[]) => void;
   setSearch?: (search: string) => void;
-  search?: string; 
+  search?: string;
   isSearchInput?: boolean;
   className?: string;
   sliceCount?: number;
+  isCustomLabel?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -33,15 +35,16 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   isSearchInput = true,
   className = "",
   sliceCount = 1,
+  isCustomLabel = false,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState(search); 
+  const [searchValue, setSearchValue] = useState(search);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
     setSearchValue("");
     if (setSearch) {
-      setSearch(""); 
+      setSearch("");
     }
     setDropdownOpen((prev) => !prev);
   };
@@ -66,7 +69,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     const value = e.target.value;
     setSearchValue(value);
     if (setSearch) {
-      setSearch(value); 
+      setSearch(value);
     }
   };
 
@@ -139,22 +142,41 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           )}
           <ul>
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <li
-                  key={option.value}
-                  className={`dropdown-item ${
-                    selectedValues?.includes(option.value) ? "selected" : ""
-                  }`}
-                  onClick={() => handleSelectOption(option)}
-                >
-                  <span>{option.label}</span>
-                  {selectedValues?.includes(option.value) && (
-                    <span className="checkmark">
-                      <FcCheckmark size={18} />
-                    </span>
-                  )}
-                </li>
-              ))
+              filteredOptions.map((option) => {
+                const adminStatusClass = getOrderStatusLabel(option.label, true);
+
+                return isCustomLabel ? (
+                  <li
+                    key={option.value}
+                    className={`dropdown-item ${adminStatusClass} ${
+                      selectedValues?.includes(option.value) ? "selected" : ""
+                    }`}
+                    onClick={() => handleSelectOption(option)}
+                  >
+                    <span>{option.label}</span>
+                    {selectedValues?.includes(option.value) && (
+                      <span className="checkmark">
+                        <FcCheckmark size={18} />
+                      </span>
+                    )}
+                  </li>
+                ) : (
+                  <li
+                    key={option.value}
+                    className={`dropdown-item ${
+                      selectedValues?.includes(option.value) ? "selected" : ""
+                    }`}
+                    onClick={() => handleSelectOption(option)}
+                  >
+                    <span>{option.label}</span>
+                    {selectedValues?.includes(option.value) && (
+                      <span className="checkmark">
+                        <FcCheckmark size={18} />
+                      </span>
+                    )}
+                  </li>
+                );
+              })
             ) : showNoCustomers ? (
               <li className="no-search">No customers found</li>
             ) : showNoResults ? (

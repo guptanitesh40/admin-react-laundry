@@ -10,15 +10,18 @@ export enum DiscountType {
 }
 
 export enum OrderStatus {
-  "Pickup Pending" = 1,
-  "Items Received by Pickupboy" = 2,
-  "Items Received at Branch" = 3,
-  "Workshop Received Items" = 4,
-  "Workshop Moved to in Process" = 5,
-  "Workshop Marks as Completed" = 6,
-  "Branch Received Items" = 7,
-  "Branch Assigned Deliveryboy" = 8,
-  "Deliveryboy Marks as Completed" = 9,
+  "Order Placed" = 111,
+  "Branch Assigned" = 112,
+  "Pickup Boy Assigned" = 2,
+  "Pickup Complete" = 3,
+  "Items Received at Branch" = 4,
+  "Workshop Assigned" = 5,
+  "Order Received at Workshop" = 6,
+  "Order Work In Progress" = 7,
+  "Order Completed" = 9,
+  "Ready for delivery" = 10,
+  "Delivered" = 11,
+  "Cancelled" = 12,
 }
 
 export enum WorkshopOrderStatus {
