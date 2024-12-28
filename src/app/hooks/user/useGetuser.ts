@@ -2,6 +2,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface User {
+  total_pending_amount: number;
+  user: any;
+  orders: any;
   first_name: string;
   last_name: string;
   email: string;
@@ -16,12 +19,12 @@ interface User {
 
 const useGetUser = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
 
     const fetchUser = async (user_id: number) => {
 
       if (!user_id) {
-        setUser(null); 
+        setUserData(null); 
         return;
       }
 
@@ -47,7 +50,7 @@ const useGetUser = () => {
         }
 
         const data = await response.json();
-        setUser(data?.data?.user);
+        setUserData(data?.data);
       } catch (error: any) {
         toast.error(error?.message || "Network error: Failed to fetch.", {
           position: "top-center",
@@ -57,7 +60,7 @@ const useGetUser = () => {
       }
     };
 
-  return { user, loading, fetchUser };
+  return { userData, loading, fetchUser };
 };
 
 export default useGetUser;

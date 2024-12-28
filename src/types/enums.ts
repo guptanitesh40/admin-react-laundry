@@ -24,6 +24,18 @@ export enum OrderStatus {
   "Cancelled" = 12,
 }
 
+export enum OrderStatusInDetail {
+  "Pending" = 1,
+  "Assigned Pickup Boy" = 2,
+  "Pickup Complete" = 3,
+  "Items Received at Branch" = 4,
+  "Workshop Assigned" = 5,
+  "Workshop Received Items" = 6,
+  "Order Work In Progress " = 7,
+  "Work Completed" = 8,
+}
+
+
 export enum WorkshopOrderStatus {
   "Order Received" = 4,
   "In Progress" = 5,

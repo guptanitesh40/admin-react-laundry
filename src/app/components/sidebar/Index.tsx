@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
-import {
-  FaProductHunt,
-  FaBuilding,
-  FaImages,
-  FaChessBishop,
-} from "react-icons/fa";
+import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from "react-icons/bi";
-import { RiBuilding2Fill } from "react-icons/ri";
+import { RiBuilding2Fill, RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { LiaUserCircle } from "react-icons/lia";
 import { HiMiniPencilSquare } from "react-icons/hi2";
 import { CiShop } from "react-icons/ci";
+import { IoIosPricetags } from "react-icons/io";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
@@ -42,7 +38,7 @@ export const Sidebar: React.FC = () => {
         <img
           className="default-logo min-h-[22px] max-w-none"
           src="/media/app/Group 34972.png"
-        />        
+        />       
       </div>
 
       <div
@@ -51,6 +47,11 @@ export const Sidebar: React.FC = () => {
       >
         <div
           className="scrollable-y-hover grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3"
+          data-scrollable="true"
+          data-scrollable-dependencies="#sidebar_header"
+          data-scrollable-height="auto"
+          data-scrollable-offset="0px"
+          data-scrollable-wrappers="#sidebar_content"
           id="sidebar_scrollable"
         >
           <div className="menu flex flex-col grow gap-0.5" id="sidebar_menu">
@@ -105,7 +106,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdCategory size={24} />
+                    <MdCategory size={24} color="gray" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Category
@@ -125,7 +126,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaProductHunt size={24} />
+                    <FaProductHunt size={24} color="gray" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Product
@@ -145,7 +146,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdLocalLaundryService size={30} />
+                    <MdLocalLaundryService size={30} color="gray" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Services
@@ -185,7 +186,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <BiSolidCoupon color="gray" size={32} />
+                    <RiMoneyRupeeCircleLine color="gray" size={32} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Price
@@ -208,7 +209,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <BiSolidCoupon color="gray" size={32} />
+                    <IoIosPricetags color="gray" size={30} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Price Content
@@ -275,7 +276,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link>            
+            </Link>
 
             <Link to="/user" onClick={() => handleItemClick("user")}>
               <div
@@ -308,7 +309,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={33} />
+                    <CiShop size={33} color="gray" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Workshops
@@ -331,7 +332,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={33} />
+                    <CiShop size={33} color="gray" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Workshop Orders

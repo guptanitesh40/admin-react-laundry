@@ -6,7 +6,6 @@ import {
   useGetAddress,
   useGetBranches,
   useGetCategories,
-  useGetCoupons,
   useGetOrder,
   useGetPrice,
   useGetProductsOnId,
@@ -20,6 +19,7 @@ import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import CustomerModal from "./CustomerModal";
+import useGetValidCoupon from "../../hooks/coupon/useGetValidCoupons";
 
 interface item {
   category_id: number;
@@ -74,7 +74,8 @@ const OrderForm: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const { users, fetchUsersByRole } = useGetUsersByRole();
-  const { coupons } = useGetCoupons(pageNumber, perPage);
+  const { validCoupons, fetchValidCoupons } = useGetValidCoupon();
+
   const { branches } = useGetBranches(pageNumber, perPage);
   const { order, fetchOrder } = useGetOrder();
   const { address, fetchAddress } = useGetAddress();
@@ -159,6 +160,7 @@ const OrderForm: React.FC = () => {
     const fetchData = async () => {
       if (formData.user_id) {
         await fetchAddress(formData.user_id);
+        await fetchValidCoupons(formData.user_id);
       }
       if (isSubmit) {
         await fetchAddress(formData.user_id);
@@ -166,7 +168,7 @@ const OrderForm: React.FC = () => {
       }
     };
     fetchData();
-  }, [formData.user_id, isSubmit]);
+  }, [formData.user_id]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -861,9 +863,9 @@ const OrderForm: React.FC = () => {
               <select
                 id="coupon_code"
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                value={formData.coupon_code || ""}
+                value={formData.coupon_code ?? ""}
                 onChange={(e) => {
-                  const selectedCoupon = coupons.find(
+                  const selectedCoupon = validCoupons.find(
                     (coupon) => coupon.code === e.target.value
                   );
                   handleDropdownChange(selectedCoupon?.code);
@@ -872,8 +874,8 @@ const OrderForm: React.FC = () => {
                 <option value="" disabled>
                   Select Coupon Code
                 </option>
-                {coupons && coupons.length > 0 ? (
-                  coupons.map((coupon) => (
+                {validCoupons && validCoupons.length > 0 ? (
+                  validCoupons.map((coupon) => (
                     <option key={coupon.coupon_id} value={coupon.code}>
                       {coupon.code}
                     </option>

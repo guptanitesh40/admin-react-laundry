@@ -318,7 +318,10 @@ const OrderDetails: React.FC = () => {
               <span className="text-sm font-medium text-gray-700">
                 Next Step:
               </span>
-              <button className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`} onClick={handleStatusClick}>
+              <button
+                className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+                onClick={handleStatusClick}
+              >
                 {order.order_status_details.next_step}
               </button>
             </div>

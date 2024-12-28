@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaEye,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -17,7 +18,6 @@ import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-
 
 interface UserTableProps {
   filters: {
@@ -185,6 +185,10 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     }
   }
 
+  const handleViewUser = async (user_id: number) => {
+    navigate(`/user/${user_id}`);
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -315,7 +319,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                   <th className="min-w-[250px]">
                     <span className="sort-label">Branches</span>
                   </th>
-                  <th className="min-w-[130px]">Actions</th>
+                  <th className="min-w-[150px]">Actions</th>
                 </tr>
               </thead>
               {loading ? (
@@ -355,7 +359,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                       <td>
                         {companies
                           .filter((company) =>
-                            (user.company_ids as number[]).includes(
+                            (user.company_ids as number[])?.includes(
                               company.company_id
                             )
                           )
@@ -365,14 +369,20 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                       <td>
                         {branches
                           .filter((branch) =>
-                            (user.branch_ids as number[]).includes(
+                            (user.branch_ids as number[])?.includes(
                               branch.branch_id
                             )
                           )
                           .map((branch) => branch.branch_name)
                           .join(", ")}{" "}
                       </td>
-                      <td>
+                      <td className="flex">
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                            onClick={() => handleViewUser(user.user_id)}
+                          >
+                            <FaEye size={18} className="text-gray-600" />
+                          </button>
                         <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           onClick={() => handleUpdateUser(user.user_id)}
