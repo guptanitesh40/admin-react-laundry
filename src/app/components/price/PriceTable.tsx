@@ -57,6 +57,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
     {}
   );
+  
   const [editing, setEditing] = useState<Set<string>>(new Set());
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [searchParams, setSearchParams] = useSearchParams();
