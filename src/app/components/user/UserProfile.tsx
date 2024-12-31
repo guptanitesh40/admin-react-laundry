@@ -7,6 +7,7 @@ import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import OrderListModal from "./OrderListModal";
 import { getRoleClass } from "../../utils/roleClasses";
+import { BASE_URL } from "../../utils/constant";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -118,7 +119,7 @@ const UserProfile: React.FC = () => {
                           <span className="">
                             <img
                               className="h-14 w-14 rounded-full"
-                              src="http://35.154.167.170:3000/images/user/1735042941768.jpeg"
+                              src={`${BASE_URL}/images/user/1735042941768.jpeg`}
                             />
                           </span>
                         </td>
