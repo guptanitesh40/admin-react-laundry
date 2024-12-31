@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useGetUser from "../../hooks/user/useGetuser";
 import useClearDueAmount from "../../hooks/order/useClearDueAmount";
-import { number } from "yup";
+import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 
 interface OrderListModalProps {
   modalOpen: boolean;
@@ -30,6 +30,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
   const { clearDueAmount, loading } = useClearDueAmount();
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [updatedOrders, setUpdatedOrders] = useState<Order[]>([]);
+  const [fullPayment, setFullPayment] = useState<boolean>();
 
   const user = userData?.user;
 
@@ -65,6 +66,12 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
         updatedOrder.current_total =
           (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0) ||
           0;
+
+        if (updatedOrder.current_total === order.total) {
+          setFullPayment(true);
+        } else {
+          setFullPayment(false);
+        }
 
         return updatedOrder;
       }
@@ -157,6 +164,9 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                         (order.kasar_amount || 0) +
                         (order.current_paid || 0);
 
+                      const paymentStatusClass = getPaymentStatusLabel(order.payment_status, true);
+                      
+
                       return (
                         <tr key={order.order_id} className="custom-row">
                           <td>#{order.order_id}</td>
@@ -208,7 +218,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                           </td>
                           <td>
                             <select
-                              className="select select-sm w-[170px] text-sm"
+                              className={`select select-sm w-[170px] text-sm ${paymentStatusClass}`}
                               data-datatable-size="true"
                               value={order.payment_status}
                               onChange={(e) =>
@@ -219,9 +229,9 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                                 )
                               }
                             >
-                              <option value="1">Pending</option>
-                              <option value="2">Received</option>
-                              <option value="3">Partial Received</option>
+                              <option value="1" className={`${paymentStatusClass}`}>Pending</option>
+                              <option value="2" disabled={!fullPayment}>Received</option>
+                              <option value="3" disabled={fullPayment}>Partial Received</option>
                             </select>
                           </td>
                         </tr>

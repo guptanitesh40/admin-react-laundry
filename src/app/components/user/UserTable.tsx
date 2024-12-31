@@ -18,6 +18,7 @@ import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
+import { getRoleClass } from "../../utils/roleClasses";
 
 interface UserTableProps {
   filters: {
@@ -164,30 +165,9 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  function getRoleClass(roleId: number) {
-    switch (roleId) {
-      case Role["Super Admin"]:
-        return "role-super-admin";
-      case Role["Sub Admin"]:
-        return "role-sub-admin";
-      case Role["Branch Manager"]:
-        return "role-branch-manager";
-      case Role["Delivery Boy"]:
-        return "role-delivery-boy";
-      case Role["Customer"]:
-        return "role-customer";
-      case Role["Workshop Manager"]:
-        return "role-workshop-manager";
-      case Role["Vendor"]:
-        return "role-vendor";
-      default:
-        return "role-default";
-    }
-  }
-
   const handleViewUser = async (user_id: number) => {
     navigate(`/user/${user_id}`);
-  }
+  };
 
   return (
     <>
@@ -312,6 +292,22 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
 
                   <th className="min-w-[80px]">Gender</th>
 
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total_pending_amount"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("total_pending_amount")}
+                    >
+                      <span className="sort-label">Total Pending Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
                   <th className="min-w-[250px]">
                     <span className="sort-label">Companies</span>
                   </th>
@@ -326,84 +322,95 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                 <TableShimmer />
               ) : users.length > 0 ? (
                 <tbody>
-                  {users.map((user) => (
-                    <tr key={user.user_id}>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          {user.user_id}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          {user.first_name} {user.last_name}
-                        </div>
-                      </td>
-                      <td>
-                        <span
-                          className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                            user.role_id
-                          )}`}
-                        >
-                          {Role[user.role_id as unknown as keyof typeof Role]}
-                        </span>
-                      </td>
-                      <td>{user.email}</td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          {user.mobile_number}
-                        </div>
-                      </td>
-                      <td>
-                        {Gender[user.gender as unknown as keyof typeof Gender]}
-                      </td>
-                      <td>
-                        {companies
-                          .filter((company) =>
-                            (user.company_ids as number[])?.includes(
-                              company.company_id
+                  {users.map((user) => {
+
+                    return (
+                      <tr key={user.user_id}>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {user.user_id}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {user.first_name} {user.last_name}
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
+                              user.role_id
+                            )}`}
+                          >
+                            {Role[user.role_id as unknown as keyof typeof Role]}
+                          </span>
+                        </td>
+                        <td>{user.email}</td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {user.mobile_number}
+                          </div>
+                        </td>
+                        <td>
+                          {
+                            Gender[
+                              user.gender as unknown as keyof typeof Gender
+                            ]
+                          }
+                        </td>
+                        <td>
+                          {user.role_id === 5 && (user.total_due_amount)}
+                        </td>
+                        <td>
+                          {companies
+                            .filter((company) =>
+                              (user.company_ids as number[])?.includes(
+                                company.company_id
+                              )
                             )
-                          )
-                          .map((company) => company.company_name)
-                          .join(", ")}
-                      </td>
-                      <td>
-                        {branches
-                          .filter((branch) =>
-                            (user.branch_ids as number[])?.includes(
-                              branch.branch_id
+                            .map((company) => company.company_name)
+                            .join(", ")}
+                        </td>
+                        <td>
+                          {branches
+                            .filter((branch) =>
+                              (user.branch_ids as number[])?.includes(
+                                branch.branch_id
+                              )
                             )
-                          )
-                          .map((branch) => branch.branch_name)
-                          .join(", ")}{" "}
-                      </td>
-                      <td className="flex">
+                            .map((branch) => branch.branch_name)
+                            .join(", ")}{" "}
+                        </td>
+                        <td className="flex">
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
                             onClick={() => handleViewUser(user.user_id)}
                           >
                             <FaEye size={18} className="text-gray-600" />
                           </button>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => handleUpdateUser(user.user_id)}
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() => handleDeleteUser(user.user_id)}
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            onClick={() => handleUpdateUser(user.user_id)}
+                          >
+                            <FaPencilAlt className="text-yellow-600" />
+                          </button>
+                          <button
+                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                            onClick={() => handleDeleteUser(user.user_id)}
+                          >
+                            <FaTrash className="text-red-500" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+
+                  })}
                 </tbody>
               ) : (
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No user available
                     </td>
                   </tr>
                 </tbody>

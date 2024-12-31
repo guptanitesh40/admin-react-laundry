@@ -5,13 +5,24 @@ import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
-import { useAddNote, useDeleteNote, useUpdateOrderStatus } from "../../hooks";
+import {
+  useAddNote,
+  useDeleteNote,
+  useGenerateInvoice,
+  useUpdateOrderStatus,
+} from "../../hooks";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
+import LoadingSpinner from "../shimmer/Loading";
+import OrderCalcelModal from "./OrderCancelModal";
+import { MdCancel } from "react-icons/md";
+import { HiReceiptRefund } from "react-icons/hi2";
+import OrderRefundModal from "./OrderRefundModal";
+import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -25,6 +36,7 @@ const OrderDetails: React.FC = () => {
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
+  const { generateInvoice, loading: generating } = useGenerateInvoice();
 
   const [formData, setFormData] = useState({
     user_id: null,
@@ -35,6 +47,10 @@ const OrderDetails: React.FC = () => {
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [workshopModalOpen, setWorkshopModalOpen] = useState<boolean>(false);
+  const [orderCancelModalOpen, setOrderCancelModalOpen] =
+    useState<boolean>(false);
+  const [orderRefundModalOpen, setOrderRefundModalOpen] =
+    useState<boolean>(false);
   const [assigned, setAssigned] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [confirm, setConfirm] = useState<boolean>(false);
@@ -209,7 +225,7 @@ const OrderDetails: React.FC = () => {
       case "Mark as Received at Branch":
         await handleStatusChange(9);
         break;
-      case "Items Received at branch":
+      case "Items Received at Branch":
       case "Pickup Complete":
         await handleStatusChange(4);
         break;
@@ -270,6 +286,18 @@ const OrderDetails: React.FC = () => {
     navigate(`/order/edit/${order_id}`);
   };
 
+  const handleOrderCancel = () => {
+    setOrderCancelModalOpen(true);
+  };
+
+  const handleOrderRefund = () => {
+    setOrderRefundModalOpen(true);
+  };
+
+  const handleGenerateInvoice = async () => {
+    await generateInvoice(order_id);
+  };
+
   if (!order) return null;
 
   const adminStatusLabel = getOrderStatusLabel(
@@ -280,6 +308,11 @@ const OrderDetails: React.FC = () => {
     order.order_status_details.next_step
   );
 
+  const paymentStatusLabel =
+    PaymentStatus[
+      order.payment_status as unknown as keyof typeof PaymentStatus
+    ];
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
@@ -287,12 +320,42 @@ const OrderDetails: React.FC = () => {
           <h1 className="text-xl font-semibold text-gray-900">
             Order Details - #{order_id}
           </h1>
-          <button
-            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            onClick={handleEditOrder}
-          >
-            <i className="ki-filled ki-pencil mr-2"></i>Edit Order
-          </button>
+          <div className="flex flex-row gap-2">
+            <button
+              className="flex items-center btn btn-light"
+              onClick={handleGenerateInvoice}
+              disabled={generating}
+            >
+              <i className="ki-filled ki-cheque text-2xl link"></i>
+              {generating ? (
+                <>
+                  View Invoice <LoadingSpinner />
+                </>
+              ) : (
+                "View Invoice"
+              )}
+            </button>
+            <button
+              className="flex items-center font-medium btn btn-primary"
+              onClick={handleEditOrder}
+            >
+              <i className="ki-filled ki-pencil mr-2"></i>Edit Order
+            </button>
+            <button
+              className="flex items-center font-semibold btn btn-danger"
+              onClick={handleOrderCancel}
+            >
+              <MdCancel size={20} />
+              Cancel Order
+            </button>
+            <button
+              className="flex items-center font-semibold btn btn-success"
+              onClick={handleOrderRefund}
+            >
+              <HiReceiptRefund size={20} />
+              Refund Order
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
@@ -463,9 +526,9 @@ const OrderDetails: React.FC = () => {
             </div>
             <div className="card-body pt-4 pb-3">
               <table className="table-auto">
-                <tbody>
-                  <tr>
-                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                <tbody className="flex flex-col gap-2">
+                  <tr className="">
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pe-9">
                       Estimated Pickup Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
@@ -475,7 +538,7 @@ const OrderDetails: React.FC = () => {
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pe-6">
                       Estimated Delivery Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
@@ -608,8 +671,8 @@ const OrderDetails: React.FC = () => {
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Payment Status:
                       </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {PaymentStatus[order.payment_status]}
+                      <td className={`badge-outline ${getPaymentStatusLabel(order.payment_status)}`}>
+                        {paymentStatusLabel}
                       </td>
                     </tr>
                     <tr>
@@ -784,6 +847,19 @@ const OrderDetails: React.FC = () => {
         workshopModalOpen={workshopModalOpen}
         onClose={() => setWorkshopModalOpen(false)}
         setAssigned={setAssigned}
+      />
+
+      <OrderCalcelModal
+        orderId={order?.order_id}
+        userId={order?.user_id}
+        orderCancelModalOpen={orderCancelModalOpen}
+        onClose={() => setOrderCancelModalOpen(false)}
+      />
+
+      <OrderRefundModal
+        orderId={order?.order_id}
+        orderRefundModalOpen={orderRefundModalOpen}
+        onClose={() => setOrderRefundModalOpen(false)}
       />
     </div>
   );
