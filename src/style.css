@@ -2882,6 +2882,11 @@ video {
   background-color: var(--tw-primary);
 }
 
+.btn-primary {
+  color: #fff;
+  background-color: var(--tw-primary);
+}
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active,

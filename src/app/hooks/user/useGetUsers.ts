@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 const GET_USERS_URL = `${import.meta.env.VITE_BASE_URL}/user`;
 
 interface User {
+  total_due_amount: number;
   user_id: number;
   first_name: string;
   last_name: string;
@@ -21,10 +22,10 @@ const useGetUsers = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  gender?: number[],
-  role?: number[],
-  company?: number[],
-  branch?: number[]
+  genders? : number[],
+  roles?: number[],
+  companies_ids?: number[],
+  branches_ids?: number[]
 ) => {
   const [users, setUsers] = useState<User[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -39,17 +40,17 @@ const useGetUsers = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (gender) {
-      gender.forEach((g) => queryParams.append("gender", g.toString()));
+    if (genders)  {
+      genders. forEach((g) => queryParams.append("genders" , g.toString()));
     }
-    if (role) {
-      role.forEach((r) => queryParams.append("role", r.toString()));
+    if (roles) {
+      roles.forEach((r) => queryParams.append("roles", r.toString()));
     }
-    if (company) {
-      company.forEach((c) => queryParams.append("company_id", c.toString()));
+    if (companies_ids) {
+      companies_ids.forEach((c) => queryParams.append("company_id", c.toString()));
     }
-    if (branch) {
-      branch.forEach((b) => queryParams.append("branch", b.toString()));
+    if (branches_ids) {
+      branches_ids.forEach((b) => queryParams.append("branches_ids", b.toString()));
     }
 
     setLoading(true);
@@ -82,7 +83,7 @@ const useGetUsers = (
 
   useEffect(() => {
     fetchUsers();
-  }, [pageNumber,perPage,search,sortColumn,sortOrder,gender,role,company,branch]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, genders, roles, companies_ids, branches_ids]);
 
   return { users, totalUsers, loading, fetchUsers };
 };

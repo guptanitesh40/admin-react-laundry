@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDeleteOrder, useGetOrders } from "../../hooks";
+import { useDeleteOrder, useGenerateInvoice, useGetOrders } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   FaChevronLeft,
@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
+import LoadingSpinner from "../shimmer/Loading";
 
 interface OrderTableProps {
   filters: {
@@ -42,6 +43,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [invoiceId, setInvoiceId] = useState<any>();
 
   const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
@@ -58,6 +60,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     filters.paymentStatusFilter
   );
   const { deleteOrder } = useDeleteOrder();
+  const { generateInvoice, loading: generating } = useGenerateInvoice();
 
   const navigate = useNavigate();
 
@@ -172,6 +175,11 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
+  };
+
+  const handleGenerateInvoice = async (order_id: number) => {
+    setInvoiceId(order_id);
+    await generateInvoice(order_id);
   };
 
   return (
@@ -523,6 +531,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+                  <th className="min-w-[160px]">Invoice</th>
 
                   <th className="w-[170px]">Actions</th>
                 </tr>
@@ -536,6 +545,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       PaymentStatus[
                         order.payment_status as unknown as keyof typeof PaymentStatus
                       ];
+                      
                     const paymentStatusClass = getPaymentStatusLabel(
                       order.payment_status
                     );
@@ -618,6 +628,26 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         </td>
                         <td>{order?.branch?.branch_name}</td>
                         <td>
+                          <button
+                            className="flex items-center mr-2 btn btn-light btn-sm"
+                            onClick={() =>
+                              handleGenerateInvoice(order.order_id)
+                            }
+                          >
+                            {generating && invoiceId === order.order_id ? (
+                              <>
+                                <i className="ki-filled ki-cheque text-2xl link"></i>
+                                Invoice <LoadingSpinner />
+                              </>
+                            ) : (
+                              <>
+                                <i className="ki-filled ki-cheque text-2xl link"></i>
+                                Invoice
+                              </>
+                            )}
+                          </button>
+                        </td>
+                        <td>
                           <div className="flex">
                             <button
                               className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
@@ -647,7 +677,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                 <tbody>
                   <tr>
                     <td colSpan={5} className="text-center">
-                      No Orders available
+                      No Order available
                     </td>
                   </tr>
                 </tbody>

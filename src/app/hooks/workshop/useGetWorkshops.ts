@@ -17,7 +17,8 @@ const useGetWorkshops = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  workshop_manager_ids?: number[],
 ) => {
   const [workshops, setWorkshops] = useState<Workshop[]>();
   const [totalWorkshops, setTotalWorkshops] = useState(0);
@@ -32,6 +33,9 @@ const useGetWorkshops = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
+    if (workshop_manager_ids) {
+      workshop_manager_ids.forEach((m) => queryParams.append("workshop_manager_ids", m.toString()));
+    }
 
     setLoading(true);
     try {
@@ -62,7 +66,7 @@ const useGetWorkshops = (
 
   useEffect(() => {
     fetchWorkshops();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, workshop_manager_ids]);
 
   return { workshops, totalWorkshops, loading, fetchWorkshops };
 };

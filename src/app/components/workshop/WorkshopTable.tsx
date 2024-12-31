@@ -10,16 +10,23 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import Swal from "sweetalert2";
+import MultiSelect from "../MultiSelect/MultiSelect";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import { searchSchema } from "../../validation/searchSchema";
+import * as Yup from "yup";
+
+interface OptionType {
+  label: string;
+  value: number;
+}
 
 interface WorkshopTableProps {
-  search: string;
   isSubmit: boolean;
   setIsSubmit: (value: boolean) => void;
   setUpdateWorkshop: (workshop_id: number) => void;
 }
 
 const WorkshopTable: React.FC<WorkshopTableProps> = ({
-  search,
   isSubmit,
   setIsSubmit,
   setUpdateWorkshop,
@@ -31,11 +38,29 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
+  const [workshopManagers, setWorkshopManagers] = useState<OptionType[]>([]);
+  const [workshopManagerFilter, setWorkshopManagerFilter] = useState<number[]>(
+    []
+  );
+
+  const { fetchUsersByRole } = useGetUsersByRole();
+
   const { workshops, totalWorkshops, loading, fetchWorkshops } =
-    useGetWorkshops(currentPage, perPage, search, sortColumn, sortOrder);
+    useGetWorkshops(
+      currentPage,
+      perPage,
+      search,
+      sortColumn,
+      sortOrder,
+      workshopManagerFilter
+    );
 
   const totalPages = Math.ceil(totalWorkshops / perPage);
 
@@ -48,6 +73,53 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
     };
     refetchData();
   }, [isSubmit]);
+
+  useEffect(() => {
+    const fetchManagers = async () => {
+      const managers = await fetchUsersByRole(6);
+      if (managers) {
+        const formattedOptions = managers.map((manager: any) => ({
+          label: `${manager.first_name} ${manager.last_name} (${manager.mobile_number})`,
+          value: manager.user_id,
+        }));
+        setWorkshopManagers(formattedOptions);
+      }
+    };
+    fetchManagers();
+  }, []);
+
+  useEffect(() => {
+    if (pageParams) {
+      setCurrentPage(Number(pageParams));
+    }
+    if (perPageParams) {
+      setPerPage(Number(perPageParams));
+    }
+  }, [pageParams, perPageParams]);
+
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
+
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate({ search: search }, { abortEarly: false });
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
 
   const handleDeleteWorkshop = async (workshop_id: number) => {
     try {
@@ -90,26 +162,6 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (pageParams) {
-      setCurrentPage(Number(pageParams));
-    }
-    if (perPageParams) {
-      setPerPage(Number(perPageParams));
-    }
-  }, [pageParams, perPageParams]);
-
-  useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    }
-  }, [search]);
-
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
@@ -138,207 +190,199 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
 
   return (
     <>
-      <div className="inline-block">
-        <div className="flex mb-3 items-center gap-2">
-          Show
+      <div className="card-header card-header-space flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
           <select
             className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
             value={perPage}
             onChange={handlePerPageChange}
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
-          per page
+          <span>per page</span>
+        </div>
+
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex items-center mb-11">
+            <MultiSelect
+              options={workshopManagers}
+              displayValue="label"
+              placeholder="Search Workshop Manager"
+              selectedValues={workshopManagerFilter}
+              onSelect={(selectedList) =>
+                setWorkshopManagerFilter(
+                  selectedList.map((manager) => manager.value)
+                )
+              }
+              onRemove={(selectedList) =>
+                setWorkshopManagerFilter(
+                  selectedList.map((manager) => manager.value)
+                )
+              }
+              className="w-[320px]"
+            />
+          </div>
+
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="w-[275px] flex-grow"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:gap-5.5">
-        <div className="card card-grid min-w-full">
-          <div className="card-body">
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th className="min-w-[90px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("workshop_id")}
+      <div className="card-body">
+        <div className="scrollable-x-auto">
+          <table className="table table-auto table-border">
+            <thead>
+              <tr>
+                <th className="min-w-[90px]">
+                  <span
+                    className={`sort ${
+                      sortColumn === "workshop_id"
+                        ? sortOrder === "ASC"
+                          ? "asc"
+                          : "desc"
+                        : ""
+                    }`}
+                    onClick={() => handleSort("workshop_id")}
+                  >
+                    <span className="sort-label">Id</span>
+                    <span className="sort-icon"></span>
+                  </span>{" "}
+                </th>
+                <th className="min-w-[200px]">
+                  <span
+                    className={`sort ${
+                      sortColumn === "workshop_name"
+                        ? sortOrder === "ASC"
+                          ? "asc"
+                          : "desc"
+                        : ""
+                    }`}
+                    onClick={() => handleSort("workshop_name")}
+                  >
+                    <span className="sort-label">Workshop name</span>
+                    <span className="sort-icon"></span>
+                  </span>
+                </th>
+                <th className="min-w-[230px]">Workshop manager</th>
+                <th className="min-w-[230px]">
+                  <span
+                    className={`sort ${
+                      sortColumn === "address"
+                        ? sortOrder === "ASC"
+                          ? "asc"
+                          : "desc"
+                        : ""
+                    }`}
+                    onClick={() => handleSort("address")}
+                  >
+                    <span className="sort-label">Address</span>
+                    <span className="sort-icon"></span>
+                  </span>
+                </th>
+                <th className="min-w-[250px]">
+                  <span
+                    className={`sort ${
+                      sortColumn === "email"
+                        ? sortOrder === "ASC"
+                          ? "asc"
+                          : "desc"
+                        : ""
+                    }`}
+                    onClick={() => handleSort("email")}
+                  >
+                    <span className="sort-label">Email</span>
+                    <span className="sort-icon"></span>
+                  </span>
+                </th>
+                <th className="min-w-[155px]">
+                  <span
+                    className={`sort ${
+                      sortColumn === "mobile_number"
+                        ? sortOrder === "ASC"
+                          ? "asc"
+                          : "desc"
+                        : ""
+                    }`}
+                    onClick={() => handleSort("mobile_number")}
+                  >
+                    <span className="sort-label">Mobile no</span>
+                    <span className="sort-icon"></span>
+                  </span>
+                </th>
+                <th className="min-w-[125px]">Actions</th>
+              </tr>
+            </thead>
+            {loading ? (
+              <TableShimmer />
+            ) : workshops?.length > 0 ? (
+              <tbody>
+                {workshops.map((workshop) => (
+                  <tr key={workshop.workshop_id}>
+                    <td>{workshop.workshop_id}</td>
+                    <td>{workshop.workshop_name}</td>
+                    <td>
+                      {workshop.workshop_managers
+                        .map((manager: any) => manager.full_name)
+                        .join(", ")}
+                    </td>
+                    <td>{workshop.address}</td>
+                    <td>{workshop.email}</td>
+                    <td>{workshop.mobile_number}</td>
+                    <td>
+                      <button
+                        className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                        onClick={() => setUpdateWorkshop(workshop.workshop_id)}
                       >
-                        Id
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "workshop_id" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "workshop_id" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[200px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("workshop_name")}
+                        <FaPencilAlt className="text-yellow-600" />
+                      </button>
+                      <button
+                        className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                        onClick={() =>
+                          handleDeleteWorkshop(workshop.workshop_id)
+                        }
                       >
-                        Workshop name
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "workshop_name" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "workshop_name" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[230px]">Workshop manager</th>
-                    <th className="min-w-[230px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("address")}
-                      >
-                        Address
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "address" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "address" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[250px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("email")}
-                      >
-                        Email
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "email" && sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "email" && sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[155px]">
-                      <div
-                        className="flex justify-between cursor-pointer"
-                        onClick={() => handleSort("mobile_number")}
-                      >
-                        Mobile no
-                        <div className="flex cursor-pointer">
-                          <FaArrowDownLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "ASC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                          <FaArrowUpLong
-                            color={
-                              sortColumn === "mobile_number" &&
-                              sortOrder === "DESC"
-                                ? "gray"
-                                : "lightgray"
-                            }
-                          />
-                        </div>
-                      </div>
-                    </th>
-                    <th className="min-w-[125px]">Actions</th>
+                        <FaTrash className="text-red-500" />
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : workshops ? (
-                  <tbody>
-                    {workshops.map((workshop) => (
-                      <tr key={workshop.workshop_id}>
-                        <td>{workshop.workshop_id}</td>
-                        <td>{workshop.workshop_name}</td>
-                        <td>
-                          {workshop.workshop_managers
-                            .map((manager: any) => manager.full_name)
-                            .join(", ")}
-                        </td>
-                        <td>{workshop.address}</td>
-                        <td>{workshop.email}</td>
-                        <td>{workshop.mobile_number}</td>
-                        <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() =>
-                              setUpdateWorkshop(workshop.workshop_id)
-                            }
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() =>
-                              handleDeleteWorkshop(workshop.workshop_id)
-                            }
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={5} className="text-center">
-                        No workshops available
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
-          </div>
+                ))}
+              </tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    No Workshop available
+                  </td>
+                </tr>
+              </tbody>
+            )}
+          </table>
         </div>
       </div>
 

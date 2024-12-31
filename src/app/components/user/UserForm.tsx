@@ -37,10 +37,11 @@ const UserForm: React.FC = () => {
   const navigate = useNavigate();
 
   const { companies } = useGetCompanies(pageNumber, perPage);
-  const { user, fetchUser } = useGetUser();
+  const { userData, fetchUser } = useGetUser();
   const [companyOptions, setCompanyOptions] = useState([]);
   const { branches } = useGetBranches(pageNumber, perPage);
   const [branchOptions, setBranchOptions] = useState([]);
+  const user = userData?.user;
 
   const formDataState: FormData = {
     first_name: "",

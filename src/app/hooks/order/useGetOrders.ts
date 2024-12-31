@@ -37,13 +37,13 @@ const useGetOrders = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  orderstatus?: number[],
-  customer_id?: number[],
-  branch_id?: number[],
-  pickup_boy_id?: number[],
-  delivery_boy_id?: number[],
-  payment_type?: number,
-  payment_status?: number[]
+  order_statuses?: number[],
+  customer_ids?: number[],
+  branches_ids?: number[],
+  pickup_boy_ids?: number[],
+  delivery_boy_ids?: number[],
+  payment_types?: number,
+  payment_statuses?: number[]
 ) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -58,36 +58,36 @@ const useGetOrders = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (orderstatus) {
-      orderstatus.forEach((o) =>
-        queryParams.append("orderstatus", o.toString())
+    if (order_statuses) {
+      order_statuses.forEach((o) =>
+        queryParams.append("order_statuses", o.toString())
       );
     }
-    if (customer_id) {
-      customer_id.forEach((c) =>
-        queryParams.append("customer_id", c.toString())
+    if (customer_ids) {
+      customer_ids.forEach((c) =>
+        queryParams.append("customer_ids", c.toString())
       );
     }
-    if (branch_id) {
-      branch_id.forEach((b) => queryParams.append("branch_id", b.toString()));
+    if (branches_ids) {
+      branches_ids.forEach((b) => queryParams.append("branches_ids", b.toString()));
     }
-    if (pickup_boy_id) {
-      pickup_boy_id.forEach((p) =>
-        queryParams.append("pickup_boy_id", p.toString())
+    if (pickup_boy_ids) {
+      pickup_boy_ids.forEach((p) =>
+        queryParams.append("pickup_boy_ids", p.toString())
       );
     }
-    if (delivery_boy_id) {
-      delivery_boy_id.forEach((d) =>
-        queryParams.append("delivery_boy_id", d.toString())
+    if (delivery_boy_ids) {
+      delivery_boy_ids.forEach((d) =>
+        queryParams.append("delivery_boy_ids", d.toString())
       );
     }
-    if (payment_status) {
-      payment_status.forEach((p) =>
-        queryParams.append("payment_status", p.toString())
+    if (payment_statuses) {
+      payment_statuses.forEach((p) =>
+        queryParams.append("payment_statuses", p.toString())
       );
     }
-    if (payment_type)
-      queryParams.append("payment_type", payment_type.toString());
+    if (payment_types)
+      queryParams.append("payment_types", payment_types.toString());
 
     setLoading(true);
     try {
@@ -125,13 +125,13 @@ const useGetOrders = (
     search,
     sortColumn,
     sortOrder,
-    orderstatus,
-    customer_id,
-    branch_id,
-    pickup_boy_id,
-    delivery_boy_id,
-    payment_type,
-    payment_status,
+    order_statuses,
+    customer_ids,
+    branches_ids,
+    pickup_boy_ids,
+    delivery_boy_ids,
+    payment_types,
+    payment_statuses,
   ]);
 
   return { orders, totalOrders, loading, fetchOrders };
