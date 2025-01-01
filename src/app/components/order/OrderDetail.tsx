@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { PaymentStatus, PaymentType } from "../../../types/enums"; // Ensure these enums are defined
+import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums"; // Ensure these enums are defined
 import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt } from "react-icons/bi";
 import dayjs from "dayjs";
@@ -54,6 +54,7 @@ const OrderDetails: React.FC = () => {
   const [assigned, setAssigned] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [confirm, setConfirm] = useState<boolean>(false);
+  const [refetch, setRefetch] = useState<boolean>(false);
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,7 +62,8 @@ const OrderDetails: React.FC = () => {
   useEffect(() => {
     fetchOrder(order_id);
     setAssigned(false);
-  }, [assigned]);
+    setRefetch(false);
+  }, [assigned, refetch]);
 
   useEffect(() => {
     if (order) {
@@ -341,55 +343,90 @@ const OrderDetails: React.FC = () => {
             >
               <i className="ki-filled ki-pencil mr-2"></i>Edit Order
             </button>
-            <button
+            {order?.order_status_details?.admin_label !== "Cancelled" && 
+            (<button
               className="flex items-center font-semibold btn btn-danger"
               onClick={handleOrderCancel}
             >
               <MdCancel size={20} />
               Cancel Order
-            </button>
-            <button
-              className="flex items-center font-semibold btn btn-success"
-              onClick={handleOrderRefund}
-            >
-              <HiReceiptRefund size={20} />
-              Refund Order
-            </button>
+            </button>)}
+            {order.payment_status === 1 ||
+              (order.refund_status === 3 && (
+                <button
+                  className="flex items-center font-semibold btn btn-success"
+                  onClick={handleOrderRefund}
+                >
+                  <HiReceiptRefund size={20} />
+                  Refund Order
+                </button>
+              ))}
           </div>
         </div>
 
-        <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-gray-700">
-              Current Status:
-            </span>
-            <span
-              className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
-            >
-              {order.order_status_details.admin_label}
-            </span>
-          </div>
-
-          <div className="flex-1 px-6">
-            <p className="text-sm text-gray-600 mt-1">
-              {order.order_status_details.description}
-            </p>
-          </div>
-
-          {order.order_status_details.next_step !== null && (
+        {order.refund_status === 3 ? (
+          <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
             <div className="flex flex-col items-center">
               <span className="text-sm font-medium text-gray-700">
-                Next Step:
+                Current Status:
               </span>
-              <button
-                className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
-                onClick={handleStatusClick}
+              <span
+                className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
               >
-                {order.order_status_details.next_step}
-              </button>
+                {order.order_status_details.admin_label}
+              </span>
             </div>
-          )}
-        </div>
+
+            <div className="flex-1 px-6">
+              <p className="text-sm text-gray-600 mt-1">
+                {order.order_status_details.description}
+              </p>
+            </div>
+
+            {order.order_status_details.next_step !== null && (
+              <div className="flex flex-col items-center">
+                <span className="text-sm font-medium text-gray-700">
+                  Next Step:
+                </span>
+                <button
+                  className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+                  onClick={handleStatusClick}
+                >
+                  {order.order_status_details.next_step}
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center bg-white p-4 rounded-md shadow-sm">
+            <div>
+              <span className="badge text-sm font-medium text-gray-700">
+                Order Refunded
+              </span>
+            </div>
+
+            <div className="flex-1 px-10">
+              <span className="text-sm font-medium text-gray-700">
+                Reason of Refund :
+              </span>
+              <p className="text-sm text-gray-600 mt-1">{order.refund_descriptions}</p>
+            </div>
+
+            <div className="flex flex-col mr-4 gap-2">
+              <span className="text-sm font-medium text-gray-700">Refund Amount : </span>
+              <span className="text-sm font-medium text-gray-700">
+                ₹{order.refund_amount}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+            <span className="text-sm font-medium text-gray-700">Refund Status :</span>
+              <span className={`${order.refund_status === 1 ? "badge badge-primary" : "badge badge-warning"} badge-outline badge-sm`}>
+                {RefundStatus[order.refund_status]}{" "}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -671,7 +708,11 @@ const OrderDetails: React.FC = () => {
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Payment Status:
                       </td>
-                      <td className={`badge-outline ${getPaymentStatusLabel(order.payment_status)}`}>
+                      <td
+                        className={`badge-outline ${getPaymentStatusLabel(
+                          order.payment_status
+                        )}`}
+                      >
                         {paymentStatusLabel}
                       </td>
                     </tr>
@@ -854,12 +895,16 @@ const OrderDetails: React.FC = () => {
         userId={order?.user_id}
         orderCancelModalOpen={orderCancelModalOpen}
         onClose={() => setOrderCancelModalOpen(false)}
+        setRefetch={setRefetch}
       />
 
       <OrderRefundModal
         orderId={order?.order_id}
+        TotalAmount={order?.total}
+        PaidAmount={order?.paid_amount}
         orderRefundModalOpen={orderRefundModalOpen}
         onClose={() => setOrderRefundModalOpen(false)}
+        setRefetch={setRefetch}
       />
     </div>
   );

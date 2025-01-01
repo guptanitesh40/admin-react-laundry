@@ -3,11 +3,11 @@ export const getPaymentStatusLabel = (status: number, returnTextColor = false) =
   if(returnTextColor) {
     switch (status) {
       case 1:
-        return "text-[#f8285a]";
+        return "payment-status-pending";
       case 2:
-        return "text-[#7239ea]";
+        return "payment-status-received";
       case 3:
-        return "text-[#f6b100]";
+        return "payment-status-partial-received";
       default:
         return "";
     }

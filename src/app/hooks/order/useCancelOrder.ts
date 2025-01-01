@@ -6,7 +6,7 @@ const useCancelOrder = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const token = localStorage.getItem("authToken");
 
-  const cancelOrder = async (formData: FormData) => {
+  const cancelOrder = async (formData: any) => {
     setLoading(true);   
 
     try {
@@ -14,8 +14,9 @@ const useCancelOrder = () => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-type': 'application/json'
         },
-        body: formData,
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();

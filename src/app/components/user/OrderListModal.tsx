@@ -218,7 +218,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                           </td>
                           <td>
                             <select
-                              className={`select select-sm w-[170px] text-sm ${paymentStatusClass}`}
+                              className={`select select-lg w-[170px] text-sm ${paymentStatusClass}`}
                               data-datatable-size="true"
                               value={order.payment_status}
                               onChange={(e) =>

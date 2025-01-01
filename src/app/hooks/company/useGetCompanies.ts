@@ -30,7 +30,7 @@ const useGetCompany = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  company_ownedby?: number
+  companies_ownedby?: number
 ) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,8 +45,8 @@ const useGetCompany = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (company_ownedby)
-      queryParams.append("company_ownedby", company_ownedby.toString());
+    if (companies_ownedby)
+      queryParams.append("companies_ownedby", companies_ownedby.toString());
 
     setLoading(true);
     try {
@@ -76,7 +76,7 @@ const useGetCompany = (
 
   useEffect(() => {
     fetchCompanies();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_ownedby]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, companies_ownedby]);
 
   return { companies, loading, totalCount, fetchCompanies };
 };

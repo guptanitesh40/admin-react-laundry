@@ -7,14 +7,18 @@ interface OrderRefundModalProps {
   orderRefundModalOpen: boolean;
   onClose: () => void;
   orderId: number;
+  TotalAmount: number;
+  PaidAmount: number;
+  setRefetch: (value: boolean) => void;
 }
 
 const schema = Yup.object().shape({
-  refund_description: Yup.string().required(
+  refund_descriptions: Yup.string().required(
     "Please enter text to add description"
   ),
   refund_amount: Yup.number()
-    .typeError("Paid amount must be a number")
+    .required("Refund amount is required")
+    .typeError("Refund amount must be a number")
     .min(0, "Paid amount must be a positive number"),
   refund_status: Yup.number()
     .required("Please choose refund status")
@@ -25,6 +29,9 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
   orderRefundModalOpen,
   onClose,
   orderId,
+  TotalAmount,
+  PaidAmount,
+  setRefetch,
 }) => {
   const { refundOrder, loading } = useRefundOrder();
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -33,7 +40,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
     order_id: orderId,
     refund_amount: null,
     refund_status: null,
-    refund_description: "",
+    refund_descriptions: "",
   });
 
   useEffect(() => {
@@ -42,14 +49,14 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
         order_id: orderId,
         refund_amount: null,
         refund_status: null,
-        refund_description: "",
+        refund_descriptions: "",
       });
     } else {
       setFormData({
         order_id: orderId,
         refund_amount: null,
         refund_status: null,
-        refund_description: "",
+        refund_descriptions: "",
       });
       setErrors({});
     }
@@ -69,6 +76,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
       const success = await refundOrder(formattedData);
       if (success) {
         onClose();
+        setRefetch(true);
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -104,6 +112,15 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
           Refund Order #{orderId}
         </h1>
 
+        <div className="flex flex-col p-2">
+          <span className="text-gray-700 text-sm font-medium py-1">
+            Total Amount : ₹{TotalAmount}
+          </span>
+          <span className="text-gray-700 text-sm font-medium py-1">
+            Paid Amount :  ₹{PaidAmount}
+          </span>
+        </div>
+
         <div className="p-2">
           <div className="flex flex-col mb-2">
             <label
@@ -133,25 +150,25 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
           <div className="flex flex-col mb-2">
             <label
               className="block text-gray-700 text-base font-bold mb-2"
-              htmlFor="refund_description"
+              htmlFor="refund_descriptions"
             >
               Reason of Refund (Refund Note)
             </label>
             <textarea
-              id="refund_description"
-              name="refund_description"
-              value={formData.refund_description}
+              id="refund_descriptions"
+              name="refund_descriptions"
+              value={formData.refund_descriptions}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  refund_description: e.target.value,
+                  refund_descriptions: e.target.value,
                 })
               }
               className="h-20 input border border-gray-300 rounded-md p-2"
               rows={5}
             />
             <p className="text-red-500 text-sm">
-              {errors.refund_description || "\u00A0"}
+              {errors.refund_descriptions || "\u00A0"}
             </p>
           </div>
 

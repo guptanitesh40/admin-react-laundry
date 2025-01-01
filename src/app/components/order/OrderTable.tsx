@@ -633,6 +633,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                             onClick={() =>
                               handleGenerateInvoice(order.order_id)
                             }
+                            disabled={generating && invoiceId === order.order_id}
                           >
                             {generating && invoiceId === order.order_id ? (
                               <>
