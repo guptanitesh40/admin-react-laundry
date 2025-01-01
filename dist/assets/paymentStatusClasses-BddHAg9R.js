@@ -1,0 +1,1 @@
+const t=(e,a=!1)=>{if(a)switch(e){case 1:return"payment-status-pending";case 2:return"payment-status-received";case 3:return"payment-status-partial-received";default:return""}else switch(e){case 1:return"badge badge-danger";case 2:return"badge badge-info";case 3:return"badge badge-warning";default:return""}};export{t as g};

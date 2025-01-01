@@ -9,7 +9,7 @@ const useGetBanners = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  banner_type?: number[]
+  banner_types?: number[]
 ) => {
   const [banners, setBanners] = useState([]);
   const [totalBanners, setTotalBanners] = useState(0);
@@ -24,8 +24,8 @@ const useGetBanners = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (banner_type) {
-      banner_type.forEach((b) => queryParams.append("banner_type", b.toString()));
+    if (banner_types) {
+      banner_types.forEach((b) => queryParams.append("banner_types", b.toString()));
     }
 
     setLoading(true);
@@ -58,7 +58,7 @@ const useGetBanners = (
 
   useEffect(() => {
     fetchBanners();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, banner_type]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, banner_types]);
 
   return { banners, totalBanners, loading, fetchBanners };
 };

@@ -2,6 +2,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
+  refund_amount: any;
+  refund_descriptions: string;
+  refund_status: number;
   order_status_details: any;
   pickup_comment: string;
   workshop_status_name: string;

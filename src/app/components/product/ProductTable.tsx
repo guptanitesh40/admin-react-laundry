@@ -241,6 +241,13 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </span>
                   </th>
 
+                  <th className="w-[125px]">
+                    <div className="flex justify-between">
+                      Image
+                      <div className="flex "></div>
+                    </div>
+                  </th>
+
                   <th className="w-[130px]">Actions</th>
                 </tr>
               </thead>
@@ -259,6 +266,13 @@ const ProductTable: React.FC<ProductTableProps> = ({
                         <div className="flex items-center gap-1.5">
                           {product.name}
                         </div>
+                      </td>
+                      <td>
+                        <img
+                          alt={product.name}
+                          className="rounded-lg size-20 shrink-0"
+                          src={product.image}
+                        />
                       </td>
                       <td>
                         <button

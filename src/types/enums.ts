@@ -67,3 +67,9 @@ export enum CompanyOwed {
   "Own" = 1,
   "Other company" = 2,
 }
+
+export enum RefundStatus {
+  "Full" = 1,
+  "Partial" = 2,
+  "None" = 3,
+}

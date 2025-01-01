@@ -8,6 +8,7 @@ const useRefundOrder = () => {
 
   const refundOrder = async (formData: any) => {
 
+    setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/refund`, {
         method: "POST",
