@@ -146,7 +146,7 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      {user.user_id === 5 && (
+      {user.role_id === 5 && (
         <div className="card rounded-lg mt-6">
           <div className="card-header">
             <h3 className="text-xl font-semibold mb-1">Orders</h3>

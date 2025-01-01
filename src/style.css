@@ -9647,3 +9647,23 @@ label.rating-label {
 .custom-row {
   height: 100px ! important;
 }
+
+.payment-status-pending {
+  color: #f8285a !important;
+}
+
+.payment-status-received {
+  color: #7239ea !important;
+}
+
+.payment-status-partial-received {
+  color: #f6b100 !important;
+}
+
+.refund-status-full {
+  color: #1b84ff;
+}
+
+.refund-status-partial {
+  color: #f6b100;
+}

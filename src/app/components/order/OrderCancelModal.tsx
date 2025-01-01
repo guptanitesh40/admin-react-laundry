@@ -2,14 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useCancelOrder } from "../../hooks";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { BiImageAlt } from "react-icons/bi";
-import { RxCross2 } from "react-icons/rx";
 
 interface OrderCalcelModalProps {
   onClose: () => void;
   orderCancelModalOpen: boolean;
-  orderId: any;
-  userId: any;
+  orderId: number;
+  userId: number;
+  setRefetch: (value: boolean) => void;
 }
 
 const schema = Yup.object().shape({
@@ -21,9 +20,9 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
   orderCancelModalOpen,
   orderId,
   userId,
+  setRefetch,
 }) => {
   const { cancelOrder, loading } = useCancelOrder();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -31,18 +30,24 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
     user_id: userId,
     order_id: orderId,
     text_note: "",
-    images: [] as (string | File)[],
   });
 
   useEffect(() => {
-    setFormData({
-      user_id: null,
-      order_id: null,
-      text_note: "",
-      images: [],
-    });
-    setErrorMessage("");
-  }, [onClose]);
+    if (orderCancelModalOpen) {
+      setFormData({
+        user_id: userId,
+        order_id: orderId,
+        text_note: "",
+      });
+    } else {
+      setFormData({
+        user_id: null,
+        order_id: null,
+        text_note: "",
+      });
+      setErrorMessage("");
+    }
+  }, [orderCancelModalOpen]);
 
   const handleCancelOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,21 +55,11 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
     try {
       await schema.validate(formData, { abortEarly: false });
 
-      const formDataObj = new FormData();
-      formDataObj.append("user_id", formData.user_id);
-      formDataObj.append("order_id", formData.order_id);
-      formDataObj.append("text_note", formData.text_note);
-
-      if (formData.images && formData.images.length > 0) {
-        formData.images.forEach((image) => {
-          formDataObj.append("images", image);
-        });
-      }
-
-      const success = await cancelOrder(formDataObj);
+      const success = await cancelOrder(formData);
       if (success) {
         setErrorMessage("");
         onClose();
+        setRefetch(true);        
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -73,39 +68,6 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
         toast.error("Failed to Cancel Order");
       }
     }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const target = e.target;
-
-    if (target instanceof HTMLInputElement) {
-      const { name, value, files } = target;
-
-      if (name === "images" && files && files.length > 0) {
-        setFormData((prev) => ({
-          ...prev,
-          images: [...prev.images, ...Array.from(files)],
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      }
-    }
-  };
-
-  const handleIconClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
   };
 
   if (!orderCancelModalOpen) return;
@@ -135,58 +97,19 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
           </h2>
 
           <div>
-            <div className="relative border border-gray-300 rounded-md p-2">
-              <textarea
-                className="w-full h-[50px] p-3 border-none focus:outline-none focus:ring-0"
-                placeholder="Write a text note..."
-                value={formData.text_note || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    text_note: e.target.value,
-                  })
-                }
-              />
-              <div className="flex items-center mt-2">
-                <button
-                  className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 rounded-full p-1 transition-all ease-in-out duration-200"
-                  title="Attach image"
-                  onClick={handleIconClick}
-                >
-                  <BiImageAlt size={23} />
-                </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  multiple
-                  onChange={handleChange}
-                  name="images"
-                />
-              </div>
-            </div>
+            <textarea
+              className="h-20 input border border-gray-300 rounded-md p-2"
+              rows={5}
+              placeholder="Write a text note..."
+              value={formData.text_note || ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  text_note: e.target.value,
+                })
+              }
+            />
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
-          </div>
-
-          <div>
-            {formData.images.map((image, index) => (
-              <div
-                key={index}
-                className="relative inline-block mr-2 mb-2 group"
-              >
-                <img
-                  src={URL.createObjectURL(image as File)}
-                  alt={`Preview ${index}`}
-                  className="w-32 h-32 object-cover rounded-md border"
-                />
-                <button
-                  className="absolute top-0 right-0 rounded-full p-1 shadow-md text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  onClick={() => handleRemoveImage(index)}
-                >
-                  <RxCross2 size={20} />
-                </button>
-              </div>
-            ))}
           </div>
         </div>
 
