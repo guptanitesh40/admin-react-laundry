@@ -53,8 +53,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
       }));
       setFilteredOrders(paymentDueOrders);
     }
-  }, [user]);
-
+  }, [user]); 
   const handleInputChange = (orderId: number, field: string, value: number) => {
     const updated = filteredOrders.map((order) => {
       if (order.order_id === orderId) {
@@ -67,7 +66,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
           (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0) ||
           0;
 
-        if (updatedOrder.current_total === order.total) {
+        if (updatedOrder.current_total === order.total || updatedOrder.current_total === order.total - order.paid_amount) {
           setFullPayment(true);
         } else {
           setFullPayment(false);
@@ -111,6 +110,7 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
     const success = await clearDueAmount(userId, payload.filteredOrders);
     if (success) {
       onClose();
+      setUpdatedOrders([]);
     }
     setRefetch(true);
   };
@@ -164,8 +164,10 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                         (order.kasar_amount || 0) +
                         (order.current_paid || 0);
 
-                      const paymentStatusClass = getPaymentStatusLabel(order.payment_status, true);
-                      
+                      const paymentStatusClass = getPaymentStatusLabel(
+                        order.payment_status,
+                        true
+                      );
 
                       return (
                         <tr key={order.order_id} className="custom-row">
@@ -217,22 +219,40 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
                             )}
                           </td>
                           <td>
-                            <select
-                              className={`select select-lg w-[170px] text-sm ${paymentStatusClass}`}
-                              data-datatable-size="true"
-                              value={order.payment_status}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  order.order_id,
-                                  "payment_status",
-                                  Number(e.target.value)
-                                )
-                              }
-                            >
-                              <option value="1" className={`${paymentStatusClass}`}>Pending</option>
-                              <option value="2" disabled={!fullPayment}>Received</option>
-                              <option value="3" disabled={fullPayment}>Partial Received</option>
-                            </select>
+                            <div>
+                              <select
+                                className={`select select-lg w-[170px] text-sm ${paymentStatusClass}`}
+                                data-datatable-size="true"
+                                data-tooltip="#custom_tooltip"
+                                value={order.payment_status}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    order.order_id,
+                                    "payment_status",
+                                    Number(e.target.value)
+                                  )
+                                }
+                              >
+                                <option
+                                  value="1"
+                                  className={`${paymentStatusClass}`}
+                                >
+                                  Pending
+                                </option>
+                                <option value="2" disabled={!fullPayment}>
+                                  Received
+                                </option>
+                                <option value="3" disabled={fullPayment}>
+                                  Partial Received
+                                </option>
+                              </select>
+                              <div
+                                className="hidden rounded-xl shadow-default p-3 bg-light border border-gray-200 text-gray-700 text-xs font-normal"
+                                id="custom_tooltip"
+                              >
+                                Change Payment Status
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       );

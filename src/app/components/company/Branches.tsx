@@ -48,7 +48,7 @@ const Branches: React.FC<BranchesProps> = ({ company_id }) => {
                           <td className="min-w-48 w-full text-gray-700">{branch.branch_address}</td>
                           <td className="min-w-16 text-center">
                             <span 
-                            className="btn btn-sm"
+                            className="btn btn-sm btn-secondary"
                             onClick={() =>
                                 navigate(`/branch-profile/${branch.branch_id}`)
                               }

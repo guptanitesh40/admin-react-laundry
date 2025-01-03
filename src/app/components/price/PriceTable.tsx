@@ -48,9 +48,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
   isSave,
   setIsSave,
 }) => {
-  const { categories } = useGetCategories();
-  const { products } = useGetProducts();
-  const { services } = useGetServices();
+  const { categories } = useGetCategories(1,1000);
+  const { products } = useGetProducts(1,1000);
+  const { services } = useGetServices(1,1000);
   const { prices, loading, fetchPrices } = useGetPrice();
   const { addPrice } = useAddPrice();
 
@@ -166,7 +166,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
       }
     }
     setIsSave(false);
-  }, [isSave, addPrice, fetchPrices, combinations, updatedPrices]);
+  }, [isSave, addPrice, combinations, updatedPrices]);
 
   const handleInputBlur = (key: string) => {
     setEditing((prev) => {
