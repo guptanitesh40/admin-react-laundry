@@ -328,8 +328,8 @@ const UserForm: React.FC = () => {
               <MultiSelect
                 options={companyOptions}
                 displayValue="company_name"
-                selectedValues={companyOptions.filter((option) =>
-                  formData.company_ids.includes(option.company_id)
+                selectedValues={companyOptions?.filter((option) =>
+                  formData.company_ids?.includes(option.company_id)
                 )}
                 onSelect={(selectedList) => {
                   setFormData({
@@ -363,8 +363,8 @@ const UserForm: React.FC = () => {
               <MultiSelect
                 options={branchOptions}
                 displayValue="branch_name"
-                selectedValues={branchOptions.filter((option) =>
-                  formData.branch_ids.includes(option.branch_id)
+                selectedValues={branchOptions?.filter((option) =>
+                  formData.branch_ids?.includes(option.branch_id)
                 )}
                 onSelect={(selectedList) => {
                   setFormData({
@@ -384,9 +384,6 @@ const UserForm: React.FC = () => {
                 }}
                 isObject={true}
               />
-              <p className="text-red-500 text-sm">
-                {errors.branch_ids || "\u00A0"}
-              </p>
             </div>
           )}
 

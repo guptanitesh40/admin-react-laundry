@@ -4,6 +4,7 @@ import { useDeleteCompany, useGetCompanies, useGetCompany } from "../../hooks";
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaEye,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -149,6 +150,10 @@ const CompanyTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const handleViewCompany = (company_id: number) => {
+    navigate(`/company-profile/${company_id}`);
+  };
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -288,21 +293,7 @@ const CompanyTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[230px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "address"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("address")}
-                    >
-                      <span className="sort-label">Address</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[320px]">Address</th>
 
                   <th className="min-w-[120px]">
                     <span
@@ -354,7 +345,7 @@ const CompanyTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[125px]">Actions</th>
+                  <th className="min-w-[180px]">Actions</th>
                 </tr>
               </thead>
               {loading ? (
@@ -369,9 +360,14 @@ const CompanyTable: React.FC = () => {
                         </div>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span
+                          className="cursor-pointer hover:text-primary"
+                          onClick={() =>
+                            navigate(`/company-profile/${company.company_id}`)
+                          }
+                        >
                           {company.company_name}
-                        </div>
+                        </span>
                       </td>
                       <td>
                         <div className="flex items-center gap-2.5">
@@ -423,6 +419,12 @@ const CompanyTable: React.FC = () => {
                       </td>
 
                       <td>
+                        <button
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                          onClick={() => handleViewCompany(company.company_id)}
+                        >
+                          <FaEye size={18} className="text-gray-600" />
+                        </button>
                         <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           onClick={() =>

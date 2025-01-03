@@ -7,7 +7,6 @@ interface OrderCalcelModalProps {
   onClose: () => void;
   orderCancelModalOpen: boolean;
   orderId: number;
-  userId: number;
   setRefetch: (value: boolean) => void;
 }
 
@@ -19,12 +18,12 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
   onClose,
   orderCancelModalOpen,
   orderId,
-  userId,
   setRefetch,
 }) => {
   const { cancelOrder, loading } = useCancelOrder();
-
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId  = user?.user_id;
 
   const [formData, setFormData] = useState({
     user_id: userId,

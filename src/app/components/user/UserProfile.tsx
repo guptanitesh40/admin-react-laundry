@@ -22,6 +22,7 @@ const UserProfile: React.FC = () => {
 
   useEffect(() => {
     fetchUser(user_id);
+    setRefetch(false);
   }, [user_id, refetch]);
 
   const handleViewOrder = (order_id: number) => {
