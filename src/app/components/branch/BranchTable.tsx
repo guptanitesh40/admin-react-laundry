@@ -4,6 +4,7 @@ import { useDeleteBranch, useGetBranches, useGetCompanies } from "../../hooks";
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaEye,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -163,6 +164,10 @@ const BranchTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const handleViewBranch = (branch_id: number) => {
+    navigate(`/branch-profile/${branch_id}`);
+  };
+
   if (!users || !companies) return;
 
   return (
@@ -171,7 +176,7 @@ const BranchTable: React.FC = () => {
         <div className="flex flex-col items-center gap-2 mb-4">
           <div className="flex items-center gap-2">
             <span>Per Page</span>
-            <select 
+            <select
               className="select select-sm w-16"
               data-datatable-size="true"
               name="perpage"
@@ -199,7 +204,7 @@ const BranchTable: React.FC = () => {
                   setCompanyFilter(
                     selectedList.map((item: { value: any }) => item.value)
                   )
-                } 
+                }
                 onRemove={(selectedList: any) =>
                   setCompanyFilter(
                     selectedList.map((item: { value: any }) => item.value)
@@ -207,7 +212,7 @@ const BranchTable: React.FC = () => {
                 }
                 className="min-w-[250px]"
               />
-              
+
               <MultiSelect
                 options={users?.map((user: any) => ({
                   label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
@@ -301,20 +306,7 @@ const BranchTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "address"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("address")}
-                    >
-                      <span className="sort-label">Address</span>
-                      <span className="sort-icon"></span>
-                    </span>
+                  <th className="min-w-[320px]">Address
                   </th>
 
                   <th className="min-w-[200px]">
@@ -431,16 +423,22 @@ const BranchTable: React.FC = () => {
                         </div>
                       </td>
                       <td>
-                        <div className="flex gap-2">
+                        <div className="flex">
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                            onClick={() => handleViewBranch(branch.branch_id)}
+                          >
+                            <FaEye size={18} className="text-gray-600" />
+                          </button>
                           <button
                             onClick={() => handleUpdateBranch(branch.branch_id)}
-                            className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>
                           <button
                             onClick={() => handleDeleteBranch(branch.branch_id)}
-                            className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
+                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                           >
                             <FaTrash className="text-red-500" />
                           </button>

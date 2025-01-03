@@ -32,14 +32,6 @@ export const userSchema = (isEdit: boolean) => {
           .required("Please select a company"),
       otherwise: (schema) => schema,
     }),
-    branch_ids: Yup.array().when("role_id", {
-      is: (value: number) => value === 3,
-      then: (schema) =>
-        schema
-          .min(1, "Please select at least one branch")
-          .required("Please select a branch"),
-      otherwise: (schema) => schema,
-    }),
   });
 };
 

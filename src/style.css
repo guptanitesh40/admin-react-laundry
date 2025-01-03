@@ -9667,3 +9667,36 @@ label.rating-label {
 .refund-status-partial {
   color: #f6b100;
 }
+
+
+.tooltip-custom-z {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip-custom-z:hover .tooltip-text-z {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tooltip-text-z {
+  visibility: hidden;
+  width: 180px;
+  background-color: var(--tw-info-light);
+  color: gray;
+  text-align: center;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 10px;
+  position: absolute;
+  bottom: 90%;
+  left: -30%;
+  transform: translateX(-10%) translateY(5px);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  white-space: pre-wrap;
+}

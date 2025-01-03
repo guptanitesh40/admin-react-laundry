@@ -23,7 +23,7 @@ const useGetBranchesOnId = () => {
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_BRANCHES_URL = `${import.meta.env.VITE_BASE_URL}/branches/company/${company_id}`;
+    const GET_BRANCHES_URL = `${import.meta.env.VITE_BASE_URL}/branches/companies?company_ids=${company_id}`;
 
     setLoading(true);
 

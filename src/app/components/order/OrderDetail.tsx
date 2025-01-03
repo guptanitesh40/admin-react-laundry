@@ -343,24 +343,27 @@ const OrderDetails: React.FC = () => {
             >
               <i className="ki-filled ki-pencil mr-2"></i>Edit Order
             </button>
-            {order?.order_status_details?.admin_label !== "Cancelled" && 
-            (<button
-              className="flex items-center font-semibold btn btn-danger"
-              onClick={handleOrderCancel}
-            >
-              <MdCancel size={20} />
-              Cancel Order
-            </button>)}
-            {order.payment_status === 1 ||
-              (order.refund_status === 3 && (
-                <button
-                  className="flex items-center font-semibold btn btn-success"
-                  onClick={handleOrderRefund}
-                >
-                  <HiReceiptRefund size={20} />
-                  Refund Order
-                </button>
-              ))}
+            {order?.order_status < 8 &&
+              order?.refund_status !==1 && 
+              (
+                  <button
+                    className="flex items-center font-semibold btn btn-danger"
+                    onClick={handleOrderCancel}
+                  >
+                    <MdCancel size={20} />
+                    Cancel Order
+                  </button>
+                )}
+
+            {order.payment_status !== 1 && order.refund_status === 3 && (
+              <button
+                className="flex items-center font-semibold btn btn-success"
+                onClick={handleOrderRefund}
+              >
+                <HiReceiptRefund size={20} />
+                Refund Order
+              </button>
+            )}
           </div>
         </div>
 
@@ -409,19 +412,31 @@ const OrderDetails: React.FC = () => {
               <span className="text-sm font-medium text-gray-700">
                 Reason of Refund :
               </span>
-              <p className="text-sm text-gray-600 mt-1">{order.refund_descriptions}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {order.refund_descriptions}
+              </p>
             </div>
-
+            
             <div className="flex flex-col mr-4 gap-2">
-              <span className="text-sm font-medium text-gray-700">Refund Amount : </span>
+              <span className="text-sm font-medium text-gray-700">
+                Refund Amount :{" "}
+              </span>
               <span className="text-sm font-medium text-gray-700">
                 ₹{order.refund_amount}
               </span>
             </div>
 
             <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-gray-700">Refund Status :</span>
-              <span className={`${order.refund_status === 1 ? "badge badge-primary" : "badge badge-warning"} badge-outline badge-sm`}>
+              <span className="text-sm font-medium text-gray-700">
+                Refund Status :
+              </span>
+              <span
+                className={`${
+                  order.refund_status === 1
+                    ? "badge badge-primary"
+                    : "badge badge-warning"
+                } badge-outline badge-sm`}
+              >
                 {RefundStatus[order.refund_status]}{" "}
               </span>
             </div>
@@ -892,7 +907,6 @@ const OrderDetails: React.FC = () => {
 
       <OrderCalcelModal
         orderId={order?.order_id}
-        userId={order?.user_id}
         orderCancelModalOpen={orderCancelModalOpen}
         onClose={() => setOrderCancelModalOpen(false)}
         setRefetch={setRefetch}

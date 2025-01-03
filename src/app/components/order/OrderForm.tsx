@@ -168,7 +168,7 @@ const OrderForm: React.FC = () => {
       }
     };
     fetchData();
-  }, [formData.user_id]);
+  }, [formData.user_id, isSubmit]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -224,7 +224,7 @@ const OrderForm: React.FC = () => {
           (order.express_delivery_charges || 0) +
           (order.shipping_charges || 0),
         branch_id: order.branch_id,
-        order_status: null,
+        order_status: order.order_status,
       };
 
       setFormData(initialFormData);
@@ -526,6 +526,7 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="username"
+                autoComplete="off"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
