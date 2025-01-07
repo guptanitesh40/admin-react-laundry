@@ -75,6 +75,26 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
+            <Link to="/settings" onClick={() => handleItemClick("settings")}>
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "settings"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <li className="ki-filled ki-setting-2 text-lg"></li>
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Settings
+                  </span>
+                </div>
+              </div>
+            </Link>
+
             <Link to="/orders" onClick={() => handleItemClick("orders")}>
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -276,7 +296,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link>
+            </Link>            
 
             <Link to="/user" onClick={() => handleItemClick("user")}>
               <div

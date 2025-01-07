@@ -94,3 +94,6 @@ export { default as useUpdatePriceContent } from './price-content/useUpdatePrice
 export { default as useDeletePriceContent } from './price-content/useDeletePriceContent.ts';
 
 export { default as useGenerateInvoice } from './invoice/useGetInvoice.ts';
+
+export { default as useGetSettings } from './settings/useGetSettings.ts';
+export { default as useAddSettings } from './settings/useAddSettings.ts';

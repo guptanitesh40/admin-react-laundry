@@ -23,6 +23,7 @@ import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
+import { RiFilePaperLine } from "react-icons/ri";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -315,6 +316,11 @@ const OrderDetails: React.FC = () => {
       order.payment_status as unknown as keyof typeof PaymentStatus
     ];
 
+  const handlePrintLabel = () => {
+    const url = order?.order_label?.fileUrl;
+    window.open(url, "_blank");
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
@@ -343,17 +349,15 @@ const OrderDetails: React.FC = () => {
             >
               <i className="ki-filled ki-pencil mr-2"></i>Edit Order
             </button>
-            {order?.order_status < 8 &&
-              order?.refund_status !==1 && 
-              (
-                  <button
-                    className="flex items-center font-semibold btn btn-danger"
-                    onClick={handleOrderCancel}
-                  >
-                    <MdCancel size={20} />
-                    Cancel Order
-                  </button>
-                )}
+            {order?.order_status < 8 && order?.refund_status !== 1 && (
+              <button
+                className="flex items-center font-semibold btn btn-danger"
+                onClick={handleOrderCancel}
+              >
+                <MdCancel size={20} />
+                Cancel Order
+              </button>
+            )}
 
             {order.payment_status !== 1 && order.refund_status === 3 && (
               <button
@@ -416,7 +420,7 @@ const OrderDetails: React.FC = () => {
                 {order.refund_descriptions}
               </p>
             </div>
-            
+
             <div className="flex flex-col mr-4 gap-2">
               <span className="text-sm font-medium text-gray-700">
                 Refund Amount :{" "}
@@ -449,6 +453,12 @@ const OrderDetails: React.FC = () => {
           <div className="bg-white p-6 rounded-md shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Order Items</h2>
+              <button
+                className="btn btn-light btn-sm flex gap-2 ml-20 text-gray-700 text-sm font-semibold"
+                onClick={handlePrintLabel}
+              >
+                <RiFilePaperLine size={20} color="gray" /> Print Label
+              </button>
               <span className="text-gray-700 text-sm font-semibold px-3 py-1 rounded-lg ">
                 Total Items: {order.items.length}
               </span>
