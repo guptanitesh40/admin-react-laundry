@@ -23,8 +23,8 @@ const useGetCoupons = (
   search: string = '',
   sortColumn?: string,
   sortOrder?: string,
-  discount_type?: number,
-  coupon_type?: number[],
+  discount_types?: number,
+  coupon_types?: number[],
 ) => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -39,9 +39,9 @@ const useGetCoupons = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (discount_type) queryParams.append("discount_type", discount_type.toString());
-    if (coupon_type) {
-      coupon_type.forEach((c) => queryParams.append("coupon_type", c.toString()));
+    if (discount_types) queryParams.append("discount_types", discount_types.toString());
+    if (coupon_types) {
+      coupon_types.forEach((c) => queryParams.append("coupon_types", c.toString()));
     }
 
     setLoading(true);
@@ -77,7 +77,7 @@ const useGetCoupons = (
 
   useEffect(() => {
     fetchCoupons();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, coupon_type, discount_type]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, coupon_types, discount_types]);
 
   return { coupons, totalCoupons, loading, fetchCoupons };
 };

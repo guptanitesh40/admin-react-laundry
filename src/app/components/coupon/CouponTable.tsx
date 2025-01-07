@@ -525,7 +525,7 @@ const CouponTable: React.FC = () => {
                 <tbody>
                   <tr>
                     <td colSpan={5} className="text-center">
-                      No coupons available
+                      No coupon available
                     </td>
                   </tr>
                 </tbody>

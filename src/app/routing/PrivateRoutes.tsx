@@ -39,6 +39,7 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/price-content/PriceContent")
   );
   const UserProfile = lazy(() => import("../components/user/UserProfile"));
+  const Settings = lazy(() => import("../components/settings/Settings"));
 
   return (
     <Routes>
@@ -194,6 +195,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<ListShimmer />}>
               <Banner />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Settings />
             </Suspense>
           }
         />
