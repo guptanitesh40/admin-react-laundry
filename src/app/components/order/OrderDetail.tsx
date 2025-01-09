@@ -321,6 +321,11 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
+  const handleViewRefundReceipt = () => {
+    const url = order?.refund_receipt_url?.fileUrl;
+    window.open(url, "_blank");
+  }
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
@@ -444,6 +449,13 @@ const OrderDetails: React.FC = () => {
                 {RefundStatus[order.refund_status]}{" "}
               </span>
             </div>
+
+            <button
+                className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
+                onClick={handleViewRefundReceipt}
+              >
+                <RiFilePaperLine size={20} color="gray" /> Refund <br/>Receipt
+              </button>
           </div>
         )}
       </div>

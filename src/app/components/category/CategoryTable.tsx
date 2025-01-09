@@ -367,7 +367,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No Categories available
                     </td>
                   </tr>
                 </tbody>
