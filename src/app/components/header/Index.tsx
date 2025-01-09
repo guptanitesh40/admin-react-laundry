@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
           id="header_container"
         >
           <div className="flex gap-1 lg:hidden items-center -ml-1">
-            <a className="shrink-0" href="html/demo1.html">
+            <a className="shrink-0">
               <img
                 className="max-h-[25px] w-full"
                 src="/media/app/Favicon.png"
