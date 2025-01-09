@@ -449,7 +449,7 @@ const CompanyTable: React.FC = () => {
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No company available
                     </td>
                   </tr>
                 </tbody>

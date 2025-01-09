@@ -354,7 +354,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No banner available
                     </td>
                   </tr>
                 </tbody>

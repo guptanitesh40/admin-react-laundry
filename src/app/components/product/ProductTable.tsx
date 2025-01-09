@@ -297,7 +297,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No Products available
                     </td>
                   </tr>
                 </tbody>
