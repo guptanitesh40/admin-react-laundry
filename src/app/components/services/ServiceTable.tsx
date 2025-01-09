@@ -295,7 +295,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No users available
+                      No Service available
                     </td>
                   </tr>
                 </tbody>

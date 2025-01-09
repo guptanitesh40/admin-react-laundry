@@ -97,3 +97,5 @@ export { default as useGenerateInvoice } from './invoice/useGetInvoice.ts';
 
 export { default as useGetSettings } from './settings/useGetSettings.ts';
 export { default as useAddSettings } from './settings/useAddSettings.ts';
+
+export { default as useGetPayments } from './payment/useGetPayments.ts';

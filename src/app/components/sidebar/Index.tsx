@@ -8,6 +8,7 @@ import { LiaUserCircle } from "react-icons/lia";
 import { HiMiniPencilSquare } from "react-icons/hi2";
 import { CiShop } from "react-icons/ci";
 import { IoIosPricetags } from "react-icons/io";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
@@ -29,6 +30,9 @@ export const Sidebar: React.FC = () => {
   return (
     <div
       className="sidebar scrollbar-hide dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 hidden lg:flex flex-col items-stretch shrink-0"
+      data-drawer="true"
+      data-drawer-class="drawer drawer-start top-0 bottom-0"
+      data-drawer-enable="true|lg:false"
       id="sidebar"
     >
       <div
@@ -110,6 +114,26 @@ export const Sidebar: React.FC = () => {
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Orders
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/payments" onClick={() => handleItemClick("payments")}>
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "payments"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <FaMoneyBillTransfer color="gray" size={31} />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Payments
                   </span>
                 </div>
               </div>
