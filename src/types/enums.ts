@@ -73,3 +73,10 @@ export enum RefundStatus {
   "Partial" = 2,
   "None" = 3,
 }
+
+export enum IsPublish {
+  "None" = 1,
+  "Website" = 2,
+  "Mobile App" = 3,
+  "Both" = 4,
+}  

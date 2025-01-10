@@ -4315,7 +4315,7 @@ video {
 }
 
 .rating-on {
-  color: var(--tw-warning);
+  color: lightgreen;
 }
 
 .rating-off {
@@ -9704,4 +9704,25 @@ label.rating-label {
 
 .margin-x{
   margin:12px !important;
+}
+
+.publish-website {
+  background-color: #e6f2ff;
+  color: #0066cc;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+.publish-app {
+  background-color: #fff2e6;
+  color: #b3b300;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+.publish-both {
+  background-color: #f9f9f9;
+  color: #666666;
+  font-size: 14px;
+  padding: 5px 10px;
 }

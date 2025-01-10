@@ -41,6 +41,7 @@ const PrivateRoutes: React.FC = () => {
   const UserProfile = lazy(() => import("../components/user/UserProfile"));
   const Settings = lazy(() => import("../components/settings/Settings"));
   const Payments = lazy(() => import("../components/payments/Payments"));
+  const Feedback = lazy(() => import("../components/feedback/Feedback"));
 
   return (
     <Routes>
@@ -304,6 +305,15 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Shimmer />}>
               <WorkshopOrder />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/customer-feedback"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Feedback />
             </Suspense>
           }
         />

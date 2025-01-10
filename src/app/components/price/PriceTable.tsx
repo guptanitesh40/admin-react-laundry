@@ -6,10 +6,11 @@ import {
   useGetProducts,
   useGetServices,
 } from "../../hooks";
-import Shimmer from "../shimmer/Shimmer";
+import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import { searchSchema } from "../../validation/searchSchema";
 
 interface Category {
   category_id: number;
@@ -38,31 +39,30 @@ interface Combination {
 }
 
 interface PriceTableProps {
-  search: string;
   isSave: boolean;
   setIsSave: (value: boolean) => void;
 }
 
-const PriceTable: React.FC<PriceTableProps> = ({
-  search,
-  isSave,
-  setIsSave,
-}) => {
-  const { categories } = useGetCategories(1,1000);
-  const { products } = useGetProducts(1,1000);
-  const { services } = useGetServices(1,1000);
+const PriceTable: React.FC<PriceTableProps> = ({ isSave, setIsSave }) => {
+  const { categories } = useGetCategories(1, 1000);
+  const { products } = useGetProducts(1, 1000);
+  const { services } = useGetServices(1, 1000);
   const { prices, loading, fetchPrices } = useGetPrice();
   const { addPrice } = useAddPrice();
 
   const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
     {}
   );
-  
+
   const [editing, setEditing] = useState<Set<string>>(new Set());
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+
+  const [search, setSearch] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const getCombinations = useCallback(
     (
@@ -130,6 +130,22 @@ const PriceTable: React.FC<PriceTableProps> = ({
     }));
   };
 
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
+      }
+    }
+  };
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
@@ -195,157 +211,180 @@ const PriceTable: React.FC<PriceTableProps> = ({
   }, [search]);
 
   return (
-    <div>
-      {loading ? (
-        <Shimmer />
-      ) : (
-        <>
-          <div className="mt-12 grid gap-5 lg:gap-7.5">
-            <div className="card card-grid min-w-full">
-              <div className="card-body">
-                <div data-datatable="true" data-datatable-page-size="10">
-                  <div className="scrollable-x-auto">
-                    <table
-                      className="table table-auto table-border"
-                      data-datatable-table="true"
-                    >
-                      <thead>
-                        <tr>
-                          <th className="min-w-[40px]">Id</th>
-                          <th className="min-w-[250px]">
-                            <span
-                              className={`sort ${
-                                sortColumn === "category"
-                                  ? sortOrder === "ASC"
-                                    ? "asc"
-                                    : "desc"
-                                  : ""
-                              }`}
-                              onClick={() => handleSort("category")}
-                            >
-                              <span className="sort-label">Category</span>
-                              <span className="sort-icon"></span>
-                            </span>
-                          </th>
-                          <th className="min-w-[250px]">
-                            <span
-                              className={`sort ${
-                                sortColumn === "product"
-                                  ? sortOrder === "ASC"
-                                    ? "asc"
-                                    : "desc"
-                                  : ""
-                              }`}
-                              onClick={() => handleSort("product")}
-                            >
-                              <span className="sort-label">Product</span>
-                              <span className="sort-icon"></span>
-                            </span>
-                          </th>
-                          <th className="min-w-[250px]">
-                            <span
-                              className={`sort ${
-                                sortColumn === "service"
-                                  ? sortOrder === "ASC"
-                                    ? "asc"
-                                    : "desc"
-                                  : ""
-                              }`}
-                              onClick={() => handleSort("service")}
-                            >
-                              <span className="sort-label">Service</span>
-                              <span className="sort-icon"></span>
-                            </span>
-                          </th>
+    <>
+      <div className="flex-wrap container-fixed">
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="min-w-[185px]"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
+          </div>
+        </div>
+      </div>
 
-                          <th className="min-w-[200px]">
-                            <span
-                              className={`sort ${
-                                sortColumn === "price"
-                                  ? sortOrder === "ASC"
-                                    ? "asc"
-                                    : "desc"
-                                  : ""
-                              }`}
-                              onClick={() => handleSort("price")}
-                            >
-                              <span className="sort-label">Price</span>
-                              <span className="sort-icon"></span>
-                            </span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredCombinations.length > 0 ? (
-                          filteredCombinations.map((combination, index) => {
-                            const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-                            const isEditing = editing.has(key);
+      <div className="container-fixed">
+        <div className="grid gap-5 lg:gap-7.5">
+          <div className="card card-grid min-w-full">
+            <div className="card-body">
+              <div data-datatable="true" data-datatable-page-size="10">
+                <div className="scrollable-x-auto">
+                  <table
+                    className="table table-auto table-border"
+                    data-datatable-table="true"
+                  >
+                    <thead>
+                      <tr>
+                        <th className="min-w-[40px]">Id</th>
+                        <th className="min-w-[250px]">
+                          <span
+                            className={`sort ${
+                              sortColumn === "category"
+                                ? sortOrder === "ASC"
+                                  ? "asc"
+                                  : "desc"
+                                : ""
+                            }`}
+                            onClick={() => handleSort("category")}
+                          >
+                            <span className="sort-label">Category</span>
+                            <span className="sort-icon"></span>
+                          </span>
+                        </th>
+                        <th className="min-w-[250px]">
+                          <span
+                            className={`sort ${
+                              sortColumn === "product"
+                                ? sortOrder === "ASC"
+                                  ? "asc"
+                                  : "desc"
+                                : ""
+                            }`}
+                            onClick={() => handleSort("product")}
+                          >
+                            <span className="sort-label">Product</span>
+                            <span className="sort-icon"></span>
+                          </span>
+                        </th>
+                        <th className="min-w-[250px]">
+                          <span
+                            className={`sort ${
+                              sortColumn === "service"
+                                ? sortOrder === "ASC"
+                                  ? "asc"
+                                  : "desc"
+                                : ""
+                            }`}
+                            onClick={() => handleSort("service")}
+                          >
+                            <span className="sort-label">Service</span>
+                            <span className="sort-icon"></span>
+                          </span>
+                        </th>
 
-                            return (
-                              <tr
-                                key={index}
-                                className={`font-semibold ${
-                                  combination.price ? "" : "text-red-500"
-                                }`}
-                              >
-                                <td>{index + 1}</td>
-                                <td>{combination.category.name}</td>
-                                <td>{combination.product.name}</td>
-                                <td>{combination.service.name}</td>
-                                <td className="relative">
-                                  {isEditing ? (
-                                    <input
-                                      ref={(el) =>
-                                        (inputRefs.current[key] = el)
-                                      }
-                                      type="text"
-                                      className="w-full h-full absolute inset-0 input input-bordered"
-                                      value={
-                                        updatedPrices[key] !== undefined
-                                          ? updatedPrices[key]
-                                          : combination.price || ""
-                                      }
-                                      onChange={(e) =>
-                                        handlePriceChange(
-                                          key,
-                                          e.target.value === ""
-                                            ? 0
-                                            : Number(e.target.value)
-                                        )
-                                      }
-                                      onBlur={() => handleInputBlur(key)}
-                                    />
-                                  ) : (
-                                    <span
-                                      className="cursor-pointer h-full flex"
-                                      onClick={() => handleEditClick(key)}
-                                    >
-                                      {updatedPrices[key] !== undefined
+                        <th className="min-w-[200px]">
+                          <span
+                            className={`sort ${
+                              sortColumn === "price"
+                                ? sortOrder === "ASC"
+                                  ? "asc"
+                                  : "desc"
+                                : ""
+                            }`}
+                            onClick={() => handleSort("price")}
+                          >
+                            <span className="sort-label">Price</span>
+                            <span className="sort-icon"></span>
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredCombinations.length > 0 ? (
+                        filteredCombinations.map((combination, index) => {
+                          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+                          const isEditing = editing.has(key);
+
+                          return (
+                            <tr
+                              key={index}
+                              className={`font-semibold ${
+                                combination.price ? "" : "text-red-500"
+                              }`}
+                            >
+                              <td>{index + 1}</td>
+                              <td>{combination.category.name}</td>
+                              <td>{combination.product.name}</td>
+                              <td>{combination.service.name}</td>
+                              <td className="relative">
+                                {isEditing ? (
+                                  <input
+                                    ref={(el) => (inputRefs.current[key] = el)}
+                                    type="text"
+                                    className="w-full h-full absolute inset-0 input input-bordered"
+                                    value={
+                                      updatedPrices[key] !== undefined
                                         ? updatedPrices[key]
-                                        : combination.price || "Add Price"}
-                                    </span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td colSpan={5} className="text-center">
-                              No data available
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                                        : combination.price || ""
+                                    }
+                                    onChange={(e) =>
+                                      handlePriceChange(
+                                        key,
+                                        e.target.value === ""
+                                          ? 0
+                                          : Number(e.target.value)
+                                      )
+                                    }
+                                    onBlur={() => handleInputBlur(key)}
+                                  />
+                                ) : (
+                                  <span
+                                    className="cursor-pointer h-full flex"
+                                    onClick={() => handleEditClick(key)}
+                                  >
+                                    {updatedPrices[key] !== undefined
+                                      ? updatedPrices[key]
+                                      : combination.price || "Add Price"}
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={5} className="text-center">
+                            No data available
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+      </div>
+    </>
   );
 };
 
