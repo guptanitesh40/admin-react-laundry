@@ -76,74 +76,76 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <div className="space-y-6">
-          <div className="col-span-2 lg:col-span-1 flex">
-            <div className="card grow">
-              <div className="card-header">
-                <h3 className="card-title">Personal Information</h3>
-              </div>
-              <div className="card-body pt-4 pb-3">
-                <table className="table-auto">
-                  <tbody>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Name:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {user.first_name} {user.last_name}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Email:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        email
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Mobile Number:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {user.mobile_number}
-                      </td>
-                    </tr>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-7.5 mt-5">
 
-                    {user.role_id === 5 ? (
-                      <tr>
-                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                          Profile Photo :
-                        </td>
-                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          <span className="">
-                            <img
-                              className="h-14 w-14 rounded-full"
-                              src={`${BASE_URL}/images/user/1735042941768.jpeg`}
-                            />
-                          </span>
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr>
-                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                          Role:
-                        </td>
-                        <span
-                          className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                            user.role_id
-                          )}`}
-                        >
-                          {Role[user.role_id as unknown as keyof typeof Role]}
+        <div className="col-span-1">
+          <div className="card pb-2.5">
+            
+            <div className="card-header">
+              <h3 className="card-title">Personal Information</h3>
+            </div>
+
+            <div className="card-body pt-4 pb-3">
+              <table className="table-auto">
+                <tbody>
+                  <tr>
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                      Name:
+                    </td>
+                    <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                      {user.first_name} {user.last_name}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                      Email:
+                    </td>
+                    <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                      email
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                      Mobile Number:
+                    </td>
+                    <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                      {user.mobile_number}
+                    </td>
+                  </tr>
+
+                  {user.role_id === 5 ? (
+                    <tr>
+                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                        Profile Photo :
+                      </td>
+                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        <span className="">
+                          <img
+                            className="h-14 w-14 rounded-full"
+                            src={`${BASE_URL}/images/user/1735042941768.jpeg`}
+                          />
                         </span>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                        Role:
+                      </td>
+                      <span
+                        className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
+                          user.role_id
+                        )}`}
+                      >
+                        {Role[user.role_id as unknown as keyof typeof Role]}
+                      </span>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -167,7 +169,7 @@ const UserProfile: React.FC = () => {
                   <th className="min-w-[80px]">Paid Amount</th>
                   <th className="">Kasar Amount</th>
                   <th className="min-w-[140px]">Payment Type</th>
-                  <th>Payment Status</th>
+                  <th className="min-w-[135px]">Payment Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>

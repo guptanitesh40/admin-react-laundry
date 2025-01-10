@@ -173,25 +173,23 @@ const BranchTable: React.FC = () => {
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
-        <div className="flex flex-col items-center gap-2 mb-4">
-          <div className="flex items-center gap-2">
-            <span>Per Page</span>
-            <select
-              className="select select-sm w-16"
-              data-datatable-size="true"
-              name="perpage"
-              value={perPage}
-              onChange={handlePerPageChange}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
+          <select
+            className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
+            value={perPage}
+            onChange={handlePerPageChange}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+          <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-wrap gap-2.5 mb-6">
-            <div className="flex items-center gap-3 mb-5">
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
               <MultiSelect
                 options={companies?.map((company) => ({
                   label: company.company_name,
@@ -233,37 +231,31 @@ const BranchTable: React.FC = () => {
                 }
                 className="min-w-[300px]"
               />
-            </div>
           </div>
 
-          <div className="flex flex-col items-start">
-            <div className="flex flex-col items-start">
-              <form
-                onSubmit={onSearchSubmit}
-                className="flex items-center gap-2"
-              >
-                <label className="input input-sm h-10 flex items-center gap-2">
-                  <input
-                    type="search"
-                    value={searchInput}
-                    onChange={(e) => {
-                      setSearchInput(e.target.value);
-                      if (e.target.value === "") {
-                        setSearch("");
-                      }
-                    }}
-                    placeholder="Search..."
-                    className="flex-grow"
-                  />
-                  <button type="submit" className="btn btn-sm btn-icon">
-                    <i className="ki-filled ki-magnifier"></i>
-                  </button>
-                </label>
-              </form>
-              <p className="text-red-500 text-sm mt-1">
-                {errorMessage || "\u00A0"}
-              </p>
-            </div>
+          <div className="flex">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
+                <input
+                  type="search"
+                  value={searchInput}
+                  onChange={(e) => {
+                    setSearchInput(e.target.value);
+                    if (e.target.value === "") {
+                      setSearch("");
+                    }
+                  }}
+                  placeholder="Search..."
+                  className="flex-grow"
+                />
+                <button type="submit" className="btn btn-sm btn-icon">
+                  <i className="ki-filled ki-magnifier"></i>
+                </button>
+              </label>
+            </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
           </div>
         </div>
       </div>
@@ -306,8 +298,7 @@ const BranchTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[320px]">Address
-                  </th>
+                  <th className="min-w-[320px]">Address</th>
 
                   <th className="min-w-[200px]">
                     <span

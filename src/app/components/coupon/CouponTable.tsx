@@ -32,7 +32,6 @@ const CouponTable: React.FC = () => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-
   const { coupons, fetchCoupons, loading, totalCoupons } = useGetCoupons(
     currentPage,
     perPage,
@@ -177,48 +176,44 @@ const CouponTable: React.FC = () => {
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-wrap gap-2.5 mb-6">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center mb-5">
-                <MultiSelect
-                  options={couponTypeOptions}
-                  displayValue="label"
-                  placeholder="Select Coupon Type"
-                  selectedValues={couponTypeFilter}
-                  onSelect={(selectedList: any) =>
-                    setCouponTypeFilter(
-                      selectedList.map((item: { value: any }) => item.value)
-                    )
-                  }
-                  onRemove={(selectedList: any) =>
-                    setCouponTypeFilter(
-                      selectedList.map((item: { value: any }) => item.value)
-                    )
-                  }
-                  className="min-w-[250px]"
-                  sliceCount={3}
-                  isSearchInput={false}
-                />
-              </div>
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
+            <MultiSelect
+              options={couponTypeOptions}
+              displayValue="label"
+              placeholder="Select Coupon Type"
+              selectedValues={couponTypeFilter}
+              onSelect={(selectedList: any) =>
+                setCouponTypeFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setCouponTypeFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[250px]"
+              sliceCount={3}
+              isSearchInput={false}
+            />
 
-              <select
-                className="select select-lg w-[170px] text-sm"
-                value={discountTypeFiter}
-                onChange={(e) => {
-                  setDicountTypeFilter(Number(e.target.value));
-                }}
-              >
-                <option value="" selected>
-                  Discount type
-                </option>
-                <option value={1}>Amount</option>
-                <option value={2}>Percentage</option>
-              </select>
-            </div>
+            <select
+              className="select select-lg w-[170px] text-sm"
+              value={discountTypeFiter}
+              onChange={(e) => {
+                setDicountTypeFilter(Number(e.target.value));
+              }}
+            >
+              <option value="" selected>
+                Discount type
+              </option>
+              <option value={1}>Amount</option>
+              <option value={2}>Percentage</option>
+            </select>
           </div>
 
-          <div className="flex flex-col items-start">
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -231,7 +226,7 @@ const CouponTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="flex-grow"
+                  className="min-w-[185px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>

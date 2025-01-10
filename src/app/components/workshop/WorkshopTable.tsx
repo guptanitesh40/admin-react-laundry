@@ -206,8 +206,8 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex items-center mb-11">
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
             <MultiSelect
               options={workshopManagers}
               displayValue="label"
@@ -223,11 +223,11 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                   selectedList.map((manager) => manager.value)
                 )
               }
-              className="w-[320px]"
+              className="w-[300px]"
             />
           </div>
 
-          <div className="flex flex-col items-start">
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -240,7 +240,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="min-w-[185px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>

@@ -172,12 +172,8 @@ const CompanyTable: React.FC = () => {
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-wrap gap-2.5 mb-6">
-            <button className="btn btn-lg btn-outline btn-primary flex-shrink-0">
-              <i className="ki-filled ki-setting-4"></i>
-              Filter
-            </button>
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
             <select
               className="select select-lg w-[200px] text-sm"
               value={ownershipFilter}
@@ -186,14 +182,14 @@ const CompanyTable: React.FC = () => {
               }}
             >
               <option value="" selected>
-               Select Ownership
+                Select Ownership
               </option>
               <option value={1}>Own</option>
               <option value={2}>Other Company</option>
             </select>
           </div>
 
-          <div className="flex flex-col items-start">
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -206,7 +202,7 @@ const CompanyTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="min-w-[185px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>

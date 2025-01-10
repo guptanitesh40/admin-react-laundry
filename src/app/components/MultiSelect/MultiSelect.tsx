@@ -124,9 +124,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             )}
           </div>
         )}
-        <span className="dropdown-arrow">
-          <MdArrowDropDown size={22} />
-        </span>
       </div>
 
       {dropdownOpen && (
