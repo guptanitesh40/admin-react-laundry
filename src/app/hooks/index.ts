@@ -99,3 +99,4 @@ export { default as useGetSettings } from './settings/useGetSettings.ts';
 export { default as useAddSettings } from './settings/useAddSettings.ts';
 
 export { default as useGetPayments } from './payment/useGetPayments.ts';
+export { default as useGetFeedbacks } from './feedback/useGetFeedbacks.ts';

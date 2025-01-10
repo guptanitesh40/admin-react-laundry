@@ -214,7 +214,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="min-w-[185px]"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>

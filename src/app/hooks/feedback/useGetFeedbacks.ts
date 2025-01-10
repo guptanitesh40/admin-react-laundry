@@ -3,13 +3,14 @@ import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 const token = localStorage.getItem("authToken");
 
-interface Payments {
-  created_at: string,
-  razorpay_transaction_id: number;
-  razorpay_order_id: string;
-  currency: string;
-  status: any;
-  amount: number;
+interface Feedback {
+  created_at: any;
+  feedback_id: number;
+  rating: number;
+  comment: string;
+  is_publish: any;
+  order_id: number;
+  order: any;
   user_id: number;
   user: any;
   first_name: string;
@@ -18,18 +19,18 @@ interface Payments {
   mobile_number: any;
 }
 
-const useGetPayments = (
+const useGetFeedbacks = (
   pageNumber: number = 1,
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
   sortOrder?: string
 ) => {
-  const [payments, setPayments] = useState<Payments[]>();
-  const [count, setCount] = useState(0);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [count, setCount] = useState(0);
 
-  const fetchPayments = async () => {
+  const fetchFeedbacks = async () => {
 
     const queryParams = new URLSearchParams();
 
@@ -40,9 +41,8 @@ const useGetPayments = (
     if (sortOrder) queryParams.append("order", sortOrder);
 
     setLoading(true);
-
     try {
-      const response = await fetch(`${BASE_URL}/razorpay/transaction?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/feedback?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
@@ -57,20 +57,20 @@ const useGetPayments = (
         return;
       }
 
-      setPayments(data?.data?.result);
+      setFeedbacks(data?.data?.feedbacks);
       setCount(data?.data?.count);
     } catch (error: any) {
-      toast.error("Network Error : Failed to fetch payments");
+      toast.error(error || "Network Error : Failed to fetch feedbacks");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPayments();
+    fetchFeedbacks();
   }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
-  return { payments, count, fetchPayments, loading };
+  return { feedbacks, fetchFeedbacks, loading, count };
 };
 
-export default useGetPayments;
+export default useGetFeedbacks;
