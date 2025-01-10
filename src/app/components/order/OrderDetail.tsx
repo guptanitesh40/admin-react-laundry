@@ -33,6 +33,9 @@ const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const order_id = Number(id);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId  = user?.user_id;
+
   const { order, fetchOrder } = useGetOrder();
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
@@ -147,7 +150,7 @@ const OrderDetails: React.FC = () => {
       await schema.validate(formData, { abortEarly: false });
 
       const formDataObj = new FormData();
-      formDataObj.append("user_id", formData.user_id);
+      formDataObj.append("user_id", userId);
       formDataObj.append("order_id", formData.order_id);
       formDataObj.append("text_note", formData.text_note);
 

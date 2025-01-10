@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { useGetPayments } from "../../hooks";
 import { useSearchParams } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useGetFeedbacks } from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
+import { IsPublish } from "../../../types/enums";
+import { getPublishStatusLabel } from "../../utils/publishStatus";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
-const PaymentsTable: React.FC = () => {
+const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,7 +21,7 @@ const PaymentsTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { payments, count } = useGetPayments(
+  const { feedbacks, count } = useGetFeedbacks(
     currentPage,
     perPage,
     search,
@@ -80,7 +82,19 @@ const PaymentsTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  if (!payments) return;
+  const renderRatingStars = (rating: any) => {
+    return Array.from({ length: 5 }).map((_, index) => (
+      <div
+        key={index}
+        className={`rating-label ${index < rating ? "checked" : ""}`}
+      >
+        <i className="rating-on ki-solid ki-star text-base leading-none"></i>
+        <i className="rating-off ki-outline ki-star text-base leading-none"></i>
+      </div>
+    ));
+  };
+
+  if (!feedbacks) return;
 
   return (
     <>
@@ -114,7 +128,7 @@ const PaymentsTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="min-w-[185px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
@@ -134,6 +148,21 @@ const PaymentsTable: React.FC = () => {
             <table className="table table-auto table-border">
               <thead>
                 <tr>
+                  <th className="min-w-[70px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "order_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("order_id")}
+                    >
+                      <span className="sort-label">Order Id</span>
+                      <span className="sort-icon"></span>
+                    </span>{" "}
+                  </th>
                   <th className="min-w-[250px]">
                     <span
                       className={`sort ${
@@ -145,7 +174,7 @@ const PaymentsTable: React.FC = () => {
                       }`}
                       onClick={() => handleSort("first_name")}
                     >
-                      <span className="sort-label">Customer Name</span>
+                      <span className="sort-label">Customer name</span>
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
@@ -162,7 +191,7 @@ const PaymentsTable: React.FC = () => {
                     >
                       <span className="sort-label">Email</span>
                       <span className="sort-icon"></span>
-                    </span>{" "}
+                    </span>
                   </th>
                   <th className="min-w-[130px]">
                     <span
@@ -175,67 +204,96 @@ const PaymentsTable: React.FC = () => {
                       }`}
                       onClick={() => handleSort("mobile_number")}
                     >
-                      <span className="sort-label">Mobile No</span>
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[300px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "rating"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("rating")}
+                    >
+                      <span className="sort-label">Rating</span>
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
                   <th className="min-w-[120px]">
                     <span
                       className={`sort ${
-                        sortColumn === "razorpay_transaction_id"
+                        sortColumn === "date"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("razorpay_transaction_id")}
+                      onClick={() => handleSort("date")}
                     >
-                      <span className="sort-label">Transaction Id</span>
+                      <span className="sort-label">Date</span>
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
-                  <th className="min-w-[120px]">Created At</th>
-                  <th className="min-w-[60px]">Status</th>
-                  <th className="min-w-[120px]">Order Id</th>
-                  <th className="min-w-[60px]">Currency</th>
-                  <th className="min-w-[60px]">
+                  <th className="min-w-[140px]">
                     <span
                       className={`sort ${
-                        sortColumn === "amount"
+                        sortColumn === "is_publish"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("amount")}
+                      onClick={() => handleSort("is_publish")}
                     >
-                      <span className="sort-label">Amount</span>
+                      <span className="sort-label">Publish</span>
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
                 </tr>
               </thead>
-              {payments.length > 0 ? (
+              {feedbacks.length > 0 ? (
                 <tbody>
-                  {payments.map((payment) => (
-                    <tr key={payment.razorpay_transaction_id}>
+                  {feedbacks.map((feedback) => (
+                    <tr key={feedback.feedback_id}>
+                      <td>#{feedback.order_id}</td>
                       <td>
-                        {payment.user.first_name} {payment.user.last_name}
+                        {feedback?.order?.user?.first_name}{" "}
+                        {feedback?.order?.user?.last_name}
                       </td>
-                      <td>{payment.user.email}</td>
-                      <td>{payment.user.mobile_number}</td>
-                      <td>{payment.razorpay_transaction_id}</td>
+                      <td>{feedback?.order?.user?.email}</td>
+                      <td>{feedback?.order?.user?.mobile_number}</td>
+                      <td className="flex flex-col">
+                        <span>
+                          <div className="rating">
+                            {renderRatingStars(feedback.rating)}
+                          </div>
+                        </span>
+                        {feedback.comment}
+                      </td>
                       <td>
                         <div className="flex items-center gap-2.5">
-                          {dayjs(payment.created_at).format("DD-MM-YYYY")}
+                          {dayjs(feedback.created_at).format("DD-MM-YYYY")}
                           <br />
-                          {dayjs(payment.created_at).format("hh:mm:ss A")}
+                          {dayjs(feedback.created_at).format("hh:mm:ss A")}
                         </div>
                       </td>
-                      <td>{payment.status}</td>
-                      <td>{payment.razorpay_order_id}</td>
-                      <td>{payment.currency}</td>
-                      <td>{payment.amount}</td>
+                      <td>
+                        <span
+                          className={`mt-1 rounded-md text-sm ${getPublishStatusLabel(
+                            feedback.is_publish
+                          )}`}
+                        >
+                          {
+                            IsPublish[
+                              feedback.is_publish as keyof typeof IsPublish
+                            ]
+                          }
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -243,7 +301,7 @@ const PaymentsTable: React.FC = () => {
                 <tbody>
                   <tr>
                     <td colSpan={5} className="text-center">
-                      No Payments data available
+                      No Feedback data available
                     </td>
                   </tr>
                 </tbody>
@@ -255,7 +313,7 @@ const PaymentsTable: React.FC = () => {
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {payments.length} of {count} Orders
+                  Showing {feedbacks.length} of {count} Users
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button
@@ -295,4 +353,4 @@ const PaymentsTable: React.FC = () => {
   );
 };
 
-export default PaymentsTable;
+export default FeedbackTable;

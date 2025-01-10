@@ -9,6 +9,7 @@ import { HiMiniPencilSquare } from "react-icons/hi2";
 import { CiShop } from "react-icons/ci";
 import { IoIosPricetags } from "react-icons/io";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { VscFeedback } from "react-icons/vsc";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
@@ -42,7 +43,7 @@ export const Sidebar: React.FC = () => {
         <img
           className="default-logo min-h-[22px] max-w-none"
           src="/media/app/Group 34972.png"
-        />       
+        />
       </div>
 
       <div
@@ -320,7 +321,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link>            
+            </Link>
 
             <Link to="/user" onClick={() => handleItemClick("user")}>
               <div
@@ -380,6 +381,29 @@ export const Sidebar: React.FC = () => {
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Workshop Orders
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              to="/customer-feedback"
+              onClick={() => handleItemClick("customer-feedback")}
+            >
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "customer-feedback"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <VscFeedback size={33} color="gray" />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Customer Feedback
                   </span>
                 </div>
               </div>
