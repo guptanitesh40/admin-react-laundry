@@ -52,14 +52,7 @@ export const Header: React.FC = () => {
                 data-drawer-toggle="#sidebar"
               >
                 <i className="ki-filled ki-menu"></i>
-              </button>
-
-              <button
-                className="btn btn-icon btn-light btn-clear btn-sm"
-                data-drawer-toggle="#megamenu_wrapper"
-              >
-                <i className="ki-filled ki-burger-menu-2"></i>
-              </button>
+              </button>              
             </div>
           </div>
 

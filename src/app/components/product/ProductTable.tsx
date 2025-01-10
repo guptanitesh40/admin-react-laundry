@@ -157,27 +157,25 @@ const ProductTable: React.FC<ProductTableProps> = ({
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
-        <div className="justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm mb-2 font-medium">
-          <div className="flex items-center gap-2 order-2 md:order-1">
-            Show
-            <select
-              className="select select-sm w-16"
-              data-datatable-size="true"
-              name="perpage"
-              value={perPage}
-              onChange={handlePerPageChange}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-            </select>
-            per page
-          </div>
+        <div className="flex items-center gap-2 mb-4">
+          <span>Show</span>
+          <select
+            className="select select-sm w-16"
+            data-datatable-size="true"
+            name="perpage"
+            value={perPage}
+            onChange={handlePerPageChange}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+          <span>per page</span>
         </div>
 
-        <div className="flex flex-wrap gap-2 lg:gap-5">
-          <div className="flex flex-col">
-            <form onSubmit={onSearchSubmit} className="flex flex-col">
-              <label className="input input-sm h-10 flex items-center">
+        <div className="flex items-center gap-4 flex-1 justify-end">
+          <div className="flex flex-col items-start">
+            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+              <label className="input input-sm h-10 flex items-center gap-2">
                 <input
                   type="search"
                   value={searchInput}
@@ -187,15 +185,17 @@ const ProductTable: React.FC<ProductTableProps> = ({
                       setSearch("");
                     }
                   }}
-                  placeholder="Search product"
-                  className="w-[275px]"
+                  placeholder="Search..."
+                  className="min-w-[185px] flex-grow"
                 />
-                <button type="submit">
+                <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
                 </button>
               </label>
-              <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
             </form>
+            <p className="text-red-500 text-sm mt-1">
+              {errorMessage || "\u00A0"}
+            </p>
           </div>
         </div>
       </div>
@@ -225,7 +225,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[250px]">
+                  <th className="min-w-[690px]">
                     <span
                       className={`sort ${
                         sortColumn === "name"
@@ -241,14 +241,14 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="w-[125px]">
+                  <th className="min-w-[125px]">
                     <div className="flex justify-between">
                       Image
                       <div className="flex "></div>
                     </div>
                   </th>
 
-                  <th className="w-[130px]">Actions</th>
+                  <th className="min-w-[125px]">Actions</th>
                 </tr>
               </thead>
               {loading ? (

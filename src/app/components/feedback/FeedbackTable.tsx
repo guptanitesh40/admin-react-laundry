@@ -208,7 +208,7 @@ const FeedbackTable: React.FC = () => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-                  <th className="min-w-[300px]">
+                  <th className="min-w-[100px]">
                     <span
                       className={`sort ${
                         sortColumn === "rating"
@@ -220,6 +220,21 @@ const FeedbackTable: React.FC = () => {
                       onClick={() => handleSort("rating")}
                     >
                       <span className="sort-label">Rating</span>
+                      <span className="sort-icon"></span>
+                    </span>{" "}
+                  </th>
+                  <th className="min-w-[300px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "comment"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("comment")}
+                    >
+                      <span className="sort-label">Comment</span>
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
@@ -266,14 +281,14 @@ const FeedbackTable: React.FC = () => {
                       </td>
                       <td>{feedback?.order?.user?.email}</td>
                       <td>{feedback?.order?.user?.mobile_number}</td>
-                      <td className="flex flex-col">
+                      <td>
                         <span>
                           <div className="rating">
                             {renderRatingStars(feedback.rating)}
                           </div>
                         </span>
-                        {feedback.comment}
                       </td>
+                      <td>{feedback.comment}</td>
                       <td>
                         <div className="flex items-center gap-2.5">
                           {dayjs(feedback.created_at).format("DD-MM-YYYY")}

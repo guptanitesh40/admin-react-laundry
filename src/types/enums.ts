@@ -59,7 +59,7 @@ export enum Gender {
 
 export enum BannerType {
   "Website" = 1,
-  "App" = 2,
+  "Mobile App" = 2,
   "Both" = 3,
 }
 

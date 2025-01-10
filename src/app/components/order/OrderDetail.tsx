@@ -34,7 +34,7 @@ const OrderDetails: React.FC = () => {
   const order_id = Number(id);
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const userId  = user?.user_id;
+  const userId = user?.user_id;
 
   const { order, fetchOrder } = useGetOrder();
   const { addNote, loading } = useAddNote();
@@ -327,7 +327,7 @@ const OrderDetails: React.FC = () => {
   const handleViewRefundReceipt = () => {
     const url = order?.refund_receipt_url?.fileUrl;
     window.open(url, "_blank");
-  }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -454,11 +454,12 @@ const OrderDetails: React.FC = () => {
             </div>
 
             <button
-                className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
-                onClick={handleViewRefundReceipt}
-              >
-                <RiFilePaperLine size={20} color="gray" /> Refund <br/>Receipt
-              </button>
+              className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
+              onClick={handleViewRefundReceipt}
+            >
+              <RiFilePaperLine size={20} color="gray" /> Refund <br />
+              Receipt
+            </button>
           </div>
         )}
       </div>
@@ -493,7 +494,7 @@ const OrderDetails: React.FC = () => {
                       />
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold text-gray-900 mb-px">
-                          {item.product.name}
+                          {item.product.name} ({item.quantity})
                         </span>
                         <span className="text-2sm font-medium text-gray-600">
                           Category: {item.category.name}
@@ -756,6 +757,16 @@ const OrderDetails: React.FC = () => {
                         {paymentStatusLabel}
                       </td>
                     </tr>
+                    {order?.pending_due_amount && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Pending amount:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.pending_due_amount}
+                        </td>
+                      </tr>
+                    )}
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Transaction ID:
