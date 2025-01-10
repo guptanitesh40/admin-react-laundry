@@ -13,6 +13,8 @@ import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import { getPublishStatusLabel } from "../../utils/publishStatus";
+import { getBannerTypeLabel } from "../../utils/bannerTypeLabel";
 
 interface BannerTableProps {
   setEditBanner: (banner_id: number) => void;
@@ -184,8 +186,8 @@ const BannerTable: React.FC<BannerTableProps> = ({
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex items-center mb-11">             
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
             <MultiSelect
               options={bannerTypeOptions}
               displayValue="label"
@@ -201,13 +203,13 @@ const BannerTable: React.FC<BannerTableProps> = ({
                   selectedList.map((item: { value: any }) => item.value)
                 )
               }
-              className="min-w-[250px]"
+              className="min-w-[270px]"
               sliceCount={3}
               isSearchInput={false}
             />
           </div>
 
-          <div className="flex flex-col items-start">
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -220,7 +222,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                     }
                   }}
                   placeholder="Search..."
-                  className="w-[275px] flex-grow"
+                  className="min-w-[185px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
@@ -293,9 +295,9 @@ const BannerTable: React.FC<BannerTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="w-[125px]">Banner type</th>
+                  <th className="min-w-[130px]">Banner type</th>
 
-                  <th className="w-[125px]">Actions</th>
+                  <th className="min-w-[125px]">Actions</th>
                 </tr>
               </thead>
               {loading ? (
@@ -327,11 +329,17 @@ const BannerTable: React.FC<BannerTableProps> = ({
                         </div>
                       </td>
                       <td>
-                        {
-                          BannerType[
-                            banner.banner_type as unknown as keyof typeof BannerType
-                          ]
-                        }
+                        <span
+                          className={`mt-1 rounded-md text-sm ${getBannerTypeLabel(
+                            banner.banner_type
+                          )}`}
+                        >
+                          {
+                            BannerType[
+                              banner.banner_type as unknown as keyof typeof BannerType
+                            ]
+                          }
+                        </span>
                       </td>
                       <td>
                         <button

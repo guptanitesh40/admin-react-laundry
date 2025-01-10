@@ -3,10 +3,11 @@ export const getPublishStatusLabel = (status: number) => {
     case 1:
       return "";
     case 2:
-      return "publish-website";
+      return "badge-website";
     case 3:
-      return "publish-app";
+      return "badge-app";
     default:
-      return "publish-both";
+      return "badge-web-app";
   }
 };
+
