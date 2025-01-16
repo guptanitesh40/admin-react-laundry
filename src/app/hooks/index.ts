@@ -69,7 +69,11 @@ export { default as useResetPassword } from './login/useResetPassword';
 export { default as useValidateOtp } from './login/useValidateOtp';
 
 export { default as useGetOrdersData } from './report/useGetOrdersData';
-export { default as useGetPaymentData } from './report/useGetPaymentData';
+export { default as useGetSalesData } from './report/useGetSalesData.ts';
+export { default as useGetPaymentTypeData } from './report/useGetPaymentTypeData.ts';
+export { default as useGetKasarData } from './report/useGetKasarData';
+export { default as useGetDeliveryPendingData } from './report/useGetDeliveryPendingData.ts';
+
 
 export { default as useGetWorkshops } from './workshop/useGetWorkshops';
 export { default as useGetWorkshop } from './workshop/useGetWorkshop';
@@ -100,3 +104,4 @@ export { default as useAddSettings } from './settings/useAddSettings.ts';
 
 export { default as useGetPayments } from './payment/useGetPayments.ts';
 export { default as useGetFeedbacks } from './feedback/useGetFeedbacks.ts';
+
