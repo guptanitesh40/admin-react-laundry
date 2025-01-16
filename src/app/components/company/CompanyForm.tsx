@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useAddCompany,
-  useGetCompany,
-  useUpdateCompany,
-} from "../../hooks";
+import { useAddCompany, useGetCompany, useUpdateCompany } from "../../hooks";
 import toast from "react-hot-toast";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -70,7 +66,6 @@ const CompanyForm: React.FC = () => {
     };
     fetchCompanyData();
   }, [company_id]);
-  
 
   useEffect(() => {
     if (company) {
@@ -121,24 +116,29 @@ const CompanyForm: React.FC = () => {
       await schema.validate(formData, { abortEarly: false });
 
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
-          if (key === "logo") {
-            return formData.logo instanceof File || formData.logo !== initialFormData.logo;
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            if (key === "logo") {
+              return (
+                formData.logo instanceof File ||
+                formData.logo !== initialFormData.logo
+              );
+            }
+            return formData[key] !== initialFormData[key];
           }
-          return formData[key] !== initialFormData[key];
-        });
+        );
       };
 
-      if (!isDataChanged()) { 
-        navigate("/branches"); 
+      if (!isDataChanged()) {
+        navigate("/branches");
         return;
       }
 
       let success;
       if (company_id) {
-         success = await updateCompany(company_id, formData);        
+        success = await updateCompany(company_id, formData);
       } else {
-         success = await addCompany(formData);      
+        success = await addCompany(formData);
       }
       if (success) {
         navigate("/companies");
@@ -405,7 +405,7 @@ const CompanyForm: React.FC = () => {
 
           <div className="flex flex-col">
             <label className="mb-2 font-semibold" htmlFor="company_ownedby">
-              Company owned by 
+              Company owned by
             </label>
             <select
               className="select border border-gray-300 rounded-md p-2 w-full text-sm"
@@ -429,22 +429,24 @@ const CompanyForm: React.FC = () => {
             </p>
           </div>
 
-          {formData.company_ownedby === 2 && (<div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="contract_document">
-              Contract Document
-            </label>
-            <input
-              type="file"
-              id="contract_document"
-              name="contract_document"
-              accept=".pdf,.doc,.docx"
-              onChange={handleChange}
-              className="border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">
-              {errors.contract_document || "\u00A0"}
-            </p>
-          </div>)}
+          {formData.company_ownedby === 2 && (
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold" htmlFor="contract_document">
+                Contract Document
+              </label>
+              <input
+                type="file"
+                id="contract_document"
+                name="contract_document"
+                accept=".pdf,.doc,.docx"
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">
+                {errors.contract_document || "\u00A0"}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-start mt-6">

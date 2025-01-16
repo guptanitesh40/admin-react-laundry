@@ -1,16 +1,20 @@
 import React from "react";
-import LineChart from "../chart/LineChart";
-import PieChart from "../chart/PieChart";
+import OrderReport from "../report/OrderReport";
+import SalesReport from "../report/SalesReport";
+import DeliveryPendingReport from "../report/DeliveryPendingReport";
+import PaymentTypeReport from "../report/paymentTypeReport";
+import KasarReport from "../report/KasarReport";
 
 const DashBoard: React.FC = () => {
   return (
     <>
       <div className="container-fixed">
-        <div className="flex flex-wrap items-center lg:items-end justify-between gap-5">
-          <LineChart />
-        </div>
-        <div className="mt-10">
-        <PieChart />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-7.5">
+          <OrderReport />
+          <DeliveryPendingReport />
+          <SalesReport />
+          <KasarReport/>
+          <PaymentTypeReport />
         </div>
       </div>
     </>
