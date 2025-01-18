@@ -1,25 +1,24 @@
 import { useEffect } from "react";
-import { useGetDeliveryPendingData } from "../../hooks";
+import { useGetDeliveryCompletedData } from "../../hooks";
 import Chart from "react-apexcharts";
-import { MdOutlinePendingActions } from "react-icons/md";
+import { GrCompliance } from "react-icons/gr";
 
-const DeliveryPendingReport = () => {
-  const { deliveryPendingData, fetchDeliveryPendingData } =
-    useGetDeliveryPendingData();
+const DeliveryCompletedReport: React.FC = () => {
+  const { deliveryCompletedData, fetchDeliveryCompletedData } =
+    useGetDeliveryCompletedData();
 
   useEffect(() => {
-    fetchDeliveryPendingData();
+    fetchDeliveryCompletedData();
   }, []);
 
-  const categories = deliveryPendingData
-    ? (deliveryPendingData || []).map((item: { month: any }) => item.month)
+  const categories = deliveryCompletedData
+    ? (deliveryCompletedData || []).map((item: { month: any }) => item.month)
     : [];
-  const orders = deliveryPendingData
-    ? (deliveryPendingData || []).map((item: { count: any }) => item.count)
+  const orders = deliveryCompletedData
+    ? (deliveryCompletedData || []).map((item: { count: any }) => item.count)
     : [];
-
   const orderCount =
-    deliveryPendingData?.reduce(
+    deliveryCompletedData?.reduce(
       (sum: number, order: { count: number }) => sum + Number(order.count),
       0
     ) || 0;
@@ -27,7 +26,7 @@ const DeliveryPendingReport = () => {
   const data = {
     series: [
       {
-        name: "Delivery Pending",
+        name: "Delivery Completed",
         data: orders,
       },
     ],
@@ -69,9 +68,6 @@ const DeliveryPendingReport = () => {
           strokeColor: "#1976d2",
         },
       },
-      yaxis: {
-        show: false,
-      },
       xaxis: {
         type: "category",
         categories: categories,
@@ -91,6 +87,9 @@ const DeliveryPendingReport = () => {
           show: false,
         },
       },
+      yaxis: {
+        show: false,
+      },
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -102,17 +101,19 @@ const DeliveryPendingReport = () => {
   return (
     <>
       <div className="col-span-1">
-        <div className="card pb-2.5 w-full">
-          <div className="card-body card-fit grid gap-1">
+        <div className="card pb-2.5">
+          <div className="card-body card-fit">
             <div className="flex justify-between ml-8">
               <div>
                 <h3 className="font-semibold text-[#64748b]">
-                  Delivery Pending
+                  Delivery Completed
                 </h3>
-                <span className="text-[#384551] font-medium">{orderCount}</span>
+                <span className="text-[#384551] font-medium ml-1">
+                  {orderCount}
+                </span>
               </div>
               <div className="mr-10 mt-2">
-                <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
+                <GrCompliance size={23} color="rgb(13 202 240)" />
               </div>
             </div>
             <div className="h-[110px]">
@@ -130,4 +131,4 @@ const DeliveryPendingReport = () => {
   );
 };
 
-export default DeliveryPendingReport;
+export default DeliveryCompletedReport;
