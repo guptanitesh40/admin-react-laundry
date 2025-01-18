@@ -30,8 +30,6 @@ const useGetKasarData = () => {
 
       const data = await response.json();
 
-      console.log("data in api", data);
-
       if (!response.ok) {
         toast.error(data.message, { position: "top-center" });
         setLoading(false);

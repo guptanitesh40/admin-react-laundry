@@ -10,16 +10,10 @@ const PendingAmountReport: React.FC = () => {
     fetchPendingAmountData();
   }, []);
 
-  const chartData = pendingAmountData?.map((item: any) => ({
-    month: item.month,
-    totalAmount: item.total_amount,
-    pendingAmount: item.pending_amount,
-  }));
-
-  const categories = chartData?.map((item: any) => item.month) || [];
-  const totalAmounts = chartData?.map((item: any) => item.totalAmount) || [];
+  const categories = pendingAmountData?.map((item: any) => item.month) || [];
+  const totalAmounts = pendingAmountData?.map((item: any) => item.total_amount) || [];
   const pendingAmounts =
-    chartData?.map((item: any) => item.pendingAmount) || [];
+  pendingAmountData?.map((item: any) => item.pending_amount) || [];
 
   const chartOptions = {
     chart: {

@@ -9,16 +9,10 @@ const RefundAmountReport: React.FC = () => {
     fetchRefundAmountData();
   }, []);
 
-  const chartData = refundAmountData?.map((item: any) => ({
-    month: item.month,
-    totalRefundAmount: item.total_refund_amount,
-    totalAmount: item.total_amount,
-  }));
-
-  const categories = chartData?.map((item: any) => item.month) || [];
+  const categories = refundAmountData?.map((item: any) => item.month) || [];
   const refundAmounts =
-    chartData?.map((item: any) => item.totalRefundAmount) || [];
-  const totalAmounts = chartData?.map((item: any) => item.totalAmount) || [];
+  refundAmountData?.map((item: any) => item.total_refund_amount) || [];
+  const totalAmounts = refundAmountData?.map((item: any) => item.total_amount) || [];
 
   const chartOptions = {
     chart: {
