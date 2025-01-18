@@ -9740,3 +9740,8 @@ label.rating-label {
   font-size: 14px;
   padding: 5px 10px;
 }
+
+.card-fit {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}

@@ -17,10 +17,13 @@ const PaymentTypeReport = () => {
     fetchPaymentTypeData();
   }, []);
 
-  const aggregatedData = (paymentTypeData || []).reduce((acc: Record<string, number>, item: PaymentData) => {
-    acc[item.paymentType] = (acc[item.paymentType] || 0) + item.count;
-    return acc;
-  }, {});
+  const aggregatedData = (paymentTypeData || []).reduce(
+    (acc: Record<string, number>, item: PaymentData) => {
+      acc[item.paymentType] = (acc[item.paymentType] || 0) + item.count;
+      return acc;
+    },
+    {}
+  );
 
   const formattedData = {
     labels: Object.keys(aggregatedData),
@@ -37,33 +40,37 @@ const PaymentTypeReport = () => {
   };
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3 className="card-title">Payment Type Report</h3>
-      </div>
+    <>
+      <div className="col-span-1">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Payment Type Report</h3>
+          </div>
 
-      <div className="card-body flex justify-center items-center px-3 py-1">
-        <div style={{ height: "280px" }}>
-          <Pie
-            data={formattedData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: "bottom",
-                  labels: {
-                    boxWidth: 20,
-                    padding: 20,
-                    usePointStyle: true,
+          <div className="card-body grid gap-1">
+            <div style={{ height: "210px" }}>
+              <Pie
+                data={formattedData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: {
+                        boxWidth: 20,
+                        padding: 20,
+                        usePointStyle: true,
+                      },
+                    },
                   },
-                },
-              },
-              cutout: "60%",
-            }}
-          />
+                  cutout: "60%",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

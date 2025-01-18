@@ -3,27 +3,29 @@ import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 const token = localStorage.getItem("authToken");
 
-interface SalesData {
+interface DeliveryCompletedData {
+  count: number;
   month: string;
-  total_sales: number;
-  total_collection: number;
-  unpaid_Amount: number;
 }
 
-const useGetSalesData = () => {
-  const [salesData, setSalesData] = useState<SalesData | null>();
+const useGetDeliveryCompletedData = () => {
+  const [deliveryCompletedData, setDeliveryCompletedData] =
+    useState<DeliveryCompletedData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchSalesData = async (start_date?: string, end_date?: string) => {
+  const fetchDeliveryCompletedData = async (
+    start_date?: string,
+    end_date?: string
+  ) => {
     const queryParams = new URLSearchParams();
 
     if (start_date) queryParams.append("startDate", start_date);
     if (end_date) queryParams.append("endDate", end_date);
 
-    setLoading(false);
+    setLoading(true);
     try {
       const response = await fetch(
-        `${BASE_URL}/report/sales-report?${queryParams}`,
+        `${BASE_URL}/report/delivery-completed-report?${queryParams}`,
         {
           method: "GET",
           headers: {
@@ -40,15 +42,15 @@ const useGetSalesData = () => {
         return;
       }
 
-      setSalesData(data);
+      setDeliveryCompletedData(data);
     } catch {
-      toast.error("Network error: Failed to fetch data.");
+        toast.error("Network error: Failed to fetch.");
     } finally {
       setLoading(false);
     }
   };
 
-  return { salesData, loading, fetchSalesData };
+  return { deliveryCompletedData, loading, fetchDeliveryCompletedData };
 };
 
-export default useGetSalesData;
+export default useGetDeliveryCompletedData;

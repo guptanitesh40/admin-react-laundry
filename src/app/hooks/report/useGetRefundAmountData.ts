@@ -3,17 +3,18 @@ import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 const token = localStorage.getItem("authToken");
 
-interface KasarData {
+interface RefundAmount {
   month: string;
-  total_kasar_amount: number;
-  total_order_amount: number;
+  total_refund_amount: number;
+  total_amount: number;
 }
 
-const useGetKasarData = () => {
-  const [kasarData, setKasarData] = useState<KasarData | null>();
+const useGetRefundAmountData = () => {
+  const [refundAmountData, setRefundAmountData] =
+    useState<RefundAmount | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchKasarData = async (start_date?: string, end_date?: string) => {
+  const fetchRefundAmountData = async (start_date?: string, end_date?: string) => {
     const queryParams = new URLSearchParams();
 
     if (start_date) queryParams.append("startDate", start_date);
@@ -21,7 +22,7 @@ const useGetKasarData = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/kasar-report?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/report/refund-report`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,24 +31,21 @@ const useGetKasarData = () => {
 
       const data = await response.json();
 
-      console.log("data in api", data);
-
       if (!response.ok) {
         toast.error(data.message, { position: "top-center" });
         setLoading(false);
         return;
       }
 
-      setKasarData(data);
-
+      setRefundAmountData(data);
     } catch {
-      toast.error("Network error: Failed to fetch kasar data.");
+      toast.error("Network error: Failed to fetch.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-  return { kasarData, loading, fetchKasarData };
+  return { refundAmountData, loading, fetchRefundAmountData };
 };
 
-export default useGetKasarData;
+export default useGetRefundAmountData;

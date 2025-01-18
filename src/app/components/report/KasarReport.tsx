@@ -12,11 +12,11 @@ const KasarReport = () => {
   const categories = kasarData?.map((item: { month: any }) => item.month) || [];
   const totalKasarAmount =
     kasarData?.map(
-      (item: { totalKasarAmount: any }) => item.totalKasarAmount
+      (item: { total_kasar_amount: any }) => item.total_kasar_amount
     ) || [];
   const totalOrderAmount =
     kasarData?.map(
-      (item: { totalOrderAmount: any }) => item.totalOrderAmount
+      (item: { total_order_amount: any }) => item.total_order_amount
     ) || [];
 
   const data = {
@@ -72,18 +72,20 @@ const KasarReport = () => {
 
   return (
     <>
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">Kasar Report</h3>
-        </div>
-        <div className="card-body grid gap-1">
-          <div style={{ height: "280px" }}>
-            <Chart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={data.options.chart.height}
-            />
+      <div className="col-span-2">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Kasar Report</h3>
+          </div>
+          <div className="card-body grid gap-1">
+            <div style={{ height: "280px" }}>
+              <Chart
+                options={data.options}
+                series={data.series}
+                type={data.options.chart.type}
+                height={data.options.chart.height}
+              />
+            </div>
           </div>
         </div>
       </div>
