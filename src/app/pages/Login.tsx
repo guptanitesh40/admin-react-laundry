@@ -43,8 +43,10 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-
-      await validationSchema.validate({ username, password }, { abortEarly: false });
+      await validationSchema.validate(
+        { username, password },
+        { abortEarly: false }
+      );
 
       if (username.length > 50) {
         toast.error("Username must be 50 characters or fewer.", {
@@ -91,79 +93,82 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full dark:bg-coal-500 ">
-      <div className="grid lg:grid-cols-2 grow">
-        <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1">
-          <div className="card max-w-[450px] w-full">
-            <form
-              onSubmit={handleSubmit}
-              className="card-body flex flex-col gap-3 p-10 w-[370px]"
-              id="log_in_form"
-            >
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
-                  Log in
-                </h3>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="form-label text-gray-900" htmlFor="username">
-                  Email 
-                </label>
-                <input
-                  id="username"
-                  className="input border border-gray-300 rounded-md p-2"
-                  placeholder="email@example.com"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <p className="right-[0.2rem] text-red-500 text-sm w-80">
-                  {errors.username || "\u00A0"}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between gap-1">
-                  <label
-                    className="form-label text-gray-900"
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <Link
-                    className="text-2sm link shrink-0"
-                    to="/forgot-password"
-                  >
-                    Forgot Password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <input
-                    id="password"
-                    className="input border border-gray-300 rounded-md p-2"
-                    name="user_password"
-                    placeholder="Enter Password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <p className="right-[0.2rem] text-red-500 text-sm w-80">
-                  {errors.password || "\u00A0"}
-                </p>
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary flex justify-center grow"
-                disabled={loading}
-              >
-                {loading ? "Logging In..." : "Log In"}
-              </button>
-            </form>
+    <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1 w-full">
+      <div className="card max-w-[450px]">
+        <form
+          onSubmit={handleSubmit}
+          className="card-body flex flex-col gap-3 p-10 w-[370px]"
+          id="log_in_form"
+        >
+          <div className="flex justify-center">
+            <img
+              className="default-logo min-h-[22px] max-w-none"
+              src="/media/app/Group 34972.png"
+            />
           </div>
-        </div>
+          <div className="text-center mt-3">
+            <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
+              Log in to your account
+            </h3>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="form-label text-gray-900" htmlFor="username">
+              Email
+            </label>
+            <input
+              id="username"
+              className="input border border-gray-300 rounded-md p-2"
+              placeholder="email@example.com"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+              {errors.username || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-1">
+              <label className="form-label text-gray-900" htmlFor="password">
+                Password
+              </label>
+              <Link className="text-2sm link shrink-0" to="/forgot-password">
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="relative">
+              <label className="input" data-toggle-password="true">
+                <input
+                  name="password"
+                  placeholder="Enter Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <span
+                  className="btn btn-icon"
+                  data-toggle-password-trigger="true"
+                >
+                  <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
+                  <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
+                </span>
+              </label>
+            </div>
+            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+              {errors.password || "\u00A0"}
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary flex justify-center grow"
+            disabled={loading}
+          >
+            {loading ? "Logging In..." : "Log In"}
+          </button>
+        </form>
       </div>
     </div>
   );
