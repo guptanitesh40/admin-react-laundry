@@ -77,6 +77,7 @@ export { default as useGetDeliveryCompletedData } from './report/useGetDeliveryC
 export { default as useGetPendingAmountData } from './report/useGetPendingAmountData.ts';
 export { default as useGetRefundAmountData } from './report/useGetRefundAmountData.ts';
 export { default as useGetPaymentTransactionData } from './report/useGetPaymentTransactionData.ts';
+export { default as useGetCustomerActivityData } from './report/useGetCustomerActivityData.ts';
 
 export { default as useGetWorkshops } from './workshop/useGetWorkshops';
 export { default as useGetWorkshop } from './workshop/useGetWorkshop';
