@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useAddSettings, useGetSettings } from "../../hooks";
+import {
+  useAddSettings,
+  useGetSettings,
+  useUpdatePromotionBanner,
+} from "../../hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FaPencilAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
+import LoadingSpinner from "../shimmer/Loading";
 
 const schema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
@@ -17,12 +22,12 @@ const schema = Yup.object().shape({
 
 const PromotionBanner: React.FC = () => {
   const { settingsData, fetchSetting, loading } = useGetSettings();
-  const { addSetting } = useAddSettings();
+  const { addSetting, loading: adding } = useAddSettings();
+  const { updatePromotionBanner, loading: updating } =
+    useUpdatePromotionBanner();
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [refetch, setRefetch] = useState<boolean>(false);
-
-  const bannerSettings = settingsData?.data?.home_promotion_banner_website;
+  const [refetch, setRefetch] = useState<boolean>(false); 
 
   const [formData, setFormData] = useState({
     image: null,
@@ -44,21 +49,23 @@ const PromotionBanner: React.FC = () => {
   }, [refetch]);
 
   useEffect(() => {
-    if (bannerSettings) {
-      const promotionBanner = JSON.parse(bannerSettings);
+    if (settingsData) {
+      const promotionBannerSettings = JSON.parse(
+        settingsData?.data?.home_promotion_banner_website
+      );
+      const promotionBanner = settingsData?.data?.home_banner_image;
 
-      if (promotionBanner) {
-        const fetchedData = {
-          image: promotionBanner.image_url || "",
-          title: promotionBanner.title || "",
-          price: promotionBanner.price || "",
-          offer_validity: dayjs(promotionBanner.offer_validity),
-        };
-        setFormData(fetchedData);
-        setInitialFormData(fetchedData);
-      }
+      const fetchedData = {
+        ...formData,
+        title: promotionBannerSettings.title || "",
+        price: promotionBannerSettings.price || "",
+        offer_validity: dayjs(promotionBannerSettings.offer_validity),
+        image: promotionBanner,
+      };
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
     }
-  }, [bannerSettings]);
+  }, [settingsData]);
 
   const handleDateChange = (newDate: Dayjs | null) => {
     setFormData((prev) => ({
@@ -85,14 +92,26 @@ const PromotionBanner: React.FC = () => {
     try {
       await schema.validate(formData, { abortEarly: false });
 
+      let success;
+
+      const formDataToSend = new FormData();
+
+      if (preview !== null) {
+        formDataToSend.append("home_banner_image", formData.image);
+        formDataToSend.append("setting_key", "home_banner_image");
+
+        success = await updatePromotionBanner(formDataToSend);
+        if (success) {
+          setRefetch(true);
+        }
+        setPreview(null);
+      }
+
       const isDataChanged = () => {
         return (Object.keys(formData) as (keyof typeof formData)[]).some(
           (key) => {
             if (key === "image") {
-              return (
-                formData.image instanceof File ||
-                formData.image !== initialFormData.image
-              );
+              return false;
             }
             return formData[key] !== initialFormData[key];
           }
@@ -103,18 +122,20 @@ const PromotionBanner: React.FC = () => {
         return;
       }
 
-      const settingKey = "home_promotion_banner_website";
-      const settingValue = {
+      const updatedBannerData = {
         title: formData.title,
         price: formData.price,
-        offer_validity: formData.offer_validity.format("DD-MMM-YYYY"),
-        image_url: formData.image,
+        offer_validity: formData.offer_validity,
       };
 
-      const success = await addSetting({
-        setting_key: settingKey,
-        setting_value: JSON.stringify(settingValue),
-      });
+      const payload = [
+        {
+          setting_key: "home_promotion_banner_website",
+          setting_value: JSON.stringify(updatedBannerData),
+        },
+      ];
+
+      success = await addSetting(payload);
       if (success) {
         setErrors({});
         setRefetch(true);
@@ -218,7 +239,7 @@ const PromotionBanner: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full">
+            <div>
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
                   Offer Validity
@@ -244,9 +265,20 @@ const PromotionBanner: React.FC = () => {
                 </LocalizationProvider>
               </div>
             </div>
-            <div className="flex justify-end pt-2.5">
-              <button className="btn btn-primary" onClick={handleSaveSettings}>
-                Save Changes
+            <div className="flex relative justify-end pt-2.5">
+              <button
+                className="btn btn-primary"
+                onClick={handleSaveSettings}
+                disabled={adding || updating}
+              >
+                {adding || updating ? (
+                  <>
+                    Saving...
+                    <LoadingSpinner />
+                  </>
+                ) : (
+                  <>Save Changes</>
+                )}
               </button>
             </div>
           </div>

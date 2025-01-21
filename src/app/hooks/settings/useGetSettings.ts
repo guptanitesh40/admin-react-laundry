@@ -38,10 +38,6 @@ const useGetSettings = () => {
     }
   };
 
-  useEffect(() => {
-    fetchSetting();
-  }, []);
-
   return { settingsData, fetchSetting, loading };
 };
 

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import PriceTable from "./PriceTable";
-import * as Yup from "yup";
-import { searchSchema } from "../../validation/searchSchema";
+import LoadingSpinner from "../shimmer/Loading";
 
 const Price: React.FC = () => {
   const [isSave, setIsSave] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
     <>
@@ -16,14 +16,31 @@ const Price: React.FC = () => {
             </h1>
           </div>
           <div className="flex items-center gap-2.5">
-            <button onClick={() => setIsSave(true)} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Save
+            <button
+              onClick={() => setIsSave(true)}
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  {" "}
+                  <i className="ki-filled ki-plus-squared"></i> Saving.. <LoadingSpinner />{" "}
+                </>
+              ) : (
+                <>
+                  <i className="ki-filled ki-plus-squared"></i> Save
+                </>
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      <PriceTable isSave={isSave} setIsSave={setIsSave} />
+      <PriceTable
+        isSave={isSave}
+        setIsSave={setIsSave}
+        setIsLoading={setIsLoading}
+      />
     </>
   );
 };
