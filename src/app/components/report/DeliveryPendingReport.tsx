@@ -38,6 +38,9 @@ const DeliveryPendingReport = () => {
         toolbar: {
           show: false,
         },
+        zoom: {
+        enabled: false,
+      },
       },
       colors: ["#4154f1", "#2eca6a", "#ff771d"],
       fill: {

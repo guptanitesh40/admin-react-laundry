@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAddSettings, useGetSettings } from "../../hooks";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { settingSchema } from "../../validation/settingSchema";
+import LoadingSpinner from "../shimmer/Loading";
 
-const GeneralSettings = () => {
-  const { settingsData, fetchSetting } = useGetSettings();
-  const { addSetting } = useAddSettings();
+const GeneralSettings: React.FC = ({}) => {
+  const { settingsData, fetchSetting, loading } = useGetSettings();
+  const { addSetting, loading: adding } = useAddSettings();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refetch, setRefetch] = useState<boolean>(false);
-  const [settingKey, setSettingKey] = useState<string | null>("");
-  const [settingValue, setSettingValue] = useState<string | null>("");
+  const [settings, setSettings] = useState<
+    { setting_key: string; setting_value: string }[]
+  >([]);
 
   const generalSettings = settingsData?.data;
 
@@ -31,20 +33,30 @@ const GeneralSettings = () => {
 
   useEffect(() => {
     if (generalSettings) {
-      const fetchedSettings = {
+      const fetchedSettings = Object.keys(generalSettings)
+        .map((key) => ({
+          setting_key: key,
+          setting_value: generalSettings[key] || "",
+        }))
+        .filter(
+          (setting) => Object.keys(formData).includes(setting.setting_key)
+        );
+
+      setSettings(fetchedSettings);
+
+      setFormData({
         estimate_delivery_express_day:
-          generalSettings.estimate_delivery_express_day,
+          generalSettings.estimate_delivery_express_day || "",
         estimate_delivery_normal_day:
-          generalSettings.estimate_delivery_normal_day,
+          generalSettings.estimate_delivery_normal_day || "",
         estimate_pickup_express_hour:
-          generalSettings.estimate_pickup_express_hour,
+          generalSettings.estimate_pickup_express_hour || "",
         estimate_pickup_normal_hour:
-          generalSettings.estimate_pickup_normal_hour,
-        gst_percentage: generalSettings.gst_percentage,
-        shipping_charge: generalSettings.shipping_charge,
-        express_delivery_charge: generalSettings.express_delivery_charge,
-      };
-      setFormData(fetchedSettings);
+          generalSettings.estimate_pickup_normal_hour || "",
+        gst_percentage: generalSettings.gst_percentage || "",
+        shipping_charge: generalSettings.shipping_charge || "",
+        express_delivery_charge: generalSettings.express_delivery_charge || "",
+      });
     }
   }, [generalSettings]);
 
@@ -54,10 +66,17 @@ const GeneralSettings = () => {
     try {
       await settingSchema.validate(formData, { abortEarly: false });
 
-      const success = await addSetting({
-        setting_key: settingKey,
-        setting_value: settingValue,
-      });
+      const isDataChanged = () => {
+        return Object.keys(formData).some(        
+          (key) => formData[key] !== generalSettings[key]
+        );
+      };
+
+      if (!isDataChanged()) {
+        return;
+      }
+
+      const success = await addSetting(settings);
       if (success) {
         setErrors({});
         setRefetch(true);
@@ -75,9 +94,9 @@ const GeneralSettings = () => {
     }
   };
 
-  const handleItemChange = (key: string, value: any) => {
-    setSettingKey(key);
-    setSettingValue(value);
+  const handleItemChange = (key: string, value: string) => {
+    setSettings((prev) => prev.map((setting) => setting.setting_key === key ? { ...setting, setting_value: value } : setting)
+    );
 
     setFormData({
       ...formData,
@@ -116,6 +135,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -139,6 +159,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -159,6 +180,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -182,6 +204,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -205,6 +228,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -225,6 +249,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full">
               <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                 <label className="form-label flex items-center gap-1 max-w-56">
@@ -248,9 +273,19 @@ const GeneralSettings = () => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end pt-2.5">
-              <button className="btn btn-primary" onClick={handleSaveSettings}>
-                Save Changes
+            <div className="flex relative justify-end pt-2.5">
+              <button
+                className="btn btn-primary"
+                onClick={handleSaveSettings}
+                disabled={adding}
+              >
+                {adding ? (
+                  <>
+                    Saving... <LoadingSpinner />
+                  </>
+                ) : (
+                  <>Save Changes </>
+                )}
               </button>
             </div>
           </div>
