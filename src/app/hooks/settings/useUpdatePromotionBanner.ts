@@ -3,23 +3,19 @@ import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 const token = localStorage.getItem("authToken");
 
-const useAddSettings = () => {
+const useUpdatePromotionBanner = () => {
   const [loading, setLoading] = useState<boolean>();
 
-  const addSetting = async (settings: any) => {
+  const updatePromotionBanner = async (formData: FormData) => {
     setLoading(true);
 
     try {
-
-      const payload = { settings }
-
-      const response = await fetch(`${BASE_URL}/admin/settings`, {
+      const response = await fetch(`${BASE_URL}/admin/settings/image`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       const data = await response.json();
@@ -32,7 +28,7 @@ const useAddSettings = () => {
       toast.success(data.message, { position: "top-center" });
       return true;
     } catch (error: any) {
-      toast.error(error || "Network Error : Fail to add data", {
+      toast.error(error || "Network Error : Fail to update banner", {
         position: "top-center",
       });
     } finally {
@@ -40,7 +36,7 @@ const useAddSettings = () => {
     }
   };
 
-  return { addSetting, loading };
+  return { updatePromotionBanner, loading };
 };
 
-export default useAddSettings;
+export default useUpdatePromotionBanner;

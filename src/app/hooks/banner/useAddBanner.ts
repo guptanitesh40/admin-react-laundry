@@ -15,6 +15,7 @@ const useAddBanner = () => {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
+          
         },
         body: formData,  
       });

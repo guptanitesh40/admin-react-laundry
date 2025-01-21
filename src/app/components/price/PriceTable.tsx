@@ -41,14 +41,19 @@ interface Combination {
 interface PriceTableProps {
   isSave: boolean;
   setIsSave: (value: boolean) => void;
+  setIsLoading: (value: boolean) => void;
 }
 
-const PriceTable: React.FC<PriceTableProps> = ({ isSave, setIsSave }) => {
+const PriceTable: React.FC<PriceTableProps> = ({
+  isSave,
+  setIsSave,
+  setIsLoading,
+}) => {
   const { categories } = useGetCategories(1, 1000);
   const { products } = useGetProducts(1, 1000);
   const { services } = useGetServices(1, 1000);
   const { prices, loading, fetchPrices } = useGetPrice();
-  const { addPrice } = useAddPrice();
+  const { addPrice, loading: adding } = useAddPrice();
 
   const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
     {}
@@ -115,6 +120,74 @@ const PriceTable: React.FC<PriceTableProps> = ({ isSave, setIsSave }) => {
       return 0;
     });
 
+  useEffect(() => {
+    if (isSave) {
+      const isDataChanged = combinations.some((combination) => {
+        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+        return (
+          updatedPrices[key] !== undefined &&
+          updatedPrices[key] !== combination.price
+        );
+      });
+
+      if (!isDataChanged) {
+        setIsSave(false);
+        return;
+      }
+
+      const updatedData = combinations
+        .map((combination) => {
+          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+
+          return {
+            category_id: combination.category.category_id,
+            product_id: combination.product.product_id,
+            service_id: combination.service.service_id,
+            price:
+              updatedPrices[key] !== undefined
+                ? updatedPrices[key]
+                : combination.price,
+          };
+        })
+        .filter((combination) => combination.price > 0);
+
+      try {
+        addPrice(updatedData);
+        fetchPrices();
+        setEditing(new Set());
+      } catch (error) {
+        toast.error("Failed to save prices.");
+      }
+    }
+    setIsSave(false);
+  }, [isSave, addPrice, combinations, updatedPrices]);
+
+  useEffect(() => {
+    const keys = Array.from(editing);
+    if (keys.length > 0) {
+      const key = keys[0];
+      if (inputRefs.current[key]) {
+        inputRefs.current[key]?.focus();
+      }
+    }
+  }, [editing]);
+
+  useEffect(() => {
+    if (search) {
+      setSearchParams({ search: search });
+    } else {
+      setSearchParams({});
+    }
+  }, [search]);
+
+  useEffect(() => {
+    if (adding) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [adding]);
+
   const handleEditClick = (key: string) => {
     setEditing((prev) => {
       const updatedEditing = new Set(prev);
@@ -155,35 +228,6 @@ const PriceTable: React.FC<PriceTableProps> = ({ isSave, setIsSave }) => {
     }
   };
 
-  useEffect(() => {
-    if (isSave) {
-      const updatedData = combinations
-        .map((combination) => {
-          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-
-          return {
-            category_id: combination.category.category_id,
-            product_id: combination.product.product_id,
-            service_id: combination.service.service_id,
-            price:
-              updatedPrices[key] !== undefined
-                ? updatedPrices[key]
-                : combination.price,
-          };
-        })
-        .filter((combination) => combination.price > 0);
-
-      try {
-        addPrice(updatedData);
-        fetchPrices();
-        setEditing(new Set());
-      } catch (error) {
-        toast.error("Failed to save prices.");
-      }
-    }
-    setIsSave(false);
-  }, [isSave, addPrice, combinations, updatedPrices]);
-
   const handleInputBlur = (key: string) => {
     setEditing((prev) => {
       const updatedEditing = new Set(prev);
@@ -191,24 +235,6 @@ const PriceTable: React.FC<PriceTableProps> = ({ isSave, setIsSave }) => {
       return updatedEditing;
     });
   };
-
-  useEffect(() => {
-    const keys = Array.from(editing);
-    if (keys.length > 0) {
-      const key = keys[0];
-      if (inputRefs.current[key]) {
-        inputRefs.current[key]?.focus();
-      }
-    }
-  }, [editing]);
-
-  useEffect(() => {
-    if (search) {
-      setSearchParams({ search: search });
-    } else {
-      setSearchParams({});
-    }
-  }, [search]);
 
   return (
     <>
