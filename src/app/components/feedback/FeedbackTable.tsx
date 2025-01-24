@@ -8,24 +8,6 @@ import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 
-interface FeedbackData {
-  feedback_id: number;
-  rating: number;
-  comment: string;
-  is_publish: number;
-  order_id: number;
-  created_at: any;
-  order: {
-    user_id: number;
-    user: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      mobile_number: string;
-    };
-  };
-}
-
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -425,22 +407,7 @@ const FeedbackTable: React.FC = () => {
                               >
                                 Both
                               </option>
-                            </select>
-                            {/* {feedback.is_publish !== 1 ? (
-                            <span
-                              className="tooltip"
-                              data-tooltip-content="true"
-                            >
-                              Change Publish Status
-                            </span>
-                          ) : (
-                            <span
-                              className="tooltip"
-                              data-tooltip-content="true"
-                            >
-                              Click to Approve Feedback
-                            </span>
-                          )} */}
+                            </select>                            
                           </span>
                         </td>
                       </tr>
