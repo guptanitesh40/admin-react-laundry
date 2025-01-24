@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-
 const token = localStorage.getItem("authToken");
 
-interface CustomerActivityData {
-  month: string;
-  login_count: number;
+interface CustomerRatingData {
+  rating: number;
+  month: any;
+  count: number;
 }
 
-const useGetCustomerActivityData = () => {
-  const [customerActivityData, setCustomerActivityData] =
-    useState<CustomerActivityData | null>();
+const useGetCustomerRatingData = () => {
+  const [customerRatingData, setCustomerRatingData] =
+    useState<CustomerRatingData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchCustomerActivityData = async () => {
+  const fetchCustomerRatingData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/customer-activity`, {
+      const response = await fetch(`${BASE_URL}/report/customers-feedback`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const useGetCustomerActivityData = () => {
         return;
       }
 
-      setCustomerActivityData(data);
+      setCustomerRatingData(data);
     } catch {
       toast.error("Network error: Failed to fetch data.");
     } finally {
@@ -40,7 +40,7 @@ const useGetCustomerActivityData = () => {
     }
   };
 
-  return { customerActivityData, loading, fetchCustomerActivityData}
+  return { customerRatingData, loading, fetchCustomerRatingData };
 };
 
-export default useGetCustomerActivityData;
+export default useGetCustomerRatingData;

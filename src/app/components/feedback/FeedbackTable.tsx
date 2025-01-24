@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGetFeedbacks } from "../../hooks";
+import { useApproveFeedback, useGetFeedbacks } from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import { IsPublish } from "../../../types/enums";
@@ -21,15 +21,43 @@ const FeedbackTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { feedbacks, count } = useGetFeedbacks(
+  const [publishFilter, setPublishFilter] = useState<number>();
+  const [refetch, setRefetch] = useState<boolean>(false);
+  const [feedbackData, setFeedbackData] = useState<any[]>([]);
+
+  const { feedbacks, count, fetchFeedbacks } = useGetFeedbacks(
     currentPage,
     perPage,
     search,
     sortColumn,
     sortOrder
   );
+  const { approveFeedback } = useApproveFeedback();
 
   const totalPages = Math.ceil(count / perPage);
+
+  useEffect(() => {
+    fetchFeedbacks();
+    setRefetch(false);
+  }, [refetch]);
+
+  useEffect(() => {
+    if (feedbacks?.length > 0) {
+      const extratedFeedback = feedbacks?.map((feedback) => ({
+        first_name: feedback?.order?.user?.first_name,
+        last_name: feedback?.order?.user?.last_name,
+        order_id: feedback.order_id,
+        email: feedback?.order?.user?.email,
+        created_at: feedback.created_at,
+        mobile_number: feedback?.order?.user?.mobile_number,
+        feedback_id: feedback.feedback_id,
+        is_publish: feedback.is_publish,
+        comment: feedback.comment,
+        rating: feedback.rating,
+      }));
+      setFeedbackData(extratedFeedback);
+    }
+  }, [feedbacks]);
 
   useEffect(() => {
     if (pageParams) {
@@ -94,6 +122,18 @@ const FeedbackTable: React.FC = () => {
     ));
   };
 
+  const handleDropdownChange = (feedback_id: number, value: any) => {
+    setFeedbackData((prev) =>
+      prev.map((feedback) =>
+        feedback.feedback_id === feedback_id
+          ? { ...feedback, is_publish: value }
+          : feedback
+      )
+    );
+
+    approveFeedback(feedback_id, value);
+  };
+
   if (!feedbacks) return;
 
   return (
@@ -114,8 +154,36 @@ const FeedbackTable: React.FC = () => {
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-col items-start">
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
+            <select
+              className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
+                publishFilter
+              )}`}
+              value={publishFilter}
+              onChange={(e) => {
+                setPublishFilter(Number(e.target.value));
+              }}
+            >
+              <option value="" className="badge-danger badge-outline">
+                Publish Status
+              </option>
+              <option value="1" className="badge-danger badge-outline">
+                Approve
+              </option>
+              <option value="2" className="badge-info badge-outline">
+                Website
+              </option>
+              <option value="3" className="badge-warning badge-outline">
+                Mobile App
+              </option>
+              <option value="4" className="badge-secondary badge-outline">
+                Both
+              </option>
+            </select>
+          </div>
+
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -270,47 +338,81 @@ const FeedbackTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              {feedbacks.length > 0 ? (
+              {feedbackData.length > 0 ? (
                 <tbody>
-                  {feedbacks.map((feedback) => (
-                    <tr key={feedback.feedback_id}>
-                      <td>#{feedback.order_id}</td>
-                      <td>
-                        {feedback?.order?.user?.first_name}{" "}
-                        {feedback?.order?.user?.last_name}
-                      </td>
-                      <td>{feedback?.order?.user?.email}</td>
-                      <td>{feedback?.order?.user?.mobile_number}</td>
-                      <td>
-                        <span>
-                          <div className="rating">
-                            {renderRatingStars(feedback.rating)}
+                  {feedbackData.map((feedback) => {
+                    return (
+                      <tr key={feedback.feedback_id}>
+                        <td>#{feedback.order_id}</td>
+                        <td>
+                          {feedback.first_name} {feedback.last_name}
+                        </td>
+                        <td>{feedback.email}</td>
+                        <td>{feedback.mobile_number}</td>
+                        <td>
+                          <span>
+                            <div className="rating">
+                              {renderRatingStars(feedback.rating)}
+                            </div>
+                          </span>
+                        </td>
+                        <td>{feedback.comment}</td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(feedback.created_at).format("DD-MM-YYYY")}
+                            <br />
+                            {dayjs(feedback.created_at).format("hh:mm:ss A")}
                           </div>
-                        </span>
-                      </td>
-                      <td>{feedback.comment}</td>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          {dayjs(feedback.created_at).format("DD-MM-YYYY")}
-                          <br />
-                          {dayjs(feedback.created_at).format("hh:mm:ss A")}
-                        </div>
-                      </td>
-                      <td>
-                        <span
-                          className={`mt-1 rounded-md text-sm ${getPublishStatusLabel(
-                            feedback.is_publish
-                          )}`}
-                        >
-                          {
-                            IsPublish[
-                              feedback.is_publish as keyof typeof IsPublish
-                            ]
-                          }
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td>
+                          <span
+                            className="menu-badge"
+                            data-tooltip="true"
+                            data-tooltip-placement="top"
+                          >
+                            <select
+                              className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
+                                feedback.is_publish
+                              )}`}
+                              data-tooltip="true"
+                              value={feedback.is_publish}
+                              onChange={(e) =>
+                                handleDropdownChange(
+                                  feedback.feedback_id,
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option
+                                value="1"
+                                className="badge-danger badge-outline"
+                              >
+                                Approve
+                              </option>
+                              <option
+                                value="2"
+                                className="badge-info badge-outline"
+                              >
+                                Website
+                              </option>
+                              <option
+                                value="3"
+                                className="badge-warning badge-outline"
+                              >
+                                Mobile App
+                              </option>
+                              <option
+                                value="4"
+                                className="badge-secondary badge-outline"
+                              >
+                                Both
+                              </option>
+                            </select>                            
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               ) : (
                 <tbody>

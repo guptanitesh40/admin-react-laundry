@@ -301,8 +301,15 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleGenerateInvoice = async () => {
-    await generateInvoice(order_id);
+    if (order?.order_invoice !== "") {
+      const url = order?.order_invoice?.fileUrl;
+      window.open(url, "_blank");
+    } else {
+      await generateInvoice(order_id);
+      setRefetch(true);
+    }
   };
+
 
   if (!order) return null;
 
