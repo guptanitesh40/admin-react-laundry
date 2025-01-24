@@ -78,6 +78,7 @@ export { default as useGetPendingAmountData } from './report/useGetPendingAmount
 export { default as useGetRefundAmountData } from './report/useGetRefundAmountData.ts';
 export { default as useGetPaymentTransactionData } from './report/useGetPaymentTransactionData.ts';
 export { default as useGetCustomerActivityData } from './report/useGetCustomerActivityData.ts';
+export { default as useGetCustomerRatingData } from './report/useGetCustomerRatingData.ts';
 
 export { default as useGetWorkshops } from './workshop/useGetWorkshops';
 export { default as useGetWorkshop } from './workshop/useGetWorkshop';
@@ -101,7 +102,7 @@ export { default as useAddPriceConten } from './price-content/useAddPriceContent
 export { default as useUpdatePriceContent } from './price-content/useUpdatePriceContent.ts';
 export { default as useDeletePriceContent } from './price-content/useDeletePriceContent.ts';
 
-export { default as useGenerateInvoice } from './invoice/useGetInvoice.ts';
+export { default as useGenerateInvoice } from './invoice/useGenerateInvoice.ts';
 
 export { default as useGetSettings } from './settings/useGetSettings.ts';
 export { default as useAddSettings } from './settings/useAddSettings.ts';
@@ -109,4 +110,4 @@ export { default as useUpdatePromotionBanner } from './settings/useUpdatePromoti
 
 export { default as useGetPayments } from './payment/useGetPayments.ts';
 export { default as useGetFeedbacks } from './feedback/useGetFeedbacks.ts';
-
+export { default as useApproveFeedback } from './feedback/useApproveFeedback.ts';

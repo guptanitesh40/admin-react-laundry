@@ -1,13 +1,13 @@
 export const getPublishStatusLabel = (status: number) => {
   switch (status) {
     case 1:
-      return "";
+      return "badge badge-danger badge-outline";
     case 2:
-      return "badge-website";
+      return "badge badge-info badge-outline";
     case 3:
-      return "badge-app";
+      return "badge badge-warning badge-outline";
     default:
-      return "badge-web-app";
+      return "badge badge-secondary badge-outline";
   }
 };
 

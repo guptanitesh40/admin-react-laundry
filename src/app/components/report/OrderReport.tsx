@@ -104,7 +104,7 @@ const OrderReport = () => {
           show: false,
         },
         axisTicks: {
-          show: false,
+          show: true,
         },
         axisBorder: {
           show: false,

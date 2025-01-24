@@ -14,7 +14,7 @@ const PaymentTransactionReport: React.FC = () => {
     paymentTransactionData?.map((item: { month: any }) => item.month) || [];
   const receivedAmount =
     paymentTransactionData?.map(
-      (item: { paid_amount: any }) => item.paid_amount
+      (item: { received_amount: any }) => item.received_amount
     ) || []; 
 
   const data = {

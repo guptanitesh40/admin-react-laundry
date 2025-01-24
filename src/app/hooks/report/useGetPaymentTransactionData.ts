@@ -6,8 +6,7 @@ const token = localStorage.getItem("authToken");
 interface PaymentTransactionData {
   month: string;
   total_amount: number;
-  paid_amount: number;
-  pending_amount: number;
+  received_amount: number;
 }
 
 const useGetPaymentTransactionData = () => {

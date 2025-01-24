@@ -33,7 +33,7 @@ const PendingAmountReport: React.FC = () => {
       axisBorder: {
         show: false,
       },
-      maxTicks: 12,
+      maxTicks: 5,
       axisTicks: {
         show: false,
       },
