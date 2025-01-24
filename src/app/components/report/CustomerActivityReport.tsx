@@ -13,9 +13,7 @@ const CustomerActivityReport: React.FC = () => {
   const categories =
     customerActivityData?.map((item: { month: any }) => item.month) || [];
   const loginCount =
-    customerActivityData?.map(
-      (item: { loginCount: number }) => item.loginCount
-    ) || [];
+    customerActivityData?.map((item: { login_count: number }) => item.login_count) || [];
 
   const data = {
     series: [

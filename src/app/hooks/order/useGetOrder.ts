@@ -2,6 +2,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Order {
+  order_invoice: any;
   pending_due_amount: any;
   refund_receipt_url: any;
   order_label: any;
