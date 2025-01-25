@@ -14,6 +14,7 @@ const schema = Yup.object().shape({
   pincode: Yup.string()
     .required("Pin Code is required")
     .matches(/^[0-9]{6}$/, "Pincode must be 6 digit"),
+  address_type: Yup.number().required("Address type is required"),
 });
 
 const AddressModal: React.FC<AddressModalProps> = ({
@@ -24,7 +25,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 }) => {
   const { addAddress, loading } = useAddAddress();
 
-  const [error, setError] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [addressData, setAddressData] = useState({
     building_number: "",
@@ -35,6 +36,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     state: "",
     country: "",
     user_id: null,
+    address_type: null,
   });
 
   useEffect(() => {
@@ -55,8 +57,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
         state: "",
         country: "",
         user_id: null,
+        address_type: null,
       });
-      setError(""); 
+      setErrors({});
     }
   }, [isOpen, userId]);
 
@@ -73,7 +76,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
       onClose();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        setError(error.errors[0]);
+        const formErrors: Record<string, string> = {};
+        error.inner.forEach((err) => {
+          formErrors[err.path || ""] = err.message;
+        });
+        setErrors(formErrors);
+      } else {
+        toast.error("Failed to submit the form. Please try again.");
       }
     }
   };
@@ -87,7 +96,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg z-10 relative">
+      <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           onClick={onClose}
@@ -98,7 +107,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="building_number" className="block text-gray-700 font-semibold">
+              <label
+                htmlFor="building_number"
+                className="block text-gray-700 font-semibold"
+              >
                 Building Number
               </label>
               <input
@@ -117,7 +129,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="area" className="block text-gray-700 font-semibold">Area</label>
+              <label
+                htmlFor="area"
+                className="block text-gray-700 font-semibold"
+              >
+                Area
+              </label>
               <input
                 type="text"
                 id="area"
@@ -134,7 +151,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="landmark" className="block text-gray-700 font-semibold">
+              <label
+                htmlFor="landmark"
+                className="block text-gray-700 font-semibold"
+              >
                 Landmark
               </label>
               <input
@@ -153,7 +173,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="pincode" className="block text-gray-700 font-semibold">
+              <label
+                htmlFor="pincode"
+                className="block text-gray-700 font-semibold"
+              >
                 Pin code
               </label>
               <input
@@ -169,11 +192,18 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
-              <p className="text-red-500 text-sm">{error || "\u00A0"}</p>
+              <p className="w-full text-red-500 text-sm">
+              {errors.pincode || "\u00A0"}
+            </p>
             </div>
 
             <div>
-              <label htmlFor="city" className="block text-gray-700 font-semibold">City</label>
+              <label
+                htmlFor="city"
+                className="block text-gray-700 font-semibold"
+              >
+                City
+              </label>
               <input
                 type="text"
                 id="city"
@@ -190,7 +220,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="state" className="block text-gray-700 font-semibold">State</label>
+              <label
+                htmlFor="state"
+                className="block text-gray-700 font-semibold"
+              >
+                State
+              </label>
               <input
                 type="text"
                 id="state"
@@ -207,7 +242,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
             </div>
 
             <div>
-              <label htmlFor="country" className="block text-gray-700 font-semibold">
+              <label
+                htmlFor="country"
+                className="block text-gray-700 font-semibold"
+              >
                 Country
               </label>
               <input
@@ -224,9 +262,35 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
             </div>
+
+            <div>
+              <label
+                htmlFor="country"
+                className="block text-gray-700 font-semibold"
+              >
+                Address Type
+              </label>
+              <select 
+              className="select select-lg text-sm"
+              onChange={(e) => setAddressData({
+                ...addressData,
+                address_type: Number(e.target.value)
+              })}
+              >
+                <option value="" selected disabled className="badge-danger badge-outline">
+                  Select Address Type
+                </option>
+                <option value="1">Home</option>
+                <option value="2">Office</option>
+                <option value="3">Other</option>
+              </select>
+              <p className="w-full text-red-500 text-sm">
+                {errors.address_type || "\u00A0"}
+              </p>
+            </div>
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-6">
             <button
               type="button"
               onClick={onClose}

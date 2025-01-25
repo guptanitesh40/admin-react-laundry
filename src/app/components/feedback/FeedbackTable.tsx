@@ -3,10 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import { useApproveFeedback, useGetFeedbacks } from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
-import { IsPublish } from "../../../types/enums";
 import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,7 +21,8 @@ const FeedbackTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const [publishFilter, setPublishFilter] = useState<number>();
+  const [publishFilter, setPublishFilter] = useState<number | null>();
+  const [ratingFilter, setRatingFilter] = useState([]);
   const [refetch, setRefetch] = useState<boolean>(false);
   const [feedbackData, setFeedbackData] = useState<any[]>([]);
 
@@ -30,7 +31,9 @@ const FeedbackTable: React.FC = () => {
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    ratingFilter,
+    publishFilter
   );
   const { approveFeedback } = useApproveFeedback();
 
@@ -116,7 +119,7 @@ const FeedbackTable: React.FC = () => {
         key={index}
         className={`rating-label ${index < rating ? "checked" : ""}`}
       >
-        <i className="rating-on ki-solid ki-star text-base leading-none"></i>
+        <i className="rating-on custom-rating-on ki-solid ki-star text-base leading-none"></i>
         <i className="rating-off ki-outline ki-star text-base leading-none"></i>
       </div>
     ));
@@ -133,6 +136,19 @@ const FeedbackTable: React.FC = () => {
 
     approveFeedback(feedback_id, value);
   };
+
+  const ratingOptions = Array.from({ length: 5 }, (_, index) => ({
+    label: (
+      <div className="flex items-center" key={index}>
+        <div className="mr-1">{index + 1}</div>
+        <div className="rating-label checked mb-1">
+          <i className="rating-on custom-rating-on ki-solid ki-star text-base leading-none"></i>
+          <i className="rating-off ki-outline ki-star text-base leading-none"></i>
+        </div>
+      </div>
+    ),
+    value: index + 1,
+  }));
 
   if (!feedbacks) return;
 
@@ -156,6 +172,28 @@ const FeedbackTable: React.FC = () => {
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
           <div className="flex flex-wrap gap-2.5">
+            <MultiSelect
+              options={ratingOptions}
+              displayValue="label"
+              placeholder="Select Rating"
+              selectedValues={ratingFilter}
+              onSelect={(selectedList: any) =>
+                setRatingFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setRatingFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[270px]"
+              sliceCount={3}
+              isSearchInput={false}
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
             <select
               className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
                 publishFilter
@@ -165,9 +203,7 @@ const FeedbackTable: React.FC = () => {
                 setPublishFilter(Number(e.target.value));
               }}
             >
-              <option value="" className="badge-danger badge-outline">
-                Publish Status
-              </option>
+              <option value="">Publish Status</option>
               <option value="1" className="badge-danger badge-outline">
                 Approve
               </option>
@@ -338,7 +374,7 @@ const FeedbackTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              {feedbackData.length > 0 ? (
+              {feedbacks.length > 0 ? (
                 <tbody>
                   {feedbackData.map((feedback) => {
                     return (
@@ -407,7 +443,7 @@ const FeedbackTable: React.FC = () => {
                               >
                                 Both
                               </option>
-                            </select>                            
+                            </select>
                           </span>
                         </td>
                       </tr>

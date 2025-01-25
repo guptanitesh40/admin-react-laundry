@@ -50,46 +50,54 @@ const CustomerRatingReport: React.FC = () => {
   return (
     <div className="col-span-3">
       <div className="card w-full">
-        <div className="card-header mb-4">
+        <div className="card-header">
           <h3 className="text-lg font-semibold text-gray-700">
             Customer Rating
-          </h3>          
+          </h3>
         </div>
-        <div className="card-body flex flex-col gap-6">
-          <div className="flex flex-row">
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-4 ml-3">
             <div>
               <img
-                className="default-logo h-[70px] max-w-none"
+                className="default-logo h-[55px] max-w-none"
                 src="/media/app/review.png"
               />
             </div>
             <div className="flex flex-col">
-            <h2 className="text-5xl text-gray-700 font-bold ml-4">{averageRating.toFixed(2)}</h2>
-            <p className="text-lg font-semibold text-gray-700 ml-5">─ of {totolRating} reviews</p>
+              <h2 className="text-2xl text-gray-700 font-bold">
+                {averageRating.toFixed(2)}
+              </h2>
+              <p className="text-base font-semibold text-gray-700">
+                ─ of {totolRating} reviews
+              </p>
             </div>
-          </div> 
-          {ratings.map((rating, index) => (
-            <div key={index} className="space-y-1">
-              <div className="flex justify-between text-sm font-medium text-gray-600">
-                <div className="space-x-1">
-                  <span>{rating.label}</span>
-                  <div
-                    key={index}
-                    className="rating-label custom-rating checked"
-                  >
-                    <i className="custom-rating-on rating-on ki-solid ki-star text-base leading-none"></i>
+          </div>
+
+          <div className="card-body flex flex-col gap-2 custom-body">
+            {ratings.map((rating, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <div className="flex justify-between text-sm font-medium text-gray-600">
+                  <div className="flex gap-2 items-center justify-center">
+                    <span>{rating.label}</span>
+                    <div
+                      key={index}
+                      className="rating-label custom-rating checked"
+                    >
+                      <i className="custom-rating-on rating-on ki-solid ki-star text-base leading-none"></i>
+                    </div>
                   </div>
+                  
                 </div>
-                <span>{rating.count}</span>
+                <div className="w-full h-[8px] bg-gray-200 rounded overflow-hidden">
+                  <div
+                    className="progressbar h-full transition-all duration-500"
+                    style={{ width: `${(rating.count / maxCount) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="font-medium text-sm text-gray-600">{rating.count}</span>
               </div>
-              <div className="w-full h-[8px] bg-gray-200 rounded overflow-hidden">
-                <div
-                  className="progressbar h-full transition-all duration-500"
-                  style={{ width: `${(rating.count / maxCount) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

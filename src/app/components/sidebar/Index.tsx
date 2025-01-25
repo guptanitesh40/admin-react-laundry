@@ -37,13 +37,15 @@ export const Sidebar: React.FC = () => {
       id="sidebar"
     >
       <div
-        className="sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0"
+        className="cursor-pointer sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0"
         id="sidebar_header"
       >
-        <img
-          className="default-logo min-h-[22px] max-w-none"
-          src="/media/app/Group 34972.png"
-        />
+        <Link to="/dashboard" onClick={() => handleItemClick("dashboard")}>
+          <img
+            className="default-logo min-h-[22px] max-w-none"
+            src="/media/app/Group 34972.png"
+          />
+        </Link>
       </div>
 
       <div
