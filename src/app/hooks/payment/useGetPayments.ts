@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 const token = localStorage.getItem("authToken");
 
 interface Payments {
-  created_at: string,
+  created_at: string;
   razorpay_transaction_id: number;
   razorpay_order_id: string;
   currency: string;
@@ -23,14 +23,15 @@ const useGetPayments = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  user_id?: number[],
+  status?: string[]
 ) => {
   const [payments, setPayments] = useState<Payments[]>();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchPayments = async () => {
-
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
@@ -38,16 +39,25 @@ const useGetPayments = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
+    if (user_id) {
+      user_id.forEach((u) => queryParams.append("user_id", u.toString()));
+    }
+    if (status) {
+      status.forEach((status) => queryParams.append("status", status));
+    }
 
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/razorpay/transaction?${queryParams}`, {
-        method: "GET",
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/razorpay/transaction?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -68,7 +78,7 @@ const useGetPayments = (
 
   useEffect(() => {
     fetchPayments();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, user_id, status]);
 
   return { payments, count, fetchPayments, loading };
 };

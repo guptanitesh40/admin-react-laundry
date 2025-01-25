@@ -4,7 +4,7 @@ import { BASE_URL } from "../../utils/constant";
 const token = localStorage.getItem("authToken");
 
 interface PaymentTypeData {
-  paymentType: string;
+  payment_type: string;
   count: number;
 }
 

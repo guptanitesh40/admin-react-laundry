@@ -9763,3 +9763,7 @@ label.rating-label {
 .custom-rating-on {
   color: #bfb494 !important;
 }
+
+.custom-body {
+  padding: 15px;
+}

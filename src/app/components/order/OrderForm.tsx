@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import {
   useAddOrder,
   useApplyCoupon,
+  useGeneratePaymentLink,
   useGetAddress,
   useGetBranches,
   useGetCategories,
@@ -20,6 +21,8 @@ import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import CustomerModal from "./CustomerModal";
 import useGetValidCoupon from "../../hooks/coupon/useGetValidCoupons";
+import { RiShareForwardFill } from "react-icons/ri";
+import useGetUser from "../../hooks/user/useGetuser";
 
 interface item {
   category_id: number;
@@ -80,6 +83,9 @@ const OrderForm: React.FC = () => {
   const { order, fetchOrder } = useGetOrder();
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
+  const { userData, fetchUser } = useGetUser();
+  const { transactionId, generatePaymentLink } = useGeneratePaymentLink();
+  const user = userData?.user;
 
   const navigate = useNavigate();
 
@@ -161,6 +167,7 @@ const OrderForm: React.FC = () => {
       if (formData.user_id) {
         await fetchAddress(formData.user_id);
         await fetchValidCoupons(formData.user_id);
+        await fetchUser(formData.user_id);
       }
       if (isSubmit) {
         await fetchAddress(formData.user_id);
@@ -169,6 +176,15 @@ const OrderForm: React.FC = () => {
     };
     fetchData();
   }, [formData.user_id, isSubmit]);
+
+  useEffect(() => {
+    if (transactionId) {
+      setFormData({
+        ...formData,
+        transaction_id: transactionId,
+      });
+    }
+  }, [transactionId]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -497,6 +513,21 @@ const OrderForm: React.FC = () => {
     navigate(`/order/${order_id}`);
   };
 
+  const handleSendCustomerData = async () => {
+    const customerInfo = {
+      amount: formData.paid_amount,
+      currency: "INR",
+      user_id: formData.user_id,
+      customer: {
+        name: formData.username,
+        mobile_number: Number(user?.mobile_number),
+        email: user?.email,
+      },
+    };
+
+    await generatePaymentLink(customerInfo);
+  };
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -685,7 +716,7 @@ const OrderForm: React.FC = () => {
                   </select>
                   <p className="w-full text-red-500 text-sm">
                     {errors[`items[${index}].product_id`]}
-                  </p>                 
+                  </p>
                 </div>
 
                 <div className="flex flex-col flex-1 md:mb-0">
@@ -1029,6 +1060,17 @@ const OrderForm: React.FC = () => {
               <p className="w-full text-red-500 text-sm">
                 {errors.payment_type || "\u00A0"}
               </p>
+              {!order_id && formData.payment_type === 2 && (
+                <div>
+                  <button
+                    className="-mt-2 badge text-sm badge-info badge-outline"
+                    onClick={handleSendCustomerData}
+                  >
+                    <RiShareForwardFill color="blue" />
+                    {"  "} Send Payment Link
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col">
@@ -1071,11 +1113,9 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="transaction_id"
-                value={formData.transaction_id || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, transaction_id: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2"
+                value={transactionId || ""}
+                className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
+                readOnly
               />
             </div>
 

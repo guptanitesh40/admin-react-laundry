@@ -24,7 +24,9 @@ const useGetFeedbacks = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  rating?: number[],
+  is_publish?: number, 
 ) => {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -39,6 +41,10 @@ const useGetFeedbacks = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
+    if(is_publish) queryParams.append("is_publish", is_publish.toString());
+    if (rating) {
+      rating.forEach((r) => queryParams.append("rating", r.toString()));
+    }
 
     setLoading(true);
     try {
@@ -68,7 +74,7 @@ const useGetFeedbacks = (
 
   useEffect(() => {
     fetchFeedbacks();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder]);
+  }, [pageNumber, perPage, search, sortColumn, sortOrder, is_publish, rating]);
 
   return { feedbacks, fetchFeedbacks, loading, count };
 };

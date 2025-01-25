@@ -6,7 +6,7 @@ import { useGetPaymentTypeData } from "../../hooks";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface PaymentData {
-  paymentType: string;
+  payment_type: string;
   count: number;
 }
 
@@ -19,7 +19,7 @@ const PaymentTypeReport = () => {
 
   const aggregatedData = (paymentTypeData || []).reduce(
     (acc: Record<string, number>, item: PaymentData) => {
-      acc[item.paymentType] = (acc[item.paymentType] || 0) + item.count;
+      acc[item.payment_type] = (acc[item.payment_type] || 0) + item.count;
       return acc;
     },
     {}

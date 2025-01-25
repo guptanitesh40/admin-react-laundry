@@ -5,6 +5,13 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import dayjs from "dayjs";
+import MultiSelect from "../MultiSelect/MultiSelect";
+import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+
+interface OptionType {
+  label: string;
+  value: number;
+}
 
 const PaymentsTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,15 +26,44 @@ const PaymentsTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState([]);
+  const [userFilter, setUserFilter] = useState<number[]>([]);
+
   const { payments, count } = useGetPayments(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder
+    sortOrder,
+    userFilter,
+    paymentStatusFilter
   );
 
+  const paymentStatusOptions = [
+    { label: "Created", value: "created" },
+    { label: "Paid", value: "paid" },
+    { label: "Attempted", value: "attempted" },
+  ];
+
+  const { fetchUsersByRole } = useGetUsersByRole();
+
   const totalPages = Math.ceil(count / perPage);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      const customers = await fetchUsersByRole(5, customerSearch);
+      const formattedOptions = customers?.map((user: any) => ({
+        label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+        value: user.user_id,
+      }));
+      setCustomerOptions(formattedOptions);
+    };
+    if (customerSearch) {
+      fetchCustomer();
+    }
+  }, [customerSearch]);
 
   useEffect(() => {
     if (pageParams) {
@@ -100,8 +136,49 @@ const PaymentsTable: React.FC = () => {
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-col items-start">
+        <div className="flex flex-wrap gap-2 lg:gap-2 mb-3">
+          <div className="flex flex-wrap gap-2.5">
+            <MultiSelect
+              options={paymentStatusOptions}
+              displayValue="label"
+              placeholder="Select Payment Status"
+              selectedValues={paymentStatusFilter}
+              onSelect={(selectedList: any) =>
+                setPaymentStatusFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setPaymentStatusFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[180px]"
+              sliceCount={1}
+              isSearchInput={false}
+            />
+
+            <MultiSelect
+              options={customerOptions}
+              displayValue="user_name"
+              placeholder="Select Customer"
+              selectedValues={userFilter}
+              onSelect={(selectedList: any) =>
+                setUserFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setUserFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[320px]"
+              setSearch={setCustomerSearch}
+            />
+          </div>
+
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -114,7 +191,7 @@ const PaymentsTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="min-w-[185px] flex-grow"
+                  className="min-w-[150px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>
