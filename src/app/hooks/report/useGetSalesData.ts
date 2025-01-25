@@ -7,7 +7,7 @@ interface SalesData {
   month: string;
   total_sales: number;
   total_collection: number;
-  unpaid_Amount: number;
+  unpaid_amount: number;
 }
 
 const useGetSalesData = () => {
@@ -23,7 +23,7 @@ const useGetSalesData = () => {
     setLoading(false);
     try {
       const response = await fetch(
-        `${BASE_URL}/report/sales-report?${queryParams}`,
+        `${BASE_URL}/report/sales-booking?${queryParams}`,
         {
           method: "GET",
           headers: {

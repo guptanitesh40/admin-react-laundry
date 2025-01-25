@@ -109,5 +109,8 @@ export { default as useAddSettings } from './settings/useAddSettings.ts';
 export { default as useUpdatePromotionBanner } from './settings/useUpdatePromotionBanner.ts';
 
 export { default as useGetPayments } from './payment/useGetPayments.ts';
+export { default as useGeneratePaymentLink } from './payment/useGeneratePaymentLink.ts';
+
 export { default as useGetFeedbacks } from './feedback/useGetFeedbacks.ts';
 export { default as useApproveFeedback } from './feedback/useApproveFeedback.ts';
+

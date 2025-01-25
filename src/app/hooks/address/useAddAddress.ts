@@ -1,16 +1,16 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
+const token = localStorage.getItem("authToken");
 
 const useAddAddress = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const addAddress = async (addressData: any) => {
-    const ADD_ADDRESS_URL = `${import.meta.env.VITE_BASE_URL}/address/admin/`;
-    const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
-      const response = await fetch(ADD_ADDRESS_URL, {
+      const response = await fetch(`${BASE_URL}/address/admin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

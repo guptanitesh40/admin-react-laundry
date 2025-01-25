@@ -7,7 +7,7 @@ export const getPublishStatusLabel = (status: number) => {
     case 3:
       return "badge badge-warning badge-outline";
     default:
-      return "badge badge-secondary badge-outline";
+      return "";
   }
 };
 
