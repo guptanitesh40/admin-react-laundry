@@ -2901,7 +2901,8 @@ video {
   border-color: var(--tw-primary-clarity);
 }
 
-.btn-outline.btn-primary i {
+.btn-outline.
+-primary i {
   color: var(--tw-primary);
 }
 
@@ -9523,6 +9524,16 @@ label.rating-label {
   .dropdown-item {
     font-size: 12px;
   }
+
+  .temp-style {
+
+  }
+
+  
+  .problem-001 {
+    background: red;
+    column: span 2 / span 2;
+  }
 }
 
 .search-input {
@@ -9767,3 +9778,4 @@ label.rating-label {
 .custom-body {
   padding: 15px;
 }
+

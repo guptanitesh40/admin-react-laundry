@@ -68,7 +68,7 @@ const CouponModal: React.FC = () => {
           coupon.maximum_usage_count_per_user.toString(),
         total_usage_count: coupon.total_usage_count.toString(),
         coupon_type: coupon.coupon_type.toString(),
-      }
+      };
 
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
@@ -91,14 +91,12 @@ const CouponModal: React.FC = () => {
     }
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const dataToValidate = {
       ...formData,
-      code: formData.code.toUpperCase(),
+      code: formData?.code?.toUpperCase(),
       discount_type: Number(formData.discount_type),
       coupon_type: Number(formData.coupon_type),
       discount_value: Number(formData.discount_value),
@@ -112,13 +110,15 @@ const CouponModal: React.FC = () => {
 
     try {
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
-          return formData[key] !== initialFormData[key];
-        });
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            return formData[key] !== initialFormData[key];
+          }
+        );
       };
 
-      if (!isDataChanged()) { 
-        navigate("/coupon"); 
+      if (!isDataChanged()) {
+        navigate("/coupon");
         return;
       }
 
@@ -126,9 +126,9 @@ const CouponModal: React.FC = () => {
       await couponSchema.validate(dataToValidate, { abortEarly: false });
 
       if (coupon?.coupon_id) {
-         success = await updateCoupon(coupon.coupon_id, dataToValidate);
+        success = await updateCoupon(coupon.coupon_id, dataToValidate);
       } else {
-         success = await addCoupon(dataToValidate);
+        success = await addCoupon(dataToValidate);
       }
       if (success) {
         navigate("/coupon");
@@ -149,232 +149,207 @@ const CouponModal: React.FC = () => {
   const isLoading = addingCoupon || updatingCoupon;
 
   return (
-    <div className="align-center justify-center mx-16">
-      <div className="card card-grid w-[790px]">
-        <div className="border-0 mx-auto p-8 max-w-4xl align-middle">
-          <h2 className="card-title flex flex-col items-start">
-            <span className="card-label font-bold text-gray-700 text-2xl mb-5">
-              {coupon ? "Edit Coupon" : "Add Coupon"}
-            </span>
-          </h2>
+    <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
+      <h1 className="text-2xl font-bold mb-6">
+        {coupon ? "Edit Coupon" : "Add Coupon"}
+      </h1>
 
-          <form
-            onSubmit={handleSubmit}
-            className="w-full grid grid-cols-1 md:grid-cols-2 gap-4"
-          >
-            <div className="mb-4 col-span-1">
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Code
+            </label>
+            <input
+              type="text"
+              value={formData.code ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, code: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2"
+            />
+            <p className="w-full text-red-500 text-sm">
+              {errors.code || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              value={formData.title ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
+          </div>
+
+          <div className="flex flex-col col-span-2 problem-001">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="h-20 input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.description || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Discount Type
+            </label>
+            <select
+              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+              value={formData.discount_type ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  discount_type: Number(e.target.value),
+                })
+              }
+            >
+              <option value="" disabled>
+                Select Discount Type
+              </option>
+              <option value={1}>Flat</option>
+              <option value={2}>Percentage</option>
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.discount_type || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Discount Value
+            </label>
+            <input
+              type="text"
+              value={formData.discount_value ?? ""}
+              onChange={(e) =>
+                setFormData({ ...formData, discount_value: e.target.value })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.discount_value || "\u00A0"}
+            </p>
+          </div>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="mb-4 col-span-1 w-[320px]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Code
+                Start Time
               </label>
-              <input
-                type="text"
-                value={formData.code ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, code: e.target.value })
-                }
-                className="uppercase input border border-gray-300 rounded-md p-2 w-full"
+              <DateTimePicker
+                value={formData.start_time}
+                onChange={handleStartTimeChange}
+                format="DD-MM-YYYY hh:mm:ss A"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+                disablePast
               />
-              <p className="w-full text-red-500 text-sm">
-                {errors.code || "\u00A0"}
-              </p>
             </div>
 
-            <div className="mb-4 col-span-1">
+            <div className="mb-4 col-span-1 w-[320px]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Title
+                End Time
               </label>
-              <input
-                type="text"
-                value={formData.title ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
+              <DateTimePicker
+                value={formData.end_time}
+                onChange={handleEndTimeChange}
+                format="DD-MM-YYYY hh:mm:ss A"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+                minDateTime={formData.start_time}
               />
-              <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
             </div>
+          </LocalizationProvider>
 
-            <div className="mb-4 col-span-2">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Description
-              </label>
-              <textarea
-                value={formData.description ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                className="h-20 input border border-gray-300 rounded-md p-2 w-full"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.description || "\u00A0"}
-              </p>
-            </div>
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Max Usage Per User
+            </label>
+            <input
+              type="text"
+              value={formData.maximum_usage_count_per_user ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  maximum_usage_count_per_user: e.target.value,
+                })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.maximum_usage_count_per_user || "\u00A0"}
+            </p>
+          </div>
 
-            <div className="mb-4 col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Discount Type
-              </label>
-              <select
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                value={formData.discount_type ?? ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    discount_type: Number(e.target.value),
-                  })
-                }
-              >
-                <option value="" disabled>
-                  Select Discount Type
-                </option>
-                <option value={1}>Flat</option>
-                <option value={2}>Percentage</option>
-              </select>
-              <p className="text-red-500 text-sm">
-                {errors.discount_type || "\u00A0"}
-              </p>
-            </div>
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Total Usage Count
+            </label>
+            <input
+              type="text"
+              value={formData.total_usage_count ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  total_usage_count: e.target.value,
+                })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.total_usage_count || "\u00A0"}
+            </p>
+          </div>
 
-            <div className="mb-4 col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Discount Value
-              </label>
-              <input
-                type="text"
-                value={formData.discount_value ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, discount_value: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.discount_value || "\u00A0"}
-              </p>
-            </div>
+          <div className="flex flex-col">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Coupon Type
+            </label>
+            <select
+              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+              value={formData.coupon_type ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  coupon_type: Number(e.target.value),
+                })
+              }
+            >
+              <option value="" disabled>
+                Select Coupon Type
+              </option>
+              <option value={1}>Web</option>
+              <option value={2}>App</option>
+              <option value={3}>Both</option>
+            </select>
+            <p className="text-red-500 text-sm">
+              {errors.coupon_type || "\u00A0"}
+            </p>
+          </div>
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <div className="mb-4 col-span-1 w-[320px]">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Start Time
-                </label>
-                <DateTimePicker
-                  value={formData.start_time}
-                  onChange={handleStartTimeChange}
-                  format="DD-MM-YYYY hh:mm:ss A"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                    },
-                  }}
-                  disablePast
-                />
-              </div>
-
-              <div className="mb-4 col-span-1 w-[320px]">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  End Time
-                </label>
-                <DateTimePicker
-                  value={formData.end_time}
-                  onChange={handleEndTimeChange}
-                  format="DD-MM-YYYY hh:mm:ss A"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                    },
-                  }}
-                  minDateTime={formData.start_time} 
-                />
-              </div>
-            </LocalizationProvider>
-
-            <div className="mb-4 col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Max Usage Per User
-              </label>
-              <input
-                type="text"
-                value={formData.maximum_usage_count_per_user ?? ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    maximum_usage_count_per_user: e.target.value,
-                  })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.maximum_usage_count_per_user || "\u00A0"}
-              </p>
-            </div>
-
-            <div className="mb-4 col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Total Usage Count
-              </label>
-              <input
-                type="text"
-                value={formData.total_usage_count ?? ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    total_usage_count: e.target.value,
-                  })
-                }
-                className="input border border-gray-300 rounded-md p-2 w-full"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.total_usage_count || "\u00A0"}
-              </p>
-            </div>
-
-            <div className="mb-4 col-span-1">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Coupon Type
-              </label>
-              <select
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                value={formData.coupon_type ?? ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, coupon_type: Number(e.target.value )})
-                }
-              >
-                <option value="" disabled>
-                  Select Coupon Type
-                </option>
-                <option value={1}>Web</option>
-                <option value={2}>App</option>
-                <option value={3}>Both</option>
-              </select>
-              <p className="text-red-500 text-sm">
-                {errors.coupon_type || "\u00A0"}
-              </p>
-            </div>
-
-            <div className="flex items-center col-span-2 space-x-4">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isLoading}
-              >
-                {isLoading
-                  ? "Saving..."
-                  : coupon_id
-                  ? "Update Coupon"
-                  : "Add Coupon"}
-              </button>
-              <button
-                type="submit"
-                className="btn  btn-light py-5 px-10 "
-                disabled={isLoading}
-                onClick={handelCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

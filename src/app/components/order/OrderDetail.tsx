@@ -310,7 +310,6 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-
   if (!order) return null;
 
   const adminStatusLabel = getOrderStatusLabel(
@@ -338,151 +337,154 @@ const OrderDetails: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-semibold text-gray-900">
-            Order Details - #{order_id}
-          </h1>
-          <div className="flex flex-row gap-2">
-            <button
-              className="flex items-center btn btn-light"
-              onClick={handleGenerateInvoice}
-              disabled={generating}
-            >
-              <i className="ki-filled ki-cheque text-2xl link"></i>
-              {generating ? (
-                <>
-                  View Invoice <LoadingSpinner />
-                </>
-              ) : (
-                "View Invoice"
+      <div className="card rounded-xl">
+        <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-xl font-semibold text-gray-900">
+              Order Details - #{order_id}
+            </h1>
+            <div className="flex flex-row gap-2">
+              <button
+                className="flex items-center btn btn-light"
+                onClick={handleGenerateInvoice}
+                disabled={generating}
+              >
+                <i className="ki-filled ki-cheque text-2xl link"></i>
+                {generating ? (
+                  <>
+                    View Invoice <LoadingSpinner />
+                  </>
+                ) : (
+                  "View Invoice"
+                )}
+              </button>
+              <button
+                className="flex items-center font-medium btn btn-primary"
+                onClick={handleEditOrder}
+              >
+                <i className="ki-filled ki-pencil mr-2"></i>Edit Order
+              </button>
+              {order?.order_status < 8 && order?.refund_status !== 1 && (
+                <button
+                  className="flex items-center font-semibold btn btn-danger"
+                  onClick={handleOrderCancel}
+                >
+                  <MdCancel size={20} />
+                  Cancel Order
+                </button>
               )}
-            </button>
-            <button
-              className="flex items-center font-medium btn btn-primary"
-              onClick={handleEditOrder}
-            >
-              <i className="ki-filled ki-pencil mr-2"></i>Edit Order
-            </button>
-            {order?.order_status < 8 && order?.refund_status !== 1 && (
-              <button
-                className="flex items-center font-semibold btn btn-danger"
-                onClick={handleOrderCancel}
-              >
-                <MdCancel size={20} />
-                Cancel Order
-              </button>
-            )}
 
-            {order.payment_status !== 1 && order.refund_status === 3 && (
-              <button
-                className="flex items-center font-semibold btn btn-success"
-                onClick={handleOrderRefund}
-              >
-                <HiReceiptRefund size={20} />
-                Refund Order
-              </button>
-            )}
+              {order.payment_status !== 1 && order.refund_status === 3 && (
+                <button
+                  className="flex items-center font-semibold btn btn-success"
+                  onClick={handleOrderRefund}
+                >
+                  <HiReceiptRefund size={20} />
+                  Refund Order
+                </button>
+              )}
+            </div>
           </div>
-        </div>
 
-        {order.refund_status === 3 ? (
-          <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
-            <div className="flex flex-col items-center">
-              <span className="text-sm font-medium text-gray-700">
-                Current Status:
-              </span>
-              <span
-                className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
-              >
-                {order.order_status_details.admin_label}
-              </span>
-            </div>
-
-            <div className="flex-1 px-6">
-              <p className="text-sm text-gray-600 mt-1">
-                {order.order_status_details.description}
-              </p>
-            </div>
-
-            {order.order_status_details.next_step !== null && (
+          {order.refund_status === 3 ? (
+            <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
               <div className="flex flex-col items-center">
                 <span className="text-sm font-medium text-gray-700">
-                  Next Step:
+                  Current Status:
                 </span>
-                <button
-                  className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
-                  onClick={handleStatusClick}
+                <span
+                  className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
                 >
-                  {order.order_status_details.next_step}
-                </button>
+                  {order.order_status_details.admin_label}
+                </span>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center bg-white p-4 rounded-md shadow-sm">
-            <div>
-              <span className="badge text-sm font-medium text-gray-700">
-                Order Refunded
-              </span>
-            </div>
+  
+              <div className="flex-1 px-6">
+                <p className="text-sm text-gray-600 mt-1">
+                  {order.order_status_details.description}
+                </p>
+              </div>
 
-            <div className="flex-1 px-10">
-              <span className="text-sm font-medium text-gray-700">
-                Reason of Refund :
-              </span>
-              <p className="text-sm text-gray-600 mt-1">
-                {order.refund_descriptions}
-              </p>
+              {order.order_status_details.next_step !== null && (
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-medium text-gray-700">
+                    Next Step:
+                  </span>
+                  <button
+                    className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+                    onClick={handleStatusClick}
+                  >
+                    {order.order_status_details.next_step}
+                  </button>
+                </div>
+              )}
             </div>
+          ) : (
+            <div className="flex items-center bg-white p-4 rounded-md shadow-sm">
+              <div>
+                <span className="badge text-sm font-medium text-gray-700">
+                  Order Refunded
+                </span>
+              </div>
 
-            <div className="flex flex-col mr-4 gap-2">
-              <span className="text-sm font-medium text-gray-700">
-                Refund Amount :{" "}
-              </span>
-              <span className="text-sm font-medium text-gray-700">
-                ₹{order.refund_amount}
-              </span>
-            </div>
+              <div className="flex-1 px-10">
+                <span className="text-sm font-medium text-gray-700">
+                  Reason of Refund :
+                </span>
+                <p className="text-sm text-gray-600 mt-1">
+                  {order.refund_descriptions}
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-gray-700">
-                Refund Status :
-              </span>
-              <span
-                className={`${
-                  order.refund_status === 1
-                    ? "badge badge-primary"
-                    : "badge badge-warning"
-                } badge-outline badge-sm`}
+              <div className="flex flex-col mr-4 gap-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Refund Amount :{" "}
+                </span>
+                <span className="text-sm font-medium text-gray-700">
+                  ₹{order.refund_amount}
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-gray-700">
+                  Refund Status :
+                </span>
+                <span
+                  className={`${
+                    order.refund_status === 1
+                      ? "badge badge-primary"
+                      : "badge badge-warning"
+                  } badge-outline badge-sm`}
+                >
+                  {RefundStatus[order.refund_status]}{" "}
+                </span>
+              </div>
+
+              <button
+                className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
+                onClick={handleViewRefundReceipt}
               >
-                {RefundStatus[order.refund_status]}{" "}
-              </span>
+                <RiFilePaperLine size={20} color="gray" /> Refund <br />
+                Receipt
+              </button>
             </div>
-
-            <button
-              className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
-              onClick={handleViewRefundReceipt}
-            >
-              <RiFilePaperLine size={20} color="gray" /> Refund <br />
-              Receipt
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-md shadow">
+          <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold">Order Items</h2>
+              <h3 className="card-title text-lg">Order Items</h3>
               <button
-                className="btn btn-light btn-sm flex gap-2 ml-20 text-gray-700 text-sm font-semibold"
+                className="btn btn-secondary btn-lg flex gap-2 ml-20 text-gray-700 text-sm font-semibold"
                 onClick={handlePrintLabel}
               >
-                <RiFilePaperLine size={20} color="gray" /> Print Label
+                <RiFilePaperLine size={20} color="gray" />{" "}
+                <p className="text-gray-700">Print Label</p>
               </button>
-              <span className="text-gray-700 text-sm font-semibold px-3 py-1 rounded-lg ">
+              <span className="text-gray-700 text-sm font-semibold px-3 py-1 rounded-lg flex">
                 Total Items: {order.items.length}
               </span>
             </div>
@@ -496,7 +498,7 @@ const OrderDetails: React.FC = () => {
                     <div className="flex items-center gap-3.5">
                       <img
                         alt={item.product.name}
-                        className="w-10 shrink-0 object-cover rounded"
+                        className="w-16 h-16 shrink-0 object-cover rounded"
                         src={item.product.image}
                       />
                       <div className="flex flex-col">
@@ -509,7 +511,7 @@ const OrderDetails: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-5">
-                      <span className="badge badge-lg badge-success badge-outline text-xs font-medium mr-2 px-2.5">
+                      <span className="badge  badge-sm flex badge-success badge-outline text-xs">
                         Service: {item.service.name}
                       </span>
                     </div>
@@ -790,13 +792,13 @@ const OrderDetails: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-6 bg-white p-6 rounded-md shadow">
+      <div className="mt-6 card rounded-xl p-6 shadow">
         <h2 className="text-lg font-medium text-gray-700 mb-4">Order Notes</h2>
 
         <div>
           <div className="relative border border-gray-300 rounded-md p-2">
             <textarea
-              className="w-full h-[100px] p-3 border-none focus:outline-none focus:ring-0"
+              className="w-full h-16 p-3 border-none focus:outline-none focus:ring-0"
               placeholder="Add a new note..."
               value={formData.text_note || ""}
               onChange={(e) =>
@@ -805,6 +807,7 @@ const OrderDetails: React.FC = () => {
                   text_note: e.target.value,
                 })
               }
+              rows={5}
             />
             <div className="flex items-center mt-2">
               <button
@@ -845,16 +848,18 @@ const OrderDetails: React.FC = () => {
           ))}
         </div>
 
-        <button
-          className={`px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600
+        <div className="flex relative justify-start pt-2.5">
+          <button
+            className={`px-4 py-2 btn btn-primary 
           ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-          onClick={hanldeAddNote}
-          disabled={loading}
-        >
-          {loading ? "Adding..." : "Add Note"}
-        </button>
+            onClick={hanldeAddNote}
+            disabled={loading}
+          >
+            {loading ? "Adding..." : "Add Note"}
+          </button>
+        </div>
 
-        <ul className="mt-6 space-y-4">
+        <ul className="mt-4 space-y-4">
           {order.notes?.map((note, index) => {
             const formattedDate = dayjs(note.created_at).format(
               "HH:mm, DD/MM/YYYY"

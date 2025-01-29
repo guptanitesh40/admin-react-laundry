@@ -7,6 +7,7 @@ import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import CustomerRatingReport from "../report/CustomerRatingReport";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

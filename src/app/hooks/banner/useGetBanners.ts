@@ -9,7 +9,7 @@ const useGetBanners = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  banner_types?: number[]
+  banner_types?: number
 ) => {
   const [banners, setBanners] = useState([]);
   const [totalBanners, setTotalBanners] = useState(0);
@@ -24,9 +24,8 @@ const useGetBanners = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (banner_types) {
-      banner_types.forEach((b) => queryParams.append("banner_types", b.toString()));
-    }
+    if (banner_types) queryParams.append("banner_types", banner_types.toString());
+
 
     setLoading(true);
     try {

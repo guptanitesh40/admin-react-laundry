@@ -41,11 +41,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
   const pageFromParams = searchParams.get("page");
   const perPageFromParams = searchParams.get("perPage");
 
-  const [bannerTypeFilter, setBannerTypeFilter] = useState<number[]>([]);
-
-  const bannerTypeOptions = Object.entries(BannerType)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
+  const [bannerTypeFilter, setBannerTypeFilter] = useState<number>();
 
   const { banners, fetchBanners, totalBanners, loading } = useGetBanners(
     currentPage,
@@ -188,25 +184,20 @@ const BannerTable: React.FC<BannerTableProps> = ({
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
           <div className="flex flex-wrap gap-2.5">
-            <MultiSelect
-              options={bannerTypeOptions}
-              displayValue="label"
-              placeholder="Select Banner Type"
-              selectedValues={bannerTypeFilter}
-              onSelect={(selectedList: any) =>
-                setBannerTypeFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              onRemove={(selectedList: any) =>
-                setBannerTypeFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              className="min-w-[270px]"
-              sliceCount={3}
-              isSearchInput={false}
-            />
+            <select
+              className="select select-lg w-[170px] text-sm"
+              value={bannerTypeFilter}
+              onChange={(e) => {
+                setBannerTypeFilter(Number(e.target.value));
+              }}
+            >
+              <option value="" selected>
+                Banner Type
+              </option>
+              <option value={1}>Website</option>
+              <option value={2}>App</option>
+              <option value={3}>Both</option>
+            </select>
           </div>
 
           <div className="flex">

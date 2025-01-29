@@ -1,7 +1,7 @@
+import CustomerRatingReport from "../report/CustomerRatingReport";
 import FeedbackTable from "./FeedbackTable";
 
 const Feedback: React.FC = () => {
-    
   return (
     <>
       <div className="container-fixed">
@@ -13,6 +13,10 @@ const Feedback: React.FC = () => {
       </div>
 
       <div className="container-fixed">
+        <CustomerRatingReport />
+      </div>
+
+      <div className="container-fixed mt-5">
         <div className="grid gap-5 lg:gap-7.5">
           <div className="card card-grid min-w-full">
             <FeedbackTable />

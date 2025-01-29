@@ -3,7 +3,7 @@ import useGetUser from "../../hooks/user/useGetuser";
 import useClearDueAmount from "../../hooks/order/useClearDueAmount";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 
-interface OrderListModalProps {
+interface DuoOrderListModalProps {
   modalOpen: boolean;
   onClose: () => void;
   userId: number;
@@ -20,7 +20,7 @@ interface Order {
   current_total: number | null;
 }
 
-const OrderListModal: React.FC<OrderListModalProps> = ({
+const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   modalOpen,
   onClose,
   userId,
@@ -95,6 +95,13 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
   };
 
   const handleSave = async () => {
+
+    if(updatedOrders.length === 0){
+      onClose();
+      return;
+    }
+      
+
     const payload = {
       user_id: userId,
       filteredOrders: updatedOrders.map(
@@ -268,4 +275,4 @@ const OrderListModal: React.FC<OrderListModalProps> = ({
   );
 };
 
-export default OrderListModal;
+export default DuoOrderListModal;

@@ -24,7 +24,7 @@ const useGetCoupons = (
   sortColumn?: string,
   sortOrder?: string,
   discount_types?: number,
-  coupon_types?: number[],
+  coupon_types?: number,
 ) => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,9 +40,8 @@ const useGetCoupons = (
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (discount_types) queryParams.append("discount_types", discount_types.toString());
-    if (coupon_types) {
-      coupon_types.forEach((c) => queryParams.append("coupon_types", c.toString()));
-    }
+    if (coupon_types) queryParams.append("coupon_types", coupon_types.toString());
+
 
     setLoading(true);
     try {
