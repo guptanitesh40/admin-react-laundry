@@ -2,7 +2,7 @@ import React from "react";
 import OrderReport from "../report/OrderReport";
 import SalesReport from "../report/SalesReport";
 import DeliveryPendingReport from "../report/DeliveryPendingReport";
-import PaymentTypeReport from "../report/paymentTypeReport";
+import PaymentTypeReport from "../report/PaymentTypeReport";
 import KasarReport from "../report/KasarReport";
 import DeliveryCompletedReport from "../report/DeliveryCompletedReport";
 import PendingAmountReport from "../report/PendingAmountReport";
@@ -26,7 +26,6 @@ const DashBoard: React.FC = () => {
           <KasarReport/>
           <PaymentTransactionReport/>
           <CustomerActivityReport/>
-          <CustomerRatingReport/>
         </div>
       </div>
     </>

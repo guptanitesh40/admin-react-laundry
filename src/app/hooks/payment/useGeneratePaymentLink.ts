@@ -32,8 +32,7 @@ const useGeneratePaymentLink = () => {
         return;
       }
 
-      toast.success("Payment Link sent successfully");
-      setTransactionId(data?.razorpay?.razorpay_order_id);
+      setTransactionId(data?.data?.razorpay?.razorpay_order_id);
     } catch {
         toast.error("Fail to generate payment link try again later");
     } finally {
