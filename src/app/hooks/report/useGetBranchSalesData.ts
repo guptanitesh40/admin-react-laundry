@@ -20,7 +20,7 @@ const useGetBranchSalesData = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${BASE_URL}/branch-wise-sales-collections`,
+        `${BASE_URL}/report/branch-wise-sales-collections`,
         {
           method: "GET",
           headers: {

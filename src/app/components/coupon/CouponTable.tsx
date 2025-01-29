@@ -13,7 +13,6 @@ import TableShimmer from "../shimmer/TableShimmer";
 import { CouponType, DiscountType } from "../../../types/enums";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import MultiSelect from "../MultiSelect/MultiSelect";
 
 const CouponTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +21,7 @@ const CouponTable: React.FC = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
-  const [couponTypeFilter, setCouponTypeFilter] = useState<number[]>([]);
+  const [couponTypeFilter, setCouponTypeFilter] = useState<number>();
   const [discountTypeFiter, setDicountTypeFilter] = useState<number>();
 
   const [search, setSearch] = useState<string>("");
@@ -47,9 +46,6 @@ const CouponTable: React.FC = () => {
 
   const totalPages = Math.ceil(totalCoupons / perPage);
 
-  const couponTypeOptions = Object.entries(CouponType)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
 
   const handleDeleteCoupon = async (coupon_id: number) => {
     try {
@@ -178,25 +174,21 @@ const CouponTable: React.FC = () => {
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
           <div className="flex flex-wrap gap-2.5">
-            <MultiSelect
-              options={couponTypeOptions}
-              displayValue="label"
-              placeholder="Select Coupon Type"
-              selectedValues={couponTypeFilter}
-              onSelect={(selectedList: any) =>
-                setCouponTypeFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              onRemove={(selectedList: any) =>
-                setCouponTypeFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              className="min-w-[250px]"
-              sliceCount={3}
-              isSearchInput={false}
-            />
+          
+            <select
+              className="select select-lg w-[170px] text-sm"
+              value={discountTypeFiter}
+              onChange={(e) => {
+                setCouponTypeFilter(Number(e.target.value));
+              }}
+            >
+              <option value="" selected>
+                Coupon Type
+              </option>
+              <option value={1}>Website</option>
+              <option value={2}>App</option>
+              <option value={3}>Both</option>
+            </select>
 
             <select
               className="select select-lg w-[170px] text-sm"

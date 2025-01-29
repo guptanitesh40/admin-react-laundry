@@ -2,7 +2,7 @@ import PaymentsTable from "./PaymentsTable";
 
 const Payments: React.FC = () => {
   return (
-    <>
+    <div className="mt-5">
       <div className="container-fixed">
         <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
           <h1 className="text-xl font-semibold leading-none text-gray-900">
@@ -18,7 +18,7 @@ const Payments: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

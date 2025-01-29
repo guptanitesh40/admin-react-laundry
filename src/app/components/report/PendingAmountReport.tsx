@@ -10,98 +10,34 @@ const PendingAmountReport: React.FC = () => {
     fetchPendingAmountData();
   }, []);
 
-  const categories = pendingAmountData?.map((item: any) => item.month) || [];
-  const totalAmounts = pendingAmountData?.map((item: any) => item.total_amount) || [];
-  const pendingAmounts =
-  pendingAmountData?.map((item: any) => item.pending_amount) || [];
+  const totalAmounts = pendingAmountData?.reduce(
+    (sum: number, item: any) => sum + item.total_amount,
+    0
+  ) || 0;
 
+  const pendingAmounts = pendingAmountData?.reduce(
+    (sum: number, item: any) => sum + item.pending_amount,
+    0
+  ) || 0;
+  
   const chartOptions = {
     chart: {
-      type: "bar",
-      stacked: true,
-      toolbar: { show: false },
+      type: "pie",
     },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: "30%",
-        endingShape: "rounded",
-      },
-    },
-    xaxis: {
-      categories: categories,
-      axisBorder: {
-        show: false,
-      },
-      maxTicks: 5,
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "var(--tw-gray-500)",
-          fontSize: "12px",
-        },
-      },
-      tooltip: {
-        enabled: false,
-        formatter: undefined,
-        offsetY: 0,
-        style: {
-          fontSize: "12px",
-        },
-      },
-    },
-    yaxis: {
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "var(--tw-gray-500)",
-          fontSize: "12px",
-        },
-        formatter: (value: any) => {
-          return `${value}`;
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    tooltip: {
-      shared: true,
-      intersect: false,
-    },
+    labels: ["Total Amount", "Pending Amount"],
     colors: ["#34a853", "#fbbc04"],
     legend: {
-      position: "top",
-      horizontalAlign: "right",
+      position: "bottom",
     },
-    responsive: [
-      {
-        breakpoint: 600,
-        options: {
-          plotOptions: {
-            bar: {
-              columnWidth: "70%",
-            },
-          },
-        },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (value: number) => `${value}`,
       },
-    ],
+    },
   };
 
-  const chartSeries = [
-    {
-      name: "Total Amount",
-      data: totalAmounts,
-    },
-    {
-      name: "Pending Amount",
-      data: pendingAmounts,
-    },
-  ];
+  const chartSeries = [totalAmounts, pendingAmounts];
 
   return (
     <div className="col-span-2">
@@ -111,14 +47,12 @@ const PendingAmountReport: React.FC = () => {
         </div>
 
         <div className="card-body grid gap-1">
-          <div>
-            <ReactApexChart
-              options={chartOptions}
-              series={chartSeries}
-              type="bar"
-              height={200}
-            />
-          </div>
+          <ReactApexChart
+            options={chartOptions}
+            series={chartSeries}
+            type="pie"
+            height={250}
+          />
         </div>
       </div>
     </div>
