@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGetPaymentTransactionData } from "../../hooks";
-import Chart from "react-apexcharts";
+import AreaChart from "react-apexcharts";
 
 const PaymentTransactionReport: React.FC = () => {
   const { paymentTransactionData, fetchPaymentTransactionData } =
@@ -15,10 +15,15 @@ const PaymentTransactionReport: React.FC = () => {
   const receivedAmount =
     paymentTransactionData?.map(
       (item: { total_amount: any }) => item.total_amount
-    ) || []; 
+    ) || [];
+
+  const totalReceivedAmount = paymentTransactionData?.reduce(
+    (sum: any, item: { total_amount: number }) => sum + item.total_amount,
+    0
+  );
 
   const data = {
-    series: [    
+    series: [
       {
         name: "Received Amount",
         data: receivedAmount,
@@ -26,7 +31,6 @@ const PaymentTransactionReport: React.FC = () => {
     ],
     options: {
       chart: {
-        height: 210,
         type: "area",
         toolbar: {
           show: false,
@@ -61,44 +65,24 @@ const PaymentTransactionReport: React.FC = () => {
       stroke: {
         curve: "smooth",
         show: true,
-        width: 3,
-        colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
+        width: 2,
+        linecap: "butt",
+        dashArray: 4,
+        colors: ["#dbdfe9"],
       },
       legend: {
         show: false,
-      },
-      markers: {
-        size: 0,
-        colors: "var(--tw-primary-light)",
-        strokeColors: "var(--tw-primary)",
-        strokeWidth: 4,
-        strokeOpacity: 1,
-        strokeDashArray: 0,
-        fillOpacity: 1,
-        shape: "circle",
-        radius: 2,
-        offsetX: 0,
-        offsetY: 0,
-        showNullDataPoints: true,
-        hover: {
-          size: 8,
-          sizeOffset: 0,
-        },
       },
       xaxis: {
         categories: categories,
         axisBorder: {
           show: false,
         },
-        maxTicks: 12,
         axisTicks: {
           show: false,
         },
         labels: {
-          style: {
-            colors: "var(--tw-gray-500)",
-            fontSize: "12px",
-          },
+          show: false,
         },
         crosshairs: {
           position: "front",
@@ -106,13 +90,6 @@ const PaymentTransactionReport: React.FC = () => {
             color: "var(--tw-primary)",
             width: 1,
             dashArray: 3,
-          },
-        },
-        tooltip: {
-          enabled: false,
-          offsetY: 0,
-          style: {
-            fontSize: "12px",
           },
         },
       },
@@ -128,8 +105,29 @@ const PaymentTransactionReport: React.FC = () => {
             fontSize: "12px",
           },
           formatter: (value: any) => {
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            }
             return `${value}`;
           },
+        },
+      },
+      markers: {
+        size: 2,
+        colors: "#dbdfe9",
+        strokeColors: "#dbdfe9",
+        strokeWidth: 4,
+        strokeOpacity: 1,
+        strokeDashArray: 0,
+        fillOpacity: 1,
+        shape: "circle",
+        radius: 2,
+        offsetX: 0,
+        offsetY: 0,
+        showNullDataPoints: true,
+        hover: {
+          size: 4,
+          sizeOffset: 0,
         },
       },
       tooltip: {
@@ -141,21 +139,22 @@ const PaymentTransactionReport: React.FC = () => {
   };
 
   return (
-    <div className="col-span-2">
+    <div className="col-span-1">
       <div className="card w-full">
-        <div className="card-header">
-          <h3 className="card-title">Payment Transaction Report</h3>
+        <div className="card-header border-none flex flex-col mt-2 items-start">
+          <h3 className="card-title">Payment Report</h3>
+          <h5 className="block text-gray-500 text-sm font-bold">
+            Total Received Amount ₹{totalReceivedAmount?.toLocaleString()}{" "}
+          </h5>
         </div>
 
         <div className="card-body grid gap-1">
-          <div className="h-[210px]">
-            <Chart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={data.options.chart.height}
-            />
-          </div>
+          <AreaChart
+            options={data.options}
+            series={data.series}
+            type={data.options.chart.type}
+            height={200}
+          />
         </div>
       </div>
     </div>

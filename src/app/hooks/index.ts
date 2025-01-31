@@ -80,6 +80,7 @@ export { default as useGetPaymentTransactionData } from './report/useGetPaymentT
 export { default as useGetCustomerActivityData } from './report/useGetCustomerActivityData.ts';
 export { default as useGetCustomerRatingData } from './report/useGetCustomerRatingData.ts';
 export { default as useGetBranchSalesData } from './report/useGetBranchSalesData.ts';
+export { default as useGetDeliveryData } from './report/useGetDeliveryData.ts';
 
 export { default as useGetWorkshops } from './workshop/useGetWorkshops';
 export { default as useGetWorkshop } from './workshop/useGetWorkshop';

@@ -55,7 +55,7 @@ const CustomerRatingReport: React.FC = () => {
             Customer Rating
           </h3>
         </div>
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex flex-wrap mt-3 justify-between items-center gap-4">
           <div className="flex items-center gap-4 ml-3">
             <div>
               <img
@@ -73,7 +73,7 @@ const CustomerRatingReport: React.FC = () => {
             </div>
           </div>
 
-          <div className="card-body flex flex-col gap-2 custom-body">
+          <div className="card-body flex flex-col gap-2 custom-body min-w-[250px]">
             {ratings.map((rating, index) => (
               <div key={index} className="flex items-center gap-4">
                 <div className="flex justify-between text-sm font-medium text-gray-600">
