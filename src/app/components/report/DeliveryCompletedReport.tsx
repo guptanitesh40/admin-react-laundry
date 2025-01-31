@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useGetDeliveryCompletedData } from "../../hooks";
-import Chart from "react-apexcharts";
+import AreaChart from "react-apexcharts";
 import { GrCompliance } from "react-icons/gr";
 
 const DeliveryCompletedReport: React.FC = () => {
@@ -32,7 +32,6 @@ const DeliveryCompletedReport: React.FC = () => {
     ],
     options: {
       chart: {
-        height: 200,
         type: "area",
         toolbar: {
           show: false,
@@ -55,9 +54,11 @@ const DeliveryCompletedReport: React.FC = () => {
         enabled: false,
       },
       stroke: {
+        show: true,
         curve: "smooth",
-        width: 3,
-        lineCap: "round",
+        lineCap: "butt",
+        width: 2,
+        dashArray: 0,
       },
       grid: {
         borderColor: "rgba(0, 0, 0, 0)",
@@ -103,28 +104,29 @@ const DeliveryCompletedReport: React.FC = () => {
 
   return (
     <>
-      <div className="col-span-1">
-        <div className="card pb-2.5">
-          <div className="card-body card-fit">
-            <div className="flex justify-between ml-8">
-              <div>
-                <h3 className="font-semibold text-[#64748b]">
-                  Delivery Completed
-                </h3>
-                <span className="text-[#384551] font-medium ml-1">
-                  {orderCount}
-                </span>
-              </div>
-              <div className="mr-10 mt-2">
-                <GrCompliance size={23} color="rgb(13 202 240)" />
-              </div>
+      <div className="card pb-2.5 max-h-[300px]">
+        <div className="card-body card-fit">
+          <div className="flex justify-between ml-8">
+            <div>
+              <h3 className="font-semibold text-[#64748b]">
+                Delivery Completed
+              </h3>
+              <span className="text-[#384551] font-medium ml-1">
+                {orderCount}
+              </span>
             </div>
-            <div className="h-[110px]">
-              <Chart
+            <div className="mr-10 mt-2">
+              <GrCompliance size={23} color="rgb(13 202 240)" />
+            </div>
+          </div>
+
+          <div className="h-[200px] w-100">
+            <div className="relative h-full w-full">
+              <AreaChart
                 options={data.options}
                 series={data.series}
                 type={data.options.chart.type}
-                height={data.options.chart.height}
+                height={240}
               />
             </div>
           </div>

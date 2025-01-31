@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useGetDeliveryPendingData } from "../../hooks";
-import Chart from "react-apexcharts";
+import AreaChart from "react-apexcharts";
 import { MdOutlinePendingActions } from "react-icons/md";
 
 const DeliveryPendingReport = () => {
@@ -33,14 +33,13 @@ const DeliveryPendingReport = () => {
     ],
     options: {
       chart: {
-        height: 200,
         type: "area",
         toolbar: {
           show: false,
         },
         zoom: {
-        enabled: false,
-      },
+          enabled: false,
+        },
       },
       colors: ["#4154f1", "#2eca6a", "#ff771d"],
       fill: {
@@ -56,9 +55,11 @@ const DeliveryPendingReport = () => {
         enabled: false,
       },
       stroke: {
+        show: true,
         curve: "smooth",
-        width: 3,
-        lineCap: "round",
+        lineCap: "butt",
+        width: 2,
+        dashArray: 0,
       },
       grid: {
         borderColor: "rgba(0, 0, 0, 0)",
@@ -104,8 +105,7 @@ const DeliveryPendingReport = () => {
 
   return (
     <>
-      <div className="col-span-1">
-        <div className="card pb-2.5 w-full">
+        <div className="card pb-2.5 max-h-[300px]">
           <div className="card-body card-fit grid gap-1">
             <div className="flex justify-between ml-8">
               <div>
@@ -118,17 +118,19 @@ const DeliveryPendingReport = () => {
                 <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
               </div>
             </div>
-            <div className="h-[110px]">
-              <Chart
-                options={data.options}
-                series={data.series}
-                type={data.options.chart.type}
-                height={data.options.chart.height}
-              />
+
+            <div className="h-[200px] w-100">
+              <div className="relative h-full w-full">
+                <AreaChart
+                  options={data.options}
+                  series={data.series}
+                  type={data.options.chart.type}
+                  height={240}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 };

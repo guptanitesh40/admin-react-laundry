@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useGetSalesData } from "../../hooks";
-import Chart from "react-apexcharts";
+import AreaChart from "react-apexcharts";
 
-const SalesReport = () => {
+const SalesBookingReport = () => {
   const { salesData, fetchSalesData } = useGetSalesData();
 
   useEffect(() => {
@@ -18,6 +18,11 @@ const SalesReport = () => {
     ) || [];
   const totalUnpaidAmount = salesData?.map(
     (item: { unpaid_amount: any }) => item.unpaid_amount
+  );
+
+  const totalOrderAmount = salesData?.reduce(
+    (sum: any, item: { total_sales: any }) => sum + item.total_sales,
+    0
   );
 
   const data = {
@@ -37,7 +42,7 @@ const SalesReport = () => {
     ],
     options: {
       chart: {
-        height: 210,
+        height: 280,
         type: "area",
         toolbar: {
           show: false,
@@ -78,10 +83,35 @@ const SalesReport = () => {
       legend: {
         show: false,
       },
+      xaxis: {
+        type: "category",
+        categories: categories,
+        style: {
+          colors: "#6c757d",
+        },
+        labels: {
+          show: false,
+        },
+        
+        axisTicks: {
+          show: false,
+        },
+        axisBorder: {
+          show: false,
+        },
+        crosshairs: {
+          position: "front",
+          stroke: {
+            color: "var(--tw-primary)",
+            width: 1,
+            dashArray: 3,
+          },
+        },
+      },
       markers: {
-        size: 0,
-        colors: "var(--tw-primary-light)",
-        strokeColors: "var(--tw-primary)",
+        size: 2,
+        colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
+        strokeColors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
         strokeWidth: 4,
         strokeOpacity: 1,
         strokeDashArray: 0,
@@ -92,39 +122,8 @@ const SalesReport = () => {
         offsetY: 0,
         showNullDataPoints: true,
         hover: {
-          size: 8,
+          size: 4,
           sizeOffset: 0,
-        },
-      },
-      xaxis: {
-        categories: categories,
-        axisBorder: {
-          show: false,
-        },
-        maxTicks: 12,
-        axisTicks: {
-          show: false,
-        },
-        labels: {
-          style: {
-            colors: "var(--tw-gray-500)",
-            fontSize: "12px",
-          },
-        },
-        crosshairs: {
-          position: "front",
-          stroke: {
-            color: "var(--tw-primary)",
-            width: 1,
-            dashArray: 3,
-          },
-        },
-        tooltip: {
-          enabled: false,
-          offsetY: 0,
-          style: {
-            fontSize: "12px",
-          },
         },
       },
       yaxis: {
@@ -139,10 +138,14 @@ const SalesReport = () => {
             fontSize: "12px",
           },
           formatter: (value: any) => {
-            return `${value}`;
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            } 
+            return value.toString();
           },
         },
       },
+      
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -154,13 +157,17 @@ const SalesReport = () => {
   return (
     <div className="col-span-2">
       <div className="card w-full">
-        <div className="card-header">
+        <div className="card-header border-none flex flex-col mt-2 items-start">          
           <h3 className="card-title">Sales Booking</h3>
+          <h5 className="block text-gray-500 text-sm font-bold">
+            Total Order Amount ₹{totalOrderAmount?.toLocaleString()}{" "}
+          </h5>
+        
         </div>
 
         <div className="card-body grid gap-1">
-          <div className="h-[210px]">
-            <Chart
+          <div className="h-[280px]">
+            <AreaChart
               options={data.options}
               series={data.series}
               type={data.options.chart.type}
@@ -173,4 +180,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default SalesBookingReport;

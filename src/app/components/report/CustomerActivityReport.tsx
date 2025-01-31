@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useGetCustomerActivityData } from "../../hooks";
-import Chart from "react-apexcharts";
+import LineChart from "react-apexcharts";
 
 const CustomerActivityReport: React.FC = () => {
   const { customerActivityData, fetchCustomerActivityData } =
@@ -13,7 +13,9 @@ const CustomerActivityReport: React.FC = () => {
   const categories =
     customerActivityData?.map((item: { month: any }) => item.month) || [];
   const loginCount =
-    customerActivityData?.map((item: { login_count: number }) => item.login_count) || [];
+    customerActivityData?.map(
+      (item: { login_count: number }) => item.login_count
+    ) || [];
 
   const data = {
     series: [
@@ -24,8 +26,7 @@ const CustomerActivityReport: React.FC = () => {
     ],
     options: {
       chart: {
-        height: 210,
-        type: "area",
+        type: "line", 
         toolbar: {
           show: false,
         },
@@ -33,12 +34,10 @@ const CustomerActivityReport: React.FC = () => {
       dataLabels: {
         enabled: false,
       },
-      colors: ["#4154f1", "#2eca6a", "#ff771d"],
+      colors: ["#00ff00"],
       fill: {
         gradient: {
-          enabled: true,
-          opacityFrom: 0.25,
-          opacityTo: 0,
+          enabled: false, 
         },
       },
       grid: {
@@ -47,28 +46,50 @@ const CustomerActivityReport: React.FC = () => {
         clipMarkers: false,
         yaxis: {
           lines: {
-            show: true,            
+            show: true,
           },
         },
         xaxis: {
           lines: {
-            show: false,            
+            show: false,
           },
         },
       },
       stroke: {
         curve: "smooth",
         show: true,
-        width: 3,
-        colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
+        width: 2,
+        linecap: "round",
+        dashArray: 0,
+        colors: ["#00ff00"],
       },
       legend: {
         show: false,
       },
+      xaxis: {
+        categories: categories,
+        axisBorder: {
+          show: false,
+        },
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          show: false,
+        },
+        crosshairs: {
+          position: "front",
+          stroke: {
+            color: "var(--tw-primary)",
+            width: 1,
+            dashArray: 3,
+          },
+        },
+      },
       markers: {
-        size: 0,
-        colors: "var(--tw-primary-light)",
-        strokeColors: "var(--tw-primary)",
+        size: 2,
+        colors: "#00ff00",
+        strokeColors: "#00ff00",
         strokeWidth: 4,
         strokeOpacity: 1,
         strokeDashArray: 0,
@@ -79,39 +100,8 @@ const CustomerActivityReport: React.FC = () => {
         offsetY: 0,
         showNullDataPoints: true,
         hover: {
-          size: 8,
+          size: 4,
           sizeOffset: 0,
-        },
-      },
-      xaxis: {
-        categories: categories,
-        axisBorder: {
-          show: false,
-        },
-        maxTicks: 12,
-        axisTicks: {
-          show: false,
-        },
-        labels: {
-          style: {
-            colors: "var(--tw-gray-500)",
-            fontSize: "12px",
-          },
-        },
-        crosshairs: {
-          position: "front",
-          stroke: {
-            color: "var(--tw-primary)",
-            width: 1,
-            dashArray: 3,
-          },
-        },
-        tooltip: {
-          enabled: false,
-          offsetY: 0,
-          style: {
-            fontSize: "12px",
-          },
         },
       },
       yaxis: {
@@ -126,6 +116,9 @@ const CustomerActivityReport: React.FC = () => {
             fontSize: "12px",
           },
           formatter: (value: any) => {
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            }
             return `${value}`;
           },
         },
@@ -140,19 +133,19 @@ const CustomerActivityReport: React.FC = () => {
 
   return (
     <>
-      <div className="col-span-2">
+      <div className="col-span-1">
         <div className="card w-full">
-          <div className="card-header">
-            <h3 className="card-title">Customer Activity Report</h3>
+          <div className="card-header border-none">
+            <h3 className="card-title">Customer Activity</h3>
           </div>
 
           <div className="card-body grid gap-1">
-            <div className="h-[210px]">
-              <Chart
+            <div className="h-[235px]">
+              <LineChart
                 options={data.options}
                 series={data.series}
                 type={data.options.chart.type}
-                height={data.options.chart.height}
+                height={230}
               />
             </div>
           </div>

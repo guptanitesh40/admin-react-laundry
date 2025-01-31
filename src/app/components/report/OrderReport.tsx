@@ -4,7 +4,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import Chart from "react-apexcharts";
+import AreaChart from "react-apexcharts";
 import { FiShoppingCart } from "react-icons/fi";
 
 const OrderReport = () => {
@@ -52,7 +52,6 @@ const OrderReport = () => {
     ],
     options: {
       chart: {
-        height: 200,
         type: "area",
         toolbar: {
           show: false,
@@ -75,9 +74,11 @@ const OrderReport = () => {
         enabled: false,
       },
       stroke: {
+        show: true,
         curve: "smooth",
-        width: 3,
-        lineCap: "round",
+        lineCap: "butt",
+        width: 2,
+        dashArray: 0,
       },
       grid: {
         borderColor: "rgba(0, 0, 0, 0)",
@@ -104,7 +105,7 @@ const OrderReport = () => {
           show: false,
         },
         axisTicks: {
-          show: true,
+          show: false,
         },
         axisBorder: {
           show: false,
@@ -123,30 +124,30 @@ const OrderReport = () => {
 
   return (
     <>
-        <div className="card pb-2.5 w-full">
-          <div className="card-body card-fit grid gap-1">
-            <div className="flex justify-between ml-8">
-              <div>
-                <h3 className="font-semibold text-[#64748b]">Orders</h3>
-                <span className="text-[#384551] font-medium">
-                  {orderCount}
-                </span>
-              </div>
-              <div className="mr-10 mt-2">
-                <FiShoppingCart size={23} color="rgb(13 202 240)"/>
-              </div>
+      <div className="card pb-2.5 max-h-[300px] ">
+        <div className="card-body card-fit grid gap-1">
+          <div className="flex justify-between ml-8">
+            <div>
+              <h3 className="font-semibold text-[#64748b]">Orders</h3>
+              <span className="text-[#384551] font-medium">{orderCount}</span>
             </div>
+            <div className="mr-10 mt-2">
+              <FiShoppingCart size={23} color="rgb(13 202 240)" />
+            </div>
+          </div>
 
-            <div className="h-[110px]">
-              <Chart
+          <div className="h-[200px] w-100">
+            <div className="relative h-full w-full">
+              <AreaChart
                 options={data.options}
                 series={data.series}
                 type={data.options.chart.type}
-                height={data.options.chart.height}
+                height={240}
               />
             </div>
           </div>
         </div>
+      </div>
     </>
   );
 };

@@ -9214,10 +9214,15 @@ label.rating-label {
 .multiSelectContainer ul {
   max-height: 150px !important;
   overflow-y: auto !important;
+  display: block;
+  width: 100%;
 }
 
 .multiselect {
   width: 225px !important;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
 }
 
 .optionContainer {
@@ -9779,3 +9784,7 @@ label.rating-label {
   padding: 15px;
 }
 
+.fit-chart {
+  padding-right:0px;
+  padding-left:0px;
+}
