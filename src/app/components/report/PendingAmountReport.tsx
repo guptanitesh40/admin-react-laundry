@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ReactApexChart from "react-apexcharts";
+import PieChart from "react-apexcharts";
 import { useGetPendingAmountData } from "../../hooks";
 
 const PendingAmountReport: React.FC = () => {
@@ -40,18 +40,18 @@ const PendingAmountReport: React.FC = () => {
   const chartSeries = [totalAmounts, pendingAmounts];
 
   return (
-    <div className="col-span-2">
+    <div className="col-span-1">
       <div className="card w-full">
-        <div className="card-header">
-          <h3 className="card-title">Pending Amount Report</h3>
+        <div className="card-header border-none">
+          <h3 className="card-title">Pending Amount</h3>
         </div>
 
-        <div className="card-body grid gap-1">
-          <ReactApexChart
+        <div className="card-body grid gap-1 w-full">
+          <PieChart
             options={chartOptions}
             series={chartSeries}
             type="pie"
-            height={250}
+            height={210}
           />
         </div>
       </div>

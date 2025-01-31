@@ -84,7 +84,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   return (
     <>
       <div className="card-header flex flex-col items-start gap-4">
-        <div className="grid-template">
+        <div className="grid grid-cols-3 gap-10 md:grid-cols-1 sm:grid-cols-1">
           <MultiSelect
             options={customerOptions}
             displayValue="label"
@@ -109,6 +109,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             setSearch={setCustomerSearch}
+            className="min-w-[300px]"
           />
 
           <MultiSelect

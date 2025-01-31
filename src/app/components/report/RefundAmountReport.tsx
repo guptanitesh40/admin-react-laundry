@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ReactApexChart from "react-apexcharts";
+import BarChart from "react-apexcharts";
 import { useGetRefundAmountData } from "../../hooks";
 
 const RefundAmountReport: React.FC = () => {
@@ -11,8 +11,9 @@ const RefundAmountReport: React.FC = () => {
 
   const categories = refundAmountData?.map((item: any) => item.month) || [];
   const refundAmounts =
-  refundAmountData?.map((item: any) => item.total_refund_amount) || [];
-  const totalAmounts = refundAmountData?.map((item: any) => item.total_amount) || [];
+    refundAmountData?.map((item: any) => item.total_refund_amount) || [];
+  const totalAmounts =
+    refundAmountData?.map((item: any) => item.total_amount) || [];
 
   const chartOptions = {
     chart: {
@@ -53,7 +54,10 @@ const RefundAmountReport: React.FC = () => {
           fontSize: "12px",
         },
         formatter: (value: any) => {
-          return `${value}`;
+          if (value >= 1000) {
+            return `₹${(value / 1000).toFixed(0)}K`;
+          }
+          return value.toString();
         },
       },
     },
@@ -97,13 +101,13 @@ const RefundAmountReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card w-full">
-        <div className="card-header">
+        <div className="card-header border-none">
           <h2 className="card-title">Refund Amount Report</h2>
         </div>
 
         <div className="card-body card-fit grid gap-1">
           <div>
-            <ReactApexChart
+            <BarChart
               options={chartOptions}
               series={chartSeries}
               type="bar"

@@ -1,29 +1,26 @@
 import { useEffect } from "react";
-import { useGetPaymentTypeData } from "../../hooks";
+import { useGetDeliveryData } from "../../hooks";
 import DonutChart from "react-apexcharts";
 
-const PaymentTypeReport = () => {
-  const { paymentTypeData, fetchPaymentTypeData } = useGetPaymentTypeData();
+const DeliveryReport: React.FC = () => {
+  const { deliveryData, fetchDeliveryData } = useGetDeliveryData();
 
   useEffect(() => {
-    fetchPaymentTypeData();
+    fetchDeliveryData();
   }, []);
 
-  const cashOnDelivery = paymentTypeData?.reduce(
-    (sum: any , item: { cash_on_delivery: any}) => sum + item.cash_on_delivery, 
-    0
+  const deliveryCompleted = deliveryData?.reduce(
+    (sum: any, item: { completed: any }) => item.completed, 0
   )
 
-  const onlinePayment = paymentTypeData?.reduce(
-    (sum: any , item: { online_payment: any}) => sum + item.online_payment, 
-    0
+  const deliveryPending = deliveryData?.reduce(
+    (sum: any, item: { pending: any }) => item.pending, 0
   )
 
-
-  const data = [cashOnDelivery, onlinePayment];
+  const data = [ deliveryCompleted, deliveryPending]  
 
   const options = {
-    labels: ["Cash On Delivery", "Online payment"],
+    labels: ["Delivery Completed", "Delivery Pending"],
     fill: {
       colors: ["var(--tw-primary)", "var(--tw-brand)"],
     },
@@ -56,35 +53,40 @@ const PaymentTypeReport = () => {
         width: 8,
         height: 8,
       },
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: "bottom",
-            },
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
           },
         },
-      ],
+      },
+    ],
   };
 
   return (
     <div className="col-span-1">
       <div className="card">
         <div className="card-header border-none">
-          <h3 className="card-title">Payment Type</h3>
+          <h3 className="card-title">Delivery Report</h3>
         </div>
 
         <div className="card-body grid gap-1">
-            <DonutChart series={data} options={options} type="donut" height={225} />
+          <DonutChart
+            series={data}
+            options={options}
+            type="donut"
+            height={200}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default PaymentTypeReport;
+export default DeliveryReport;
