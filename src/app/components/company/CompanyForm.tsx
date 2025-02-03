@@ -160,6 +160,7 @@ const CompanyForm: React.FC = () => {
     navigate("/companies");
   };
 
+
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
       <h1 className="text-2xl font-bold mb-6">
@@ -167,10 +168,10 @@ const CompanyForm: React.FC = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="company_name">
-              Company Name
+            <label className="block text-gray-700 font-semibold" htmlFor="company_name">
+              Company name
             </label>
             <input
               type="text"
@@ -186,7 +187,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="address">
+            <label className="block text-gray-700 font-semibold" htmlFor="address">
               Address
             </label>
             <input
@@ -201,7 +202,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="city">
+            <label className="block text-gray-700 font-semibold" htmlFor="city">
               City
             </label>
             <input
@@ -216,7 +217,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="state">
+            <label className="block text-gray-700 font-semibold" htmlFor="state">
               State
             </label>
             <input
@@ -231,8 +232,8 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="zip_code">
-              Zip Code
+            <label className="block text-gray-700 font-semibold" htmlFor="zip_code">
+              Zip code
             </label>
             <input
               type="text"
@@ -248,8 +249,8 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="company_owner_name">
-              Company Owner Name
+            <label className="block text-gray-700 font-semibold" htmlFor="company_owner_name">
+              Company owner name
             </label>
             <input
               type="text"
@@ -265,8 +266,8 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="phone_number">
-              Phone Number
+            <label className="block text-gray-700 font-semibold" htmlFor="phone_number">
+              Phone number
             </label>
             <input
               type="text"
@@ -282,8 +283,8 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="mobile_number">
-              Mobile Number
+            <label className="block text-gray-700 font-semibold" htmlFor="mobile_number">
+              Mobile number
             </label>
             <input
               type="text"
@@ -299,7 +300,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="email">
+            <label className="block text-gray-700 font-semibold" htmlFor="email">
               Email
             </label>
             <input
@@ -314,7 +315,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="website">
+            <label className="block text-gray-700 font-semibold" htmlFor="website">
               Website
             </label>
             <input
@@ -329,7 +330,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="logo">
+            <label className="block text-gray-700 font-semibold" htmlFor="logo">
               Logo
             </label>
             <input
@@ -344,7 +345,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="registration_number">
+            <label className="block text-gray-700 font-semibold" htmlFor="registration_number">
               Registration Number
             </label>
             <input
@@ -361,7 +362,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="registration_date">
+            <label className="block text-gray-700 font-semibold" htmlFor="registration_date">
               Registration Date
             </label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -389,7 +390,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="gstin">
+            <label className="block text-gray-700 font-semibold" htmlFor="gstin">
               GSTIN
             </label>
             <input
@@ -404,7 +405,7 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="company_ownedby">
+            <label className="block text-gray-700 font-semibold" htmlFor="company_ownedby">
               Company owned by
             </label>
             <select
@@ -431,7 +432,7 @@ const CompanyForm: React.FC = () => {
 
           {formData.company_ownedby === 2 && (
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="contract_document">
+              <label className="block text-gray-700 font-semibold" htmlFor="contract_document">
                 Contract Document
               </label>
               <input

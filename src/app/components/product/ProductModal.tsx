@@ -43,24 +43,24 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   useEffect(() => {
     if (isOpen && product && product_id) {
-        const fetchedData = {
-          name: product.name,
-          image: product.image,
-        }
+      const fetchedData = {
+        name: product.name,
+        image: product.image,
+      };
 
-        setFormData(fetchedData);
-        setInitialFormData(fetchedData);
-      } else {
-        setFormData({
-          name: "",
-          image: "",
-        });
-        setInitialFormData({
-          name: "",
-          image: "",
-        });
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
+    } else {
+      setFormData({
+        name: "",
+        image: "",
+      });
+      setInitialFormData({
+        name: "",
+        image: "",
+      });
       setErrors({});
-    } 
+    }
   }, [isOpen, product, product_id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,17 +87,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
       await schema.validate(formData, { abortEarly: false });
 
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
-          if (key === "image") {
-            return formData.image instanceof File || formData.image !== initialFormData.image;
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            if (key === "image") {
+              return (
+                formData.image instanceof File ||
+                formData.image !== initialFormData.image
+              );
+            }
+            return formData[key] !== initialFormData[key];
           }
-          return formData[key] !== initialFormData[key];
-        });
+        );
       };
 
-      if (!isDataChanged()) {             
+      if (!isDataChanged()) {
         onClose();
-        return; 
+        return;
       }
 
       const formDataObj = new FormData();
@@ -129,9 +134,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 z-10 relative">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div
+        className="fixed inset-0 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 zx:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -143,60 +151,62 @@ const ProductModal: React.FC<ProductModalProps> = ({
           {product_id ? "Edit Product" : "Add Product"}
         </h1>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col mb-4">
-            <label className="mb-2 font-semibold" htmlFor="name">
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
-          </div>
+          <div className="grid grid-cols-1 gap-3">
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="name">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
+            </div>
 
-          <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="image">
-              Image
-            </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
-          </div>
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="image">
+                Image
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
+            </div>
 
-          <div className="flex gap-4 mt-4">
-            <button
-              type="submit"
-              className={`btn btn-primary ${
-                adding || updating ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={adding || updating}
-            >
-              {adding || updating
-                ? adding
-                  ? "Adding..."
-                  : "Updating..."
-                : product_id
-                ? "Update Product"
-                : "Add Product"}
-            </button>
-            <button
-              type="button"
-              className="btn btn-light"
-              onClick={onClose}
-              disabled={adding || updating}
-            >
-              Cancel
-            </button>
+            <div className="flex gap-4 mt-4">
+              <button
+                type="submit"
+                className={`btn btn-primary ${
+                  adding || updating ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={adding || updating}
+              >
+                {adding || updating
+                  ? adding
+                    ? "Adding..."
+                    : "Updating..."
+                  : product_id
+                  ? "Update Product"
+                  : "Add Product"}
+              </button>
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={onClose}
+                disabled={adding || updating}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </form>
       </div>

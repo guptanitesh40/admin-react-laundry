@@ -25,7 +25,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
     title: "",
     description: "",
     image: "" as string | File,
-    banner_type:null,
+    banner_type: null,
   });
 
   const [initialFormData, setInitialFormData] = useState({
@@ -51,7 +51,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
         image: banner.image,
         banner_type: banner.banner_type,
       };
-  
+
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
     } else {
@@ -111,17 +111,22 @@ const BannerModal: React.FC<BannerModalProps> = ({
       });
 
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
-          if (key === "image") {
-            return formData.image instanceof File || formData.image !== initialFormData.image;
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            if (key === "image") {
+              return (
+                formData.image instanceof File ||
+                formData.image !== initialFormData.image
+              );
+            }
+            return formData[key] !== initialFormData[key];
           }
-          return formData[key] !== initialFormData[key];
-        });
+        );
       };
-            
-      if (!isDataChanged()) {             
+
+      if (!isDataChanged()) {
         onClose();
-        return; 
+        return;
       }
 
       const formDataObj = new FormData();
@@ -157,13 +162,13 @@ const BannerModal: React.FC<BannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[480px] ban:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -175,61 +180,58 @@ const BannerModal: React.FC<BannerModalProps> = ({
           {banner_id ? "Edit Banner" : "Add Banner"}
         </h1>
         <form onSubmit={handleSubmit}>
-          
-          <div className="flex flex-col mb-4">
-            <label className="mb-2 font-semibold" htmlFor="title">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
-          </div>
-
-          <div className="flex flex-col mb-4">
-            <label className="mb-2 font-semibold" htmlFor="description">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="h-20 input border border-gray-300 rounded-md p-2"
-              rows={5}
-            />
-            <p className="text-red-500 text-sm">
-              {errors.description || "\u00A0"}
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="image">
-              Image
-            </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
-            <p className="text-red-500 text-sm">
-              {errors.image ? errors.image : "\u00A0"}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="flex flex-col">
-              <label className="mb-2 font-semibold">
-                Banner type
+          <div className="grid grid-cols-1 gap-2">
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="title">
+                Title
               </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
+            </div>
+
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="description">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="h-20 input border border-gray-300 rounded-md p-2"
+                rows={5}
+              />
+              <p className="text-red-500 text-sm">
+                {errors.description || "\u00A0"}
+              </p>
+            </div>
+
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="image">
+                Image
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">
+                {errors.image ? errors.image : "\u00A0"}
+              </p>
+            </div>
+
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold">Banner type</label>
               <div className="flex space-x-4">
                 <label className="flex items-center space-x-2">
                   <input
@@ -283,36 +285,34 @@ const BannerModal: React.FC<BannerModalProps> = ({
               <p className="text-red-500 text-sm">
                 {errors.banner_type || "\u00A0"}
               </p>
-            </div>            
-          </div>
-          
+            </div>
 
-          <div className="flex gap-4 mt-4">
-            <button
-              type="submit"
-              className={`btn btn-primary ${
-                adding || updating ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              disabled={adding || updating}
-            >
-              {adding || updating
-                ? adding
-                  ? "Adding..."
-                  : "Updating..."
-                : banner_id
-                ? "Update Banner"
-                : "Add Banner"}
-            </button>
-            <button
-              type="button"
-              className="btn btn-light"
-              onClick={onClose}
-              disabled={adding || updating}
-            >
-              Cancel
-            </button>
+            <div className="flex gap-4 mt-4">
+              <button
+                type="submit"
+                className={`btn btn-primary ${
+                  adding || updating ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                disabled={adding || updating}
+              >
+                {adding || updating
+                  ? adding
+                    ? "Adding..."
+                    : "Updating..."
+                  : banner_id
+                  ? "Update Banner"
+                  : "Add Banner"}
+              </button>
+              <button
+                type="button"
+                className="btn btn-light"
+                onClick={onClose}
+                disabled={adding || updating}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-
         </form>
       </div>
     </div>

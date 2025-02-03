@@ -1,22 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
+const token = localStorage.getItem("authToken");
 
-interface Service {
-  service_service_id: number;
-  service_name: string;
-  image: string;
-}
 
 const useGetServicesOnId = () => {
-  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchServicesOnId = async (category_id: number, product_id: number) => {
-    const token = localStorage.getItem("authToken");
-    const GET_SERVICE_URL = `${import.meta.env.VITE_BASE_URL}/category/${category_id}/product/${product_id}/service`;
 
     try {
-      const response = await fetch(GET_SERVICE_URL, {
+      const response = await fetch(`${BASE_URL}/category/${category_id}/product/${product_id}/service`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -24,25 +18,27 @@ const useGetServicesOnId = () => {
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, { position: "top-center" });
+        toast.error(data.message, { position: "top-center" });
+        setLoading(false);
         return;
       }
 
-      const data = await response.json();
       const servicesData = data?.data || [];
-      setServices(servicesData);
+      return servicesData;
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
       });
+      return [];
     } finally {
       setLoading(false);
     }
   };
 
-  return { services, loading, fetchServicesOnId };
+  return { loading, fetchServicesOnId };
 };
 
 export default useGetServicesOnId;

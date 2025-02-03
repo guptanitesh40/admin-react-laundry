@@ -58,7 +58,14 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
           className="fixed inset-0 bg-black opacity-50"
           onClick={onClose}
         ></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96 z-10 relative">
+        <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 z-10 zx:min-w-[85%] relative">
+          <button
+            className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+            data-modal-dismiss="true"
+            onClick={onClose}
+          >
+            <i className="ki-filled ki-cross"></i>
+          </button>
           <h1 className="text-2xl font-bold mb-6">Add Category</h1>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col mb-4">

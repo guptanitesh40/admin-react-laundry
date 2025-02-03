@@ -132,7 +132,7 @@ const KasarReport = () => {
         offsetY: 0,
         showNullDataPoints: true,
         hover: {
-          size: 8,
+          size: 4,
           sizeOffset: 0,
         },
       },

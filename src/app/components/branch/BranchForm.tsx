@@ -142,9 +142,9 @@ const BranchForm: React.FC = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="company_id">
+            <label className="block text-gray-700 font-semibold" htmlFor="company_id">
               Company
             </label>
             <select
@@ -177,7 +177,7 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_manager_id">
+            <label className="block text-gray-700 font-semibold" htmlFor="branch_manager_id">
               Branch Manager
             </label>
             <select
@@ -212,7 +212,7 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_name">
+            <label className="block text-gray-700 font-semibold" htmlFor="branch_name">
               Branch Name
             </label>
             <input
@@ -229,7 +229,7 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_address">
+            <label className="block text-gray-700 font-semibold" htmlFor="branch_address">
               Branch Address
             </label>
             <input
@@ -246,7 +246,7 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_phone_number">
+            <label className="block text-gray-700 font-semibold" htmlFor="branch_phone_number">
               Branch Phone Number
             </label>
             <input
@@ -263,7 +263,7 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="branch_email">
+            <label className="block text-gray-700 font-semibold" htmlFor="branch_email">
               Branch Email
             </label>
             <input
@@ -281,7 +281,7 @@ const BranchForm: React.FC = () => {
 
           <div className="flex flex-col">
             <label
-              className="mb-2 font-semibold"
+              className="block text-gray-700 font-semibold"
               htmlFor="branch_registration_number"
             >
               Branch Registration Number

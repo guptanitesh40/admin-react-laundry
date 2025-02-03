@@ -348,6 +348,27 @@ const CouponModal: React.FC = () => {
             </p>
           </div>
 
+          <div className="flex items-center col-span-2 space-x-4">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading
+                ? "Saving..."
+                : coupon_id
+                ? "Update Coupon"
+                : "Add Coupon"}
+            </button>
+            <button
+              type="submit"
+              className="btn  btn-light py-5 px-10 "
+              disabled={isLoading}
+              onClick={handelCancel}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
     </div>
