@@ -21,7 +21,7 @@ const CustomerRatingReport: React.FC = () => {
   useEffect(() => {
     if (customerRatingData) {
       const fetchedRatings = ratings.map((rating) => {
-        const data = customerRatingData.find(
+        const data = customerRatingData?.find(
           (item: { rating: { toString: () => string } }) =>
             item.rating.toString() === rating.label
         );
@@ -30,12 +30,12 @@ const CustomerRatingReport: React.FC = () => {
 
       setRatings(fetchedRatings);
 
-      const totalRating = customerRatingData.reduce(
+      const totalRating = customerRatingData?.reduce(
         (acc: number, data: { rating: number; count: number }) =>
           acc + data.rating * data.count,
         0
       );
-      const totalCount = customerRatingData.reduce(
+      const totalCount = customerRatingData?.reduce(
         (acc: any, data: { count: any }) => acc + data.count,
         0
       );
@@ -46,6 +46,25 @@ const CustomerRatingReport: React.FC = () => {
   }, [customerRatingData]);
 
   const maxCount = Math.max(...ratings.map((rating) => rating.count));
+
+  const getProgressBarColor = (label: any) => {
+    const ratingNumber = Number(label);
+
+    switch (ratingNumber) {
+      case 1:
+        return "bg-red-500"; 
+      case 2:
+        return "bg-green-500"; 
+      case 3:
+        return "bg-yellow-500";
+      case 4:
+        return "bg-orange-500"; 
+      case 5:
+        return "bg-blue-500";
+      default:
+        return "bg-gray-200"; 
+    }
+  }
 
   return (
     <div className="col-span-3">
@@ -90,7 +109,7 @@ const CustomerRatingReport: React.FC = () => {
                 </div>
                 <div className="w-full h-[8px] bg-gray-200 rounded overflow-hidden">
                   <div
-                    className="progressbar h-full transition-all duration-500"
+                    className={`${getProgressBarColor(rating.label)} rounded-full h-full transition-all duration-500`}
                     style={{ width: `${(rating.count / maxCount) * 100}%` }}
                   ></div>
                 </div>

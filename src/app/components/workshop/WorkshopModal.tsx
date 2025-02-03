@@ -145,7 +145,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[480px] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[480px] ban:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"

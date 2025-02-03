@@ -18,7 +18,7 @@ const DashBoard: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:gap-5 w-full">
           <OrderReport />
           <DeliveryPendingReport />
-          <DeliveryCompletedReport/> 
+          <DeliveryCompletedReport /> 
           <DeliveryReport />
           <SalesBookingReport />
           <RefundAmountReport/>

@@ -198,10 +198,10 @@ const UserForm: React.FC = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
           <div className="flex flex-col">
-            <label htmlFor="first_name" className="mb-2 font-semibold">
-              First Name
+            <label htmlFor="first_name" className="block text-gray-700 font-semibold">
+              First name
             </label>
             <input
               type="text"
@@ -219,8 +219,8 @@ const UserForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="last_name" className="mb-2 font-semibold">
-              Last Name
+            <label htmlFor="last_name" className="block text-gray-700 font-semibold">
+              Last name
             </label>
             <input
               type="text"
@@ -238,7 +238,7 @@ const UserForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="email" className="mb-2 font-semibold">
+            <label htmlFor="email" className="block text-gray-700 font-semibold">
               Email
             </label>
             <input
@@ -255,8 +255,8 @@ const UserForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="mobile_number" className="mb-2 font-semibold">
-              Mobile Number
+            <label htmlFor="mobile_number" className="block text-gray-700 font-semibold">
+              Mobile number
             </label>
             <input
               type="text"
@@ -274,7 +274,7 @@ const UserForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="password" className="mb-2 font-semibold">
+            <label htmlFor="password" className="block text-gray-700 font-semibold">
               Password
             </label>
             <input
@@ -293,7 +293,7 @@ const UserForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="role_id">
+            <label className="block text-gray-700 font-semibold" htmlFor="role_id">
               Role
             </label>
             <select
@@ -322,7 +322,7 @@ const UserForm: React.FC = () => {
 
           {formData.role_id === 2 && (
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="role_id">
+              <label className="block text-gray-700 font-semibold" htmlFor="role_id">
                 Company
               </label>
               <MultiSelect
@@ -357,7 +357,7 @@ const UserForm: React.FC = () => {
 
           {formData.role_id === 3 && (
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold" htmlFor="role_id">
+              <label className="block text-gray-700 font-semibold" htmlFor="role_id">
                 Branch
               </label>
               <MultiSelect
@@ -388,7 +388,7 @@ const UserForm: React.FC = () => {
           )}
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold">Gender</label>
+            <label className="block text-gray-700 font-semibold">Gender</label>
             <div className="flex space-x-4">
               <label className="flex items-center space-x-2">
                 <input
@@ -444,7 +444,7 @@ const UserForm: React.FC = () => {
 
           {user_id && (
             <div className="flex flex-col">
-              <label htmlFor="image" className="mb-2 font-semibold">
+              <label htmlFor="image" className="block text-gray-700 font-semibold">
                 Profile Photo
               </label>
               <input
