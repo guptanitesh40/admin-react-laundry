@@ -371,6 +371,9 @@ export default {
 				  12.5: '3.125rem', 	// 40px
 			  },
 			  screens: {
+				  ban: {max:'500px'},
+				  zx: {max:'400px'},
+				  bn: {max:'525px'},
 				  sm: '640px',
 				  md: '768px',
 				  lg: '1024px',

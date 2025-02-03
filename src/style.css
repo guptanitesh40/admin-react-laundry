@@ -9771,11 +9771,6 @@ label.rating-label {
   unicode-bidi: isolate;
 }
 
-.progressbar {
-  background-color: #377dff;
-  border: rounded-full;
-}
-
 .custom-rating-on {
   color: #bfb494 !important;
 }

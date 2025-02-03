@@ -59,8 +59,8 @@ interface FormData {
 const OrderForm: React.FC = () => {
   const { prices } = useGetPrice();
   const { categories } = useGetCategories();
-  const { products, fetchProductsOnId } = useGetProductsOnId();
-  const { services, fetchServicesOnId } = useGetServicesOnId();
+  const { fetchProductsOnId } = useGetProductsOnId();
+  const { fetchServicesOnId } = useGetServicesOnId();
 
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
@@ -86,6 +86,9 @@ const OrderForm: React.FC = () => {
   const { userData, fetchUser } = useGetUser();
   const { transactionId, generatePaymentLink } = useGeneratePaymentLink();
   const user = userData?.user;
+
+  const [productCache, setProductCache] = useState<Record<number, any[]>>({});
+  const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
 
   const navigate = useNavigate();
 
@@ -397,10 +400,34 @@ const OrderForm: React.FC = () => {
           const service_id = Number(updatedItem.service_id);
           const quantity = Number(updatedItem.quantity) || 1;
 
-          if (["category_id", "product_id"].includes(field)) {
-            if (category_id) fetchProductsOnId(category_id);
-            if (product_id && category_id)
-              fetchServicesOnId(category_id, product_id);
+          if (field === "category_id") {
+            const categoryId = Number(value);
+            if (!productCache[categoryId]) {
+              fetchProductsOnId(categoryId).then((products) => {
+                setProductCache((prevCache) => ({
+                  ...prevCache,
+                  [categoryId]: products,
+                }));
+              });
+            }
+            updatedItem.product_id = null;
+            updatedItem.service_id = null;
+          }
+
+          if (field === "product_id") {
+            const categoryId = Number(item.category_id);
+            const productId = Number(value);
+            const cacheKey = `${categoryId}_${productId}`;
+
+            if (!serviceCache[cacheKey]) {
+              fetchServicesOnId(categoryId, productId).then((services) => {
+                setServiceCache((prevCache) => ({
+                  ...prevCache,
+                  [cacheKey]: services,
+                }));
+              });
+            }
+            updatedItem.service_id = null;
           }
 
           if (["category_id", "product_id", "service_id"].includes(field)) {
@@ -646,238 +673,234 @@ const OrderForm: React.FC = () => {
             </h1>
           </div>
 
-          {formData.items.map((item, index) => (
-            <>
-              <div
-                key={index}
-                className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
-              >
-                <div className="flex flex-col flex-1 md:mb-0">
-                  <label
-                    htmlFor="category"
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                  >
-                    Category
-                  </label>
-                  <select
-                    id="category"
-                    value={item.category_id ?? ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "category_id", e.target.value)
-                    }
-                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  >
-                    <option value="" disabled>
-                      Select Category
-                    </option>
-                    {categories.map((cat) => (
-                      <option key={cat.category_id} value={cat.category_id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].category_id`]}
-                  </p>
-                </div>
+          {formData.items.map((item, index) => {
 
-                <div className="flex flex-col flex-1 md:mb-0">
-                  <label
-                    htmlFor="product"
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                  >
-                    Product
-                  </label>
-                  <select
-                    id="product"
-                    value={item.product_id ?? ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "product_id", e.target.value)
-                    }
-                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  >
-                    <option value="" disabled>
-                      Select Product
-                    </option>
-                    {products && products.length > 0
-                      ? products.map((prod) => (
-                          <option
-                            key={prod.product_product_id}
-                            value={prod.product_product_id}
-                          >
-                            {prod.product_name}
-                          </option>
-                        ))
-                      : item.product_id && (
+            return (
+              <>
+                <div
+                  key={index}
+                  className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
+                >
+                  <div className="flex flex-col flex-1 md:mb-0">
+                    <label
+                      htmlFor="category"
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                    >
+                      Category
+                    </label>
+                    <select
+                      id="category"
+                      value={item.category_id ?? ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "category_id", e.target.value)
+                      }
+                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                    >
+                      <option value="" disabled>
+                        Select Category
+                      </option>
+                      {categories.map((cat) => (
+                        <option key={cat.category_id} value={cat.category_id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="w-full text-red-500 text-sm">
+                      {errors[`items[${index}].category_id`]}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col flex-1 md:mb-0">
+                    <label
+                      htmlFor="product"
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                    >
+                      Product
+                    </label>
+                    <select
+                      id="product"
+                      value={item.product_id ?? ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "product_id", e.target.value)
+                      }
+                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                    >
+                      <option value="" disabled>
+                        Select Product
+                      </option>
+                      {productCache[item.category_id]?.map((prod) => (
+                        <option
+                          key={prod.product_product_id}
+                          value={prod.product_product_id}
+                        >
+                          {prod.product_name}
+                        </option>
+                      )) ||
+                        (item.product_id && (
                           <option key={item.product_id} value={item.product_id}>
                             {item.product_name}
                           </option>
-                        )}
-                  </select>
-                  <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].product_id`]}
-                  </p>
-                </div>
+                        ))}
+                    </select>
+                    <p className="w-full text-red-500 text-sm">
+                      {errors[`items[${index}].product_id`]}
+                    </p>
+                  </div>
 
-                <div className="flex flex-col flex-1 md:mb-0">
-                  <label
-                    htmlFor="service"
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                  >
-                    Service
-                  </label>
-                  <select
-                    id="service"
-                    value={item.service_id ?? ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "service_id", e.target.value)
-                    }
-                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  >
-                    <option value="" disabled>
-                      Select Service
-                    </option>
-                    {services && services.length > 0
-                      ? services.map((serv) => (
-                          <option
-                            key={serv.service_service_id}
-                            value={serv.service_service_id}
-                          >
-                            {serv.service_name}
-                          </option>
-                        ))
-                      : item.service_id && (
-                          <option key={item.service_id} value={item.service_id}>
-                            {item.service_name}
-                          </option>
-                        )}
-                  </select>
-                  <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].service_id`]}
-                  </p>
-                </div>
-
-                <div className="flex flex-col flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Price
-                  </label>
-                  <input
-                    type="text"
-                    value={item.price || ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "price", e.target.value)
-                    }
-                    className={`input border rounded-md p-2 w-full ${
-                      isNaN(order_id)
-                        ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
-                        : "border-gray-300"
-                    }`}
-                    readOnly={isNaN(order_id)}
-                  />
-                  <p className="w-full text-red-500 text-sm">
-                    {errors[`items[${index}].price`]}
-                  </p>
-                </div>
-
-                <div className="flex flex-col flex-1 md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Quantity
-                  </label>
-                  <input
-                    type="text"
-                    value={item.quantity ?? 1}
-                    onChange={(e) =>
-                      handleItemChange(index, "quantity", e.target.value)
-                    }
-                    className="input border border-gray-300 rounded-md p-2 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col flex-1 md:mb-0">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    Item total
-                  </label>
-                  <input
-                    type="text"
-                    value={item.item_Total ?? ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "item_Total", e.target.value)
-                    }
-                    min="0"
-                    step="0.01"
-                    readOnly
-                    className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
-                  />
-                </div>
-
-                <div className="flex flex-col md:mb-0">
-                  <label
-                    htmlFor="description_checkbox"
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                  >
-                    Description
-                  </label>
-                  <input
-                    className="checkbox checkbox-lg m-auto mt-2"
-                    id="description_checkbox"
-                    data-datatable-check="true"
-                    type="checkbox"
-                    checked={item.showDescription}
-                    onChange={(e) =>
-                      handleItemChange(
-                        index,
-                        "showDescription",
-                        e.target.checked
-                      )
-                    }
-                  />
-                  <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
-                </div>
-
-                <div className="flex items-end">
-                  <button
-                    type="button"
-                    className={`p-2 mt-8 rounded-full ${
-                      formData.items.length > 1
-                        ? "bg-red-100 hover:bg-red-200"
-                        : "bg-gray-200 cursor-not-allowed"
-                    }`}
-                    onClick={() => handleRemoveItem(index)}
-                    disabled={formData.items.length === 1}
-                  >
-                    <FaTrash
-                      className={`${
-                        formData.items.length > 1
-                          ? "text-red-500"
-                          : "text-gray-400"
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              {item.showDescription && (
-                <div>
-                  <div className="flex flex-col w-[500px] mb-8">
+                  <div className="flex flex-col flex-1 md:mb-0">
                     <label
-                      htmlFor="description"
+                      htmlFor="service"
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                    >
+                      Service
+                    </label>
+                    <select
+                      id="service"
+                      value={item.service_id ?? ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "service_id", e.target.value)
+                      }
+                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                    >
+                      <option value="" disabled>
+                        Select Service
+                      </option>
+                      {serviceCache[`${item.category_id}_${item.product_id}`]?.map((serv:any) => (
+                        <option
+                          key={serv.service_service_id}
+                          value={serv.service_service_id}
+                        >
+                          {serv.service_name}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="w-full text-red-500 text-sm">
+                      {errors[`items[${index}].service_id`]}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col flex-1">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Price
+                    </label>
+                    <input
+                      type="text"
+                      value={item.price || ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "price", e.target.value)
+                      }
+                      className={`input border rounded-md p-2 w-full ${
+                        isNaN(order_id)
+                          ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
+                          : "border-gray-300"
+                      }`}
+                      readOnly={isNaN(order_id)}
+                    />
+                    <p className="w-full text-red-500 text-sm">
+                      {errors[`items[${index}].price`]}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col flex-1 md:mb-0">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Quantity
+                    </label>
+                    <input
+                      type="text"
+                      value={item.quantity ?? 1}
+                      onChange={(e) =>
+                        handleItemChange(index, "quantity", e.target.value)
+                      }
+                      className="input border border-gray-300 rounded-md p-2 w-full"
+                    />
+                  </div>
+
+                  <div className="flex flex-col flex-1 md:mb-0">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Item total
+                    </label>
+                    <input
+                      type="text"
+                      value={item.item_Total ?? ""}
+                      onChange={(e) =>
+                        handleItemChange(index, "item_Total", e.target.value)
+                      }
+                      min="0"
+                      step="0.01"
+                      readOnly
+                      className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col md:mb-0">
+                    <label
+                      htmlFor="description_checkbox"
                       className="block text-gray-700 text-sm font-bold mb-2"
                     >
                       Description
                     </label>
-                    <textarea
-                      id="description"
-                      value={item.description || ""}
+                    <input
+                      className="checkbox checkbox-lg m-auto mt-2"
+                      id="description_checkbox"
+                      data-datatable-check="true"
+                      type="checkbox"
+                      checked={item.showDescription}
                       onChange={(e) =>
-                        handleItemChange(index, "description", e.target.value)
+                        handleItemChange(
+                          index,
+                          "showDescription",
+                          e.target.checked
+                        )
                       }
-                      className="h-20 input border border-gray-300 rounded-md p-2 w-full"
                     />
+                    <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
+                  </div>
+
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      className={`p-2 mt-8 rounded-full ${
+                        formData.items.length > 1
+                          ? "bg-red-100 hover:bg-red-200"
+                          : "bg-gray-200 cursor-not-allowed"
+                      }`}
+                      onClick={() => handleRemoveItem(index)}
+                      disabled={formData.items.length === 1}
+                    >
+                      <FaTrash
+                        className={`${
+                          formData.items.length > 1
+                            ? "text-red-500"
+                            : "text-gray-400"
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
-              )}
-            </>
-          ))}
+
+                {item.showDescription && (
+                  <div>
+                    <div className="flex flex-col w-[500px] mb-8">
+                      <label
+                        htmlFor="description"
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        id="description"
+                        value={item.description || ""}
+                        onChange={(e) =>
+                          handleItemChange(index, "description", e.target.value)
+                        }
+                        className="h-20 input border border-gray-300 rounded-md p-2 w-full"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })}
 
           <button
             type="button"
