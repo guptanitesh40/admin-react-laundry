@@ -47,8 +47,12 @@ const CustomerRatingReport: React.FC = () => {
 
   const maxCount = Math.max(...ratings.map((rating) => rating.count));
 
-  const getProgressBarColor = (label: any) => {
+  const getProgressBarColor = (label: any, count: any) => {
     const ratingNumber = Number(label);
+
+    if(count === 0 ){
+      return "bg-gray-200"
+    }
 
     switch (ratingNumber) {
       case 1:
@@ -69,11 +73,6 @@ const CustomerRatingReport: React.FC = () => {
   return (
     <div className="col-span-3">
       <div className="card w-full">
-        <div className="card-header">
-          <h3 className="text-lg font-semibold text-gray-700">
-            Customer Rating
-          </h3>
-        </div>
         <div className="flex flex-wrap mt-3 justify-between items-center gap-4">
           <div className="flex items-center gap-4 ml-3">
             <div>
@@ -109,7 +108,7 @@ const CustomerRatingReport: React.FC = () => {
                 </div>
                 <div className="w-full h-[8px] bg-gray-200 rounded overflow-hidden">
                   <div
-                    className={`${getProgressBarColor(rating.label)} rounded-full h-full transition-all duration-500`}
+                    className={`${getProgressBarColor(rating.label, rating.count)} rounded-full h-full transition-all duration-500`}
                     style={{ width: `${(rating.count / maxCount) * 100}%` }}
                   ></div>
                 </div>

@@ -52,6 +52,7 @@ export const Sidebar: React.FC = () => {
         className="sidebar-content flex grow shrink-0 py-5 pr-2"
         id="sidebar_content"
       >
+        
         <div
           className="scrollable-y-hover grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3"
           data-scrollable="true"
@@ -412,6 +413,7 @@ export const Sidebar: React.FC = () => {
             </Link>
           </div>
         </div>
+
       </div>
     </div>
   );

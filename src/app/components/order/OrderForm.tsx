@@ -190,6 +190,13 @@ const OrderForm: React.FC = () => {
   }, [transactionId]);
 
   useEffect(() => {
+      setFormData((prev) => ({
+        ...prev,
+        payment_status: formData.payment_type === 1 ? 1 : null,
+      }));
+  }, [formData.payment_type]);
+
+  useEffect(() => {
     const fetchUserData = async () => {
       if (userSearch && isSearchMode) {
         await fetchUsersByRole(5, userSearch);
@@ -573,14 +580,23 @@ const OrderForm: React.FC = () => {
           )}
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="flex gap-2">
-            <div className="relative flex flex-col flex-[0_0_40%]">
-              <label
-                htmlFor="username"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Customer Name
-              </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-6">
+            <div className="relative col-span-1">
+              <span className="flex justify-between items-center">
+                <label
+                  htmlFor="username"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Customer name
+                </label>
+
+                <button
+                  className="btn btn-sm btn-primary -mt-6 sm:btn-lg"
+                  onClick={handleAddUser}
+                >
+                  Add Customer
+                </button>
+              </span>
               <input
                 type="text"
                 id="username"
@@ -592,7 +608,7 @@ const OrderForm: React.FC = () => {
               />
 
               {users && userSearch && isSearchMode && (
-                <ul className="absolute mt-20 bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm">
+                <ul className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm">
                   {users.length > 0 ? (
                     users.map((user: any) => (
                       <li
@@ -614,290 +630,351 @@ const OrderForm: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-col self-center">
-              <button
-                className="btn btn-primary w-[88px]"
-                onClick={handleAddUser}
-              >
-                New Customer
-              </button>
-            </div>
-
-            <div className="grow flex">
-              <div className="grow flex flex-col">
+            <div className="relative col-span-1">
+              <span className="flex justify-between items-center">
                 <label
                   htmlFor="address"
                   className="block text-gray-700 text-sm font-bold mb-2"
                 >
-                  Customer Address
+                  Customer address
                 </label>
-                <select
-                  id="address"
-                  value={formData.address_id ?? ""}
-                  onChange={handleAddressChange}
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                >
-                  <option value="" disabled>
-                    Select Address
-                  </option>
-                  {address.length > 0 ? (
-                    address.map((addr) => (
-                      <option key={addr.address_id} value={addr.address_id}>
-                        {addr.building_number}, {addr.area}, {addr.landmark},{" "}
-                        {addr.city}, {addr.state},{addr.country}, {addr.pincode}
-                      </option>
-                    ))
-                  ) : (
-                    <option>No Address available</option>
-                  )}
-                </select>
-                <p className="w-full text-red-500 text-sm">
-                  {errors.address_id || "\u00A0"}
-                </p>
-              </div>
 
-              <div className="flex flex-col self-center">
                 <button
-                  className="btn btn-primary w-20 ml-2"
+                  className="btn btn-sm btn-primary -mt-6"
                   onClick={handleAddAddress}
                 >
                   Add address
                 </button>
-              </div>
+              </span>
+
+              <select
+                id="address"
+                value={formData.address_id}
+                onChange={handleAddressChange}
+                className="select border border-gray-300 rounded-md w-full text-sm"
+              >
+                <option value="" selected disabled>
+                  Select Address
+                </option>
+                {address.length > 0 ? (
+                  address.map((addr) => (
+                    <option key={addr.address_id} value={addr.address_id}>
+                      {addr.building_number}, {addr.area}, {addr.landmark},{" "}
+                      {addr.city}, {addr.state},{addr.country}, {addr.pincode}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No Address Available</option>
+                )}
+              </select>
+              <p className="w-full text-red-500 text-sm">
+                {errors.address_id || "\u00A0"}
+              </p>
+            </div>
+
+            <div className="col-span-1">
+              <label
+                htmlFor="payment_status"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Branch
+              </label>
+              <select
+                id="company_id"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={formData.branch_id || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    branch_id: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+              >
+                <option value="" disabled>
+                  Select Branch
+                </option>
+                {branches.length > 0 ? (
+                  branches.map((branch) => (
+                    <option key={branch.branch_id} value={branch.branch_id}>
+                      {branch.branch_name}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Data Available</option>
+                )}
+              </select>
+              <p className="w-full text-red-500 text-sm">
+                {errors.branch_id || "\u00A0"}
+              </p>
             </div>
           </div>
 
-          <div>
-            <h1 className="text-xl font-semibold leading-none text-gray-900 mt-10 mb-5">
+          <div className="flex flex-wrap">
+            <h1 className="text-xl font-semibold leading-none text-gray-900 mt-6 mb-5 ml-1">
               Item
             </h1>
           </div>
 
           {formData.items.map((item, index) => {
-
             return (
               <>
-                <div
-                  key={index}
-                  className="flex flex-col items-start md:flex-row md:items-end md:space-x-1"
-                >
-                  <div className="flex flex-col flex-1 md:mb-0">
-                    <label
-                      htmlFor="category"
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                    >
-                      Category
-                    </label>
-                    <select
-                      id="category"
-                      value={item.category_id ?? ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "category_id", e.target.value)
-                      }
-                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                    >
-                      <option value="" disabled>
-                        Select Category
-                      </option>
-                      {categories.map((cat) => (
-                        <option key={cat.category_id} value={cat.category_id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="w-full text-red-500 text-sm">
-                      {errors[`items[${index}].category_id`]}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col flex-1 md:mb-0">
-                    <label
-                      htmlFor="product"
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                    >
-                      Product
-                    </label>
-                    <select
-                      id="product"
-                      value={item.product_id ?? ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "product_id", e.target.value)
-                      }
-                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                    >
-                      <option value="" disabled>
-                        Select Product
-                      </option>
-                      {productCache[item.category_id]?.map((prod) => (
-                        <option
-                          key={prod.product_product_id}
-                          value={prod.product_product_id}
+                <div className="bg-gray-50 border border-gray-50 rounded-xl mt-4 p-4">
+                  <div
+                    key={index}
+                    className="flex items-start flex-wrap md:flex-row md:items-end md:space-x-1 gap-2"
+                  >
+                    <div className="flex flex-wrap gap-2.5">
+                      <div>
+                        <label
+                          htmlFor="category"
+                          className="block text-gray-700 text-sm font-bold mb-2"
                         >
-                          {prod.product_name}
-                        </option>
-                      )) ||
-                        (item.product_id && (
-                          <option key={item.product_id} value={item.product_id}>
-                            {item.product_name}
+                          Category
+                        </label>
+                        <select
+                          id="category"
+                          value={item.category_id ?? ""}
+                          onChange={(e) =>
+                            handleItemChange(
+                              index,
+                              "category_id",
+                              e.target.value
+                            )
+                          }
+                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                        >
+                          <option value="" disabled>
+                            Select Category
                           </option>
-                        ))}
-                    </select>
-                    <p className="w-full text-red-500 text-sm">
-                      {errors[`items[${index}].product_id`]}
-                    </p>
-                  </div>
+                          {categories.map((cat) => (
+                            <option
+                              key={cat.category_id}
+                              value={cat.category_id}
+                            >
+                              {cat.name}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="w-full text-red-500 text-sm">
+                          {errors[`items[${index}].category_id`]}
+                        </p>
+                      </div>
 
-                  <div className="flex flex-col flex-1 md:mb-0">
-                    <label
-                      htmlFor="service"
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                    >
-                      Service
-                    </label>
-                    <select
-                      id="service"
-                      value={item.service_id ?? ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "service_id", e.target.value)
-                      }
-                      className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                    >
-                      <option value="" disabled>
-                        Select Service
-                      </option>
-                      {serviceCache[`${item.category_id}_${item.product_id}`]?.map((serv:any) => (
-                        <option
-                          key={serv.service_service_id}
-                          value={serv.service_service_id}
+                      <div>
+                        <label
+                          htmlFor="product"
+                          className="block text-gray-700 text-sm font-bold mb-2"
                         >
-                          {serv.service_name}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="w-full text-red-500 text-sm">
-                      {errors[`items[${index}].service_id`]}
-                    </p>
-                  </div>
+                          Product
+                        </label>
+                        <select
+                          id="product"
+                          value={item.product_id ?? ""}
+                          onChange={(e) =>
+                            handleItemChange(
+                              index,
+                              "product_id",
+                              e.target.value
+                            )
+                          }
+                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                        >
+                          <option value="" disabled>
+                            Select Product
+                          </option>
+                          {productCache[item.category_id]?.map((prod) => (
+                            <option
+                              key={prod.product_product_id}
+                              value={prod.product_product_id}
+                            >
+                              {prod.product_name}
+                            </option>
+                          )) ||
+                            (item.product_id && (
+                              <option
+                                key={item.product_id}
+                                value={item.product_id}
+                              >
+                                {item.product_name}
+                              </option>
+                            ))}
+                        </select>
+                        <p className="w-full text-red-500 text-sm">
+                          {errors[`items[${index}].product_id`]}
+                        </p>
+                      </div>
 
-                  <div className="flex flex-col flex-1">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Price
-                    </label>
-                    <input
-                      type="text"
-                      value={item.price || ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "price", e.target.value)
-                      }
-                      className={`input border rounded-md p-2 w-full ${
-                        isNaN(order_id)
-                          ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
-                          : "border-gray-300"
-                      }`}
-                      readOnly={isNaN(order_id)}
-                    />
-                    <p className="w-full text-red-500 text-sm">
-                      {errors[`items[${index}].price`]}
-                    </p>
-                  </div>
+                      <div>
+                        <label
+                          htmlFor="service"
+                          className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                          Service
+                        </label>
+                        <select
+                          id="service"
+                          value={item.service_id ?? ""}
+                          onChange={(e) =>
+                            handleItemChange(
+                              index,
+                              "service_id",
+                              e.target.value
+                            )
+                          }
+                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                        >
+                          <option value="" disabled>
+                            Select Service
+                          </option>
+                          {serviceCache[
+                            `${item.category_id}_${item.product_id}`
+                          ]?.map((serv: any) => (
+                            <option
+                              key={serv.service_service_id}
+                              value={serv.service_service_id}
+                            >
+                              {serv.service_name}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="w-full text-red-500 text-sm">
+                          {errors[`items[${index}].service_id`]}
+                        </p>
+                      </div>
 
-                  <div className="flex flex-col flex-1 md:mb-0">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Quantity
-                    </label>
-                    <input
-                      type="text"
-                      value={item.quantity ?? 1}
-                      onChange={(e) =>
-                        handleItemChange(index, "quantity", e.target.value)
-                      }
-                      className="input border border-gray-300 rounded-md p-2 w-full"
-                    />
-                  </div>
+                      <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Price
+                        </label>
+                        <input
+                          type="text"
+                          value={item.price || ""}
+                          onChange={(e) =>
+                            handleItemChange(index, "price", e.target.value)
+                          }
+                          className={`input border rounded-md p-2 w-28 ${
+                            isNaN(order_id)
+                              ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
+                              : "border-gray-300"
+                          }`}
+                          readOnly={isNaN(order_id)}
+                        />
+                        <p className="w-full text-red-500 text-sm">
+                          {errors[`items[${index}].price`]}
+                        </p>
+                      </div>
 
-                  <div className="flex flex-col flex-1 md:mb-0">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Item total
-                    </label>
-                    <input
-                      type="text"
-                      value={item.item_Total ?? ""}
-                      onChange={(e) =>
-                        handleItemChange(index, "item_Total", e.target.value)
-                      }
-                      min="0"
-                      step="0.01"
-                      readOnly
-                      className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
-                    />
-                  </div>
+                      <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Quantity
+                        </label>
+                        <input
+                          type="text"
+                          value={item.quantity ?? 1}
+                          onChange={(e) =>
+                            handleItemChange(index, "quantity", e.target.value)
+                          }
+                          className="input border border-gray-300 rounded-md p-2 w-20"
+                        />
+                      </div>
 
-                  <div className="flex flex-col md:mb-0">
-                    <label
-                      htmlFor="description_checkbox"
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                    >
-                      Description
-                    </label>
-                    <input
-                      className="checkbox checkbox-lg m-auto mt-2"
-                      id="description_checkbox"
-                      data-datatable-check="true"
-                      type="checkbox"
-                      checked={item.showDescription}
-                      onChange={(e) =>
-                        handleItemChange(
-                          index,
-                          "showDescription",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <p className="w-full text-red-500 text-sm">{"\u00A0"}</p>
-                  </div>
+                      <div>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Item total
+                        </label>
+                        <input
+                          type="text"
+                          value={item.item_Total ?? ""}
+                          onChange={(e) =>
+                            handleItemChange(
+                              index,
+                              "item_Total",
+                              e.target.value
+                            )
+                          }
+                          min="0"
+                          step="0.01"
+                          readOnly
+                          className="input w-28 border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
+                        />
+                      </div>
 
-                  <div className="flex items-end">
-                    <button
-                      type="button"
-                      className={`p-2 mt-8 rounded-full ${
-                        formData.items.length > 1
-                          ? "bg-red-100 hover:bg-red-200"
-                          : "bg-gray-200 cursor-not-allowed"
-                      }`}
-                      onClick={() => handleRemoveItem(index)}
-                      disabled={formData.items.length === 1}
-                    >
-                      <FaTrash
-                        className={`${
-                          formData.items.length > 1
-                            ? "text-red-500"
-                            : "text-gray-400"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
+                      <div>
+                        <label
+                          htmlFor="description_checkbox"
+                          className="block text-gray-700 text-sm font-bold mb-2"
+                        >
+                          Description
+                        </label>
+                        <input
+                          className="checkbox checkbox-lg mt-2"
+                          id="description_checkbox"
+                          data-datatable-check="true"
+                          type="checkbox"
+                          checked={item.showDescription}
+                          onChange={(e) =>
+                            handleItemChange(
+                              index,
+                              "showDescription",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <p className=" text-red-500 text-sm">{"\u00A0"}</p>
+                      </div>
 
-                {item.showDescription && (
-                  <div>
-                    <div className="flex flex-col w-[500px] mb-8">
-                      <label
-                        htmlFor="description"
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        id="description"
-                        value={item.description || ""}
-                        onChange={(e) =>
-                          handleItemChange(index, "description", e.target.value)
-                        }
-                        className="h-20 input border border-gray-300 rounded-md p-2 w-full"
-                      />
+                      <div>
+                        <button
+                          type="button"
+                          className={`p-2 rounded-full mt-8 ${
+                            formData.items.length > 1
+                              ? "bg-red-100 hover:bg-red-200"
+                              : "bg-gray-200 cursor-not-allowed"
+                          }`}
+                          onClick={() => handleRemoveItem(index)}
+                          disabled={formData.items.length === 1}
+                        >
+                          <FaTrash
+                            className={`${
+                              formData.items.length > 1
+                                ? "text-red-500"
+                                : "text-gray-400"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                )}
+
+                  <div className="flex justify-between items-center">
+                    <div>
+                      {item.showDescription && (
+                        <div>
+                          <div className="flex flex-col w-[500px] mb-2">
+                            <label
+                              htmlFor="description"
+                              className="block text-gray-700 text-sm font-bold mb-2"
+                            >
+                              Description
+                            </label>
+                            <textarea
+                              id="description"
+                              value={item.description || ""}
+                              onChange={(e) =>
+                                handleItemChange(
+                                  index,
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              className="input border border-gray-300 rounded-md p-2 w-full"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </>
             );
           })}
@@ -905,7 +982,7 @@ const OrderForm: React.FC = () => {
           <button
             type="button"
             onClick={handleAddItem}
-            className="btn btn-secondary mb-6"
+            className="btn btn-secondary mb-6 mt-4"
           >
             Add Item
           </button>
@@ -1117,7 +1194,9 @@ const OrderForm: React.FC = () => {
                 <option value="" disabled>
                   Select Payment Status
                 </option>
-                <option value={1}>Pending</option>
+                <option value={1}>
+                  Pending
+                </option>
                 <option value={2}>Received</option>
                 <option value={3}>Partial Received</option>
               </select>
@@ -1140,42 +1219,6 @@ const OrderForm: React.FC = () => {
                 className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
                 readOnly
               />
-            </div>
-
-            <div className="flex flex-col">
-              <label
-                htmlFor="payment_status"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Branch
-              </label>
-              <select
-                id="company_id"
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                value={formData.branch_id || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    branch_id: e.target.value ? Number(e.target.value) : null,
-                  })
-                }
-              >
-                <option value="" disabled>
-                  Select Branch
-                </option>
-                {branches.length > 0 ? (
-                  branches.map((branch) => (
-                    <option key={branch.branch_id} value={branch.branch_id}>
-                      {branch.branch_name}
-                    </option>
-                  ))
-                ) : (
-                  <option>No Data Available</option>
-                )}
-              </select>
-              <p className="w-full text-red-500 text-sm">
-                {errors.branch_id || "\u00A0"}
-              </p>
             </div>
 
             {!order_id && (

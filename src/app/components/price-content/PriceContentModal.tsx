@@ -130,7 +130,7 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[480px] ban:min-w-[85%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[480px] ban:w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -139,7 +139,7 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
           <i className="ki-filled ki-cross"></i>
         </button>
         <h1 className="text-2xl font-bold mb-6">
-          {price_content_id ? "Update Price Content" : "Add Price Content"}
+          {price_content_id ? "Update Price" : "Add Price"}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-2">

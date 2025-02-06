@@ -27,7 +27,7 @@ const PromotionBanner: React.FC = () => {
     useUpdatePromotionBanner();
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [refetch, setRefetch] = useState<boolean>(false); 
+  const [refetch, setRefetch] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     image: null,
@@ -160,128 +160,130 @@ const PromotionBanner: React.FC = () => {
           <div className="card-header" id="basic_settings">
             <h3 className="card-title">Promotion Banner</h3>
           </div>
-          <div className="card-body grid gap-4">
-            <div className="flex items-center flex-wrap gap-2.5">
-              <div className="flex justify-end flex-wrap grow gap-2.5">
-                <div className="image-input" data-image-input="true">
-                  <label
-                    htmlFor="image-upload"
-                    className="btn btn-icon btn-icon-2xl btn-light absolute z-1 size-8 -top-0.5 -right-0.5 rounded-full"
-                  >
-                    <FaPencilAlt className="text-blue-600" />
-                  </label>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    onChange={handleBannerImageChange}
-                  />
-                  <div className="image-input-placeholder rounded-md border-2">
-                    <img
-                      className="h-[200px] w-[300px] rounded-sm"
-                      src={
-                        preview ||
-                        (typeof formData.image === "string" &&
-                          formData.image) ||
-                        ""
-                      }
-                      alt="Promotion Banner"
+          <form onSubmit={handleSaveSettings}>
+            <div className="card-body grid gap-4">
+              <div className="flex items-center flex-wrap gap-2.5">
+                <div className="flex justify-end flex-wrap grow gap-2.5">
+                  <div className="image-input" data-image-input="true">
+                    <label
+                      htmlFor="image-upload"
+                      className="btn btn-icon btn-icon-2xl btn-light absolute z-1 size-8 -top-0.5 -right-0.5 rounded-full"
+                    >
+                      <FaPencilAlt className="text-blue-600" />
+                    </label>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={handleBannerImageChange}
                     />
+                    <div className="image-input-placeholder rounded-md border-2">
+                      <img
+                        className="h-[200px] w-[300px] rounded-sm"
+                        src={
+                          preview ||
+                          (typeof formData.image === "string" &&
+                            formData.image) ||
+                          ""
+                        }
+                        alt="Promotion Banner"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Title
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        title: e.target.value,
-                      })
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.title || "\u00A0"}
-                  </p>
+              <div>
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Title
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.title || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Price (Rs)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.price}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        price: e.target.value,
-                      })
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.price || "\u00A0"}
-                  </p>
+              <div>
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Price (Rs)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.price}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          price: e.target.value,
+                        })
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.price || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Offer Validity
-                </label>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={formData.offer_validity}
-                    onChange={handleDateChange}
-                    format="DD-MM-YYYY"
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        InputProps: {
-                          style: {
-                            height: "35px",
-                            width: "155px",
-                            fontSize: "14px",
+              <div>
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Offer Validity
+                  </label>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      value={formData.offer_validity}
+                      onChange={handleDateChange}
+                      format="DD-MM-YYYY"
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          InputProps: {
+                            style: {
+                              height: "35px",
+                              width: "155px",
+                              fontSize: "14px",
+                            },
                           },
                         },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                      }}
+                    />
+                  </LocalizationProvider>
+                </div>
+              </div>
+              <div className="flex relative justify-end pt-2.5">
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  disabled={adding || updating}
+                >
+                  {adding || updating ? (
+                    <>
+                      Saving...
+                      <LoadingSpinner />
+                    </>
+                  ) : (
+                    <>Save Changes</>
+                  )}
+                </button>
               </div>
             </div>
-            <div className="flex relative justify-end pt-2.5">
-              <button
-                className="btn btn-primary"
-                onClick={handleSaveSettings}
-                disabled={adding || updating}
-              >
-                {adding || updating ? (
-                  <>
-                    Saving...
-                    <LoadingSpinner />
-                  </>
-                ) : (
-                  <>Save Changes</>
-                )}
-              </button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </>

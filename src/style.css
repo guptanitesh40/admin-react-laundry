@@ -4242,7 +4242,6 @@ video {
 }
 
 
-
 .badge-mark-as-received-at-branch {
   color: var(--tw-white);
   background-color: var(--tw-mark-as-received-at-branch);
@@ -4296,6 +4295,17 @@ video {
   color: var(--tw-delivered);
   background-color: var(--tw-delivered-light);
   border-color: var(--tw-delivered-clarity);
+}
+
+.badge-danger-secondary {
+  color: #fff;
+  background-color: #e62250;
+}
+
+.badge-outline.badge-danger-secondary {
+  color: #D2665A;
+  background-color:  #ffe3eb;;
+  border-color: rgba(230, 34, 80, 0.2);
 }
 
 .rating {
@@ -9783,3 +9793,4 @@ label.rating-label {
   padding-right:0px;
   padding-left:0px;
 }
+
