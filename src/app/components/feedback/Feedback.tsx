@@ -7,7 +7,7 @@ const Feedback: React.FC = () => {
       <div className="container-fixed">
         <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
           <h1 className="text-xl font-semibold leading-none text-gray-900">
-            Customer Feedback
+            Customer Feedback And Rating
           </h1>
         </div>
       </div>

@@ -269,25 +269,25 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Order Status</th>
-
-                  <th className="min-w-[280px]">Next Status</th>
-
-                  <th className="min-w-[140px]">
+                  <th className="min-w-[200px]">
                     <span
                       className={`sort ${
-                        sortColumn === "email"
+                        sortColumn === "branch_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("email")}
+                      onClick={() => handleSort("branch_id")}
                     >
-                      <span className="sort-label">Email</span>
+                      <span className="sort-label">Assigned Branch</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="min-w-[280px]">Order Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>                  
 
                   <th className="min-w-[140px]">
                     <span
@@ -349,24 +349,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       onClick={() => handleSort("coupon_discount")}
                     >
                       <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "estimated_delivery_time"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("estimated_delivery_time")}
-                    >
-                      <span className="sort-label">
-                        Estimated delivery time
-                      </span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -464,12 +446,12 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("sub_total")}
                     >
-                      <span className="sort-label">Sub total</span>
+                      <span className="sort-label">Bill Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[105px]">
+                  <th className="min-w-[135px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -480,7 +462,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total</span>
+                      <span className="sort-label">Total Duo Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -516,22 +498,8 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "branch_id"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("branch_id")}
-                    >
-                      <span className="sort-label">Assigned Branch</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-                  <th className="min-w-[160px]">Invoice</th>
+
+                  <th className="min-w-[160px]">Receipt</th>
 
                   <th className="w-[170px]">Actions</th>
                 </tr>
@@ -545,7 +513,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       PaymentStatus[
                         order.payment_status as unknown as keyof typeof PaymentStatus
                       ];
-                      
+
                     const paymentStatusClass = getPaymentStatusLabel(
                       order.payment_status
                     );
@@ -564,6 +532,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
+
+                        <td>{order?.branch?.branch_name}</td>
+
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -586,19 +557,11 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                             </div>
                           )}
                         </td>
-                        <td>{order.user.email}</td>
                         <td>{order.user.mobile_number}</td>
 
                         <td>{order.address_details}</td>
                         <td>{order.coupon_code}</td>
                         <td>{order.coupon_discount}</td>
-                        <td>
-                          <div className="flex flex-col">
-                            {dayjs(order.estimated_delivery_time).format(
-                              "DD-MM-YYYY"
-                            )}
-                          </div>
-                        </td>
                         <td>
                           <div className="flex flex-col">
                             {dayjs(order.estimated_pickup_time).format(
@@ -626,24 +589,25 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                             {paymentStatusLabel}
                           </span>
                         </td>
-                        <td>{order?.branch?.branch_name}</td>
                         <td>
                           <button
                             className="flex items-center mr-2 btn btn-light btn-sm"
                             onClick={() =>
                               handleGenerateInvoice(order.order_id)
                             }
-                            disabled={generating && invoiceId === order.order_id}
+                            disabled={
+                              generating && invoiceId === order.order_id
+                            }
                           >
                             {generating && invoiceId === order.order_id ? (
                               <>
                                 <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Invoice <LoadingSpinner />
+                                Receipt <LoadingSpinner />
                               </>
                             ) : (
                               <>
                                 <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Invoice
+                                Receipt
                               </>
                             )}
                           </button>

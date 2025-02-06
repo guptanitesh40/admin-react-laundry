@@ -23,7 +23,7 @@ import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
-import { RiFilePaperLine } from "react-icons/ri";
+import { RiFilePaper2Fill, RiFilePaperLine } from "react-icons/ri";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -338,18 +338,18 @@ const OrderDetails: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">
-        <div className="flex flex-col bg-gray-100 p-6 rounded-md shadow-md">
-          <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col gap-4 p-5 rounded-md shadow-md">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h1 className="text-xl font-semibold text-gray-900">
               Order Details - #{order_id}
             </h1>
-            <div className="flex flex-row gap-2">
+            <div className="flex gap-2 bn:flex-wrap">
               <button
                 className="flex items-center btn btn-light"
                 onClick={handleGenerateInvoice}
                 disabled={generating}
               >
-                <i className="ki-filled ki-cheque text-2xl link"></i>
+                <RiFilePaper2Fill size={20} color="gray" />
                 {generating ? (
                   <>
                     View Invoice <LoadingSpinner />
@@ -373,7 +373,6 @@ const OrderDetails: React.FC = () => {
                   Cancel Order
                 </button>
               )}
-
               {order.payment_status !== 1 && order.refund_status === 3 && (
                 <button
                   className="flex items-center font-semibold btn btn-success"
@@ -387,18 +386,18 @@ const OrderDetails: React.FC = () => {
           </div>
 
           {order.refund_status === 3 ? (
-            <div className="flex items-center justify-between bg-white p-4 rounded-md shadow-sm">
-              <div className="flex flex-col items-center">
+            <div className="flex border border-gray-200 rounded-xl bg-gray-50 items-center justify-between bg-gray-00 p-4 shadow-sm bn:flex bn:flex-col gap-5">
+              <div className="flex items-center bn:flex-row desktop:flex-col gap-2">
                 <span className="text-sm font-medium text-gray-700">
                   Current Status:
                 </span>
                 <span
-                  className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+                  className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px]`}
                 >
                   {order.order_status_details.admin_label}
                 </span>
               </div>
-  
+
               <div className="flex-1 px-6">
                 <p className="text-sm text-gray-600 mt-1">
                   {order.order_status_details.description}
@@ -406,12 +405,12 @@ const OrderDetails: React.FC = () => {
               </div>
 
               {order.order_status_details.next_step !== null && (
-                <div className="flex flex-col items-center">
+                <div className="flex items-center bn:flex-row desktop:flex-col gap-2">
                   <span className="text-sm font-medium text-gray-700">
                     Next Step:
                   </span>
                   <button
-                    className={`${nextStepLabel} badge-outline badge-xl rounded-[30px] mt-2`}
+                    className={`${nextStepLabel} badge-outline badge-xl rounded-[30px]`}
                     onClick={handleStatusClick}
                   >
                     {order.order_status_details.next_step}
@@ -474,60 +473,74 @@ const OrderDetails: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <div className="space-y-6">
-          <div className="card p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="card-title text-lg">Order Items</h3>
-              <button
-                className="btn btn-secondary btn-lg flex gap-2 ml-20 text-gray-700 text-sm font-semibold"
-                onClick={handlePrintLabel}
-              >
-                <RiFilePaperLine size={20} color="gray" />{" "}
-                <p className="text-gray-700">Print Label</p>
-              </button>
-              <span className="text-gray-700 text-sm font-semibold px-3 py-1 rounded-lg flex">
-                Total Items: {order.items.length}
-              </span>
-            </div>
-            <div className="space-y-4">
-              {order.items.map((item: any) => (
-                <div
-                  key={item.item_id}
-                  className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3.5">
-                      <img
-                        alt={item.product.name}
-                        className="w-16 h-16 shrink-0 object-cover rounded"
-                        src={item.product.image}
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-gray-900 mb-px">
-                          {item.product.name} ({item.quantity})
-                        </span>
-                        <span className="text-2sm font-medium text-gray-600">
-                          Category: {item.category.name}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-5">
-                      <span className="badge  badge-sm flex badge-success badge-outline text-xs">
-                        Service: {item.service.name}
-                      </span>
-                    </div>
-                  </div>
-                  {item.description && (
-                    <div className="mt-2 p-3 bg-gray-100 rounded-md">
-                      <p className="text-sm text-gray-600">
-                        <span className="text-sm font-medium text-gray-600">
-                          Description :
-                        </span>{" "}
-                        {item.description}
-                      </p>
-                    </div>
-                  )}
+          <div className="card p-2">
+            <div className="card-header border-none p-2 mb-2 ml-2">
+              <div className="card-title align-items-start flex-column">
+                <div>
+                  <h3 className="card-title text-lg">Order Items</h3>
+
+                  <span className="text-gray-500 text-sm font-bold rounded-lg flex">
+                    Total Items: {order.items.length}
+                  </span>
                 </div>
-              ))}
+              </div>
+              <div className="flex flex-end">
+                <button
+                  className="btn btn-secondary btn-lg flex gap-2 mr-4 text-gray-700 text-sm font-semibold"
+                  onClick={handlePrintLabel}
+                >
+                  <RiFilePaperLine size={20} color="gray" />{" "}
+                  <p className="text-gray-700">Print Label</p>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap">
+              <div className="card-body p-0 ml-4">
+                <div className="scrollable-y-hover pe-4 pb-4 max-h-[400px] mb-4">
+                  <div className="space-y-4">
+                    {order.items.map((item: any) => (
+                      <div
+                        key={item.item_id}
+                        className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
+                      >
+                        <div className="flex items-center flex-wrap gap-2 justify-between">
+                          <div className="flex items-center gap-3.5">
+                            <img
+                              alt={item.product.name}
+                              className="w-16 h-16 shrink-0 object-cover rounded"
+                              src={item.product.image}
+                            />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-semibold text-gray-900 mb-px">
+                                {item.product.name} ({item.quantity})
+                              </span>
+                              <span className="text-2sm font-medium text-gray-600">
+                                Category: {item.category.name}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-5">
+                            <span className="badge  badge-sm flex badge-success badge-outline text-xs">
+                              Service: {item.service.name}
+                            </span>
+                          </div>
+                        </div>
+                        {item.description && (
+                          <div className="mt-2 p-3 bg-gray-100 rounded-md">
+                            <p className="text-sm text-gray-600">
+                              <span className="text-sm font-medium text-gray-600">
+                                Description :
+                              </span>{" "}
+                              {item.description}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -642,39 +655,41 @@ const OrderDetails: React.FC = () => {
 
         <div className="space-y-6">
           <div className="col-span-2 lg:col-span-1 flex">
-            <div className="card grow">
+            <div className="card min-w-full">
               <div className="card-header">
                 <h3 className="card-title">Customer Information</h3>
               </div>
-              <div className="card-body pt-4 pb-3">
-                <table className="table-auto">
-                  <tbody>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Name:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {order.user.first_name} {order.user.last_name}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Email:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {order.user.email}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Mobile Number:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {order.user.mobile_number}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="card-body pt-4 pb-2">
+                <div className="scrollable-x-auto">
+                  <table className="table-auto">
+                    <tbody>
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Name:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.user.first_name} {order.user.last_name}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Email:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.user.email}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Mobile Number:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.user.mobile_number}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

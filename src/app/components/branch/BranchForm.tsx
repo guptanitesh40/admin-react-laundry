@@ -83,7 +83,9 @@ const BranchForm: React.FC = () => {
     }
   }, [branch]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -144,7 +146,10 @@ const BranchForm: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="company_id">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="company_id"
+            >
               Company
             </label>
             <select
@@ -168,7 +173,7 @@ const BranchForm: React.FC = () => {
                   </option>
                 ))
               ) : (
-              <option>No Data available</option>
+                <option>No Data available</option>
               )}
             </select>
             <p className="text-red-500 text-sm">
@@ -177,7 +182,10 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="branch_manager_id">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_manager_id"
+            >
               Branch Manager
             </label>
             <select
@@ -212,8 +220,11 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="branch_name">
-              Branch Name
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_name"
+            >
+              Branch name
             </label>
             <input
               type="text"
@@ -229,11 +240,13 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="branch_address">
-              Branch Address
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_address"
+            >
+              Address
             </label>
-            <input
-              type="text"
+            <textarea
               id="branch_address"
               name="branch_address"
               value={formData.branch_address || ""}
@@ -246,8 +259,11 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="branch_phone_number">
-              Branch Phone Number
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_phone_number"
+            >
+              Mobile number
             </label>
             <input
               type="text"
@@ -263,8 +279,11 @@ const BranchForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="branch_email">
-              Branch Email
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_email"
+            >
+              Email
             </label>
             <input
               type="text"
@@ -300,7 +319,7 @@ const BranchForm: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex gap-4">
+        <div className="flex gap-4">
           <button
             type="submit"
             className={`btn btn-primary mt-5 ${
