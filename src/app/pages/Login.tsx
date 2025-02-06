@@ -25,6 +25,7 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const isAuthenticated = useSelector(
     (state: any) => state.auth.isAuthenticated
@@ -143,16 +144,19 @@ const Login: React.FC = () => {
                 <input
                   name="password"
                   placeholder="Enter Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <span
-                  className="btn btn-icon"
-                  data-toggle-password-trigger="true"
+                  className="btn btn-icon cursor-pointer ml-2"
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
-                  <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
+                  {showPassword ? (
+                    <i className="ki-filled ki-eye-slash text-gray-500"></i>
+                  ) : (
+                    <i className="ki-filled ki-eye text-gray-500"></i>
+                  )}
                 </span>
               </label>
             </div>

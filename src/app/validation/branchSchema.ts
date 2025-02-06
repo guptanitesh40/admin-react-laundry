@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const branchSchema = Yup.object().shape({
   branch_name: Yup.string().required("Branch name is required"),
 
-  branch_address: Yup.string().required("Branch address is required"),
+  branch_address: Yup.string().required("Please add branch address"),
 
   branch_manager_id: Yup.string()
   .required("Please select branch manager")
@@ -15,7 +15,7 @@ export const branchSchema = Yup.object().shape({
       if (value === null || value === "") return true;
       return /^[0-9]{10}$/.test(value);
     })
-    .test("required", "Phone Number is required", (value) => {
+    .test("required", "Please add mobile number", (value) => {
       if (value === null || value === "") return false;
       return true;
     }),
@@ -34,9 +34,6 @@ export const branchSchema = Yup.object().shape({
     ),
 
   company_id: Yup.number()
-    .typeError("Company ID must be a number")
-    .required("Company ID is required")
-    .positive("Company ID must be a positive number")
-    .integer("Company ID must be an integer")
-    .test("required", "Company id must be a number", (value) => !!value),
+    .required("Please select company")
+    .test("required", "Please select company", (value) => !!value),
 });

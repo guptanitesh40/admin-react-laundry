@@ -1,5 +1,7 @@
-
-export const getOrderStatusLabel = (status: string, returnTextColor = false) => {
+export const getOrderStatusLabel = (
+  status: string,
+  returnTextColor = false
+) => {
   if (returnTextColor) {
     switch (status) {
       case "Order Placed":
@@ -26,8 +28,10 @@ export const getOrderStatusLabel = (status: string, returnTextColor = false) => 
         return "text-[#388E3C]";
       case "Delivered":
         return "text-[#f6b100]";
-      case "Cancelled":
+      case "Cancelled By Admin":
         return "text-[#f8285a]";
+      case "Cancelled By Customer":
+        return "text-[#D2665A]";
       default:
         return "";
     }
@@ -71,8 +75,10 @@ export const getOrderStatusLabel = (status: string, returnTextColor = false) => 
         return "badge badge-ready-for-delivery";
       case "Delivered":
         return "badge badge-delivered";
-      case "Cancelled":
+      case "Cancelled By Admin":
         return "badge badge-danger";
+      case "Cancelled By Customer":
+        return "badge badge-danger-secondary";
       default:
         return "";
     }

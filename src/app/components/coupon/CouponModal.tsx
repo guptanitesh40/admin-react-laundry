@@ -155,7 +155,7 @@ const CouponModal: React.FC = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           <div className="flex flex-col">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Code
@@ -188,7 +188,7 @@ const CouponModal: React.FC = () => {
             <p className="text-red-500 text-sm">{errors.title || "\u00A0"}</p>
           </div>
 
-          <div className="flex flex-col col-span-2 problem-001">
+          <div className="flex flex-col md:col-span-2">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Description
             </label>
@@ -347,28 +347,28 @@ const CouponModal: React.FC = () => {
               {errors.coupon_type || "\u00A0"}
             </p>
           </div>
+        </div>
 
-          <div className="flex items-center col-span-2 space-x-4">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isLoading}
-            >
-              {isLoading
-                ? "Saving..."
-                : coupon_id
-                ? "Update Coupon"
-                : "Add Coupon"}
-            </button>
-            <button
-              type="submit"
-              className="btn  btn-light py-5 px-10 "
-              disabled={isLoading}
-              onClick={handelCancel}
-            >
-              Cancel
-            </button>
-          </div>
+        <div className="flex justify-start mt-6 gap-4">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isLoading}
+          >
+            {isLoading
+              ? "Saving..."
+              : coupon_id
+              ? "Update Coupon"
+              : "Add Coupon"}
+          </button>
+          <button
+            type="submit"
+            className="btn  btn-light py-5 px-10 "
+            disabled={isLoading}
+            onClick={handelCancel}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>

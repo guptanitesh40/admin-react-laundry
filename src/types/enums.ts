@@ -21,7 +21,8 @@ export enum OrderStatus {
   "Order Completed" = 9,
   "Ready for delivery" = 10,
   "Delivered" = 11,
-  "Cancelled" = 12,
+  "Cancelled By Admin" = 12,
+  "Cancelled By Customer" = 13,
 }
 
 export enum WorkshopOrderStatus {
@@ -45,7 +46,7 @@ export enum Role {
   "Super Admin" = 1,
   "Sub Admin" = 2,
   "Branch Manager" = 3,
-  "Delivery Boy" = 4,
+  "Delivery and Pickup" = 4,
   "Customer" = 5,
   "Workshop Manager" = 6,
   "Vendor" = 7,

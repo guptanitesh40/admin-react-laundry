@@ -10,9 +10,6 @@ const GeneralSettings: React.FC = ({}) => {
   const { addSetting, loading: adding } = useAddSettings();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refetch, setRefetch] = useState<boolean>(false);
-  const [settings, setSettings] = useState<
-    { setting_key: string; setting_value: string }[]
-  >([]);
 
   const generalSettings = settingsData?.data;
 
@@ -33,17 +30,6 @@ const GeneralSettings: React.FC = ({}) => {
 
   useEffect(() => {
     if (generalSettings) {
-      const fetchedSettings = Object.keys(generalSettings)
-        .map((key) => ({
-          setting_key: key,
-          setting_value: generalSettings[key] || "",
-        }))
-        .filter(
-          (setting) => Object.keys(formData).includes(setting.setting_key)
-        );
-
-      setSettings(fetchedSettings);
-
       setFormData({
         estimate_delivery_express_day:
           generalSettings.estimate_delivery_express_day || "",
@@ -67,7 +53,7 @@ const GeneralSettings: React.FC = ({}) => {
       await settingSchema.validate(formData, { abortEarly: false });
 
       const isDataChanged = () => {
-        return Object.keys(formData).some(        
+        return Object.keys(formData).some(
           (key) => formData[key] !== generalSettings[key]
         );
       };
@@ -75,6 +61,11 @@ const GeneralSettings: React.FC = ({}) => {
       if (!isDataChanged()) {
         return;
       }
+
+      const settings = Object.keys(formData).map((key) => ({
+        setting_key: key,
+        setting_value: formData[key],
+      }));
 
       const success = await addSetting(settings);
       if (success) {
@@ -95,9 +86,6 @@ const GeneralSettings: React.FC = ({}) => {
   };
 
   const handleItemChange = (key: string, value: string) => {
-    setSettings((prev) => prev.map((setting) => setting.setting_key === key ? { ...setting, setting_value: value } : setting)
-    );
-
     setFormData({
       ...formData,
       [key]: value,
@@ -111,184 +99,186 @@ const GeneralSettings: React.FC = ({}) => {
           <div className="card-header" id="basic_settings">
             <h3 className="card-title">General Settings</h3>
           </div>
-          <div className="card-body grid gap-1">
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Estimate Pickup Normal Hour (In Hour)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.estimate_pickup_normal_hour || ""}
-                    onChange={(e) =>
-                      handleItemChange(
-                        "estimate_pickup_normal_hour",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.estimate_pickup_normal_hour || "\u00A0"}
-                  </p>
+          <form onSubmit={handleSaveSettings}>
+            <div className="card-body grid gap-1">
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Estimate Pickup Normal Hour (In Hour)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.estimate_pickup_normal_hour || ""}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "estimate_pickup_normal_hour",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.estimate_pickup_normal_hour || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Estimate Pickup Express Hour (In Hour)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.estimate_pickup_express_hour || ""}
-                    onChange={(e) =>
-                      handleItemChange(
-                        "estimate_pickup_express_hour",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.estimate_pickup_express_hour || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Estimate Pickup Express Hour (In Hour)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.estimate_pickup_express_hour || ""}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "estimate_pickup_express_hour",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.estimate_pickup_express_hour || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  GST Percentage (%)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.gst_percentage}
-                    onChange={(e) =>
-                      handleItemChange("gst_percentage", e.target.value)
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.gst_percentage || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    GST Percentage (%)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.gst_percentage}
+                      onChange={(e) =>
+                        handleItemChange("gst_percentage", e.target.value)
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.gst_percentage || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Estimate Delivery Normal Day (Day)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.estimate_delivery_normal_day}
-                    onChange={(e) =>
-                      handleItemChange(
-                        "estimate_delivery_normal_day",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.estimate_delivery_normal_day || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Estimate Delivery Normal Day (Day)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.estimate_delivery_normal_day}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "estimate_delivery_normal_day",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.estimate_delivery_normal_day || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Estimate Delivery Express Day (Day)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.estimate_delivery_express_day}
-                    onChange={(e) =>
-                      handleItemChange(
-                        "estimate_delivery_express_day",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.estimate_delivery_express_day || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Estimate Delivery Express Day (Day)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.estimate_delivery_express_day}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "estimate_delivery_express_day",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.estimate_delivery_express_day || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Shipping Charge (Rs)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.shipping_charge}
-                    onChange={(e) =>
-                      handleItemChange("shipping_charge", e.target.value)
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.shipping_charge || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Shipping Charge (Rs)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.shipping_charge}
+                      onChange={(e) =>
+                        handleItemChange("shipping_charge", e.target.value)
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.shipping_charge || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full">
-              <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                <label className="form-label flex items-center gap-1 max-w-56">
-                  Express Delivery Charge (Rs)
-                </label>
-                <div className="flex flex-col w-full">
-                  <input
-                    className="input"
-                    type="text"
-                    value={formData.express_delivery_charge}
-                    onChange={(e) =>
-                      handleItemChange(
-                        "express_delivery_charge",
-                        e.target.value
-                      )
-                    }
-                  />
-                  <p className="text-red-500 text-sm">
-                    {errors.express_delivery_charge || "\u00A0"}
-                  </p>
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Express Delivery Charge (Rs)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.express_delivery_charge}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "express_delivery_charge",
+                          e.target.value
+                        )
+                      }
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.express_delivery_charge || "\u00A0"}
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div className="flex relative justify-end pt-2.5">
+                <button
+                  className="btn btn-primary"
+                  type="submit"
+                  disabled={adding}
+                >
+                  {adding ? (
+                    <>
+                      Saving... <LoadingSpinner />
+                    </>
+                  ) : (
+                    <>Save Changes </>
+                  )}
+                </button>
+              </div>
             </div>
-            <div className="flex relative justify-end pt-2.5">
-              <button
-                className="btn btn-primary"
-                onClick={handleSaveSettings}
-                disabled={adding}
-              >
-                {adding ? (
-                  <>
-                    Saving... <LoadingSpinner />
-                  </>
-                ) : (
-                  <>Save Changes </>
-                )}
-              </button>
-            </div>
-          </div>
+          </form>
         </div>
       </div>
     </>
