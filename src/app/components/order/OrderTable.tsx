@@ -287,7 +287,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
 
                   <th className="min-w-[280px]">Order Status</th>
 
-                  <th className="min-w-[280px]">Next Status</th>                  
+                  <th className="min-w-[280px]">Next Status</th>
 
                   <th className="min-w-[140px]">
                     <span
@@ -321,6 +321,54 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "booking_date"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("booking_date")}
+                    >
+                      <span className="sort-label">Booking Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "estimated_pickup_time"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("estimated_pickup_time")}
+                    >
+                      <span className="sort-label">Estimated Pickup Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "delivery_date"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("delivery_date")}
+                    >
+                      <span className="sort-label">Delivery Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
                   <th className="min-w-[130px]">
                     <span
                       className={`sort ${
@@ -349,88 +397,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       onClick={() => handleSort("coupon_discount")}
                     >
                       <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "estimated_pickup_time"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("estimated_pickup_time")}
-                    >
-                      <span className="sort-label">Estimated pickup time</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "shipping_charges"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("shipping_charges")}
-                    >
-                      <span className="sort-label">Shipping charge</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[180px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "express_delivery_charges"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("express_delivery_charges")}
-                    >
-                      <span className="sort-label">
-                        Express delivery charges
-                      </span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[100px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "gst"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("gst")}
-                    >
-                      <span className="sort-label">GST</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "kasar_amount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("kasar_amount")}
-                    >
-                      <span className="sort-label">Kasar amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -483,22 +449,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[155px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "payment_status"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("payment_status")}
-                    >
-                      <span className="sort-label">Payment Status</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[160px]">Receipt</th>
 
                   <th className="w-[170px]">Actions</th>
@@ -509,15 +459,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
               ) : orders.length > 0 ? (
                 <tbody>
                   {orders.map((order) => {
-                    const paymentStatusLabel =
-                      PaymentStatus[
-                        order.payment_status as unknown as keyof typeof PaymentStatus
-                      ];
-
-                    const paymentStatusClass = getPaymentStatusLabel(
-                      order.payment_status
-                    );
-
                     const adminStatusClass = getOrderStatusLabel(
                       order.order_status_details.admin_label
                     );
@@ -560,19 +501,28 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         <td>{order.user.mobile_number}</td>
 
                         <td>{order.address_details}</td>
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
                         <td>
-                          <div className="flex flex-col">
-                            {dayjs(order.estimated_pickup_time).format(
-                              "DD-MM-YYYY"
-                            )}
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(order.created_at).format("DD-MM-YYYY")}
+                            <br />
+                            {dayjs(order.created_at).format("hh:mm:ss A")}
                           </div>
                         </td>
-                        <td>{order.shipping_charges}</td>
-                        <td>{order.express_delivery_charges}</td>
-                        <td>{order.gst}</td>
-                        <td>{order.kasar_amount}</td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(order.estimated_pickup_time).format("DD-MM-YYYY")}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(order.estimated_delivery_time).format(
+                              "DD-MM-YYYY"
+                            )}
+                            <br />
+                          </div>
+                        </td>
+                        <td>{order.coupon_code}</td>
+                        <td>{order.coupon_discount}</td>
                         <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>
@@ -581,13 +531,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                               order.payment_type as keyof typeof PaymentType
                             ]
                           }
-                        </td>
-                        <td>
-                          <span
-                            className={`${paymentStatusClass} badge-outline rounded-[30px]`}
-                          >
-                            {paymentStatusLabel}
-                          </span>
                         </td>
                         <td>
                           <button

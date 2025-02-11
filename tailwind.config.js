@@ -371,9 +371,11 @@ export default {
 				  12.5: '3.125rem', 	// 40px
 			  },
 			  screens: {
-				  ban: {max:'500px'},
 				  zx: {max:'400px'},
-				  bn: {max:'525px'},
+				  mobile: {max:'525px'},
+				  lgmobile: {max:'500px'},
+				  xmobile: {max: '470px'},
+				  smmobile: {max: '640px'},
 				  cmd: {max:'715px'},
 				  mdscreen: '635px',
 				  desktop:'525px',

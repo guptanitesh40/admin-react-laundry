@@ -343,30 +343,33 @@ const OrderDetails: React.FC = () => {
             <h1 className="text-xl font-semibold text-gray-900">
               Order Details - #{order_id}
             </h1>
-            <div className="flex gap-2 bn:flex-wrap">
+            <div className="flex gap-2 mobile:flex-wrap">
+              {order?.order_status === 11 && (
+                <button
+                  className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
+                  onClick={handleGenerateInvoice}
+                  disabled={generating}
+                >
+                  <RiFilePaper2Fill size={20} color="gray" />
+                  {generating ? (
+                    <>
+                      View Invoice <LoadingSpinner />
+                    </>
+                  ) : (
+                    "View Invoice"
+                  )}
+                </button>
+              )}
+
               <button
-                className="flex items-center btn btn-light"
-                onClick={handleGenerateInvoice}
-                disabled={generating}
-              >
-                <RiFilePaper2Fill size={20} color="gray" />
-                {generating ? (
-                  <>
-                    View Invoice <LoadingSpinner />
-                  </>
-                ) : (
-                  "View Invoice"
-                )}
-              </button>
-              <button
-                className="flex items-center font-medium btn btn-primary"
+                className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
                 onClick={handleEditOrder}
               >
                 <i className="ki-filled ki-pencil mr-2"></i>Edit Order
               </button>
               {order?.order_status < 8 && order?.refund_status !== 1 && (
                 <button
-                  className="flex items-center font-semibold btn btn-danger"
+                  className="flex items-center font-semibold btn-danger sm:btn smmobile:btn-sm smmobile:btn"
                   onClick={handleOrderCancel}
                 >
                   <MdCancel size={20} />
@@ -375,7 +378,7 @@ const OrderDetails: React.FC = () => {
               )}
               {order.payment_status !== 1 && order.refund_status === 3 && (
                 <button
-                  className="flex items-center font-semibold btn btn-success"
+                  className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
                   onClick={handleOrderRefund}
                 >
                   <HiReceiptRefund size={20} />
@@ -386,8 +389,8 @@ const OrderDetails: React.FC = () => {
           </div>
 
           {order.refund_status === 3 ? (
-            <div className="flex border border-gray-200 rounded-xl bg-gray-50 items-center justify-between bg-gray-00 p-4 shadow-sm bn:flex bn:flex-col gap-5">
-              <div className="flex items-center bn:flex-row desktop:flex-col gap-2">
+            <div className="flex border border-gray-200 rounded-xl bg-gray-50 items-center justify-between bg-gray-00 p-4 shadow-sm mobile:flex mobile:flex-col gap-5">
+              <div className="flex items-center mobile:flex-col desktop:flex-col gap-2">
                 <span className="text-sm font-medium text-gray-700">
                   Current Status:
                 </span>
@@ -405,7 +408,7 @@ const OrderDetails: React.FC = () => {
               </div>
 
               {order.order_status_details.next_step !== null && (
-                <div className="flex items-center bn:flex-row desktop:flex-col gap-2">
+                <div className="flex items-center mobile:flex-col desktop:flex-col gap-2">
                   <span className="text-sm font-medium text-gray-700">
                     Next Step:
                   </span>
@@ -486,7 +489,7 @@ const OrderDetails: React.FC = () => {
               </div>
               <div className="flex flex-end">
                 <button
-                  className="btn btn-secondary btn-lg flex gap-2 mr-4 text-gray-700 text-sm font-semibold"
+                  className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
                   onClick={handlePrintLabel}
                 >
                   <RiFilePaperLine size={20} color="gray" />{" "}
@@ -504,15 +507,15 @@ const OrderDetails: React.FC = () => {
                         key={item.item_id}
                         className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
                       >
-                        <div className="flex items-center flex-wrap gap-2 justify-between">
-                          <div className="flex items-center gap-3.5">
+                        <div className="flex items-center flex-wrap gap-x-10 gap-y-2 justify-between xmobile:flex-col">
+                          <div className="flex items-center gap-3.5 xmobile:flex-col">
                             <img
                               alt={item.product.name}
                               className="w-16 h-16 shrink-0 object-cover rounded"
                               src={item.product.image}
                             />
-                            <div className="flex flex-col">
-                              <span className="text-sm font-semibold text-gray-900 mb-px">
+                            <div className="flex flex-col ">
+                              <span className="text-sm font-semibold text-gray-900 mb-px xmobile:ml-8">
                                 {item.product.name} ({item.quantity})
                               </span>
                               <span className="text-2sm font-medium text-gray-600">
@@ -521,9 +524,10 @@ const OrderDetails: React.FC = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-5">
-                            <span className="badge  badge-sm flex badge-success badge-outline text-xs">
-                              Service: {item.service.name}
-                            </span>
+                            <div className="badge badge-sm flex gap-1 badge-success badge-outline text-xs">
+                              <span className="mobile:hidden">Service : </span>
+                              <span>{item.service.name}</span>
+                            </div>
                           </div>
                         </div>
                         {item.description && (
@@ -754,53 +758,55 @@ const OrderDetails: React.FC = () => {
           </div>
 
           <div className="col-span-2 lg:col-span-1 flex">
-            <div className="card grow">
+            <div className="card min-w-full">
               <div className="card-header">
                 <h3 className="card-title">Payment Information</h3>
               </div>
               <div className="card-body pt-4 pb-3">
-                <table className="table-auto">
-                  <tbody>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Payment Type:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {PaymentType[order.payment_type]}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Payment Status:
-                      </td>
-                      <td
-                        className={`badge-outline ${getPaymentStatusLabel(
-                          order.payment_status
-                        )}`}
-                      >
-                        {paymentStatusLabel}
-                      </td>
-                    </tr>
-                    {order?.pending_due_amount && (
+                <div className="scrollable-x-auto">
+                  <table className="table-auto">
+                    <tbody>
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                          Pending amount:
+                          Payment Type:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.pending_due_amount}
+                          {PaymentType[order.payment_type]}
                         </td>
                       </tr>
-                    )}
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Transaction ID:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {order.transaction_id || "N/A"}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Payment Status:
+                        </td>
+                        <td
+                          className={`badge-outline ${getPaymentStatusLabel(
+                            order.payment_status
+                          )}`}
+                        >
+                          {paymentStatusLabel}
+                        </td>
+                      </tr>
+                      {order?.pending_due_amount && (
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Pending amount:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.pending_due_amount}
+                          </td>
+                        </tr>
+                      )}
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Transaction ID:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.transaction_id || "N/A"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

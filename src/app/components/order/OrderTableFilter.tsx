@@ -83,8 +83,8 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
 
   return (
     <>
-      <div className="card-header flex flex-col items-start gap-4">
-        <div className="grid grid-cols-3 gap-10 md:grid-cols-1 sm:grid-cols-1">
+      <div className="p-4">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
           <MultiSelect
             options={customerOptions}
             displayValue="label"
@@ -109,7 +109,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             setSearch={setCustomerSearch}
-            className="min-w-[300px]"
+            className="w-full"
           />
 
           <MultiSelect
@@ -136,6 +136,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             isCustomLabel={true}
+            className="w-full"
           />
 
           <MultiSelect
@@ -164,6 +165,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
                 branchFilter: selectedValues,
               });
             }}
+            className="w-full"
           />
 
           <MultiSelect
@@ -189,6 +191,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
                 deliveryBoyFilter: selectedValues,
               });
             }}
+            className="w-full"
           />
 
           <MultiSelect
@@ -214,6 +217,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
                 pickupBoyFilter: selectedValues,
               });
             }}
+            className="w-full"
           />
 
           <MultiSelect
@@ -240,6 +244,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             isSearchInput={false}
+            className="w-full"
           />
 
           <select

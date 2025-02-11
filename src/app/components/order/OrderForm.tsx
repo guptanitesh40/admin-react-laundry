@@ -190,10 +190,10 @@ const OrderForm: React.FC = () => {
   }, [transactionId]);
 
   useEffect(() => {
-      setFormData((prev) => ({
-        ...prev,
-        payment_status: formData.payment_type === 1 ? 1 : null,
-      }));
+    setFormData((prev) => ({
+      ...prev,
+      payment_status: formData.payment_type === 1 ? 1 : null,
+    }));
   }, [formData.payment_type]);
 
   useEffect(() => {
@@ -580,7 +580,7 @@ const OrderForm: React.FC = () => {
           )}
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-6 mt-4">
             <div className="relative col-span-1">
               <span className="flex justify-between items-center">
                 <label
@@ -674,13 +674,13 @@ const OrderForm: React.FC = () => {
 
             <div className="col-span-1">
               <label
-                htmlFor="payment_status"
+                htmlFor="branch"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Branch
               </label>
               <select
-                id="company_id"
+                id="branch"
                 className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                 value={formData.branch_id || ""}
                 onChange={(e) =>
@@ -922,27 +922,6 @@ const OrderForm: React.FC = () => {
                         />
                         <p className=" text-red-500 text-sm">{"\u00A0"}</p>
                       </div>
-
-                      <div>
-                        <button
-                          type="button"
-                          className={`p-2 rounded-full mt-8 ${
-                            formData.items.length > 1
-                              ? "bg-red-100 hover:bg-red-200"
-                              : "bg-gray-200 cursor-not-allowed"
-                          }`}
-                          onClick={() => handleRemoveItem(index)}
-                          disabled={formData.items.length === 1}
-                        >
-                          <FaTrash
-                            className={`${
-                              formData.items.length > 1
-                                ? "text-red-500"
-                                : "text-gray-400"
-                            }`}
-                          />
-                        </button>
-                      </div>
                     </div>
                   </div>
 
@@ -972,6 +951,29 @@ const OrderForm: React.FC = () => {
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    <div className="flex flex-end justify-end relative">
+                      <div>
+                        <button
+                          type="button"
+                          className={`p-2 rounded-full mt-1 ${
+                            formData.items.length > 1
+                              ? "bg-red-100 hover:bg-red-200"
+                              : "bg-gray-200 cursor-not-allowed"
+                          }`}
+                          onClick={() => handleRemoveItem(index)}
+                          disabled={formData.items.length === 1}
+                        >
+                          <FaTrash
+                            className={`${
+                              formData.items.length > 1
+                                ? "text-red-500"
+                                : "text-gray-400"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1194,9 +1196,7 @@ const OrderForm: React.FC = () => {
                 <option value="" disabled>
                   Select Payment Status
                 </option>
-                <option value={1}>
-                  Pending
-                </option>
+                <option value={1}>Pending</option>
                 <option value={2}>Received</option>
                 <option value={3}>Partial Received</option>
               </select>
@@ -1224,7 +1224,7 @@ const OrderForm: React.FC = () => {
             {!order_id && (
               <div className="flex flex-col">
                 <label
-                  htmlFor="payment_method"
+                  htmlFor="item_status"
                   className="block text-gray-700 text-sm font-bold mb-2"
                 >
                   Item status

@@ -6,12 +6,15 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import AreaChart from "react-apexcharts";
 import { FiShoppingCart } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const OrderReport = () => {
   const [formData, setFormData] = useState({
     start_time: "",
     end_time: "",
   });
+
+  const navigate = useNavigate();
 
   const { orderData, fetchOrdersData } = useGetOrdersData();
 
@@ -88,9 +91,6 @@ const OrderReport = () => {
           bottom: 60,
           left: 0,
         },
-        marker: {
-          strokeColor: "#1976d2",
-        },
       },
       yaxis: {
         show: false,
@@ -114,6 +114,30 @@ const OrderReport = () => {
           show: false,
         },
       },
+      markers:
+        orderData?.length === 1
+          ? {
+              size: 2,
+              colors: "#1976d2",
+              strokeColors: "#1976d2",
+              strokeWidth: 4,
+              strokeOpacity: 1,
+              strokeDashArray: 0,
+              fillOpacity: 1,
+              shape: "circle",
+              radius: 2,
+              offsetX: 0,
+              offsetY: 0,
+              showNullDataPoints: true,
+              hover: {
+                size: 4,
+                sizeOffset: 0,
+              },
+            }
+          : {
+              size: 4,
+              strokeColor: "#1976d2",
+            },
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -122,9 +146,16 @@ const OrderReport = () => {
     },
   };
 
+  const handleNavigateToOrderList = () => {
+    navigate("/orders");
+  };
+
   return (
     <>
-      <div className="card pb-2.5 max-h-[300px] ">
+      <div
+        className="card pb-2.5 max-h-[300px] cursor-pointer"
+        onClick={handleNavigateToOrderList}
+      >
         <div className="card-body card-fit grid gap-1">
           <div className="flex justify-between ml-8">
             <div>

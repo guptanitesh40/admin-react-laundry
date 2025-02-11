@@ -69,9 +69,6 @@ const DeliveryPendingReport = () => {
           bottom: 60,
           left: 0,
         },
-        marker: {
-          strokeColor: "#1976d2",
-        },
       },
       yaxis: {
         show: false,
@@ -95,6 +92,29 @@ const DeliveryPendingReport = () => {
           show: false,
         },
       },
+      markers:
+        deliveryPendingData?.length === 1
+          ? {
+              size: 2,
+              colors: "#1976d2",
+              strokeColors: "#1976d2",
+              strokeWidth: 4,
+              strokeOpacity: 1,
+              strokeDashArray: 0,
+              fillOpacity: 1,
+              shape: "circle",
+              radius: 2,
+              offsetX: 0,
+              offsetY: 0,
+              showNullDataPoints: true,
+              hover: {
+                size: 4,
+                sizeOffset: 0,
+              },
+            }
+          : {
+              strokeColor: "#1976d2",
+            },
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -105,32 +125,30 @@ const DeliveryPendingReport = () => {
 
   return (
     <>
-        <div className="card pb-2.5 max-h-[300px]">
-          <div className="card-body card-fit grid gap-1">
-            <div className="flex justify-between ml-8">
-              <div>
-                <h3 className="font-semibold text-[#64748b]">
-                  Delivery Pending
-                </h3>
-                <span className="text-[#384551] font-medium">{orderCount}</span>
-              </div>
-              <div className="mr-10 mt-2">
-                <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
-              </div>
+      <div className="card pb-2.5 max-h-[300px]">
+        <div className="card-body card-fit grid gap-1">
+          <div className="flex justify-between ml-8">
+            <div>
+              <h3 className="font-semibold text-[#64748b]">Delivery Pending</h3>
+              <span className="text-[#384551] font-medium">{orderCount}</span>
             </div>
+            <div className="mr-10 mt-2">
+              <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
+            </div>
+          </div>
 
-            <div className="h-[200px] w-100">
-              <div className="relative h-full w-full">
-                <AreaChart
-                  options={data.options}
-                  series={data.series}
-                  type={data.options.chart.type}
-                  height={240}
-                />
-              </div>
+          <div className="h-[200px] w-100">
+            <div className="relative h-full w-full">
+              <AreaChart
+                options={data.options}
+                series={data.series}
+                type={data.options.chart.type}
+                height={240}
+              />
             </div>
           </div>
         </div>
+      </div>
     </>
   );
 };
