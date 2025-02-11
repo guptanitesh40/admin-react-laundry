@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useGetPaymentTransactionData } from "../../hooks";
 import AreaChart from "react-apexcharts";
+import { useNavigate } from "react-router-dom";
 
 const PaymentTransactionReport: React.FC = () => {
   const { paymentTransactionData, fetchPaymentTransactionData } =
     useGetPaymentTransactionData();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPaymentTransactionData();
@@ -138,8 +141,12 @@ const PaymentTransactionReport: React.FC = () => {
     },
   };
 
+  const handleNavigateToPaymentList = () => {
+    navigate('/payments');
+  }
+
   return (
-    <div className="col-span-1">
+    <div className="col-span-1 cursor-pointer" onClick={handleNavigateToPaymentList}>
       <div className="card w-full">
         <div className="card-header border-none flex flex-col mt-2 items-start">
           <h3 className="card-title">Payment Report</h3>
