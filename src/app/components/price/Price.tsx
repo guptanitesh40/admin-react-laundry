@@ -24,7 +24,7 @@ const Price: React.FC = () => {
               {isLoading ? (
                 <>
                   {" "}
-                  <i className="ki-filled ki-plus-squared"></i> Saving.. <LoadingSpinner />{" "}
+                  <i className="ki-filled ki-plus-squared"></i> Saving <LoadingSpinner />{" "}
                 </>
               ) : (
                 <>

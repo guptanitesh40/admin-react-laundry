@@ -68,9 +68,6 @@ const DeliveryCompletedReport: React.FC = () => {
           bottom: 60,
           left: 0,
         },
-        marker: {
-          strokeColor: "#1976d2",
-        },
       },
       xaxis: {
         type: "category",
@@ -94,6 +91,29 @@ const DeliveryCompletedReport: React.FC = () => {
       yaxis: {
         show: false,
       },
+      markers:
+        deliveryCompletedData?.length === 1
+          ? {
+              size: 2,
+              colors: "#1976d2",
+              strokeColors: "#1976d2",
+              strokeWidth: 4,
+              strokeOpacity: 1,
+              strokeDashArray: 0,
+              fillOpacity: 1,
+              shape: "circle",
+              radius: 2,
+              offsetX: 0,
+              offsetY: 0,
+              showNullDataPoints: true,
+              hover: {
+                size: 4,
+                sizeOffset: 0,
+              },
+            }
+          : {
+              strokeColor: "#1976d2",
+            },
       tooltip: {
         x: {
           format: "MMM yyyy",

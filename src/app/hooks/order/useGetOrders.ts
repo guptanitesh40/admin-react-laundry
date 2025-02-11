@@ -4,6 +4,7 @@ import toast, { Toast } from "react-hot-toast";
 const GET_ORDERS_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders`;
 
 interface Order {
+  created_at: any;
   branch: any;
   address_details: string | null;
   gst: number;

@@ -196,21 +196,39 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[250px]">
+                  <th className="min-w-[200px]">
                     <span
                       className={`sort ${
-                        sortColumn === "email"
+                        sortColumn === "branch_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("email")}
+                      onClick={() => handleSort("branch_id")}
                     >
-                      <span className="sort-label">Email</span>
+                      <span className="sort-label">Branch</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "workshop_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("workshop_name")}
+                    >
+                      <span className="sort-label">Workshop name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[200px]">Workshop Manager</th>
 
                   <th className="min-w-[140px]">
                     <span
@@ -332,38 +350,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[100px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "gst"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("gst")}
-                    >
-                      <span className="sort-label">GST</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "kasar_amount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("kasar_amount")}
-                    >
-                      <span className="sort-label">Kasar amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[130px]">
                     <span
                       className={`sort ${
@@ -398,43 +384,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                   <th className="min-w-[165px]">Payment type</th>
 
-                  <th className="min-w-[175px]">Payment status</th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "branch_id"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("branch_id")}
-                    >
-                      <span className="sort-label">Branch</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "workshop_name"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("workshop_name")}
-                    >
-                      <span className="sort-label">Workshop name</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[200px]">Workshop Manager</th>
-
-                  <th className="min-w-[50px]">Action</th>
+                  <th className="min-w-[50px]">Action</th>                                    
                 </tr>
               </thead>
               {loading ? (
@@ -442,21 +392,22 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
                   {workshopOrders.map((order) => {
-                    const paymentStatusLabel =
-                      PaymentStatus[
-                        order.payment_status as unknown as keyof typeof PaymentStatus
-                      ];
-                    const paymentStatusClass = getPaymentStatusLabel(
-                      order.payment_status
-                    );
-
                     return (
                       <tr key={order.order_id}>
                         <td>#{order.order_id}</td>
                         <td>
                           {order.user.first_name} {order.user.last_name}
                         </td>
-                        <td>{order.user.email}</td>
+                        <td>{order.branch.branch_name}</td>
+                        <td>{order.workshop.workshop_name}</td>
+                        <td>
+                          {order.workshop.workshopManagerMappings
+                            .map(
+                              (mapping: any) =>
+                                `${mapping.user.first_name} ${mapping.user.last_name}`
+                            )
+                            .join(", ")}
+                        </td>
                         <td>{order.user.mobile_number}</td>
                         <td>{order.address_details}</td>
                         <td>{order.coupon_code}</td>
@@ -482,8 +433,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         </td>
                         <td>{order.shipping_charges}</td>
                         <td>{order.express_delivery_charges}</td>
-                        <td>{order.gst}</td>
-                        <td>{order.kasar_amount}</td>
                         <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>
@@ -492,23 +441,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                               order.payment_type as keyof typeof PaymentType
                             ]
                           }
-                        </td>
-                        <td>
-                          <span
-                            className={`${paymentStatusClass} badge-outline rounded-[30px]`}
-                          >
-                            {paymentStatusLabel}
-                          </span>
-                        </td>
-                        <td>{order.branch.branch_name}</td>
-                        <td>{order.workshop.workshop_name}</td>
-                        <td>
-                          {order.workshop.workshopManagerMappings
-                            .map(
-                              (mapping: any) =>
-                                `${mapping.user.first_name} ${mapping.user.last_name}`
-                            )
-                            .join(", ")}
                         </td>
 
                         <td>

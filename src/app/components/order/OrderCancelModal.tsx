@@ -72,13 +72,13 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
   if (!orderCancelModalOpen) return;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-5">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[450px] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
