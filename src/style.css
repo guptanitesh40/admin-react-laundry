@@ -9794,3 +9794,11 @@ label.rating-label {
   padding-left:0px;
 }
 
+.no-padding-left {
+  padding-left: 0px !important;
+}
+
+.semibold {
+  font-size: 14px !important; 
+  font-weight: 600 !important; 
+}

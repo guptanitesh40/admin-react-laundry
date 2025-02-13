@@ -1,11 +1,9 @@
-import {
-  useDeleteUser,
-  useGetBranches,
-  useGetCompanies,
-  useGetUsers,
-} from "../../hooks";
-import TableShimmer from "../shimmer/TableShimmer";
 import { useEffect, useState } from "react";
+import { searchSchema } from "../../validation/searchSchema";
+import * as Yup from "yup";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import TableShimmer from "../shimmer/TableShimmer";
+import { Gender } from "../../../types/enums";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -13,59 +11,45 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Gender, Role } from "../../../types/enums";
+import { useDeleteUser, useGetUsers } from "../../hooks";
 import Swal from "sweetalert2";
-import * as Yup from "yup";
-import { searchSchema } from "../../validation/searchSchema";
-import { getRoleClass } from "../../utils/roleClasses";
+import MultiSelect from "../MultiSelect/MultiSelect";
 
-interface UserTableProps {
-  filters: {
-    genderFilter: number[];
-    roleFilter: number[];
-    companyFilter: number[];
-    branchFilter: number[];
-  };
-}
-
-const UserTable: React.FC<UserTableProps> = ({ filters }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const CustomerTable: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [genderFilter, setGenderFilter] = useState<number[]>([]);
+
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
-  const perPageForList = 1000;
-  const pageNumberForList = 1;
 
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const navigate = useNavigate();
 
-  const { users, fetchUsers, count, loading } = useGetUsers(
+  let role = 5;
+
+  const { users, loading, count, fetchUsers } = useGetUsers(
     currentPage,
     perPage,
     search,
     sortColumn,
     sortOrder,
-    filters.genderFilter,
-    filters.roleFilter,
-    filters.companyFilter,
-    filters.branchFilter
+    genderFilter,
+    role
   );
   const { deleteUser } = useDeleteUser();
-  const { companies } = useGetCompanies(pageNumberForList, perPageForList);
-  const { branches } = useGetBranches(pageNumberForList, perPageForList);
 
-  const navigate = useNavigate();
+  const genderOptions = Object.entries(Gender)
+    .filter(([key, value]) => typeof value === "number")
+    .map(([label, value]) => ({ label, value: value as number }));
 
   const totalPages = Math.ceil(count / perPage);
-
-  const handleUpdateUser = (user_id: number) => {
-    navigate(`/user/edit/${user_id}`);
-  };
 
   useEffect(() => {
     if (pageParams) {
@@ -100,7 +84,41 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     }
   };
 
-  const handleDeleteUser = async (user_id: number) => {
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
+    } else {
+      setSortColumn(column);
+      setSortOrder("ASC");
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setSearchParams({
+        page: newPage.toString(),
+        perPage: perPage.toString(),
+      });
+    }
+  };
+
+  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPerPage = Number(e.target.value);
+    setPerPage(newPerPage);
+    setCurrentPage(1);
+    setSearchParams({ page: "1", perPage: newPerPage.toString() });
+  };
+
+  const handleViewCustomer = async (user_id: number) => {
+    navigate(`/customer/${user_id}`);
+  };
+
+  const handleUpdateCustomer = (user_id: number) => {
+    navigate(`/customer/edit/${user_id}`);
+  };
+
+  const handleDeleteCustomer = async (user_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
@@ -139,35 +157,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     }
   };
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
-    } else {
-      setSortColumn(column);
-      setSortOrder("ASC");
-    }
-  };
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-      setSearchParams({
-        page: newPage.toString(),
-        perPage: perPage.toString(),
-      });
-    }
-  };
-
-  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPerPage = Number(e.target.value);
-    setPerPage(newPerPage);
-    setCurrentPage(1);
-    setSearchParams({ page: "1", perPage: newPerPage.toString() });
-  };
-
-  const handleViewUser = async (user_id: number) => {
-    navigate(`/user/${user_id}`);
-  };
+  if (!users) return;
 
   return (
     <>
@@ -187,8 +177,29 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
           <span>per page</span>
         </div>
 
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-col items-start">
+        <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
+          <div className="flex flex-wrap gap-2.5">
+            <MultiSelect
+              options={genderOptions}
+              displayValue="label"
+              placeholder="Select Gender"
+              selectedValues={genderFilter}
+              onSelect={(selectedList: any) =>
+                setGenderFilter(                  
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setGenderFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="min-w-[250px]"
+              isSearchInput={false}
+            />
+          </div>
+
+          <div className="flex">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
@@ -256,8 +267,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[200px]">Role</th>
-
                   <th className="min-w-[250px]">
                     <span
                       className={`sort ${
@@ -308,13 +317,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[250px]">
-                    <span className="sort-label">Companies</span>
-                  </th>
-
-                  <th className="min-w-[250px]">
-                    <span className="sort-label">Branches</span>
-                  </th>
                   <th className="min-w-[150px]">Actions</th>
                 </tr>
               </thead>
@@ -322,101 +324,73 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                 <TableShimmer />
               ) : users.length > 0 ? (
                 <tbody>
-                  {users.map((user) => {
-
+                  {users?.map((customer: any) => {
                     return (
-                      <tr key={user.user_id}>
+                      <tr key={customer.user_id}>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {user.user_id}
+                            {customer.user_id}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-1.5">
-                            {user.first_name} {user.last_name}
+                            {customer.first_name} {customer.last_name}
                           </div>
                         </td>
-                        <td>
-                          <span
-                            className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                              user.role_id
-                            )}`}
-                          >
-                            {Role[user.role_id as unknown as keyof typeof Role]}
-                          </span>
-                        </td>
-                        <td>{user.email}</td>
+                        <td>{customer.email}</td>
                         <td>
                           <div className="flex items-center gap-1.5">
-                            {user.mobile_number}
+                            {customer.mobile_number}
                           </div>
                         </td>
                         <td>
                           {
                             Gender[
-                              user.gender as unknown as keyof typeof Gender
+                              customer.gender as unknown as keyof typeof Gender
                             ]
                           }
                         </td>
-                        <td>
-                          {user.role_id === 5 && (user.total_due_amount)}
-                        </td>
-                        <td>
-                          {companies
-                            .filter((company) =>
-                              (user.company_ids as number[])?.includes(
-                                company.company_id
-                              )
-                            )
-                            .map((company) => company.company_name)
-                            .join(", ")}
-                        </td>
-                        <td>
-                          {branches
-                            .filter((branch) =>
-                              (user.branch_ids as number[])?.includes(
-                                branch.branch_id
-                              )
-                            )
-                            .map((branch) => branch.branch_name)
-                            .join(", ")}{" "}
-                        </td>
+                        <td>{customer.total_due_amount}</td>
                         <td className="flex">
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewUser(user.user_id)}
+                            onClick={() => handleViewCustomer(customer.user_id)}
                           >
                             <FaEye size={18} className="text-gray-600" />
                           </button>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => handleUpdateUser(user.user_id)}
+                            onClick={() =>
+                              handleUpdateCustomer(customer.user_id)
+                            }
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>
                           <button
                             className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteUser(user.user_id)}
+                            onClick={() =>
+                              handleDeleteCustomer(customer.user_id)
+                            }
                           >
                             <FaTrash className="text-red-500" />
                           </button>
                         </td>
                       </tr>
                     );
-
                   })}
                 </tbody>
               ) : (
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No user available
+                      No customer available
                     </td>
                   </tr>
                 </tbody>
               )}
             </table>
           </div>
+
           {count > perPage && (
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
@@ -461,4 +435,4 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   );
 };
 
-export default UserTable;
+export default CustomerTable;
