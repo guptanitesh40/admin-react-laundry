@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const GET_USERS_URL = `${import.meta.env.VITE_BASE_URL}/user`;
+import { BASE_URL } from "../../utils/constant";
 
 interface User {
   total_due_amount: number;
@@ -23,12 +22,12 @@ const useGetUsers = (
   sortColumn?: string,
   sortOrder?: string,
   genders? : number[],
-  roles?: number[],
+  roles?: number | number [],
   companies_ids?: number[],
   branches_ids?: number[]
 ) => {
   const [users, setUsers] = useState<User[]>([]);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchUsers = async () => {
@@ -41,11 +40,15 @@ const useGetUsers = (
     if (sortColumn) queryParams.append("sortBy", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (genders)  {
-      genders. forEach((g) => queryParams.append("genders" , g.toString()));
+      genders.forEach((g) => queryParams.append("genders" , g.toString()));
     }
-    if (roles) {
-      roles.forEach((r) => queryParams.append("roles", r.toString()));
+    if(roles !== undefined){
+    if (Array.isArray(roles)) {
+      roles.forEach((roles: any) => queryParams.append("roles" , roles.toString()));
+    } else {
+      queryParams.append("roles", roles.toString());
     }
+  }
     if (companies_ids) {
       companies_ids.forEach((c) => queryParams.append("company_id", c.toString()));
     }
@@ -55,7 +58,7 @@ const useGetUsers = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_USERS_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/user?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +74,7 @@ const useGetUsers = (
       }
 
       setUsers(data?.data?.users || []);
-      setTotalUsers(data?.data?.count || 0);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -85,7 +88,7 @@ const useGetUsers = (
     fetchUsers();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, genders, roles, companies_ids, branches_ids]);
 
-  return { users, totalUsers, loading, fetchUsers };
+  return { users, count, loading, fetchUsers };
 };
 
 export default useGetUsers;

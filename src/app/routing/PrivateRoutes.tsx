@@ -42,6 +42,7 @@ const PrivateRoutes: React.FC = () => {
   const Settings = lazy(() => import("../components/settings/Settings"));
   const Payments = lazy(() => import("../components/payments/Payments"));
   const Feedback = lazy(() => import("../components/feedback/Feedback"));
+  const Customer = lazy(() => import("../components/user/Customer"));
 
   return (
     <Routes>
@@ -256,7 +257,7 @@ const PrivateRoutes: React.FC = () => {
         />
 
         <Route
-          path="/user"
+          path="/users"
           element={
             <Suspense fallback={<ListShimmer />}>
               <User />
@@ -265,7 +266,25 @@ const PrivateRoutes: React.FC = () => {
         />
 
         <Route
+          path="/customers"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Customer />
+            </Suspense>
+          }
+        />
+
+        <Route
           path="/user/:id"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <UserProfile />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/customer/:id"
           element={
             <Suspense fallback={<Shimmer />}>
               <UserProfile />
@@ -283,7 +302,25 @@ const PrivateRoutes: React.FC = () => {
         />
 
         <Route
+          path="/customer/add"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <UserForm />
+            </Suspense>
+          }
+        />
+
+        <Route
           path="/user/edit/:id"
+          element={
+            <Suspense fallback={<Shimmer />}>
+              <UserForm />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/customer/edit/:id"
           element={
             <Suspense fallback={<Shimmer />}>
               <UserForm />

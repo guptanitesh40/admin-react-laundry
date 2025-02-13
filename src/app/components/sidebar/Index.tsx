@@ -28,11 +28,14 @@ export const Sidebar: React.FC = () => {
       ? "bg-blue-100 text-white shadow-md rounded-lg transition-all duration-200"
       : "hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white rounded-lg transition-all duration-200";
 
+  const getSubmenuItemClass = (item: string) =>
+    selectedItem === item ? "active" : "";
+
   return (
     <div
       className="sidebar scrollbar-hide dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 hidden lg:flex flex-col items-stretch shrink-0"
       data-drawer="true"
-      data-drawer-class="drawer drawer-start top-0 bottom-0"
+      data-drawer-className="drawer drawer-start top-0 bottom-0"
       data-drawer-enable="true|lg:false"
       id="sidebar"
     >
@@ -52,7 +55,6 @@ export const Sidebar: React.FC = () => {
         className="sidebar-content flex grow shrink-0 py-5 pr-2"
         id="sidebar_content"
       >
-        
         <div
           className="scrollable-y-hover grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3"
           data-scrollable="true"
@@ -62,7 +64,12 @@ export const Sidebar: React.FC = () => {
           data-scrollable-wrappers="#sidebar_content"
           id="sidebar_scrollable"
         >
-          <div className="menu flex flex-col grow gap-0.5" id="sidebar_menu">
+          <div
+            className="menu flex flex-col grow gap-0.5"
+            data-menu="true"
+            data-menu-accordion-expand-all="false"
+            id="sidebar_menu"
+          >
             <Link to="/dashboard" onClick={() => handleItemClick("dashboard")}>
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -114,7 +121,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <HiMiniPencilSquare color="gray" size={31} />
+                    <HiMiniPencilSquare color="#cb9ad7" size={25} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Orders
@@ -134,7 +141,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaMoneyBillTransfer color="gray" size={31} />
+                    <FaMoneyBillTransfer color="#cb9ad7" size={25} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Payments
@@ -154,7 +161,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdCategory size={24} color="gray" />
+                    <MdCategory size={22} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Category
@@ -174,7 +181,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaProductHunt size={24} color="gray" />
+                    <FaProductHunt size={22} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Product
@@ -194,7 +201,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdLocalLaundryService size={30} color="gray" />
+                    <MdLocalLaundryService size={25} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Services
@@ -214,7 +221,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <BiSolidCoupon color="gray" size={32} />
+                    <BiSolidCoupon color="#cb9ad7" size={25} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Coupon
@@ -234,7 +241,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <RiMoneyRupeeCircleLine color="gray" size={32} />
+                    <RiMoneyRupeeCircleLine color="#cb9ad7" size={25} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Price
@@ -257,7 +264,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <IoIosPricetags color="gray" size={30} />
+                    <IoIosPricetags color="#cb9ad7" size={25} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Price Content
@@ -277,7 +284,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <RiBuilding2Fill color="gray" size={25} />
+                    <RiBuilding2Fill color="#cb9ad7" size={23} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Company
@@ -297,7 +304,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaBuilding color="gray" size={25} />
+                    <FaBuilding color="#cb9ad7" size={20} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Branch
@@ -317,7 +324,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaImages color="gray" size={25} />
+                    <FaImages color="#cb9ad7" size={23} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Banner
@@ -326,25 +333,60 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-            <Link to="/user" onClick={() => handleItemClick("user")}>
+            <div
+              className="menu-item"
+              data-menu-item-toggle="accordion"
+              data-menu-item-trigger="click"
+            >
               <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "user"
-                )}`}
+                className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[12px] pl-[10px] pr-[10px] py-[6px]"
+                tabIndex={0}
               >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <LiaUserCircle color="gray" size={33} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Users
-                  </span>
-                </div>
+                <LiaUserCircle color="#cb9ad7" size={28} />
+                <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                  Users
+                </span>
+                <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
+                  <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
+                  <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                </span>
               </div>
-            </Link>
+
+              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[20px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                <Link
+                  to="/customers"
+                  onClick={() => handleItemClick("customers")}
+                >
+                  <div
+                    className={`menu-item ${getSubmenuItemClass("customers")}`}
+                  >
+                    <span
+                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                      tabIndex={0}
+                    >
+                      <span className="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                        Customers
+                      </span>
+                    </span>
+                  </div>
+                </Link>
+
+                <Link to="/users" onClick={() => handleItemClick("users")}>
+                  <div className={`menu-item ${getSubmenuItemClass("users")}`}>
+                    <div
+                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                      tabIndex={0}
+                    >
+                      <span className="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                        Internal User
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
 
             <Link to="/workshops" onClick={() => handleItemClick("workshops")}>
               <div
@@ -357,7 +399,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={33} color="gray" />
+                    <CiShop size={28} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Workshops
@@ -380,7 +422,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={33} color="gray" />
+                    <CiShop size={28} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Workshop Orders
@@ -403,7 +445,7 @@ export const Sidebar: React.FC = () => {
                   tabIndex={0}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <VscFeedback size={33} color="gray" />
+                    <VscFeedback size={25} color="#cb9ad7" />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Customer Feedback
@@ -413,7 +455,6 @@ export const Sidebar: React.FC = () => {
             </Link>
           </div>
         </div>
-
       </div>
     </div>
   );

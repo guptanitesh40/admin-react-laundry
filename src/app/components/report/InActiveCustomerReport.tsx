@@ -1,33 +1,33 @@
 import { useEffect } from "react";
-import { useGetCustomerActivityData } from "../../hooks";
+import { useGetInActiveCustomerData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 
-const CustomerActivityReport: React.FC = () => {
-  const { customerActivityData, fetchCustomerActivityData } =
-    useGetCustomerActivityData();
+const InActiveCustomerReport = () => {
+  const { customerData, fetchInActiveCustomerData } =
+    useGetInActiveCustomerData();
 
   useEffect(() => {
-    fetchCustomerActivityData();
+    fetchInActiveCustomerData();
   }, []);
 
   const categories =
-    customerActivityData?.map((item: { month: any }) => item.month) || [];
-  const loginCount =
-    customerActivityData?.map(
-      (item: { login_count: number }) => item.login_count
+    customerData?.map((item: { month: any }) => item.month) || [];
+  const customerCount =
+    customerData?.map(
+      (item: { not_active_count: number }) => item.not_active_count
     ) || [];
 
   const data = {
     series: [
       {
-        name: "Login Count",
-        data: loginCount,
+        name: "No Active Customer",
+        data: customerCount,
       },
     ],
     options: {
       chart: {
         type: "area",
-        height: 240,
+        height: 200,
         toolbar: {
           show: false,
         },
@@ -49,7 +49,7 @@ const CustomerActivityReport: React.FC = () => {
         padding: {
           top: 0,
           right: 0,
-          bottom: 31,
+          bottom: 20,
           left: 0,
         },
       },
@@ -99,12 +99,9 @@ const CustomerActivityReport: React.FC = () => {
   return (
     <div className="card pb-2.5 max-h-[250px] rounded-md">
       <div className="card-body card-fit grid gap-1">
-        <div className="flex justify-between ml-8">
+        <div className="flex justify-between ml-5">
           <div>
-            <h3 className="card-title text-base">Activity</h3>
-            <span className="text-gray-500 font-medium">
-              Customer Login Count
-            </span>
+            <h3 className="card-title text-lg">In Active Customer</h3>            
           </div>
         </div>
 
@@ -114,7 +111,7 @@ const CustomerActivityReport: React.FC = () => {
               options={data.options}
               series={data.series}
               type={data.options.chart.type}
-              height={200}
+              height={data.options.chart.height}
             />
           </div>
         </div>
@@ -123,4 +120,4 @@ const CustomerActivityReport: React.FC = () => {
   );
 };
 
-export default CustomerActivityReport;
+export default InActiveCustomerReport;

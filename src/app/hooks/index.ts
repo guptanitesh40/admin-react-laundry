@@ -81,6 +81,8 @@ export { default as useGetCustomerActivityData } from './report/useGetCustomerAc
 export { default as useGetCustomerRatingData } from './report/useGetCustomerRatingData.ts';
 export { default as useGetBranchSalesData } from './report/useGetBranchSalesData.ts';
 export { default as useGetDeliveryData } from './report/useGetDeliveryData.ts';
+export { default as useGetNewCustomerData } from './report/useGetNewCustomerData.ts';
+export { default as useGetInActiveCustomerData } from './report/useGetInActiveCustomerData.ts';
 
 export { default as useGetWorkshops } from './workshop/useGetWorkshops';
 export { default as useGetWorkshop } from './workshop/useGetWorkshop';
