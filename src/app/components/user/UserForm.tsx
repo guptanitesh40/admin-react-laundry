@@ -9,7 +9,7 @@ import {
 import * as Yup from "yup";
 import { userSchema } from "../../validation/userSchema";
 import useGetUser from "../../hooks/user/useGetuser";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import MultiSelect from "multiselect-react-dropdown";
 
 interface FormData {
@@ -42,6 +42,9 @@ const UserForm: React.FC = () => {
   const { branches } = useGetBranches(pageNumber, perPage);
   const [branchOptions, setBranchOptions] = useState([]);
   const user = userData?.user;
+  const location = useLocation();
+
+  const [isCustomer, setIsCustomer] = useState<boolean>(false);
 
   const formDataState: FormData = {
     first_name: "",
@@ -60,6 +63,13 @@ const UserForm: React.FC = () => {
   const [initialFormData, setInitialFormData] = useState(formDataState);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  useEffect(() => {
+    const path = location.pathname.split("/")[1];
+    if (path === "customer") {
+      setIsCustomer(true);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -151,7 +161,11 @@ const UserForm: React.FC = () => {
       };
 
       if (!isDataChanged()) {
-        navigate("/user");
+        if (isCustomer) {
+          navigate("/customers");
+        } else {
+          navigate("/users");
+        }
         return;
       }
 
@@ -171,7 +185,11 @@ const UserForm: React.FC = () => {
       }
 
       if (success) {
-        navigate("/user");
+        if (isCustomer) {
+          navigate("/customers");
+        } else {
+          navigate("/users");
+        }
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -187,13 +205,23 @@ const UserForm: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/user");
+    if (isCustomer) {
+      navigate("/customers");
+    } else {
+      navigate("/users");
+    }
   };
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
       <h1 className="text-2xl font-bold mb-6">
-        {user_id ? "Edit user detail" : "Add user"}
+        {isCustomer
+          ? user_id
+            ? "Edit Customer"
+            : "Add Customer"
+          : user_id
+          ? "Edit User"
+          : "Add User"}
       </h1>
 
       <form onSubmit={handleSubmit}>
@@ -511,9 +539,13 @@ const UserForm: React.FC = () => {
               ? adding
                 ? "Adding..."
                 : "Updating..."
+              : isCustomer
+              ? user_id
+                ? "Update customer"
+                : "Add customer"
               : user_id
               ? "Update user"
-              : "Add user"}
+              : "Add User"}
           </button>
           <button
             type="button"

@@ -50,15 +50,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   };
 
   const handleSelectOption = (option: OptionType) => {
-    const updatedFilter = selectedValues.includes(option.value)
-      ? selectedValues.filter((id) => id !== option.value)
+    const updatedFilter = selectedValues?.includes(option.value)
+      ? selectedValues?.filter((id) => id !== option.value)
       : [...selectedValues, option.value];
 
     const updatedOptions = options.filter((opt) =>
-      updatedFilter.includes(opt.value)
+      updatedFilter?.includes(opt.value)
     );
 
-    if (selectedValues.includes(option.value)) {
+    if (selectedValues?.includes(option.value)) {
       onRemove(updatedOptions);
     } else {
       onSelect(updatedOptions);

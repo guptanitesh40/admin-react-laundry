@@ -26,7 +26,6 @@ const DashBoard: React.FC = () => {
           <KasarReport />
           <PaymentTypeReport />
           <PaymentTransactionReport />
-          <CustomerActivityReport />
         </div>
       </div>
     </>
