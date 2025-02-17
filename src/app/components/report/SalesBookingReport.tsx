@@ -92,7 +92,7 @@ const SalesBookingReport = () => {
         labels: {
           show: false,
         },
-        
+
         axisTicks: {
           show: false,
         },
@@ -111,7 +111,11 @@ const SalesBookingReport = () => {
       markers: {
         size: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
-        strokeColors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
+        strokeColors: [
+          "var(--tw-primary)",
+          "var(--tw-brand)",
+          "var(--tw-warning)",
+        ],
         strokeWidth: 4,
         strokeOpacity: 1,
         strokeDashArray: 0,
@@ -140,12 +144,12 @@ const SalesBookingReport = () => {
           formatter: (value: any) => {
             if (value >= 1000) {
               return `₹${(value / 1000).toFixed(0)}K`;
-            } 
+            }
             return value.toString();
           },
         },
       },
-      
+
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -155,18 +159,20 @@ const SalesBookingReport = () => {
   };
 
   return (
-    <div className="col-span-2">
+    <div className="xl:cols-span-2 sm:cols-span-1 lg:cols-span-1">
       <div className="card w-full">
-        <div className="card-header border-none flex flex-col mt-2 items-start">          
+        <div className="card-header border-none flex flex-col mt-2 items-start">
           <h3 className="card-title">Sales Booking</h3>
           <h5 className="block text-gray-500 text-sm font-bold">
-            Total Order Amount ₹{totalOrderAmount?.toLocaleString()}{" "}
+            <div className="flex flex-wrap flex-row gap-x-2">
+              <span>Total Order Amount</span>
+              <span>₹{totalOrderAmount?.toLocaleString()} </span>
+            </div>
           </h5>
-        
         </div>
 
-        <div className="card-body grid gap-1">
-          <div className="h-[280px]">
+        <div className="card-body no-padding-left grid gap-1">
+          <div className="h-[280px] miniscreen:min-w-[110%]">
             <AreaChart
               options={data.options}
               series={data.series}

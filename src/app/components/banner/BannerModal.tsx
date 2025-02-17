@@ -168,7 +168,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[480px] ban:min-w-[85%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[480px] lgmobile:min-w-[90%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
