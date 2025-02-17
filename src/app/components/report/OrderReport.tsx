@@ -8,21 +8,6 @@ import AreaChart from "react-apexcharts";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-const orderData = [
-  { month: "Jan-2025", count: 78, total_amount: 68230, pending_amount: 21540 },
-  { month: "Feb-2025", count: 85, total_amount: 70497, pending_amount: 23811 },
-  { month: "Mar-2025", count: 92, total_amount: 75321, pending_amount: 19230 },
-  { month: "Apr-2025", count: 88, total_amount: 72045, pending_amount: 20123 },
-  { month: "May-2025", count: 95, total_amount: 78964, pending_amount: 24789 },
-  { month: "Jun-2025", count: 102, total_amount: 81230, pending_amount: 23450 },
-  { month: "Jul-2025", count: 98, total_amount: 79567, pending_amount: 22560 },
-  { month: "Aug-2025", count: 105, total_amount: 83210, pending_amount: 24190 },
-  { month: "Sep-2025", count: 110, total_amount: 87000, pending_amount: 26000 },
-  { month: "Oct-2025", count: 115, total_amount: 89045, pending_amount: 27500 },
-  { month: "Nov-2025", count: 120, total_amount: 92130, pending_amount: 29040 },
-  { month: "Dec-2025", count: 125, total_amount: 95000, pending_amount: 30500 },
-];
-
 const OrderReport = () => {
   const [formData, setFormData] = useState({
     start_time: "",
@@ -31,15 +16,15 @@ const OrderReport = () => {
 
   const navigate = useNavigate();
 
-  // const { orderData, fetchOrdersData } = useGetOrdersData();
+  const { orderData, fetchOrdersData } = useGetOrdersData();
 
-  // useEffect(() => {
-  //   if (formData.start_time && formData.end_time) {
-  //     fetchOrdersData(formData.start_time, formData.end_time);
-  //   } else {
-  //     fetchOrdersData();
-  //   }
-  // }, [formData]);
+  useEffect(() => {
+    if (formData.start_time && formData.end_time) {
+      fetchOrdersData(formData.start_time, formData.end_time);
+    } else {
+      fetchOrdersData();
+    }
+  }, [formData]);
 
   const handleDateChange = (newDate: dayjs.Dayjs, field: string) => {
     setFormData((prev) => ({
