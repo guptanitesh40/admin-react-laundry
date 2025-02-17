@@ -5,20 +5,6 @@ export const userSchema = (isEdit: boolean) => {
     first_name: Yup.string().required("First name is required"),
     last_name: Yup.string().required("Last name is required"),
     email: Yup.string().email("Enter a valid email"),
-    password: isEdit
-      ? Yup.string().test(
-          "password-validation",
-          "Password must be at least 6 characters",
-          function (value) {
-            if (value && value.length > 0) {
-              return value.length >= 6;
-            }
-            return true;
-          }
-        )
-      : Yup.string()
-          .min(6, "Password must be at least 6 characters")
-          .required("Password is required"),
     mobile_number: Yup.string()
       .matches(/^\d{10}$/, "Mobile number must be 10 digits")
       .required("Mobile number is required"),

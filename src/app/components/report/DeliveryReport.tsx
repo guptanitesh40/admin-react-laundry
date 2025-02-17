@@ -76,7 +76,7 @@ const DeliveryReport: React.FC = () => {
           <h3 className="card-title">Delivery Report</h3>
         </div>
 
-        <div className="card-body grid gap-1">
+        <div className="card-body grid gap-1 lgmobile:justify-center">
           <DonutChart
             series={data}
             options={options}

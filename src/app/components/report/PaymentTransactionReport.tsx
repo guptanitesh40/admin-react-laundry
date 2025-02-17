@@ -142,26 +142,34 @@ const PaymentTransactionReport: React.FC = () => {
   };
 
   const handleNavigateToPaymentList = () => {
-    navigate('/payments');
-  }
+    navigate("/payments");
+  };
 
   return (
-    <div className="col-span-1 cursor-pointer" onClick={handleNavigateToPaymentList}>
+    <div
+      className="col-span-1 cursor-pointer"
+      onClick={handleNavigateToPaymentList}
+    >
       <div className="card w-full">
         <div className="card-header border-none flex flex-col mt-2 items-start">
           <h3 className="card-title">Payment Report</h3>
           <h5 className="block text-gray-500 text-sm font-bold">
-            Total Received Amount ₹{totalReceivedAmount?.toLocaleString()}{" "}
+            <div className="flex flex-wrap flex-row gap-x-2">
+              <span>Total Received Amount</span>
+              <span> ₹{totalReceivedAmount?.toLocaleString()} </span>
+            </div>
           </h5>
         </div>
 
-        <div className="card-body grid gap-1">
-          <AreaChart
-            options={data.options}
-            series={data.series}
-            type={data.options.chart.type}
-            height={200}
-          />
+        <div className="card-body no-padding-left grid gap-1">
+          <div className="h-[200px] miniscreen:min-w-[110%]">
+            <AreaChart
+              options={data.options}
+              series={data.series}
+              type={data.options.chart.type}
+              height={200}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -16,7 +16,6 @@ interface FormData {
   first_name: string;
   last_name: string;
   email: string;
-  password: string;
   mobile_number: string;
   gender: number | null;
   role_id: number | null;
@@ -50,7 +49,6 @@ const UserForm: React.FC = () => {
     first_name: "",
     last_name: "",
     email: "",
-    password: "",
     mobile_number: "",
     gender: null,
     role_id: null,
@@ -62,7 +60,6 @@ const UserForm: React.FC = () => {
   const [formData, setFormData] = useState(formDataState);
   const [initialFormData, setInitialFormData] = useState(formDataState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -70,6 +67,15 @@ const UserForm: React.FC = () => {
       setIsCustomer(true);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (isCustomer) {
+      setFormData({
+        ...formData,
+        role_id: 5,
+      });
+    }
+  }, [isCustomer]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +111,6 @@ const UserForm: React.FC = () => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        password: "",
         mobile_number: user.mobile_number,
         gender: user.gender,
         role_id: user.role_id,
@@ -312,71 +317,40 @@ const UserForm: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-col">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 font-semibold"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <label className="input" data-toggle-password="true">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-                <span
-                  className="btn btn-icon cursor-pointer ml-2"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? (
-                    <i className="ki-filled ki-eye-slash text-gray-500"></i>
-                  ) : (
-                    <i className="ki-filled ki-eye text-gray-500"></i>
-                  )}
-                </span>
+          {!isCustomer && (
+            <div className="flex flex-col">
+              <label
+                className="block text-gray-700 font-semibold"
+                htmlFor="role_id"
+              >
+                Role
               </label>
+              <select
+                id="role_id"
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                value={formData.role_id === null ? "" : formData.role_id}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    role_id: e.target.value ? parseInt(e.target.value) : null,
+                  })
+                }
+              >
+                <option value="" disabled>
+                  Select Role
+                </option>
+                <option value={2}>Sub Admin</option>
+                <option value={3}>Branch Manager</option>
+                <option value={4}>Delivery and Pickup</option>
+                <option value={5}>Customer</option>
+                <option value={6}>Workshop Manager</option>
+                <option value={7}>Vendor</option>
+              </select>
+              <p className="text-red-500 text-sm">
+                {errors.role_id || "\u00A0"}
+              </p>
             </div>
-            <p className="text-red-500 text-sm">
-              {errors.password || "\u00A0"}
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <label
-              className="block text-gray-700 font-semibold"
-              htmlFor="role_id"
-            >
-              Role
-            </label>
-            <select
-              id="role_id"
-              className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-              value={formData.role_id === null ? "" : formData.role_id}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  role_id: e.target.value ? parseInt(e.target.value) : null,
-                })
-              }
-            >
-              <option value="" disabled>
-                Select Role
-              </option>
-              <option value={2}>Sub Admin</option>
-              <option value={3}>Branch Manager</option>
-              <option value={4}>Delivery and Pickup</option>
-              <option value={5}>Customer</option>
-              <option value={6}>Workshop Manager</option>
-              <option value={7}>Vendor</option>
-            </select>
-            <p className="text-red-500 text-sm">{errors.role_id || "\u00A0"}</p>
-          </div>
+          )}
 
           {formData.role_id === 2 && (
             <div className="flex flex-col">

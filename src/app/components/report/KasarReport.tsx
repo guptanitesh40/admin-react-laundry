@@ -72,7 +72,7 @@ const KasarReport = () => {
       stroke: {
         curve: "smooth",
         show: true,
-        width: 3,
+        width: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
       },
       xaxis: {
@@ -121,7 +121,11 @@ const KasarReport = () => {
       markers: {
         size: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
-        strokeColors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
+        strokeColors: [
+          "var(--tw-primary)",
+          "var(--tw-brand)",
+          "var(--tw-warning)",
+        ],
         strokeWidth: 4,
         strokeOpacity: 1,
         strokeDashArray: 0,
@@ -154,17 +158,20 @@ const KasarReport = () => {
           <div className="card-header border-none flex flex-col mt-2 items-start">
             <h3 className="card-title">Kasar Report</h3>
             <h5 className="block text-gray-500 text-sm font-bold">
-              Total Kasar Amount ₹{totalKasarAmount?.toLocaleString()}
+              <div className="flex flex-wrap flex-row gap-x-2">
+                <span>Total Kasar Amount </span>
+                <span>₹{totalKasarAmount?.toLocaleString()}</span>
+              </div>
             </h5>
           </div>
 
-          <div className="card-body grid gap-1">
-            <div className="h-[210px]">
+          <div className="card-body no-padding-left grid gap-1">
+            <div className="h-[209px] miniscreen:min-w-[110%]">
               <AreaChart
                 options={data.options}
                 series={data.series}
                 type={data.options.chart.type}
-                height={210}
+                height={200}
               />
             </div>
           </div>
