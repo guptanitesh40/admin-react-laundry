@@ -113,7 +113,7 @@ const DeliveryPendingReport = () => {
               },
             }
           : {
-              strokeColor: "#1976d2",
+              size: 0,
             },
       tooltip: {
         x: {
@@ -126,27 +126,23 @@ const DeliveryPendingReport = () => {
   return (
     <>
       <div className="card pb-2.5 max-h-[300px]">
-        <div className="card-body card-fit grid gap-1">
-          <div className="flex justify-between ml-8">
-            <div>
-              <h3 className="font-semibold text-[#64748b]">Delivery Pending</h3>
-              <span className="text-[#384551] font-medium">{orderCount}</span>
-            </div>
-            <div className="mr-10 mt-2">
-              <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
-            </div>
+        <div className="flex justify-between ml-8 mt-2">
+          <div>
+            <h3 className="card-title">Delivery Pending</h3>
+            <span className="text-gray-500 font-medium">{orderCount}</span>
           </div>
+          <div className="mr-10 mt-2">
+            <MdOutlinePendingActions size={26} color="rgb(13 202 240)" />
+          </div>
+        </div>
 
-          <div className="h-[200px] w-100">
-            <div className="relative h-full w-full">
-              <AreaChart
-                options={data.options}
-                series={data.series}
-                type={data.options.chart.type}
-                height={240}
-              />
-            </div>
-          </div>
+        <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+          <AreaChart
+            options={data.options}
+            series={data.series}
+            type={data.options.chart.type}
+            height={240}
+          />
         </div>
       </div>
     </>

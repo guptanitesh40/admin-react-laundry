@@ -124,19 +124,19 @@ const NewCustomerReport: React.FC = () => {
             <h3 className="card-title">New Customer</h3>
           </div>
           <div className="mt-2">
-            <span className="p-3 bg-red-50 rounded-md relative text-gray-500 semibold">+{totalCustomers}</span>
+            <span className="p-3 bg-red-50 rounded-md relative text-gray-500 semibold">
+              +{totalCustomers}
+            </span>
           </div>
         </div>
 
-        <div className="card-body no-padding-left grid gap-1">
-          <div className="h-[150px]">
-            <BarChart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={150}
-            />
-          </div>
+        <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+          <BarChart
+            options={data.options}
+            series={data.series}
+            type={data.options.chart.type}
+            height={170}
+          />
         </div>
       </div>
     </div>

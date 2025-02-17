@@ -194,7 +194,7 @@ const CustomerTable: React.FC = () => {
                   selectedList.map((item: { value: any }) => item.value)
                 )
               }
-              className="min-w-[250px]"
+              className="lgscreen:min-w-[230px] mini:min-w-[250px]"
               isSearchInput={false}
             />
           </div>
@@ -212,7 +212,7 @@ const CustomerTable: React.FC = () => {
                     }
                   }}
                   placeholder="Search..."
-                  className="min-w-[185px] flex-grow"
+                  className="mini:min-w-[185px] lgscreen:min-w-[150px] flex-grow"
                 />
                 <button type="submit" className="btn btn-sm btn-icon">
                   <i className="ki-filled ki-magnifier"></i>

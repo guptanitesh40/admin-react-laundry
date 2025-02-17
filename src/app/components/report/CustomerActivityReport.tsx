@@ -88,6 +88,16 @@ const CustomerActivityReport: React.FC = () => {
       yaxis: {
         show: false,
       },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      ],
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -98,26 +108,22 @@ const CustomerActivityReport: React.FC = () => {
 
   return (
     <div className="card pb-2.5 max-h-[250px] rounded-md">
-      <div className="card-body card-fit grid gap-1">
-        <div className="flex justify-between ml-8">
-          <div>
-            <h3 className="card-title text-base">Activity</h3>
-            <span className="text-gray-500 font-medium">
-              Customer Login Count
-            </span>
-          </div>
+      <div className="flex justify-between ml-6 mt-2">
+        <div>
+          <h3 className="card-title text-lg">Activity</h3>
+          <span className="text-gray-500 font-medium">
+            Customer Login Count
+          </span>
         </div>
+      </div>
 
-        <div className="h-[240px] w-full">
-          <div className="relative h-full w-full">
-            <AreaChart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={200}
-            />
-          </div>
-        </div>
+      <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+        <AreaChart
+          options={data.options}
+          series={data.series}
+          type={data.options.chart.type}
+          height={200}
+        />
       </div>
     </div>
   );

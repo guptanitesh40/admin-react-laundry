@@ -105,15 +105,13 @@ const RefundAmountReport: React.FC = () => {
           <h2 className="card-title">Refund Amount Report</h2>
         </div>
 
-        <div className="card-body card-fit grid gap-1">
-          <div>
-            <BarChart
-              options={chartOptions}
-              series={chartSeries}
-              type="bar"
-              height={200}
-            />
-          </div>
+        <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+          <BarChart
+            options={chartOptions}
+            series={chartSeries}
+            type="bar"
+            height={213}
+          />
         </div>
       </div>
     </div>

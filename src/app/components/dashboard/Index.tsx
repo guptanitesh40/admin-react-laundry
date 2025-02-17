@@ -7,7 +7,6 @@ import DeliveryCompletedReport from "../report/DeliveryCompletedReport";
 import PendingAmountReport from "../report/PendingAmountReport";
 import RefundAmountReport from "../report/RefundAmountReport";
 import PaymentTransactionReport from "../report/PaymentTransactionReport";
-import CustomerActivityReport from "../report/CustomerActivityReport";
 import DeliveryReport from "../report/DeliveryReport";
 import SalesBookingReport from "../report/SalesBookingReport";
 
@@ -29,7 +28,7 @@ const DashBoard: React.FC = () => {
           <PendingAmountReport />
           <KasarReport />
           <PaymentTypeReport />
-          <PaymentTransactionReport />
+          <PaymentTransactionReport />          
         </div>
       </div>
     </>

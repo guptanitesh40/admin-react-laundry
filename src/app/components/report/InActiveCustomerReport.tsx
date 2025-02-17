@@ -98,23 +98,19 @@ const InActiveCustomerReport = () => {
 
   return (
     <div className="card pb-2.5 max-h-[250px] rounded-md">
-      <div className="card-body card-fit grid gap-1">
-        <div className="flex justify-between ml-5">
-          <div>
-            <h3 className="card-title text-lg">In Active Customer</h3>            
-          </div>
+      <div className="flex justify-between ml-5 mt-2">
+        <div>
+          <h3 className="card-title text-lg">In Active Customer</h3>
         </div>
+      </div>
 
-        <div className="h-[240px] w-full">
-          <div className="relative h-full w-full">
-            <AreaChart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={data.options.chart.height}
-            />
-          </div>
-        </div>
+      <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+        <AreaChart
+          options={data.options}
+          series={data.series}
+          type={data.options.chart.type}
+          height={data.options.chart.height}
+        />
       </div>
     </div>
   );
