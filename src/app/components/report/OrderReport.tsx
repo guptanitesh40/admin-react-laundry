@@ -8,6 +8,21 @@ import AreaChart from "react-apexcharts";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
+const orderData = [
+  { month: "Jan-2025", count: 78, total_amount: 68230, pending_amount: 21540 },
+  { month: "Feb-2025", count: 85, total_amount: 70497, pending_amount: 23811 },
+  { month: "Mar-2025", count: 92, total_amount: 75321, pending_amount: 19230 },
+  { month: "Apr-2025", count: 88, total_amount: 72045, pending_amount: 20123 },
+  { month: "May-2025", count: 95, total_amount: 78964, pending_amount: 24789 },
+  { month: "Jun-2025", count: 102, total_amount: 81230, pending_amount: 23450 },
+  { month: "Jul-2025", count: 98, total_amount: 79567, pending_amount: 22560 },
+  { month: "Aug-2025", count: 105, total_amount: 83210, pending_amount: 24190 },
+  { month: "Sep-2025", count: 110, total_amount: 87000, pending_amount: 26000 },
+  { month: "Oct-2025", count: 115, total_amount: 89045, pending_amount: 27500 },
+  { month: "Nov-2025", count: 120, total_amount: 92130, pending_amount: 29040 },
+  { month: "Dec-2025", count: 125, total_amount: 95000, pending_amount: 30500 },
+];
+
 const OrderReport = () => {
   const [formData, setFormData] = useState({
     start_time: "",
@@ -16,15 +31,15 @@ const OrderReport = () => {
 
   const navigate = useNavigate();
 
-  const { orderData, fetchOrdersData } = useGetOrdersData();
+  // const { orderData, fetchOrdersData } = useGetOrdersData();
 
-  useEffect(() => {
-    if (formData.start_time && formData.end_time) {
-      fetchOrdersData(formData.start_time, formData.end_time);
-    } else {
-      fetchOrdersData();
-    }
-  }, [formData]);
+  // useEffect(() => {
+  //   if (formData.start_time && formData.end_time) {
+  //     fetchOrdersData(formData.start_time, formData.end_time);
+  //   } else {
+  //     fetchOrdersData();
+  //   }
+  // }, [formData]);
 
   const handleDateChange = (newDate: dayjs.Dayjs, field: string) => {
     setFormData((prev) => ({
@@ -135,8 +150,7 @@ const OrderReport = () => {
               },
             }
           : {
-              size: 4,
-              strokeColor: "#1976d2",
+              size: 0,
             },
       tooltip: {
         x: {
@@ -156,27 +170,23 @@ const OrderReport = () => {
         className="card pb-2.5 max-h-[300px] cursor-pointer"
         onClick={handleNavigateToOrderList}
       >
-        <div className="card-body card-fit grid gap-1">
-          <div className="flex justify-between ml-8">
-            <div>
-              <h3 className="font-semibold text-[#64748b]">Orders</h3>
-              <span className="text-[#384551] font-medium">{orderCount}</span>
-            </div>
-            <div className="mr-10 mt-2">
-              <FiShoppingCart size={23} color="rgb(13 202 240)" />
-            </div>
+        <div className="flex justify-between ml-8 mt-2">
+          <div>
+            <h3 className="card-title">Orders</h3>
+            <span className="text-gray-500 font-medium">{orderCount}</span>
           </div>
+          <div className="mr-10 mt-2">
+            <FiShoppingCart size={23} color="rgb(13 202 240)" />
+          </div>
+        </div>
 
-          <div className="h-[200px] w-100">
-            <div className="relative h-full w-full">
-              <AreaChart
-                options={data.options}
-                series={data.series}
-                type={data.options.chart.type}
-                height={240}
-              />
-            </div>
-          </div>
+        <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+          <AreaChart
+            options={data.options}
+            series={data.series}
+            type={data.options.chart.type}
+            height={240}
+          />
         </div>
       </div>
     </>

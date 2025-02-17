@@ -77,7 +77,7 @@ const PendingAmountReport: React.FC = () => {
             options={chartOptions}
             series={chartSeries}
             type="pie"
-            height={210}
+            height={225}
           />
         </div>
       </div>

@@ -9802,3 +9802,7 @@ label.rating-label {
   font-size: 14px !important; 
   font-weight: 600 !important; 
 }
+
+.block-element {
+  display:block !important;
+}
