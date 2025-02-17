@@ -377,6 +377,7 @@ export default {
 				  xmobile: {max: '470px'},
 				  smmobile: {max: '640px'},
 				  cmd: {max:'715px'},
+				  miniscreen: {max: '350px'},
 				  mdscreen: '635px',
 				  desktop:'525px',
 				  sm: '640px',

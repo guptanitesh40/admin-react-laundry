@@ -15,13 +15,17 @@ const DashBoard: React.FC = () => {
   return (
     <>
       <div className="container-fixed">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:gap-5 w-full">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
           <OrderReport />
           <DeliveryPendingReport />
-          <DeliveryCompletedReport /> 
+          <DeliveryCompletedReport />
           <DeliveryReport />
+        </div>
+        <div className="mt-5 mb-5">
           <SalesBookingReport />
-          <RefundAmountReport/>
+        </div>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
+          <RefundAmountReport />
           <PendingAmountReport />
           <KasarReport />
           <PaymentTypeReport />

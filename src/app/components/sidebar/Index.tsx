@@ -5,11 +5,11 @@ import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
 import { BiSolidCoupon } from "react-icons/bi";
 import { RiBuilding2Fill, RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { LiaUserCircle } from "react-icons/lia";
-import { HiMiniPencilSquare } from "react-icons/hi2";
 import { CiShop } from "react-icons/ci";
 import { IoIosPricetags } from "react-icons/io";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { VscFeedback } from "react-icons/vsc";
+import { BsBoxSeam } from "react-icons/bs";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
@@ -110,25 +110,109 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-            <Link to="/orders" onClick={() => handleItemClick("orders")}>
+            <div
+              className="menu-item"
+              data-menu-item-toggle="accordion"
+              data-menu-item-trigger="click"
+            >
               <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "orders"
-                )}`}
+                className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[17px] pl-[10px] pr-[10px] py-[6px] ml-1"
+                tabIndex={0}
               >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <HiMiniPencilSquare color="#cb9ad7" size={25} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Orders
-                  </span>
-                </div>
+                <BsBoxSeam color="#cb9ad7" size={20} />
+                <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                  Orders
+                </span>
+                <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
+                  <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
+                  <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                </span>
               </div>
-            </Link>
+
+              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                <div
+                  className="menu-item"
+                  data-menu-item-toggle="accordion"
+                  data-menu-item-trigger="click"
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[17px] pl-[10px] pr-[10px] py-[6px] ml-1"
+                    tabIndex={0}
+                  >
+                    <span className="ml-[52px] menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                      Orders List
+                    </span>
+                    <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
+                      <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
+                      <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                    </span>
+                  </div>
+
+                  <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[70px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                    <Link
+                      to="/pickup-orders"
+                      onClick={() => handleItemClick("pickup-orders")}
+                    >
+                      <div
+                        className={`menu-item ${getSubmenuItemClass("pickup-orders")}`}
+                      >
+                        <span
+                          className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[8px] py-[8px]"
+                          tabIndex={0}
+                        >
+                          <span className="menu-bullet flex ml-[50px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                          <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                            Pickup Orders
+                          </span>
+                        </span>
+                      </div>
+                    </Link>
+
+                    <Link
+                      to="/delivered-orders"
+                      onClick={() => handleItemClick("/delivered-orders")}
+                    >
+                      <div
+                        className={`menu-item ${getSubmenuItemClass(
+                          "/delivered-orders"
+                        )}`}
+                      >
+                        <div
+                          className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                          tabIndex={0}
+                        >
+                          <span className="menu-bullet flex ml-[50px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                          <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                            Delivered Orders
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
+                <Link
+                  to="/booking-orders"
+                  onClick={() => handleItemClick("/booking-orders")}
+                >
+                  <div
+                    className={`menu-item ${getSubmenuItemClass(
+                      "/booking-orders"
+                    )}`}
+                  >
+                    <div
+                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                      tabIndex={0}
+                    >
+                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                        Booking List
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </div>
 
             <Link to="/payments" onClick={() => handleItemClick("payments")}>
               <div

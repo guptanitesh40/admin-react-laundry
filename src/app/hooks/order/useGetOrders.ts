@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast, { Toast } from "react-hot-toast";
-
-const GET_ORDERS_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Order {
   created_at: any;
@@ -38,13 +37,15 @@ const useGetOrders = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
+  list?: string,
+  orderList?: string,
   order_statuses?: number[],
   customer_ids?: number[],
   branches_ids?: number[],
   pickup_boy_ids?: number[],
   delivery_boy_ids?: number[],
   payment_types?: number,
-  payment_statuses?: number[]
+  payment_statuses?: number[],
 ) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -70,7 +71,9 @@ const useGetOrders = (
       );
     }
     if (branches_ids) {
-      branches_ids.forEach((b) => queryParams.append("branches_ids", b.toString()));
+      branches_ids.forEach((b) =>
+        queryParams.append("branches_ids", b.toString())
+      );
     }
     if (pickup_boy_ids) {
       pickup_boy_ids.forEach((p) =>
@@ -82,6 +85,13 @@ const useGetOrders = (
         queryParams.append("delivery_boy_ids", d.toString())
       );
     }
+    if (list) {
+      queryParams.append("list", list);
+    }
+    if(orderList)
+    {
+      queryParams.append("orderList", orderList);
+    }
     if (payment_statuses) {
       payment_statuses.forEach((p) =>
         queryParams.append("payment_statuses", p.toString())
@@ -92,7 +102,7 @@ const useGetOrders = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_ORDERS_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/orders?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +126,7 @@ const useGetOrders = (
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchOrders();
