@@ -165,15 +165,13 @@ const KasarReport = () => {
             </h5>
           </div>
 
-          <div className="card-body no-padding-left grid gap-1">
-            <div className="h-[209px] miniscreen:min-w-[110%]">
-              <AreaChart
-                options={data.options}
-                series={data.series}
-                type={data.options.chart.type}
-                height={200}
-              />
-            </div>
+          <div className="card-body flex flex-col justify-end items-stretch grow px-3 py-1">
+            <AreaChart
+              options={data.options}
+              series={data.series}
+              type={data.options.chart.type}
+              height={200}
+            />
           </div>
         </div>
       </div>

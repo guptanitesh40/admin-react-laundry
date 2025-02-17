@@ -718,12 +718,9 @@ const OrderForm: React.FC = () => {
           {formData.items.map((item, index) => {
             return (
               <>
-                <div className="bg-gray-50 border border-gray-50 rounded-xl mt-4 p-4">
-                  <div
-                    key={index}
-                    className="flex items-start flex-wrap md:flex-row md:items-end md:space-x-1 gap-2"
-                  >
-                    <div className="flex flex-wrap gap-2.5">
+                <div className="border border-gray-200 rounded-xl mt-4 p-4">
+                  <div key={index}>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,4fr))] gap-x-5 gap-y-3">
                       <div>
                         <label
                           htmlFor="category"
@@ -741,7 +738,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
-                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                          className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
                             Select Category
@@ -777,7 +774,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
-                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                          className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
                             Select Product
@@ -821,7 +818,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
-                          className="select border border-gray-300 rounded-md p-2 w-36 text-sm"
+                          className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
                             Select Service
@@ -852,7 +849,7 @@ const OrderForm: React.FC = () => {
                           onChange={(e) =>
                             handleItemChange(index, "price", e.target.value)
                           }
-                          className={`input border rounded-md p-2 w-28 ${
+                          className={`input border rounded-md p-2 w-full ${
                             isNaN(order_id)
                               ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
                               : "border-gray-300"
@@ -874,7 +871,7 @@ const OrderForm: React.FC = () => {
                           onChange={(e) =>
                             handleItemChange(index, "quantity", e.target.value)
                           }
-                          className="input border border-gray-300 rounded-md p-2 w-20"
+                          className="input border border-gray-300 rounded-md p-2 w-full"
                         />
                       </div>
 
@@ -895,7 +892,7 @@ const OrderForm: React.FC = () => {
                           min="0"
                           step="0.01"
                           readOnly
-                          className="input w-28 border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
+                          className="input w-full border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
                         />
                       </div>
 
@@ -907,7 +904,7 @@ const OrderForm: React.FC = () => {
                           Description
                         </label>
                         <input
-                          className="checkbox checkbox-lg mt-2"
+                          className="checkbox checkbox-lg mt-2 ml-5"
                           id="description_checkbox"
                           data-datatable-check="true"
                           type="checkbox"
@@ -929,7 +926,7 @@ const OrderForm: React.FC = () => {
                     <div>
                       {item.showDescription && (
                         <div>
-                          <div className="flex flex-col w-[500px] mb-2">
+                          <div className="flex flex-col w-[500px] md:w-[350px] lg:w-[300px] h-[80px] mb-2">
                             <label
                               htmlFor="description"
                               className="block text-gray-700 text-sm font-bold mb-2"
@@ -946,18 +943,18 @@ const OrderForm: React.FC = () => {
                                   e.target.value
                                 )
                               }
-                              className="input border border-gray-300 rounded-md p-2 w-full"
+                              className="h-full input border border-gray-300 rounded-md p-2 w-full"
                             />
                           </div>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex flex-end justify-end relative">
+                    <div className="flex block-element flex-end justify-end relative">
                       <div>
                         <button
                           type="button"
-                          className={`p-2 rounded-full mt-1 ${
+                          className={`p-2 rounded-full ${
                             formData.items.length > 1
                               ? "bg-red-100 hover:bg-red-200"
                               : "bg-gray-200 cursor-not-allowed"
