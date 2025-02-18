@@ -15,7 +15,7 @@ import {
 } from "../../hooks";
 import * as Yup from "yup";
 import { FaEye, FaTrash } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { orderSchema } from "../../validation/orderSchema";
 import AddressModal from "./AddressModal";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
@@ -86,6 +86,7 @@ const OrderForm: React.FC = () => {
   const { userData, fetchUser } = useGetUser();
   const { transactionId, generatePaymentLink } = useGeneratePaymentLink();
   const user = userData?.user;
+  const location = useLocation();
 
   const [productCache, setProductCache] = useState<Record<number, any[]>>({});
   const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
@@ -294,7 +295,7 @@ const OrderForm: React.FC = () => {
       };
 
       if (!isDataChanged()) {
-        navigate("/orders");
+        navigate(`${location?.state?.prevUrl}`);
         return;
       }
 
@@ -306,7 +307,7 @@ const OrderForm: React.FC = () => {
       }
 
       if (success) {
-        navigate("/orders");
+        navigate(`${location?.state?.prevUrl}`);
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -339,7 +340,7 @@ const OrderForm: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate("/orders");
+    navigate(`${location?.state?.prevUrl}`);
   };
 
   const handleAddItem = () => {

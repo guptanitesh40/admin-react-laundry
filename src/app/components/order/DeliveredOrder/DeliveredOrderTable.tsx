@@ -21,7 +21,19 @@ import dayjs from "dayjs";
 import { PaymentType } from "../../../../types/enums";
 import Swal from "sweetalert2";
 
-const DeliveredTable: React.FC = () => {
+interface DeliveredOrderTableProps {
+  filters: {
+    paymentStatusFilter: number[];
+    orderStatusFilter: number[];
+    paymentTypeFilter: number | undefined;
+    customerFilter: number[];
+    pickupBoyFilter: number[];
+    deliveryBoyFilter: number[];
+    branchFilter: number[];
+  };
+}
+
+const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,6 +58,13 @@ const DeliveredTable: React.FC = () => {
     sortOrder,
     list,
     orderList,
+    filters.orderStatusFilter,
+    filters.customerFilter,
+    filters.branchFilter,
+    filters.pickupBoyFilter,
+    filters.deliveryBoyFilter,
+    filters.paymentTypeFilter,
+    filters.paymentStatusFilter
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
@@ -120,7 +139,7 @@ const DeliveredTable: React.FC = () => {
   };
 
   const handleUpdateOrder = (order_id: number) => {
-    navigate(`/order/edit/${order_id}`);
+    navigate(`/order/edit/${order_id}`, { state: { prevUrl: location.pathname }});
   };
 
   const handleSort = (column: string) => {
@@ -169,8 +188,6 @@ const DeliveredTable: React.FC = () => {
     setInvoiceId(order_id);
     await generateInvoice(order_id);
   };
-
-  if (orders.length === 0) return;
 
   return (
     <>
@@ -631,4 +648,4 @@ const DeliveredTable: React.FC = () => {
   );
 };
 
-export default DeliveredTable;
+export default DeliveredOrderTable;

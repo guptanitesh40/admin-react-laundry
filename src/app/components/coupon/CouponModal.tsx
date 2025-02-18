@@ -247,7 +247,7 @@ const CouponModal: React.FC = () => {
           </div>
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div className="mb-4 col-span-1 w-[320px]">
+            <div className="mb-4 col-span-1 mini:w-[300px] lgscreen:w-[90%]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Start Time
               </label>
@@ -264,7 +264,7 @@ const CouponModal: React.FC = () => {
               />
             </div>
 
-            <div className="mb-4 col-span-1 w-[320px]">
+            <div className="mb-4 col-span-1 mini:w-[300px] lgscreen:w-[90%]">
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 End Time
               </label>

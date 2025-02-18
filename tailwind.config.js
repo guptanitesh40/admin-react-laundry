@@ -375,7 +375,7 @@ export default {
 				  mobile: {max:'525px'},
 				  lgmobile: {max:'500px'},
 				  xmobile: {max: '470px'},
-				  smmobile: {max: '640px'},
+				  smmobile: {max: '640px'},	
 				  smobile: {max: '570px'},
 				  cmd: {max:'715px'},
 				  lgscreen: {max: '350px'},
