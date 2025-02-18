@@ -14,7 +14,6 @@ interface FormData {
   first_name: string;
   last_name: string;
   email: string;
-  password: string;
   mobile_number: string;
   gender: number | null;
   role_id: number;
@@ -31,7 +30,6 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
     first_name: "",
     last_name: "",
     email: "",
-    password: "",
     mobile_number: "",
     gender: null,
     role_id: 5,
@@ -97,7 +95,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
         </button>
         <h2 className="text-2xl font-bold mb-6">Add New Customer</h2>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
             <div>
               <label
                 htmlFor="first_name"
@@ -113,7 +111,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 onChange={(e) =>
                   setFormData({ ...formData, first_name: e.target.value })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full input border border-gray-300 rounded-md"
               />
               <p className="text-red-500 text-sm">
                 {errors.first_name || "\u00A0"}
@@ -138,7 +136,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     last_name: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full input border border-gray-300 rounded-md"
               />
               <p className="text-red-500 text-sm">
                 {errors.last_name || "\u00A0"}
@@ -163,7 +161,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     email: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full input border border-gray-300 rounded-md"
               />
               <p className="text-red-500 text-sm">{errors.email || "\u00A0"}</p>
             </div>
@@ -186,7 +184,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     mobile_number: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full input border border-gray-300 rounded-md"
               />
               <p className="text-red-500 text-sm">
                 {errors.mobile_number || "\u00A0"}
@@ -194,31 +192,6 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-gray-700 font-semibold"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    password: e.target.value,
-                  })
-                }
-                className="w-full input border border-gray-300 rounded-md p-2"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.password || "\u00A0"}
-              </p>
-            </div>
-
-            <div className="mb-4">
               <label className="mb-2 block text-gray-700 font-semibold">
                 Gender
               </label>

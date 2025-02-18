@@ -19,7 +19,7 @@ const BookingOrder: React.FC = () => {
   });
 
   const handleAddOrder = () => {
-    navigate("/order/add");
+    navigate("/order/add", { state: { prevUrl: location.pathname }});
   };
 
   const updateFilters = (newFilters: any) => {
@@ -66,7 +66,7 @@ const BookingOrder: React.FC = () => {
                 updateFilters={updateFilters}
               />
             )}{" "}
-            <BookingOrderTable />
+            <BookingOrderTable filters={filters}/>
           </div>
         </div>
       </div>

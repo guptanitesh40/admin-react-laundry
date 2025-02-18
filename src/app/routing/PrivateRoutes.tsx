@@ -45,7 +45,7 @@ const PrivateRoutes: React.FC = () => {
   const Customer = lazy(() => import("../components/user/Customer"));
   const BookingOrder = lazy(() => import("../components/order/BookingOrder/BookingOrder"));
   const PickupOrder = lazy(() => import("../components/order/PickupOrder/PickupOrder"));
-  const DeliveredOrder = lazy(() => import("../components/order/DeliveredOrder/DeliveredOrder"));
+  const DeliveredOrderTable = lazy(() => import("../components/order/DeliveredOrder/DeliveredOrder"));
 
   return (
     <Routes>
@@ -227,7 +227,7 @@ const PrivateRoutes: React.FC = () => {
           path="/delivered-orders"
           element={
             <Suspense fallback={<ListShimmer />}>
-              <DeliveredOrder />
+              <DeliveredOrderTable />
             </Suspense>
           }
         />

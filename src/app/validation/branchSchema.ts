@@ -11,9 +11,8 @@ export const branchSchema = Yup.object().shape({
 
   branch_phone_number: Yup.string()
     .nullable()
-    .test("format", "Phone Number must be a 10-digit number", (value) => {
+    .test("format", "Phone number must be a positive number", (value) => {
       if (value === null || value === "") return true;
-      return /^[0-9]{10}$/.test(value);
     })
     .test("required", "Please add mobile number", (value) => {
       if (value === null || value === "") return false;

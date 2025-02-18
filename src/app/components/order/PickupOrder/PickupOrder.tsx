@@ -18,8 +18,9 @@ const PickupOrder: React.FC = () => {
     branchFilter: [] as number[],
   });
 
+
   const handleAddOrder = () => {
-    navigate("/order/add");
+    navigate("/order/add", { state: { prevUrl: location.pathname }});
   };
 
   const updateFilters = (newFilters: any) => {
@@ -66,7 +67,7 @@ const PickupOrder: React.FC = () => {
                 updateFilters={updateFilters}
               />
             )}{" "}
-            <PickupOrderTable />
+            <PickupOrderTable filters={filters}/>
           </div>
         </div>
       </div>
