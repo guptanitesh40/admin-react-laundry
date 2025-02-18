@@ -190,50 +190,50 @@ const BranchTable: React.FC = () => {
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
           <div className="flex flex-wrap gap-2.5">
-              <MultiSelect
-                options={companies?.map((company) => ({
-                  label: company.company_name,
-                  value: company.company_id,
-                }))}
-                displayValue="company_name"
-                placeholder="Select Company"
-                selectedValues={companyFilter}
-                onSelect={(selectedList: any) =>
-                  setCompanyFilter(
-                    selectedList.map((item: { value: any }) => item.value)
-                  )
-                }
-                onRemove={(selectedList: any) =>
-                  setCompanyFilter(
-                    selectedList.map((item: { value: any }) => item.value)
-                  )
-                }
-                className="min-w-[250px]"
-              />
+            <MultiSelect
+              options={companies?.map((company) => ({
+                label: company.company_name,
+                value: company.company_id,
+              }))}
+              displayValue="company_name"
+              placeholder="Select Company"
+              selectedValues={companyFilter}
+              onSelect={(selectedList: any) =>
+                setCompanyFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setCompanyFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="lgmobile:min-w-[235px] vsmobile:min-w-[235px]"
+            />
 
-              <MultiSelect
-                options={users?.map((user: any) => ({
-                  label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
-                  value: user.user_id,
-                }))}
-                displayValue="user_name"
-                placeholder="Select Branch Manager"
-                selectedValues={branchManagerFilter}
-                onSelect={(selectedList: any) =>
-                  setBranchManagerFilter(
-                    selectedList.map((item: { value: any }) => item.value)
-                  )
-                }
-                onRemove={(selectedList: any) =>
-                  setBranchManagerFilter(
-                    selectedList.map((item: { value: any }) => item.value)
-                  )
-                }
-                className="min-w-[300px]"
-              />
+            <MultiSelect
+              options={users?.map((user: any) => ({
+                label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+                value: user.user_id,
+              }))}
+              displayValue="user_name"
+              placeholder="Select Branch Manager"
+              selectedValues={branchManagerFilter}
+              onSelect={(selectedList: any) =>
+                setBranchManagerFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              onRemove={(selectedList: any) =>
+                setBranchManagerFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
+              }
+              className="lgmobile:min-w-[300px] vsmobile:min-w-[235px]"
+            />
           </div>
 
-          <div className="flex">
+          <div className="flex justify-self-end">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input

@@ -42,7 +42,7 @@ const SalesBookingReport = () => {
     ],
     options: {
       chart: {
-        height: 280,
+        height: 200,
         type: "area",
         toolbar: {
           show: false,
@@ -159,7 +159,7 @@ const SalesBookingReport = () => {
   };
 
   return (
-    <div className="xl:cols-span-2 sm:cols-span-1 lg:cols-span-1">
+    <div className="col-span-2">
       <div className="card w-full">
         <div className="card-header border-none flex flex-col mt-2 items-start">
           <h3 className="card-title">Sales Booking</h3>
@@ -171,15 +171,13 @@ const SalesBookingReport = () => {
           </h5>
         </div>
 
-        <div className="card-body no-padding-left grid gap-1">
-          <div className="h-[280px] miniscreen:min-w-[110%] lgmobile:min-w-[110%]">
-            <AreaChart
-              options={data.options}
-              series={data.series}
-              type={data.options.chart.type}
-              height={data.options.chart.height}
-            />
-          </div>
+        <div className="card-body flex flex-col justify-end items-stretch grow px-3 py-1">
+          <AreaChart
+            options={data.options}
+            series={data.series}
+            type={data.options.chart.type}
+            height={data.options.chart.height}
+          />
         </div>
       </div>
     </div>
