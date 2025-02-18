@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { FcCheckmark } from "react-icons/fc";
-import { MdArrowDropDown } from "react-icons/md";
 
 interface OptionType {
   label: string;
@@ -111,11 +110,34 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               ? options
                   .filter((option) => selectedValues?.includes(option.value))
                   .slice(0, sliceCount)
-                  .map((option) => (
-                    <span key={option.value} className="selected-option">
-                      {option.label}
-                    </span>
-                  ))
+                  .map((option) => {
+                    const isNumberAtEnd = /\(\d+\)$/.test(option.label);
+                    let label;
+
+                    if (option.label.length > 25) {
+                      if (isNumberAtEnd) {
+                        const match = option.label.match(/\(\d+\)$/);
+                        const numberPart = match ? match[0] : "";
+                        const textWithoutNumber = option.label
+                          .replace(numberPart, "")
+                          .trim();
+                        label = `${textWithoutNumber.slice(
+                          0,
+                          10
+                        )}... ${numberPart}`;
+                      } else {
+                        label = `${option.label.slice(0, 25)}`;
+                      }
+                    } else {
+                      label = option.label;
+                    }
+
+                    return (
+                      <span key={option.value} className="selected-option">
+                        {label}
+                      </span>
+                    );
+                  })
               : null}
             {selectedValues?.length > sliceCount && (
               <span className="selected-option">
@@ -140,7 +162,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           <ul>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => {
-                const adminStatusClass = getOrderStatusLabel(option.label, true);
+                const adminStatusClass = getOrderStatusLabel(
+                  option.label,
+                  true
+                );
 
                 return isCustomLabel ? (
                   <li
