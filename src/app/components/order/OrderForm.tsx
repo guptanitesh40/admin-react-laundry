@@ -922,11 +922,11 @@ const OrderForm: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between sm:items-center smmobile:flex-col gap-y-2 smmobile:w-full">
                     <div>
                       {item.showDescription && (
                         <div>
-                          <div className="flex flex-col w-[500px] md:w-[350px] lg:w-[300px] h-[80px] mb-2">
+                          <div className="flex smmobile:w-[100%] smmobile:justify-self-start flex-col md:w-[350px] lg:w-[420px] sm:w-[300px] h-[80px] mb-2">
                             <label
                               htmlFor="description"
                               className="block text-gray-700 text-sm font-bold mb-2"
@@ -950,7 +950,7 @@ const OrderForm: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex block-element flex-end justify-end relative">
+                    <div className="flex block-element flex-end smmobile:justify-self-end justify-end relative">
                       <div>
                         <button
                           type="button"

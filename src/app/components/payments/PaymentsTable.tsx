@@ -173,7 +173,7 @@ const PaymentsTable: React.FC = () => {
                   selectedList.map((item: { value: any }) => item.value)
                 )
               }
-              className="min-w-[320px]"
+              className="sm:min-w-[320px] smmobile:min-w-[290px] smobile:min-w-[300px] vsmobile:min-w-[240px]"
               setSearch={setCustomerSearch}
             />
           </div>
