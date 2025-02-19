@@ -72,12 +72,12 @@ const PendingAmountReport: React.FC = () => {
           <h3 className="card-title">Pending Amount</h3>
         </div>
 
-        <div className="card-body grid gap-1 lgmobile:justify-center">
+        <div className="card-body grid gap-1 fmobile:justify-center">
           <PieChart
             options={chartOptions}
             series={chartSeries}
             type="pie"
-            height={225}
+            height={220}
           />
         </div>
       </div>

@@ -373,7 +373,7 @@ export default {
 			  screens: {
 				  zx: {max:'400px'},
 				  mobile: {max:'525px'},
-				  lgmobile: {max:'500px'},
+				  fmobile: {max:'500px'},
 				  xmobile: {max: '470px'},
 				  smmobile: {max: '640px'},	
 				  smobile: {max: '570px'},

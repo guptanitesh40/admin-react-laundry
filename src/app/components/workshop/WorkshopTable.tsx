@@ -223,7 +223,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                   selectedList.map((manager) => manager.value)
                 )
               }
-              className="w-[300px]"
+              className="lgmobile:min-w-[300px] vsmobile:min-w-[235px]"
             />
           </div>
 
