@@ -36,9 +36,7 @@ const useGetOrders = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string,
-  list: string = "",
-  orderList: string = "",
+  sortOrder?: string,  
   order_statuses?: number[],
   customer_ids?: number[],
   branches_ids?: number[],
@@ -46,6 +44,8 @@ const useGetOrders = (
   delivery_boy_ids?: number[],
   payment_types?: number,
   payment_statuses?: number[],
+  list: string = "",
+  orderList: string = "",
 ) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalOrders, setTotalOrders] = useState(0);

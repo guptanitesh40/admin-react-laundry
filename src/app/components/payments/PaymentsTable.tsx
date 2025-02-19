@@ -155,7 +155,6 @@ const PaymentsTable: React.FC = () => {
               }
               className="min-w-[180px]"
               sliceCount={1}
-              isSearchInput={false}
             />
 
             <MultiSelect
@@ -175,6 +174,7 @@ const PaymentsTable: React.FC = () => {
               }
               className="sm:min-w-[320px] smmobile:min-w-[290px] smobile:min-w-[300px] vsmobile:min-w-[240px]"
               setSearch={setCustomerSearch}
+              isSearchInput={true}
             />
           </div>
 

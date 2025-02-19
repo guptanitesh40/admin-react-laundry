@@ -55,16 +55,16 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
     perPage,
     search,
     sortColumn,
-    sortOrder,
-    list,
-    orderList,
+    sortOrder,    
     filters.orderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter
+    filters.paymentStatusFilter,
+    list,
+    orderList,
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();

@@ -48,23 +48,21 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
   let list = "booking_list";
-  let orderList = "";
 
   const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder,
-    list,
-    orderList,
+    sortOrder, 
     filters.orderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter
+    filters.paymentStatusFilter,
+    list,
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();

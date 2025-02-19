@@ -43,25 +43,21 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [invoiceId, setInvoiceId] = useState<any>();
-  let list = "";
-  let orderList = "";
+  const [invoiceId, setInvoiceId] = useState<any>(); 
 
   const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder,
-    list,
-    orderList,
+    sortOrder,    
     filters.orderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter
+    filters.paymentStatusFilter  
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
@@ -91,7 +87,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   }, [search]);
 
   const handleViewOrder = (order_id: number) => {
-    navigate(`/order/${order_id}`, { state: { from: "OrderTable", prevUrl: location.pathname } });
+    navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
 
   const handleDeleteOrder = async (order_id: number) => {
@@ -136,7 +132,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   };
 
   const handleUpdateOrder = (order_id: number) => {
-    navigate(`/order/edit/${order_id}`);
+    navigate(`/order/edit/${order_id}`, { state: { prevUrl: location.pathname}});
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
