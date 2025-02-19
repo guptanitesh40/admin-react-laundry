@@ -19,7 +19,7 @@ const Order: React.FC = () => {
   });
 
   const handleAddOrder = () => {
-    navigate("/order/add");
+    navigate("/order/add", { state: { prevUrl: location.pathname }});
   };
 
   const updateFilters = (newFilters: any) => {
@@ -27,7 +27,7 @@ const Order: React.FC = () => {
   };
 
   return (
-    <>
+    <>  
       <div className="container-fixed">
         <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
           <div className="flex flex-col justify-center gap-2">

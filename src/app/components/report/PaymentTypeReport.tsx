@@ -79,8 +79,8 @@ const PaymentTypeReport = () => {
           <h3 className="card-title">Payment Type</h3>
         </div>
 
-        <div className="card-body grid gap-1 lgmobile:justify-center">
-            <DonutChart series={data} options={options} type="donut" height={225} />
+        <div className="card-body grid gap-1 fmobile:justify-center">
+            <DonutChart series={data} options={options} type="donut" height={200} />
         </div>
       </div>
     </div>
