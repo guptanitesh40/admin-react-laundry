@@ -162,7 +162,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 p-6 flex items-center overflow-auto justify-center z-50">
+    <div className="fixed inset-0 p-6 grid items-center overflow-auto justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}

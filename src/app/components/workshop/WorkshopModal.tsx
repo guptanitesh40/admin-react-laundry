@@ -140,12 +140,12 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 p-4 grid overflow-auto min-h-screen items-center justify-center z-50">
+    <div className="fixed inset-0 p-6 grid items-center overflow-auto justify-center z-50">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[450px] lgmobile:min-w-[95%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
