@@ -187,7 +187,7 @@ const FeedbackTable: React.FC = () => {
                   selectedList.map((item: { value: any }) => item.value)
                 )
               }
-              className="min-w-[270px]"
+              className="lgmobile:min-w-[250px] vsmobile:min-w-[235px]"
               sliceCount={3}
               isSearchInput={false}
             />

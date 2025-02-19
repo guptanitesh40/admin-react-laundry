@@ -263,46 +263,48 @@ const UserProfile: React.FC = () => {
                   <h3 className="card-title">Orders Summary</h3>
                 </div>
                 <div className="card-body pt-4 pb-3">
-                  <table className="table-auto">
-                    <tbody>
-                      <tr>
-                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                          Total Kasar Amount:
-                        </td>
-                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{totalKasarAmount}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                          Total Order Amount:
-                        </td>
-                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{totalOrderAmount}
-                        </td>
-                      </tr>
-                      {userData.total_pending_amount > 0 && (
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
                         <tr>
                           <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                            Total Pending Amount:
+                            Total Kasar Amount:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            ₹{userData.total_pending_amount}
-                          </td>
-                          <td>
-                            <span className="relative bottom-2 left-4">
-                              <button
-                                className="flex items-center gap-2.5 font-extralight btn btn-light "
-                                onClick={handleModalOpen}
-                              >
-                                Pay <LiaRupeeSignSolid size={20} />
-                              </button>
-                            </span>
+                            ₹{totalKasarAmount}
                           </td>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Total Order Amount:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            ₹{totalOrderAmount}
+                          </td>
+                        </tr>
+                        {userData.total_pending_amount > 0 && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Total Pending Amount:
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              ₹{userData.total_pending_amount}
+                            </td>
+                            <td>
+                              <span className="relative bottom-2 left-4">
+                                <button
+                                  className="flex items-center gap-2.5 font-extralight btn btn-light "
+                                  onClick={handleModalOpen}
+                                >
+                                  Pay <LiaRupeeSignSolid size={20} />
+                                </button>
+                              </span>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

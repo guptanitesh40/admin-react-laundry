@@ -110,7 +110,7 @@ const RefundAmountReport: React.FC = () => {
             options={chartOptions}
             series={chartSeries}
             type="bar"
-            height={213}
+            height={240}
           />
         </div>
       </div>
