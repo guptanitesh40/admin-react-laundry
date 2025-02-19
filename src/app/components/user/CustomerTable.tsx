@@ -195,7 +195,7 @@ const CustomerTable: React.FC = () => {
                 )
               }
               className="lgscreen:min-w-[230px] mini:min-w-[250px]"
-              isSearchInput={false}
+              sliceCount={2}
             />
           </div>
 

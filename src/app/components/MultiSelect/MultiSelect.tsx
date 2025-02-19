@@ -31,7 +31,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onSelect,
   setSearch,
   search = "",
-  isSearchInput = true,
+  isSearchInput = false,
   className = "",
   sliceCount = 1,
   isCustomLabel = false,

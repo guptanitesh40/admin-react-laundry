@@ -110,6 +110,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             }}
             setSearch={setCustomerSearch}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -137,6 +138,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             }}
             isCustomLabel={true}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -166,6 +168,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -192,6 +195,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -218,6 +222,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -243,8 +248,9 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
                 paymentStatusFilter: selectedValues,
               });
             }}
+            sliceCount={2}
             isSearchInput={false}
-            className="w-full"
+            className="w-full"            
           />
 
           <select

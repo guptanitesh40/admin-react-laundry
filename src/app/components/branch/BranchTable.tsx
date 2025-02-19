@@ -230,6 +230,7 @@ const BranchTable: React.FC = () => {
                 )
               }
               className="lgmobile:min-w-[300px] vsmobile:min-w-[235px]"
+              isSearchInput={true}
             />
           </div>
 

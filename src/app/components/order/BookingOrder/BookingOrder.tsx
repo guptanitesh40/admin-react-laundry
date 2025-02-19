@@ -21,7 +21,6 @@ const BookingOrder: React.FC = () => {
   const handleAddOrder = () => {
     navigate("/order/add", { state: { prevUrl: location.pathname }});
   };
-
   const updateFilters = (newFilters: any) => {
     setFilters(newFilters);
   };
