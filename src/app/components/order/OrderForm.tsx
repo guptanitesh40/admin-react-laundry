@@ -191,10 +191,12 @@ const OrderForm: React.FC = () => {
   }, [transactionId]);
 
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      payment_status: formData.payment_type === 1 ? 1 : null,
-    }));
+    if (!order_id) {
+      setFormData((prev) => ({
+        ...prev,
+        payment_status: formData.payment_type === 1 ? 1 : null,
+      }));
+    }
   }, [formData.payment_type]);
 
   useEffect(() => {

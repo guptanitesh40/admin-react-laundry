@@ -211,7 +211,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
             <MultiSelect
               options={workshopManagers}
               displayValue="label"
-              placeholder="Search Workshop Manager"
+              placeholder="Select Workshop Manager"
               selectedValues={workshopManagerFilter}
               onSelect={(selectedList) =>
                 setWorkshopManagerFilter(
@@ -224,6 +224,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                 )
               }
               className="lgmobile:min-w-[300px] vsmobile:min-w-[235px]"
+              isSearchInput={true}              
             />
           </div>
 

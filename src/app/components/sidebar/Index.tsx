@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
-import { FaProductHunt, FaBuilding, FaImages } from "react-icons/fa";
+import { FaProductHunt, FaBuilding, FaImages, FaUsers } from "react-icons/fa";
 import { BiSolidCoupon } from "react-icons/bi";
 import { RiBuilding2Fill, RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { LiaUserCircle } from "react-icons/lia";
@@ -297,6 +297,26 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
+            <Link to="/customers" onClick={() => handleItemClick("customers")}>
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "customers"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <FaUsers size={24} color="#cb9ad7" />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Customers
+                  </span>
+                </div>
+              </div>
+            </Link>
+
             <Link to="/coupon" onClick={() => handleItemClick("coupon")}>
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -420,60 +440,25 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-            <div
-              className="menu-item"
-              data-menu-item-toggle="accordion"
-              data-menu-item-trigger="click"
-            >
+            <Link to="/users" onClick={() => handleItemClick("users")}>
               <div
-                className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[12px] pl-[10px] pr-[10px] py-[6px]"
-                tabIndex={0}
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "users"
+                )}`}
               >
-                <LiaUserCircle color="#cb9ad7" size={28} />
-                <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
-                  Users
-                </span>
-                <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
-                  <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
-                  <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
-                </span>
-              </div>
-
-              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[20px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
-                <Link
-                  to="/customers"
-                  onClick={() => handleItemClick("customers")}
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
                 >
-                  <div
-                    className={`menu-item ${getSubmenuItemClass("customers")}`}
-                  >
-                    <span
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
-                    >
-                      <span className="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Customers
-                      </span>
-                    </span>
-                  </div>
-                </Link>
-
-                <Link to="/users" onClick={() => handleItemClick("users")}>
-                  <div className={`menu-item ${getSubmenuItemClass("users")}`}>
-                    <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
-                    >
-                      <span className="menu-bullet flex w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Internal User
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <LiaUserCircle color="#cb9ad7" size={28} />
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Users & Roles
+                  </span>
+                </div>
               </div>
-            </div>
+            </Link>
 
             <Link to="/workshops" onClick={() => handleItemClick("workshops")}>
               <div

@@ -47,7 +47,7 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
                 genderFilter: selectedValues,
               });
             }}
-            className="basis-1/4"
+            className="basis-1/4"            
           />
 
           <MultiSelect
@@ -120,6 +120,7 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
               });
             }}
             className="basis-1/4"
+            isSearchInput={true}
           />
         </div>
       </div>

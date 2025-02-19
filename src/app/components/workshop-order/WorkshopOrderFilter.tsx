@@ -100,7 +100,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           <MultiSelect
             options={workshopManagers}
             displayValue="label"
-            placeholder="Search Workshop Manager"
+            placeholder="Select Workshop Manager"
             selectedValues={filters.workshopManagerFilter}
             onSelect={(selectedList) =>
               updateFilters({
@@ -142,6 +142,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
             }}
             setSearch={setCustomerSearch}
             className="w-full"
+            isSearchInput={true}
           />
 
           <MultiSelect
@@ -188,8 +189,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
                 ),
               })
             }
-            isSearchInput={false}
-            sliceCount={2}
+            isSearchInput={false}            
             className="w-full"
           />
 

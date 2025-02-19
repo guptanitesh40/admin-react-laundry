@@ -94,13 +94,13 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
   if (!orderRefundModalOpen) return;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 grid overflow-auto items-center justify-center z-50 p-4">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-5 rounded-lg shadow-lg w-[500px] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -117,7 +117,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
             Total Amount : ₹{TotalAmount}
           </span>
           <span className="text-gray-700 text-sm font-medium py-1">
-            Paid Amount :  ₹{PaidAmount}
+            Paid Amount : ₹{PaidAmount}
           </span>
         </div>
 
