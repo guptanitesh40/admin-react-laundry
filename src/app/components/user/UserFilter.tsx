@@ -26,8 +26,8 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
 
   return (
     <>
-      <div className="card-header flex flex-wrap gap-4">
-        <div className="w-full flex flex-col md:flex-row gap-3 mb-8">
+      <div className="flex flex-wrap gap-4 p-4">
+        <div className="w-full flex flex-col md:flex-row gap-3">
           <MultiSelect
             options={genderOptions}
             displayValue="label"

@@ -37,7 +37,7 @@ const useGetUsers = (
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
     if (perPage) queryParams.append("per_page", perPage.toString());
     if (search) queryParams.append("search", search);
-    if (sortColumn) queryParams.append("sortBy", sortColumn);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (genders)  {
       genders.forEach((g) => queryParams.append("genders" , g.toString()));

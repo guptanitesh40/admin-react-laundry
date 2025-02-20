@@ -327,21 +327,7 @@ const FeedbackTable: React.FC = () => {
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
-                  <th className="min-w-[300px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "comment"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("comment")}
-                    >
-                      <span className="sort-label">Comment</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
+                  <th className="min-w-[300px]">Comment</th>
                   <th className="min-w-[120px]">
                     <span
                       className={`sort ${
@@ -357,21 +343,7 @@ const FeedbackTable: React.FC = () => {
                       <span className="sort-icon"></span>
                     </span>{" "}
                   </th>
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "is_publish"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("is_publish")}
-                    >
-                      <span className="sort-label">Publish</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
+                  <th className="min-w-[140px]">Publish</th>
                 </tr>
               </thead>
               {feedbacks.length > 0 ? (

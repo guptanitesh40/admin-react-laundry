@@ -168,8 +168,6 @@ const BranchTable: React.FC = () => {
     navigate(`/branch-profile/${branch_id}`);
   };
 
-  if (!users || !companies) return;
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">

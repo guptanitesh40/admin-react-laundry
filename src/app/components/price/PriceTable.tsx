@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import { searchSchema } from "../../validation/searchSchema";
+import TableShimmer from "../shimmer/TableShimmer";
 
 interface Category {
   category_id: number;
@@ -344,7 +345,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredCombinations.length > 0 ? (
+                      {loading ? (
+                        <TableShimmer/>
+                      ) : filteredCombinations.length > 0 ? (
                         filteredCombinations.map((combination, index) => {
                           const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
                           const isEditing = editing.has(key);

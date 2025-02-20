@@ -333,13 +333,13 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
-                        sortColumn === "booking_date"
+                        sortColumn === "created_at"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("booking_date")}
+                      onClick={() => handleSort("created_at")}
                     >
                       <span className="sort-label">Booking Date</span>
                       <span className="sort-icon"></span>
@@ -365,13 +365,13 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
-                        sortColumn === "delivery_date"
+                        sortColumn === "estimated_delivery_time"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("delivery_date")}
+                      onClick={() => handleSort("estimated_delivery_time")}
                     >
                       <span className="sort-label">Delivery Date</span>
                       <span className="sort-icon"></span>
