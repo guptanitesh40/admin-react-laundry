@@ -21,7 +21,7 @@ const PaymentTransactionReport: React.FC = () => {
     ) || [];
 
   const totalReceivedAmount = paymentTransactionData?.reduce(
-    (sum: any, item: { total_amount: number }) => sum + item.total_amount,
+    (sum: any, item: { total_transaction_amount: number }) => sum + item.total_transaction_amount,
     0
   );
 

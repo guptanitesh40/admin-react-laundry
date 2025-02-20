@@ -227,13 +227,13 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                   <th className="min-w-[70px]">
                     <span
                       className={`sort ${
-                        sortColumn === "id"
+                        sortColumn === "user_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("id")}
+                      onClick={() => handleSort("user_id")}
                     >
                       <span className="sort-label">Id</span>
                       <span className="sort-icon"></span>
