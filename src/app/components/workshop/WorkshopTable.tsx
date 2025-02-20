@@ -292,19 +292,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                 </th>
                 <th className="min-w-[230px]">Workshop manager</th>
                 <th className="min-w-[230px]">
-                  <span
-                    className={`sort ${
-                      sortColumn === "address"
-                        ? sortOrder === "ASC"
-                          ? "asc"
-                          : "desc"
-                        : ""
-                    }`}
-                    onClick={() => handleSort("address")}
-                  >
-                    <span className="sort-label">Address</span>
-                    <span className="sort-icon"></span>
-                  </span>
+                  Address
                 </th>
                 <th className="min-w-[250px]">
                   <span

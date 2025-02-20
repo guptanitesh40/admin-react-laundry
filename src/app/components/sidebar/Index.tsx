@@ -129,16 +129,10 @@ export const Sidebar: React.FC = () => {
                 </span>
               </div>
 
-              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">                
-
-                <Link
-                  to="/orders"
-                  onClick={() => handleItemClick("/orders")}
-                >
+              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                <Link to="/orders" onClick={() => handleItemClick("/orders")}>
                   <div
-                    className={`menu-item ${getSubmenuItemClass(
-                      "/orders"
-                    )}`}
+                    className={`menu-item ${getSubmenuItemClass("/orders")}`}
                   >
                     <div
                       className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -438,7 +432,7 @@ export const Sidebar: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </Link>
+            </Link>            
 
             <Link to="/users" onClick={() => handleItemClick("users")}>
               <div
@@ -454,7 +448,7 @@ export const Sidebar: React.FC = () => {
                     <LiaUserCircle color="#cb9ad7" size={28} />
                   </span>
                   <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Users & Roles
+                    Users and Roles
                   </span>
                 </div>
               </div>

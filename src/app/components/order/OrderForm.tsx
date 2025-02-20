@@ -283,6 +283,7 @@ const OrderForm: React.FC = () => {
         express_delivery_charges: Number(formData.express_delivery_charges),
         payment_type: Number(formData.payment_type),
         payment_status: Number(formData.payment_status),
+        order_status: 4,
         items: formattedItems,
       };
 
@@ -1221,7 +1222,7 @@ const OrderForm: React.FC = () => {
               />
             </div>
 
-            {!order_id && (
+            {/* {!order_id && (
               <div className="flex flex-col">
                 <label
                   htmlFor="item_status"
@@ -1247,7 +1248,7 @@ const OrderForm: React.FC = () => {
                   <option value={1}>Need to pickup</option>
                 </select>
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="mt-6 flex gap-4">

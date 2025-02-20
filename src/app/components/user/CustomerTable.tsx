@@ -185,7 +185,7 @@ const CustomerTable: React.FC = () => {
               placeholder="Select Gender"
               selectedValues={genderFilter}
               onSelect={(selectedList: any) =>
-                setGenderFilter(                  
+                setGenderFilter(
                   selectedList.map((item: { value: any }) => item.value)
                 )
               }
@@ -238,13 +238,13 @@ const CustomerTable: React.FC = () => {
                   <th className="min-w-[70px]">
                     <span
                       className={`sort ${
-                        sortColumn === "id"
+                        sortColumn === "user_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("id")}
+                      onClick={() => handleSort("user_id")}
                     >
                       <span className="sort-label">Id</span>
                       <span className="sort-icon"></span>
@@ -301,21 +301,7 @@ const CustomerTable: React.FC = () => {
 
                   <th className="min-w-[80px]">Gender</th>
 
-                  <th className="min-w-[150px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "total_pending_amount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("total_pending_amount")}
-                    >
-                      <span className="sort-label">Total Pending Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[150px]">Total Pending Amount</th>
 
                   <th className="min-w-[150px]">Actions</th>
                 </tr>

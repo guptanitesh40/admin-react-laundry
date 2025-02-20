@@ -43,21 +43,21 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [invoiceId, setInvoiceId] = useState<any>(); 
+  const [invoiceId, setInvoiceId] = useState<any>();
 
   const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
     sortColumn,
-    sortOrder,    
+    sortOrder,
     filters.orderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter  
+    filters.paymentStatusFilter
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
@@ -132,7 +132,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   };
 
   const handleUpdateOrder = (order_id: number) => {
-    navigate(`/order/edit/${order_id}`, { state: { prevUrl: location.pathname}});
+    navigate(`/order/edit/${order_id}`, {
+      state: { prevUrl: location.pathname },
+    });
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -305,32 +307,18 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[230px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "address_details"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("address_details")}
-                    >
-                      <span className="sort-label">Shipping Address</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[230px]">Shipping Address</th>
 
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
-                        sortColumn === "booking_date"
+                        sortColumn === "created_at"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("booking_date")}
+                      onClick={() => handleSort("created_at")}
                     >
                       <span className="sort-label">Booking Date</span>
                       <span className="sort-icon"></span>
@@ -356,13 +344,13 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
-                        sortColumn === "delivery_date"
+                        sortColumn === "estimated_delivery_time"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("delivery_date")}
+                      onClick={() => handleSort("estimated_delivery_time")}
                     >
                       <span className="sort-label">Delivery Date</span>
                       <span className="sort-icon"></span>
@@ -433,21 +421,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "payment_type"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("payment_type")}
-                    >
-                      <span className="sort-label">Payment type</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[165px]">Payment type</th>
 
                   <th className="min-w-[160px]">Receipt</th>
 
@@ -510,7 +484,9 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_pickup_time).format("DD-MM-YYYY")}
+                            {dayjs(order.estimated_pickup_time).format(
+                              "DD-MM-YYYY"
+                            )}
                           </div>
                         </td>
                         <td>
