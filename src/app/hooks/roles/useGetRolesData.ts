@@ -3,19 +3,19 @@ import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 const token = localStorage.getItem("authToken");
 
-interface ModuleData {
-  module_id: number;
-  module_name: string;
+interface RolesData {
+  role_id: number;
+  name: string;
 }
 
-const useGetModulesData = () => {
+const useGetRolesData = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [modulesData, setModulesData] = useState<ModuleData[]>();
+  const [rolesData, setRolesData] = useState<RolesData[]>();
 
-  const fetchModulesData = async () => {
+  const fetchRolesData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/modules`, {
+      const response = await fetch(`${BASE_URL}/roles`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,18 +30,19 @@ const useGetModulesData = () => {
         return;
       }
 
-      setModulesData(data?.data);
+      setRolesData(data?.data);
     } catch {
-        toast.error("Network error: Failed to fetch modules data.");
+      toast.error("Network error: Failed to fetch roles data.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchModulesData();
-  }, [])
-  return { modulesData, fetchModulesData, loading };
+    fetchRolesData();
+  }, []);
+
+  return { rolesData, fetchRolesData, loading };
 };
 
-export default useGetModulesData;
+export default useGetRolesData;

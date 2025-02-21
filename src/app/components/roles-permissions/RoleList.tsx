@@ -1,14 +1,16 @@
 import { FaPencilAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useGetRolesData } from "../../hooks";
+import TableShimmer from "../shimmer/TableShimmer";
 
 const RoleList: React.FC = () => {
+  const { rolesData, loading } = useGetRolesData();
 
   const navigate = useNavigate();
 
-  const handleEditPermissions = (role_id: number) => {
-    navigate("/user-permissions", {state: { role_id }})
-  }
-
+  const handleEditPermissions = (role: string) => {
+    navigate("/user-permissions", { state: { role } });
+  };
 
   return (
     <div className="card-body">
@@ -21,54 +23,39 @@ const RoleList: React.FC = () => {
             <thead>
               <tr>
                 <th className="min-w-[600px]">Roles</th>
-
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>Sub Admin</td>
-                <td>
-                  <div className="flex justify-self-center gap-2.5">
-                    <button
-                      className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                      aria-label="Edit"
-                      onClick={() => handleEditPermissions(2)}
-                    >
-                      <FaPencilAlt className="text-yellow-600" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Branch Manager</td>
-                <td>
-                  <div className="flex justify-self-center gap-2.5">
-                    <button
-                      className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                      aria-label="Edit"
-                      onClick={() => handleEditPermissions(3)}
-                    >
-                      <FaPencilAlt className="text-yellow-600" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Workshop Manager</td>
-                <td>
-                  <div className="flex justify-self-center gap-2.5">
-                    <button
-                      className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                      aria-label="Edit"
-                      onClick={() => handleEditPermissions(6)}
-                    >
-                      <FaPencilAlt className="text-yellow-600" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+            {loading ? (
+              <TableShimmer />
+            ) : rolesData ? (
+              <tbody>
+                {rolesData.map((role) => (
+                  <tr key={role.role_id}>
+                    <td>{role.name}</td>
+                    <td>
+                      <div className="flex justify-self-center gap-2.5">
+                        <button
+                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                          aria-label="Edit"
+                          onClick={() => handleEditPermissions(role.name)}
+                        >
+                          <FaPencilAlt className="text-yellow-600" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan={6} className="text-center">
+                    No Roles data available
+                  </td>
+                </tr>
+              </tbody>
+            )}
           </table>
         </div>
       </div>

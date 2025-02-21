@@ -434,8 +434,6 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>            
 
-
-
             <div
               className="menu-item"
               data-menu-item-toggle="accordion"
@@ -496,26 +494,6 @@ export const Sidebar: React.FC = () => {
                
               </div>
             </div>
-
-            <Link to="/users" onClick={() => handleItemClick("users")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "users"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <LiaUserCircle color="#cb9ad7" size={28} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Users and Roles
-                  </span>
-                </div>
-              </div>
-            </Link>
 
             <Link to="/workshops" onClick={() => handleItemClick("workshops")}>
               <div

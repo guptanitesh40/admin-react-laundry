@@ -1,10 +1,9 @@
-import useGetModulesData from "../../hooks/roles/useGetModulesData";
+import React from "react";
 import TableShimmer from "../shimmer/TableShimmer";
+import { useGetModulesData } from "../../hooks";
 
 const PermissionTable: React.FC = () => {
   const { modulesData, loading } = useGetModulesData();
-
-  console.log("modulesData", modulesData);
 
   return (
     <div className="card-body">
@@ -21,7 +20,6 @@ const PermissionTable: React.FC = () => {
                 <th>Read</th>
                 <th>Update</th>
                 <th>Delete</th>
-                <th>Save</th>
               </tr>
             </thead>
             {loading ? (
@@ -32,8 +30,17 @@ const PermissionTable: React.FC = () => {
                   <tr key={module.module_id}>
                     <td>{module.module_name}</td>
                     <td>
-                    <input className="order-2" name="check" type="checkbox" value="1"/>
+                    <input className="order-2 w-4 h-4" name="check" type="checkbox" value="1"/>                    
                     </td>
+                    <td>
+                      <input className="order-2 w-4 h-4" name="check" type="checkbox" value="1"/>
+                    </td>
+                    <td>
+                      <input className="order-2 w-4 h-4" name="check" type="checkbox" value="1"/>
+                    </td>
+                    <td>
+                      <input className="order-2 w-4 h-4" name="check" type="checkbox" value="1"/>
+                    </td>                    
                   </tr>
                 ))}
               </tbody>
