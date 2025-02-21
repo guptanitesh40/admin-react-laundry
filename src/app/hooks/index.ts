@@ -118,3 +118,5 @@ export { default as useGeneratePaymentLink } from './payment/useGeneratePaymentL
 export { default as useGetFeedbacks } from './feedback/useGetFeedbacks.ts';
 export { default as useApproveFeedback } from './feedback/useApproveFeedback.ts';
 
+export { default as useGetModulesData } from './roles/useGetModulesData.ts';
+export { default as useGetRolesData } from './roles/useGetRolesData.ts';

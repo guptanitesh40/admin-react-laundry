@@ -14,7 +14,7 @@ const AppRoutes: React.FC = () => {
   );
 
   return (
-    <BrowserRouter >
+    <BrowserRouter>
     <Routes>
       <Route element={<App />}>
         {isAuthenticated ? (
@@ -27,7 +27,6 @@ const AppRoutes: React.FC = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/forgot-password/enterotp" element={<EnterOtp />} />
             <Route path="/forgot-password/resetpassword" element={<ResetPassword />} />
-
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </>
