@@ -52,6 +52,8 @@ const PrivateRoutes: React.FC = () => {
   const DeliveredOrderTable = lazy(
     () => import("../components/order/DeliveredOrder/DeliveredOrder")
   );
+  const Roles = lazy(() => import("../components/roles-permissions/Roles"));
+  const Permissions = lazy(() => import("../components/roles-permissions/Permissions"))
 
   return (
     <Routes>
@@ -297,6 +299,24 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<ListShimmer />}>
               <User />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/roles"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Roles />
+            </Suspense>
+          }
+        />
+
+        <Route
+          path="/user-permissions"
+          element={
+            <Suspense fallback={<ListShimmer />}>
+              <Permissions />
             </Suspense>
           }
         />
