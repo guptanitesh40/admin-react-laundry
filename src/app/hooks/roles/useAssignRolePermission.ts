@@ -17,8 +17,6 @@ const useAssignRolePermission = () => {
 
   const assignRolePermission = async (rolePermission: any) => {
 
-    console.log("permissionsData", rolePermission);
-
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/role-permission/assign`, {
