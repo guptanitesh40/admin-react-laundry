@@ -81,7 +81,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
     }
   }, [isSave]);
 
-  const handleCheckboxChange = (module_id: number, field: keyof Permission) => {
+  const handleCheckboxChange = (role_id: number, module_id: number, field: keyof Permission) => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((perm) =>
         perm.module_id === module_id
@@ -135,6 +135,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
                             }
                             onChange={() =>
                               handleCheckboxChange(
+                                role_id: module.role_id,
                                 module.module_id,
                                 field as keyof Permission
                               )
