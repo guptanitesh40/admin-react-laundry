@@ -8,8 +8,8 @@ const RoleList: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleEditPermissions = (role: string) => {
-    navigate("/user-permissions", { state: { role } });
+  const handleEditPermissions = (role: string, role_id: number) => {
+    navigate("/user-permissions", { state: { role, role_id } });
   };
 
   return (
@@ -38,7 +38,7 @@ const RoleList: React.FC = () => {
                         <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           aria-label="Edit"
-                          onClick={() => handleEditPermissions(role.name)}
+                          onClick={() => handleEditPermissions(role.name, role.role_id)}
                         >
                           <FaPencilAlt className="text-yellow-600" />
                         </button>
