@@ -7,6 +7,7 @@ import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import toast from "react-hot-toast";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -99,8 +100,8 @@ const FeedbackTable: React.FC = () => {
       await approveFeedback(feedback_id, value);
 
       fetchFeedbacks();
-    } catch (error) {
-      console.error("Failed to update publish status:", error);
+    } catch {
+      toast.error("Failed to update publish status:");
     }
   };
 
