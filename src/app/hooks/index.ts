@@ -120,3 +120,5 @@ export { default as useApproveFeedback } from './feedback/useApproveFeedback.ts'
 
 export { default as useGetModulesData } from './roles/useGetModulesData.ts';
 export { default as useGetRolesData } from './roles/useGetRolesData.ts';
+export { default as useGetRolesPermissions } from './roles/useGetRolesPermissions.ts';
+export { default as useAssignRolePermission } from './roles/useAssignRolePermission.ts';

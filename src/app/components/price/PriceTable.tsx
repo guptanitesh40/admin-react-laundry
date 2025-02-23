@@ -153,9 +153,12 @@ const PriceTable: React.FC<PriceTableProps> = ({
         .filter((combination) => combination.price > 0);
 
       try {
-        addPrice(updatedData);
-        fetchPrices();
-        setEditing(new Set());
+        addPrice(updatedData).then(() => {
+          fetchPrices().then(() => {
+            setUpdatedPrices({});
+            setEditing(new Set());
+          });
+        });
       } catch (error) {
         toast.error("Failed to save prices.");
       }
@@ -346,7 +349,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
                     </thead>
                     <tbody>
                       {loading ? (
-                        <TableShimmer/>
+                        <TableShimmer />
                       ) : filteredCombinations.length > 0 ? (
                         filteredCombinations.map((combination, index) => {
                           const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;

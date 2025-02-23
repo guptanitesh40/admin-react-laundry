@@ -7,6 +7,7 @@ import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import toast from "react-hot-toast";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,8 +24,6 @@ const FeedbackTable: React.FC = () => {
 
   const [publishFilter, setPublishFilter] = useState<number | null>();
   const [ratingFilter, setRatingFilter] = useState([]);
-  const [refetch, setRefetch] = useState<boolean>(false);
-  const [feedbackData, setFeedbackData] = useState<any[]>([]);
 
   const { feedbacks, count, fetchFeedbacks } = useGetFeedbacks(
     currentPage,
@@ -40,29 +39,6 @@ const FeedbackTable: React.FC = () => {
   const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
-    fetchFeedbacks();
-    setRefetch(false);
-  }, [refetch]);
-
-  useEffect(() => {
-    if (feedbacks?.length > 0) {
-      const extratedFeedback = feedbacks?.map((feedback) => ({
-        first_name: feedback?.order?.user?.first_name,
-        last_name: feedback?.order?.user?.last_name,
-        order_id: feedback.order_id,
-        email: feedback?.order?.user?.email,
-        created_at: feedback.created_at,
-        mobile_number: feedback?.order?.user?.mobile_number,
-        feedback_id: feedback.feedback_id,
-        is_publish: feedback.is_publish,
-        comment: feedback.comment,
-        rating: feedback.rating,
-      }));
-      setFeedbackData(extratedFeedback);
-    }
-  }, [feedbacks]);
-
-  useEffect(() => {
     if (pageParams) {
       setCurrentPage(Number(pageParams));
     }
@@ -74,10 +50,7 @@ const FeedbackTable: React.FC = () => {
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await searchSchema.validate(
-        { search: searchInput },
-        { abortEarly: false }
-      );
+      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
       setSearch(searchInput);
       setErrorMessage("");
     } catch (error) {
@@ -99,10 +72,7 @@ const FeedbackTable: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      setSearchParams({
-        page: newPage.toString(),
-        perPage: perPage.toString(),
-      });
+      setSearchParams({ page: newPage.toString(), perPage: perPage.toString() });
     }
   };
 
@@ -113,7 +83,7 @@ const FeedbackTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  const renderRatingStars = (rating: any) => {
+  const renderRatingStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, index) => (
       <div
         key={index}
@@ -125,16 +95,14 @@ const FeedbackTable: React.FC = () => {
     ));
   };
 
-  const handleDropdownChange = (feedback_id: number, value: any) => {
-    setFeedbackData((prev) =>
-      prev.map((feedback) =>
-        feedback.feedback_id === feedback_id
-          ? { ...feedback, is_publish: value }
-          : feedback
-      )
-    );
+  const handleDropdownChange = async (feedback_id: number, value: any) => {
+    try {
+      await approveFeedback(feedback_id, value);
 
-    approveFeedback(feedback_id, value);
+      fetchFeedbacks();
+    } catch {
+      toast.error("Failed to update publish status:");
+    }
   };
 
   const ratingOptions = Array.from({ length: 5 }, (_, index) => ({
@@ -150,7 +118,7 @@ const FeedbackTable: React.FC = () => {
     value: index + 1,
   }));
 
-  if (!feedbacks) return;
+  if (!feedbacks) return null;
 
   return (
     <>
@@ -178,14 +146,10 @@ const FeedbackTable: React.FC = () => {
               placeholder="Select Rating"
               selectedValues={ratingFilter}
               onSelect={(selectedList: any) =>
-                setRatingFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
+                setRatingFilter(selectedList.map((item: { value: any }) => item.value))
               }
               onRemove={(selectedList: any) =>
-                setRatingFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
+                setRatingFilter(selectedList.map((item: { value: any }) => item.value))
               }
               className="lgmobile:min-w-[250px] vsmobile:min-w-[235px]"
               sliceCount={3}
@@ -199,9 +163,7 @@ const FeedbackTable: React.FC = () => {
                 publishFilter
               )}`}
               value={publishFilter}
-              onChange={(e) => {
-                setPublishFilter(Number(e.target.value));
-              }}
+              onChange={(e) => setPublishFilter(Number(e.target.value))}
             >
               <option value="">Publish Status</option>
               <option value="1" className="badge-danger badge-outline">
@@ -252,185 +214,65 @@ const FeedbackTable: React.FC = () => {
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="min-w-[70px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "order_id"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("order_id")}
-                    >
-                      <span className="sort-label">Order Id</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
-                  <th className="min-w-[250px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "first_name"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("first_name")}
-                    >
-                      <span className="sort-label">Customer name</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
-                  <th className="min-w-[250px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "email"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("email")}
-                    >
-                      <span className="sort-label">Email</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "mobile_number"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("mobile_number")}
-                    >
-                      <span className="sort-label">Mobile no</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-                  <th className="min-w-[100px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "rating"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("rating")}
-                    >
-                      <span className="sort-label">Rating</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
+                  <th className="min-w-[70px]">Order Id</th>
+                  <th className="min-w-[250px]">Customer name</th>
+                  <th className="min-w-[250px]">Email</th>
+                  <th className="min-w-[130px]">Mobile no</th>
+                  <th className="min-w-[100px]">Rating</th>
                   <th className="min-w-[300px]">Comment</th>
-                  <th className="min-w-[120px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "date"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("date")}
-                    >
-                      <span className="sort-label">Date</span>
-                      <span className="sort-icon"></span>
-                    </span>{" "}
-                  </th>
+                  <th className="min-w-[120px]">Date</th>
                   <th className="min-w-[140px]">Publish</th>
                 </tr>
               </thead>
-              {feedbacks.length > 0 ? (
-                <tbody>
-                  {feedbackData.map((feedback) => {
-                    return (
-                      <tr key={feedback.feedback_id}>
-                        <td>#{feedback.order_id}</td>
-                        <td>
-                          {feedback.first_name} {feedback.last_name}
-                        </td>
-                        <td>{feedback.email}</td>
-                        <td>{feedback.mobile_number}</td>
-                        <td>
-                          <span>
-                            <div className="rating">
-                              {renderRatingStars(feedback.rating)}
-                            </div>
-                          </span>
-                        </td>
-                        <td>{feedback.comment}</td>
-                        <td>
-                          <div className="flex items-center gap-2.5">
-                            {dayjs(feedback.created_at).format("DD-MM-YYYY")}
-                            <br />
-                            {dayjs(feedback.created_at).format("hh:mm:ss A")}
-                          </div>
-                        </td>
-                        <td>
-                          <span
-                            className="menu-badge"
-                            data-tooltip="true"
-                            data-tooltip-placement="top"
-                          >
-                            <select
-                              className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
-                                feedback.is_publish
-                              )}`}
-                              data-tooltip="true"
-                              value={feedback.is_publish}
-                              onChange={(e) =>
-                                handleDropdownChange(
-                                  feedback.feedback_id,
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option
-                                value="1"
-                                className="badge-danger badge-outline"
-                              >
-                                Approve
-                              </option>
-                              <option
-                                value="2"
-                                className="badge-info badge-outline"
-                              >
-                                Website
-                              </option>
-                              <option
-                                value="3"
-                                className="badge-warning badge-outline"
-                              >
-                                Mobile App
-                              </option>
-                              <option
-                                value="4"
-                                className="badge-secondary badge-outline"
-                              >
-                                Both
-                              </option>
-                            </select>
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              ) : (
-                <tbody>
-                  <tr>
-                    <td colSpan={5} className="text-center">
-                      No Feedback data available
+              <tbody>
+                {feedbacks.map((feedback) => (
+                  <tr key={feedback.feedback_id}>
+                    <td>#{feedback.order_id}</td>
+                    <td>
+                      {feedback?.order?.user?.first_name} {feedback?.order?.user?.last_name}
+                    </td>
+                    <td>{feedback?.order?.user?.email}</td>
+                    <td>{feedback?.order?.user?.mobile_number}</td>
+                    <td>
+                      <div className="rating">
+                        {renderRatingStars(feedback.rating)}
+                      </div>
+                    </td>
+                    <td>{feedback.comment}</td>
+                    <td>
+                      <div className="flex items-center gap-2.5">
+                        {dayjs(feedback.created_at).format("DD-MM-YYYY")}
+                        <br />
+                        {dayjs(feedback.created_at).format("hh:mm:ss A")}
+                      </div>
+                    </td>
+                    <td>
+                      <select
+                        className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
+                          feedback.is_publish
+                        )}`}
+                        value={feedback.is_publish}
+                        onChange={(e) =>
+                          handleDropdownChange(feedback.feedback_id, e.target.value)
+                        }
+                      >
+                        <option value="1" className="badge-danger badge-outline">
+                          Approve
+                        </option>
+                        <option value="2" className="badge-info badge-outline">
+                          Website
+                        </option>
+                        <option value="3" className="badge-warning badge-outline">
+                          Mobile App
+                        </option>
+                        <option value="4" className="badge-secondary badge-outline">
+                          Both
+                        </option>
+                      </select>
                     </td>
                   </tr>
-                </tbody>
-              )}
+                ))}
+              </tbody>
             </table>
           </div>
 
