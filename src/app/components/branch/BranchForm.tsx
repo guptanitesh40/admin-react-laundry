@@ -214,9 +214,6 @@ const BranchForm: React.FC = () => {
                 <option>No Data available</option>
               )}
             </select>
-            <p className="text-red-500 text-sm">
-              {errors.branch_manager_id || "\u00A0"}
-            </p>
           </div>
 
           <div className="flex flex-col">

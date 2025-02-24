@@ -4,6 +4,7 @@ import {
   useAddUser,
   useGetBranches,
   useGetCompanies,
+  useGetWorkshops,
   useUpdateUser,
 } from "../../hooks";
 import * as Yup from "yup";
@@ -17,11 +18,13 @@ interface FormData {
   last_name: string;
   email: string;
   mobile_number: string;
+  password: string;
   gender: number | null;
   role_id: number | null;
   image: string | File;
   company_ids: any[];
   branch_ids: any[];
+  workshop_ids: any[];
 }
 
 const UserForm: React.FC = () => {
@@ -39,7 +42,10 @@ const UserForm: React.FC = () => {
   const { userData, fetchUser } = useGetUser();
   const [companyOptions, setCompanyOptions] = useState([]);
   const { branches } = useGetBranches(pageNumber, perPage);
+  const { workshops } = useGetWorkshops(pageNumber, perPage);
   const [branchOptions, setBranchOptions] = useState([]);
+  const [workshopOptions, setWorkshopOptions] = useState([]);
+
   const user = userData?.user;
   const location = useLocation();
 
@@ -50,11 +56,13 @@ const UserForm: React.FC = () => {
     last_name: "",
     email: "",
     mobile_number: "",
+    password: "",
     gender: null,
     role_id: null,
     image: "" as string | File,
     company_ids: [],
     branch_ids: [],
+    workshop_ids: [],
   };
 
   const [formData, setFormData] = useState(formDataState);
@@ -105,6 +113,16 @@ const UserForm: React.FC = () => {
   }, [branches]);
 
   useEffect(() => {
+    if (workshops) {
+      const workshopData = workshops.map((workshop) => ({
+        workshop_id: workshop.workshop_id,
+        workshop_name: workshop.workshop_name,
+      }));
+      setWorkshopOptions(workshopData);
+    }
+  }, [branches]);
+
+  useEffect(() => {
     if (user) {
       const fetchedData = {
         ...formData,
@@ -116,6 +134,7 @@ const UserForm: React.FC = () => {
         role_id: user.role_id,
         branch_ids: user.branch_ids,
         company_ids: user.company_ids,
+        workshop_ids: user.workshop_ids,
       };
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
@@ -317,6 +336,31 @@ const UserForm: React.FC = () => {
             </p>
           </div>
 
+          {!isCustomer &&
+            user_id && (
+              <div className="flex flex-col">
+                <label
+                  htmlFor="password"
+                  className="block text-gray-700 font-semibold"
+                >
+                  Password
+                </label>
+                <input
+                  type="text"
+                  id="password"
+                  name="password"
+                  value={formData.password || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="input border border-gray-300 rounded-md p-2"
+                />
+                <p className="text-red-500 text-sm">
+                  {errors.password || "\u00A0"}
+                </p>
+              </div>
+            )}
+
           {!isCustomer && (
             <div className="flex flex-col">
               <label
@@ -417,6 +461,41 @@ const UserForm: React.FC = () => {
                     ...formData,
                     branch_ids: selectedList.map(
                       (branch: { branch_id: any }) => branch.branch_id
+                    ),
+                  });
+                }}
+                isObject={true}
+              />
+            </div>
+          )}
+
+          {formData.role_id === 6 && (
+            <div className="flex flex-col">
+              <label
+                className="block text-gray-700 font-semibold"
+                htmlFor="role_id"
+              >
+                Workshop
+              </label>
+              <MultiSelect
+                options={workshopOptions}
+                displayValue="workshop_name"
+                selectedValues={workshopOptions?.filter((option) =>
+                  formData.workshop_ids?.includes(option.workshop_id)
+                )}
+                onSelect={(selectedList) => {
+                  setFormData({
+                    ...formData,
+                    workshop_ids: selectedList.map(
+                      (workshop: { workshop_id: any }) => workshop.workshop_id
+                    ),
+                  });
+                }}
+                onRemove={(selectedList) => {
+                  setFormData({
+                    ...formData,
+                    workshop_ids: selectedList.map(
+                      (workshop: { workshop_id: any }) => workshop.workshop_id
                     ),
                   });
                 }}

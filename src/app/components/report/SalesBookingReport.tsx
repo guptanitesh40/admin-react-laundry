@@ -8,7 +8,7 @@ const SalesBookingReport = () => {
   useEffect(() => {
     fetchSalesData();
   }, []);
-
+  
   const categories = salesData?.map((item: { month: any }) => item.month) || [];
   const totalSales =
     salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
@@ -86,28 +86,32 @@ const SalesBookingReport = () => {
       xaxis: {
         type: "category",
         categories: categories,
-        style: {
-          colors: "#6c757d",
-        },
         labels: {
-          show: false,
+          show: true,
+          style: {
+            colors: "#6B7280", 
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
-
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6, 
         },
         axisBorder: {
-          show: false,
+          show: true, 
+          color: "#D1D5DB",
         },
         crosshairs: {
           position: "front",
           stroke: {
-            color: "var(--tw-primary)",
+            color: "#3B82F6",
             width: 1,
             dashArray: 3,
           },
         },
-      },
+      },      
       markers: {
         size: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],

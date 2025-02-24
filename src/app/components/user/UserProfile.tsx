@@ -54,7 +54,7 @@ const UserProfile: React.FC = () => {
           </h1>
           {userData?.total_pending_amount !== 0 && (
             <div className="flex flex-end items-center gap-2">
-              <span className="text-sm font-medium text-green-700">
+              <span className="text-sm font-medium text-red-700">
                 Total Pending Amount: ₹{userData.total_pending_amount}
               </span>
               <button

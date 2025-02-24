@@ -283,9 +283,6 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                   });
                 }}
               />
-              <p className="text-red-500 text-sm">
-                {errors.workshop_managers_ids || "\u00A0"}
-              </p>
             </div>
 
             <div className="flex gap-4 mt-4">

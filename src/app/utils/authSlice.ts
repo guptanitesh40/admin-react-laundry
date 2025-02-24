@@ -1,10 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const getInitialAuthState = () => {
+interface AuthState {
+  isAuthenticated: boolean;
+  token: string | null;
+  permissions: string[]; 
+}
+
+const getInitialAuthState = (): AuthState => {
   const storedToken = localStorage.getItem('authToken');
   return {
     isAuthenticated: !!storedToken,
     token: storedToken || null,
+    permissions: [],
   };
 };
 
@@ -20,10 +27,12 @@ const authSlice = createSlice({
       } else {
         localStorage.removeItem('authToken');
       }
+      state.permissions = action.payload.permissions; 
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.token = null;
+      state.permissions = [];
       localStorage.removeItem('authToken');
     }
   }
