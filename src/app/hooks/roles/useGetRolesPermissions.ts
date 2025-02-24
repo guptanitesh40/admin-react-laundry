@@ -29,13 +29,14 @@ const useGetRolesPermissions = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message, { position: "top-center" });
+        toast.error(data.message);
         setLoading(false);
         return;
       }
 
       setPermissionsData(data?.data);
     } catch {
+      toast.error("Network Error : Fail to fetch Role Permissions Data");
     } finally {
       setLoading(false);
     }

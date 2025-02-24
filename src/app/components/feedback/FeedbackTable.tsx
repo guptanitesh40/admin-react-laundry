@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import toast from "react-hot-toast";
+import TableShimmer from "../shimmer/TableShimmer";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,7 +26,7 @@ const FeedbackTable: React.FC = () => {
   const [publishFilter, setPublishFilter] = useState<number | null>();
   const [ratingFilter, setRatingFilter] = useState([]);
 
-  const { feedbacks, count, fetchFeedbacks } = useGetFeedbacks(
+  const { feedbacks, count, fetchFeedbacks, loading } = useGetFeedbacks(
     currentPage,
     perPage,
     search,
@@ -50,7 +51,10 @@ const FeedbackTable: React.FC = () => {
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await searchSchema.validate({ search: searchInput }, { abortEarly: false });
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
       setSearch(searchInput);
       setErrorMessage("");
     } catch (error) {
@@ -72,7 +76,10 @@ const FeedbackTable: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      setSearchParams({ page: newPage.toString(), perPage: perPage.toString() });
+      setSearchParams({
+        page: newPage.toString(),
+        perPage: perPage.toString(),
+      });
     }
   };
 
@@ -118,8 +125,6 @@ const FeedbackTable: React.FC = () => {
     value: index + 1,
   }));
 
-  if (!feedbacks) return null;
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -146,10 +151,14 @@ const FeedbackTable: React.FC = () => {
               placeholder="Select Rating"
               selectedValues={ratingFilter}
               onSelect={(selectedList: any) =>
-                setRatingFilter(selectedList.map((item: { value: any }) => item.value))
+                setRatingFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
               }
               onRemove={(selectedList: any) =>
-                setRatingFilter(selectedList.map((item: { value: any }) => item.value))
+                setRatingFilter(
+                  selectedList.map((item: { value: any }) => item.value)
+                )
               }
               className="lgmobile:min-w-[250px] vsmobile:min-w-[235px]"
               sliceCount={3}
@@ -167,7 +176,7 @@ const FeedbackTable: React.FC = () => {
             >
               <option value="">Publish Status</option>
               <option value="1" className="badge-danger badge-outline">
-                Approve
+                None
               </option>
               <option value="2" className="badge-info badge-outline">
                 Website
@@ -224,55 +233,83 @@ const FeedbackTable: React.FC = () => {
                   <th className="min-w-[140px]">Publish</th>
                 </tr>
               </thead>
-              <tbody>
-                {feedbacks.map((feedback) => (
-                  <tr key={feedback.feedback_id}>
-                    <td>#{feedback.order_id}</td>
-                    <td>
-                      {feedback?.order?.user?.first_name} {feedback?.order?.user?.last_name}
-                    </td>
-                    <td>{feedback?.order?.user?.email}</td>
-                    <td>{feedback?.order?.user?.mobile_number}</td>
-                    <td>
-                      <div className="rating">
-                        {renderRatingStars(feedback.rating)}
-                      </div>
-                    </td>
-                    <td>{feedback.comment}</td>
-                    <td>
-                      <div className="flex items-center gap-2.5">
-                        {dayjs(feedback.created_at).format("DD-MM-YYYY")}
-                        <br />
-                        {dayjs(feedback.created_at).format("hh:mm:ss A")}
-                      </div>
-                    </td>
-                    <td>
-                      <select
-                        className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
-                          feedback.is_publish
-                        )}`}
-                        value={feedback.is_publish}
-                        onChange={(e) =>
-                          handleDropdownChange(feedback.feedback_id, e.target.value)
-                        }
-                      >
-                        <option value="1" className="badge-danger badge-outline">
-                          Approve
-                        </option>
-                        <option value="2" className="badge-info badge-outline">
-                          Website
-                        </option>
-                        <option value="3" className="badge-warning badge-outline">
-                          Mobile App
-                        </option>
-                        <option value="4" className="badge-secondary badge-outline">
-                          Both
-                        </option>
-                      </select>
+              {loading ? (
+                <TableShimmer />
+              ) : feedbacks ? (
+                <tbody>
+                  {feedbacks.map((feedback) => (
+                    <tr key={feedback.feedback_id}>
+                      <td>#{feedback.order_id}</td>
+                      <td>
+                        {feedback?.order?.user?.first_name}{" "}
+                        {feedback?.order?.user?.last_name}
+                      </td>
+                      <td>{feedback?.order?.user?.email}</td>
+                      <td>{feedback?.order?.user?.mobile_number}</td>
+                      <td>
+                        <div className="rating">
+                          {renderRatingStars(feedback.rating)}
+                        </div>
+                      </td>
+                      <td>{feedback.comment}</td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {dayjs(feedback.created_at).format("DD-MM-YYYY")}
+                          <br />
+                          {dayjs(feedback.created_at).format("hh:mm:ss A")}
+                        </div>
+                      </td>
+                      <td>
+                        <select
+                          className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
+                            feedback.is_publish
+                          )}`}
+                          value={feedback.is_publish}
+                          onChange={(e) =>
+                            handleDropdownChange(
+                              feedback.feedback_id,
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option
+                            value="1"
+                            className="badge-danger badge-outline"
+                          >
+                            None
+                          </option>
+                          <option
+                            value="2"
+                            className="badge-info badge-outline"
+                          >
+                            Website
+                          </option>
+                          <option
+                            value="3"
+                            className="badge-warning badge-outline"
+                          >
+                            Mobile App
+                          </option>
+                          <option
+                            value="4"
+                            className="badge-secondary badge-outline"
+                          >
+                            Both
+                          </option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : (
+                <tbody>
+                  <tr>
+                    <td colSpan={6} className="text-center">
+                      No Feedbacks data available
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                </tbody>
+              )}
             </table>
           </div>
 

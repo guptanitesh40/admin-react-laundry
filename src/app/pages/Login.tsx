@@ -6,6 +6,7 @@ import { login as loginAction } from "../utils/authSlice";
 import toast from "react-hot-toast";
 import useLogin from "../hooks/login/useLogin";
 import * as Yup from "yup";
+import { useGetUserPermissions } from "../hooks";
 
 const device_type = "sasas";
 const device_token = "sdlknoin";
@@ -19,6 +20,8 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .min(6, "Password must be at least 6 characters long")
     .required("password is required"),
+
+  userId: Yup.number().required("Please select the user"),
 });
 
 const Login: React.FC = () => {
@@ -26,12 +29,14 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [userId, setUserId] = useState<number>();
 
   const isAuthenticated = useSelector(
     (state: any) => state.auth.isAuthenticated
   );
   const dispatch = useDispatch();
   const { login, loading } = useLogin();
+  const { fetchUserPermissions } = useGetUserPermissions();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +50,7 @@ const Login: React.FC = () => {
 
     try {
       await validationSchema.validate(
-        { username, password },
+        { username, password, userId },
         { abortEarly: false }
       );
 
@@ -66,21 +71,31 @@ const Login: React.FC = () => {
       const success = await login(
         username,
         password,
-        1,
+        userId,
         device_type,
         device_token
       );
 
       if (success) {
-        dispatch(
-          loginAction({
-            isAuthenticated: true,
-            token: localStorage.getItem("authToken"),
-          })
-        );
+        const token = localStorage.getItem("authToken");
+
+        const permissionsData = await fetchUserPermissions();
+
+        if (permissionsData) {
+          dispatch(
+            loginAction({
+              isAuthenticated: true,
+              token,
+              permissions: permissionsData,
+            })
+          );
+        }
+        
         navigate("/dashboard");
       } else {
-        dispatch(loginAction({ isAuthenticated: false, token: null }));
+        dispatch(
+          loginAction({ isAuthenticated: false, token: null, permissions: [] })
+        );
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -111,6 +126,33 @@ const Login: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
               Log in to your account
             </h3>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label
+              htmlFor="payment_status"
+              className="form-label text-gray-900 mb-1"
+            >
+              Login As
+            </label>
+            <select
+              className="select select-lg w-full text-sm"
+              value={userId}
+              onChange={(e) => {
+                setUserId(Number(e.target.value));
+              }}
+            >
+              <option value="" selected>
+                Select User
+              </option>
+              <option value={1}>Super Admin</option>
+              <option value={2}>Sub Admin</option>
+              <option value={3}>Branch Manager</option>
+              <option value={6}>Workshop Manager</option>
+            </select>
+            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+              {errors.userId || "\u00A0"}
+            </p>
           </div>
 
           <div className="flex flex-col gap-1">

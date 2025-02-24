@@ -54,6 +54,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
       setFilteredOrders(paymentDueOrders);
     }
   }, [user]); 
+
   const handleInputChange = (orderId: number, field: string, value: number) => {
     const updated = filteredOrders.map((order) => {
       if (order.order_id === orderId) {
@@ -68,8 +69,10 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
 
         if (updatedOrder.current_total === order.total || updatedOrder.current_total === order.total - order.paid_amount) {
           setFullPayment(true);
+          updatedOrder.payment_status = 2;
         } else {
           setFullPayment(false);
+          updatedOrder.payment_status = 3;
         }
 
         return updatedOrder;

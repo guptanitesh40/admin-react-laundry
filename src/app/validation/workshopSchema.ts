@@ -7,7 +7,4 @@ export const workshopSchema = Yup.object().shape({
   mobile_number: Yup.string()
     .matches(/^\d{10}$/, "Mobile number must be 10 digits")
     .required("Mobile number is required"),
-  workshop_managers_ids: Yup.array()
-    .min(1, "Please select at least workshop manager")
-    .required("Please select workshop manager"),
 });

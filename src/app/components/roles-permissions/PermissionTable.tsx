@@ -29,48 +29,59 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
   setIsLoading,
 }) => {
   const { modulesData } = useGetModulesData();
-  const { assignRolePermission, loading: assigning } =
-    useAssignRolePermission();
+  const { assignRolePermission, loading: assigning } = useAssignRolePermission();
   const { permissionsData, loading } = useGetRolesPermissions();
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [initialPermissions, setInitialPermissions] = useState<Permission[]>([]);
   const location = useLocation();
   const roleId = location?.state?.role_id;
 
   useEffect(() => {
-    if (assigning) {
-      setIsLoading(true);
-    } else {
-      setIsLoading(false);
-    }
+    setIsLoading(assigning);
   }, [assigning]);
 
   useEffect(() => {
     if (modulesData && permissionsData) {
-      const mergedPermissions = modulesData.map((module: any) => {
-        const existingPermission = permissionsData.find(
-          (p) => p.module_id === module.module_id
+      const mergedPermissions = permissionsData.map((perm: Permission) => ({
+        ...perm,
+      }));
+
+      modulesData.forEach((module: any) => {
+        const existingPermission = mergedPermissions.find(
+          (p) => p.role_id === roleId && p.module_id === module.module_id
         );
-        return (
-          existingPermission || {
+
+        if (!existingPermission) {
+          mergedPermissions.push({
             role_id: roleId,
             module_id: module.module_id,
             create: false,
             update: false,
             read: false,
             delete: false,
-          }
-        );
+          });
+        }
       });
+
       setPermissions(mergedPermissions);
+      setInitialPermissions(JSON.parse(JSON.stringify(mergedPermissions))); 
     }
   }, [modulesData, permissionsData]);
 
   useEffect(() => {
     if (isSave) {
+      const hasChanges = JSON.stringify(permissions) !== JSON.stringify(initialPermissions);
+      if (!hasChanges) {
+        setIsSave(false);
+        return;
+      }
+
       const savePermissions = async () => {
         try {
           const success = assignRolePermission(permissions);
+          
           if (success) {
+            setInitialPermissions(JSON.parse(JSON.stringify(permissions))); // Update initial state
             setIsSave(false);
           }
         } catch (error) {
@@ -81,28 +92,31 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
     }
   }, [isSave]);
 
-  const handleCheckboxChange = (role_id: number, module_id: number, field: keyof Permission) => {
+  const handleCheckboxChange = (module_id: number, field: keyof Permission) => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((perm) =>
-        perm.module_id === module_id
+        perm.role_id === roleId && perm.module_id === module_id
           ? {
               ...perm,
-              [field]: !perm[field],
-              read: field !== "read" ? true : !perm.read,
+              [field]: !perm[field], 
+              read:
+                field === "read"
+                  ? !perm.read 
+                  : (field === "create" || field === "update" || field === "delete") &&
+                    (!perm.read || (perm.create && perm.update && perm.delete))
+                    ? true
+                    : perm.read,
             }
           : perm
       )
     );
   };
-
+  
   return (
     <div className="card-body">
       <div data-datatable="true" data-datatable-page-size="10">
         <div className="scrollable-x-auto">
-          <table
-            className="table table-auto table-border"
-            data-datatable-table="true"
-          >
+          <table className="table table-auto table-border" data-datatable-table="true">
             <thead>
               <tr>
                 <th className="min-w-[200px]">Modules</th>
@@ -118,8 +132,9 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
               <tbody>
                 {modulesData.map((module: any) => {
                   const permission = permissions.find(
-                    (p) => p.module_id === module.module_id
+                    (p) => p.role_id === roleId && p.module_id === module.module_id
                   );
+
                   return (
                     <tr key={module.module_id}>
                       <td>{module.module_name}</td>
@@ -128,17 +143,9 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
                           <input
                             className="w-4 h-4"
                             type="checkbox"
-                            checked={
-                              permission
-                                ? permission[field as keyof Permission]
-                                : false
-                            }
+                            checked={permission ? permission[field as keyof Permission] : false}
                             onChange={() =>
-                              handleCheckboxChange(
-                                role_id: module.role_id,
-                                module.module_id,
-                                field as keyof Permission
-                              )
+                              handleCheckboxChange(module.module_id, field as keyof Permission)
                             }
                           />
                         </td>
