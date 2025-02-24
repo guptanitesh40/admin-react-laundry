@@ -77,25 +77,34 @@ const PaymentTransactionReport: React.FC = () => {
         show: false,
       },
       xaxis: {
+        type: "category",
         categories: categories,
-        axisBorder: {
-          show: false,
+        labels: {
+          show: true,
+          style: {
+            colors: "#6B7280", 
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6, 
         },
-        labels: {
-          show: false,
+        axisBorder: {
+          show: true, 
+          color: "#D1D5DB",
         },
         crosshairs: {
           position: "front",
           stroke: {
-            color: "var(--tw-primary)",
+            color: "#3B82F6",
             width: 1,
             dashArray: 3,
           },
         },
-      },
+      },    
       yaxis: {
         min: 0,
         tickAmount: 5,

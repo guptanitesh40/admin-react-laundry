@@ -1,7 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./authSlice";
 
-const storedToken = localStorage.getItem('authToken');
+const storedToken = localStorage.getItem("authToken");
 
 const store = configureStore({
   reducer: {
@@ -11,8 +11,9 @@ const store = configureStore({
     auth: {
       isAuthenticated: !!storedToken,
       token: storedToken || null,
-    }
-  }
+      permissions: [],
+    },
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -162,6 +162,12 @@ const OrderDetails: React.FC = () => {
 
       const success = await addNote(formDataObj);
       if (success) {
+        setFormData({
+          user_id: null,
+          order_id: null,
+          text_note: "",
+          images: [] as (string | File)[],
+        });
         setErrorMessage("");
         await fetchOrder(formData.order_id);
       }
@@ -289,7 +295,9 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleEditOrder = () => {
-    navigate(`/order/edit/${order_id}`);
+    navigate(`/order/edit/${order_id}`, {
+      state: { prevUrl: location.pathname },
+    });
   };
 
   const handleOrderCancel = () => {

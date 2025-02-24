@@ -78,27 +78,32 @@ const KasarReport = () => {
       xaxis: {
         type: "category",
         categories: categories,
-        style: {
-          colors: "#6c757d",
-        },
         labels: {
-          show: false,
+          show: true,
+          style: {
+            colors: "#6B7280", 
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6, 
         },
         axisBorder: {
-          show: false,
+          show: true, 
+          color: "#D1D5DB",
         },
         crosshairs: {
           position: "front",
           stroke: {
-            color: "var(--tw-primary)",
+            color: "#3B82F6",
             width: 1,
             dashArray: 3,
           },
         },
-      },
+      },    
       yaxis: {
         min: 0,
         tickAmount: 5,
