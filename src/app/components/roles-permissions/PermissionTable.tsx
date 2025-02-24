@@ -81,7 +81,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
           const success = assignRolePermission(permissions);
           
           if (success) {
-            setInitialPermissions(JSON.parse(JSON.stringify(permissions))); // Update initial state
+            setInitialPermissions(JSON.parse(JSON.stringify(permissions)));
             setIsSave(false);
           }
         } catch (error) {
