@@ -15,7 +15,7 @@ const useGetRolesData = () => {
   const fetchRolesData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/roles`, {
+      const response = await fetch(`${BASE_URL}/roles?flag=true`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

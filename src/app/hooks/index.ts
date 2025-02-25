@@ -123,3 +123,6 @@ export { default as useGetRolesData } from './roles/useGetRolesData.ts';
 export { default as useGetRolesPermissions } from './roles/useGetRolesPermissions.ts';
 export { default as useAssignRolePermission } from './roles/useAssignRolePermission.ts';
 export { default as useGetUserPermissions } from './roles/useGetUserPermissions.ts';
+
+export { default as usePermissions } from './roles/usePermissions.ts';
+export { default as useValidateToken } from './roles/useValidateToken.ts';

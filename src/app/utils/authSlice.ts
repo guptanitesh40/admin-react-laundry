@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
-  permissions: string[]; 
+  permissions: any[]; 
 }
 
 const getInitialAuthState = (): AuthState => {
@@ -40,3 +40,5 @@ const authSlice = createSlice({
 
 export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;
+
+
