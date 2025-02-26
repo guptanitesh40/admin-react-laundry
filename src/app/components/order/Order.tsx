@@ -3,10 +3,12 @@ import OrderTable from "./OrderTable";
 import { useNavigate } from "react-router-dom";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
+import { usePermissions } from "../../hooks";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
   const [isFilter, setIsFilter] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -19,7 +21,7 @@ const Order: React.FC = () => {
   });
 
   const handleAddOrder = () => {
-    navigate("/order/add", { state: { prevUrl: location.pathname }});
+    navigate("/order/add", { state: { prevUrl: location.pathname } });
   };
 
   const updateFilters = (newFilters: any) => {
@@ -27,7 +29,7 @@ const Order: React.FC = () => {
   };
 
   return (
-    <>  
+    <>
       <div className="container-fixed">
         <div className="flex flex-wrap items-center justify-between gap-5 pb-7.5">
           <div className="flex flex-col justify-center gap-2">
@@ -35,11 +37,15 @@ const Order: React.FC = () => {
               Orders
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddOrder} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Order
-            </button>
-          </div>
+
+          {hasPermission(3, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddOrder} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Order
+              </button>
+            </div>
+          )}
+
         </div>
 
         <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">

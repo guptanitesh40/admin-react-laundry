@@ -1,9 +1,11 @@
 import React from "react";
 import CouponTable from "./CouponTable";
 import { useNavigate } from "react-router-dom";
+import { usePermissions } from "../../hooks";
 
 const Coupon: React.FC = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
 
   const handleAddCoupon = () => {
     navigate("/coupon/add");
@@ -18,11 +20,15 @@ const Coupon: React.FC = () => {
               Coupon
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddCoupon} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Coupon
-            </button>
-          </div>
+
+          {hasPermission(9, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddCoupon} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Coupon
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
 

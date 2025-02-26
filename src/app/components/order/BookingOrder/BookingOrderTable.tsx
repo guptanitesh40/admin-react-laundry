@@ -6,6 +6,7 @@ import {
   useDeleteOrder,
   useGenerateInvoice,
   useGetOrders,
+  usePermissions,
 } from "../../../hooks";
 import {
   FaChevronLeft,
@@ -54,7 +55,7 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
     perPage,
     search,
     sortColumn,
-    sortOrder, 
+    sortOrder,
     filters.orderStatusFilter,
     filters.customerFilter,
     filters.branchFilter,
@@ -62,10 +63,11 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
-    list,
+    list
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
+  const { hasPermission } = usePermissions();
 
   const navigate = useNavigate();
 
@@ -137,7 +139,9 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
   };
 
   const handleUpdateOrder = (order_id: number) => {
-    navigate(`/order/edit/${order_id}`, { state: { prevUrl: location.pathname}});
+    navigate(`/order/edit/${order_id}`, {
+      state: { prevUrl: location.pathname },
+    });
   };
 
   const handleSort = (column: string) => {
@@ -458,7 +462,11 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
 
                   <th className="min-w-[160px]">Receipt</th>
 
-                  <th className="w-[170px]">Actions</th>
+                  {(hasPermission(3, "read") ||
+                    hasPermission(3, "update") ||
+                    hasPermission(3, "delete")) && (
+                    <th className="w-[170px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -564,28 +572,45 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
                             )}
                           </button>
                         </td>
-                        <td>
-                          <div className="flex">
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                              onClick={() => handleViewOrder(order.order_id)}
-                            >
-                              <FaEye size={18} className="text-gray-600" />
-                            </button>
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                              onClick={() => handleUpdateOrder(order.order_id)}
-                            >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                              onClick={() => handleDeleteOrder(order.order_id)}
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </div>
-                        </td>
+                        {(hasPermission(3, "read") ||
+                          hasPermission(3, "update") ||
+                          hasPermission(3, "delete")) && (
+                          <td>
+                            <div className="flex">
+                              {hasPermission(3, "read") && (
+                                <button
+                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                                  onClick={() =>
+                                    handleViewOrder(order.order_id)
+                                  }
+                                >
+                                  <FaEye size={18} className="text-gray-600" />
+                                </button>
+                              )}
+                              {hasPermission(3, "update") && (
+                                <button
+                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleUpdateOrder(order.order_id)
+                                  }
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                              )}
+
+                              {hasPermission(3, "delete") && (
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleDeleteOrder(order.order_id)
+                                  }
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}

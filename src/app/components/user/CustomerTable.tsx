@@ -11,7 +11,7 @@ import {
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
-import { useDeleteUser, useGetUsers } from "../../hooks";
+import { useDeleteUser, useGetUsers, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import MultiSelect from "../MultiSelect/MultiSelect";
 
@@ -44,6 +44,7 @@ const CustomerTable: React.FC = () => {
     role
   );
   const { deleteUser } = useDeleteUser();
+  const { hasPermission } = usePermissions();
 
   const genderOptions = Object.entries(Gender)
     .filter(([key, value]) => typeof value === "number")
@@ -303,7 +304,11 @@ const CustomerTable: React.FC = () => {
 
                   <th className="min-w-[150px]">Total Pending Amount</th>
 
-                  <th className="min-w-[150px]">Actions</th>
+                  {(hasPermission(8, "read") ||
+                    hasPermission(8, "update") ||
+                    hasPermission(8, "delete")) && (
+                    <th className="min-w-[180px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -337,30 +342,46 @@ const CustomerTable: React.FC = () => {
                           }
                         </td>
                         <td>{customer.total_due_amount}</td>
-                        <td className="flex">
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewCustomer(customer.user_id)}
-                          >
-                            <FaEye size={18} className="text-gray-600" />
-                          </button>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() =>
-                              handleUpdateCustomer(customer.user_id)
-                            }
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() =>
-                              handleDeleteCustomer(customer.user_id)
-                            }
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </td>
+
+                        {(hasPermission(8, "read") ||
+                          hasPermission(8, "update") ||
+                          hasPermission(8, "delete")) && (
+                          <td className="space-x-3">
+                            {hasPermission(8, "read") && (
+                              <button
+                                className="bg-yellow-100 hover:bg-yellow-200 p-[9px] rounded-full"
+                                style={{ marginBottom: "-30px" }}
+                                onClick={() =>
+                                  handleViewCustomer(customer.user_id)
+                                }
+                              >
+                                <FaEye size={18} className="text-gray-600" />
+                              </button>
+                            )}
+
+                            {hasPermission(8, "update") && (
+                              <button
+                                className="bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                onClick={() =>
+                                  handleUpdateCustomer(customer.user_id)
+                                }
+                              >
+                                <FaPencilAlt className="text-yellow-600" />
+                              </button>
+                            )}
+
+                            {hasPermission(8, "delete") && (
+                              <button
+                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                onClick={() =>
+                                  handleDeleteCustomer(customer.user_id)
+                                }
+                              >
+                                <FaTrash className="text-red-500" />
+                              </button>
+                            )}
+                          </td>
+                        )}
                       </tr>
                     );
                   })}

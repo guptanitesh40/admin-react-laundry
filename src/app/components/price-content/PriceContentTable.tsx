@@ -1,5 +1,5 @@
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useGetPriceContents } from "../../hooks";
+import { useGetPriceContents, usePermissions } from "../../hooks";
 import TableShimmer from "../shimmer/TableShimmer";
 import Swal from "sweetalert2";
 import useDeletePriceContent from "../../hooks/price-content/useDeletePriceContent";
@@ -18,6 +18,7 @@ const PriceContentTable: React.FC<PriceContentTableProps> = ({
 }) => {
   const { priceContents, fetchPriceContents, loading } = useGetPriceContents();
   const { deletePriceContent } = useDeletePriceContent();
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     const refetchData = async () => {
@@ -73,7 +74,10 @@ const PriceContentTable: React.FC<PriceContentTableProps> = ({
                     <th className="min-w-[120px]">Category</th>
                     <th className="min-w-[120px]">Service</th>
                     <th className="min-w-[60px]">Price</th>
-                    <th className="w-[50px]">Actions</th>
+                    {(hasPermission(11, "update") ||
+                      hasPermission(11, "delete")) && (
+                      <th className="w-[50px]">Actions</th>
+                    )}
                   </tr>
                 </thead>
                 {loading ? (
@@ -86,26 +90,34 @@ const PriceContentTable: React.FC<PriceContentTableProps> = ({
                         <td>{item.category_name}</td>
                         <td>{item.service_names.join(", ")}</td>
                         <td>{item.price}</td>
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
-                              onClick={() =>
-                                setUpdateItem(item.price_content_id)
-                              }
-                            >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
-                              onClick={() =>
-                                handleDeleteItem(item.price_content_id)
-                              }
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </div>
-                        </td>
+                        {(hasPermission(11, "update") ||
+                          hasPermission(11, "delete")) && (
+                          <td>
+                            <div className="flex gap-2">
+                              {hasPermission(11, "update") && (
+                                <button
+                                  className="bg-yellow-100 hover:bg-yellow-200 p-2 rounded-full"
+                                  onClick={() =>
+                                    setUpdateItem(item.price_content_id)
+                                  }
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                              )}
+
+                              {hasPermission(11, "delete") && (
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
+                                  onClick={() =>
+                                    handleDeleteItem(item.price_content_id)
+                                  }
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>

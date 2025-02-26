@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDeleteCompany, useGetCompanies, useGetCompany } from "../../hooks";
+import {
+  useDeleteCompany,
+  useGetCompanies,
+  useGetCompany,
+  usePermissions,
+} from "../../hooks";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -39,7 +44,7 @@ const CompanyTable: React.FC = () => {
     sortOrder,
     ownershipFilter
   );
-
+  const { hasPermission } = usePermissions();
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalCount / perPage);
@@ -341,7 +346,11 @@ const CompanyTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[180px]">Actions</th>
+                  {(hasPermission(12, "update") ||
+                    hasPermission(12, "delete") ||
+                    hasPermission(12, "read")) && (
+                    <th className="min-w-[180px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -414,30 +423,44 @@ const CompanyTable: React.FC = () => {
                         </div>
                       </td>
 
-                      <td>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                          onClick={() => handleViewCompany(company.company_id)}
-                        >
-                          <FaEye size={18} className="text-gray-600" />
-                        </button>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() =>
-                            handleUpdateCompany(company.company_id)
-                          }
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() =>
-                            handleDeleteCompany(company.company_id)
-                          }
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
+                      {(hasPermission(12, "update") ||
+                        hasPermission(12, "delete") ||
+                        hasPermission(12, "read")) && (
+                        <td>
+                          {hasPermission(12, "read") && (
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                              onClick={() =>
+                                handleViewCompany(company.company_id)
+                              }
+                            >
+                              <FaEye size={18} className="text-gray-600" />
+                            </button>
+                          )}
+
+                          {hasPermission(12, "update") && (
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                              onClick={() =>
+                                handleUpdateCompany(company.company_id)
+                              }
+                            >
+                              <FaPencilAlt className="text-yellow-600" />
+                            </button>
+                          )}
+
+                          {hasPermission(12, "delete") && (
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() =>
+                                handleDeleteCompany(company.company_id)
+                              }
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

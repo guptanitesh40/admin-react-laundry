@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAddSettings, useGetSettings } from "../../hooks";
+import { useAddSettings, useGetSettings, usePermissions } from "../../hooks";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { settingSchema } from "../../validation/settingSchema";
@@ -10,6 +10,7 @@ const GeneralSettings: React.FC = ({}) => {
   const { addSetting, loading: adding } = useAddSettings();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refetch, setRefetch] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const generalSettings = settingsData?.data;
 
@@ -108,7 +109,11 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.estimate_pickup_normal_hour || ""}
                       onChange={(e) =>
@@ -117,6 +122,7 @@ const GeneralSettings: React.FC = ({}) => {
                           e.target.value
                         )
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.estimate_pickup_normal_hour || "\u00A0"}
@@ -132,7 +138,11 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.estimate_pickup_express_hour || ""}
                       onChange={(e) =>
@@ -141,6 +151,7 @@ const GeneralSettings: React.FC = ({}) => {
                           e.target.value
                         )
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.estimate_pickup_express_hour || "\u00A0"}
@@ -156,12 +167,17 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.gst_percentage}
                       onChange={(e) =>
                         handleItemChange("gst_percentage", e.target.value)
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.gst_percentage || "\u00A0"}
@@ -177,7 +193,11 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.estimate_delivery_normal_day}
                       onChange={(e) =>
@@ -186,6 +206,7 @@ const GeneralSettings: React.FC = ({}) => {
                           e.target.value
                         )
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.estimate_delivery_normal_day || "\u00A0"}
@@ -201,7 +222,11 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.estimate_delivery_express_day}
                       onChange={(e) =>
@@ -210,6 +235,7 @@ const GeneralSettings: React.FC = ({}) => {
                           e.target.value
                         )
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.estimate_delivery_express_day || "\u00A0"}
@@ -225,12 +251,17 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.shipping_charge}
                       onChange={(e) =>
                         handleItemChange("shipping_charge", e.target.value)
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.shipping_charge || "\u00A0"}
@@ -246,7 +277,11 @@ const GeneralSettings: React.FC = ({}) => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.express_delivery_charge}
                       onChange={(e) =>
@@ -255,6 +290,7 @@ const GeneralSettings: React.FC = ({}) => {
                           e.target.value
                         )
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.express_delivery_charge || "\u00A0"}
@@ -262,21 +298,24 @@ const GeneralSettings: React.FC = ({}) => {
                   </div>
                 </div>
               </div>
-              <div className="flex relative justify-end pt-2.5">
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={adding}
-                >
-                  {adding ? (
-                    <>
-                      Saving... <LoadingSpinner />
-                    </>
-                  ) : (
-                    <>Save Changes </>
-                  )}
-                </button>
-              </div>
+
+              {hasPermission(2, "update") && (
+                <div className="flex relative justify-end pt-2.5">
+                  <button
+                    className="btn btn-primary"
+                    type="submit"
+                    disabled={adding}
+                  >
+                    {adding ? (
+                      <>
+                        Saving... <LoadingSpinner />
+                      </>
+                    ) : (
+                      <>Save Changes </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         </div>

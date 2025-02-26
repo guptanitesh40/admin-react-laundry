@@ -1,10 +1,12 @@
 import { useState } from "react";
 import PriceTable from "./PriceTable";
 import LoadingSpinner from "../shimmer/Loading";
+import { usePermissions } from "../../hooks";
 
 const Price: React.FC = () => {
   const [isSave, setIsSave] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   return (
     <>
@@ -15,24 +17,28 @@ const Price: React.FC = () => {
               Price
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsSave(true)}
-              className="btn btn-primary"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  {" "}
-                  <i className="ki-filled ki-plus-squared"></i> Saving <LoadingSpinner />{" "}
-                </>
-              ) : (
-                <>
-                  <i className="ki-filled ki-plus-squared"></i> Save
-                </>
-              )}
-            </button>
-          </div>
+
+          {(hasPermission(10, "create") || hasPermission(10, "update")) && (
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsSave(true)}
+                className="btn btn-primary"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    {" "}
+                    <i className="ki-filled ki-plus-squared"></i> Saving{" "}
+                    <LoadingSpinner />{" "}
+                  </>
+                ) : (
+                  <>
+                    <i className="ki-filled ki-plus-squared"></i> Save
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

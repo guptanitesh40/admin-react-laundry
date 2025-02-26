@@ -10,6 +10,7 @@ import {
   useDeleteCategory,
   useGetCategories,
   useGetCategory,
+  usePermissions,
   useUpdateCategory,
 } from "../../hooks"; // Ensure correct imports
 import toast from "react-hot-toast";
@@ -57,6 +58,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory();
+  const { hasPermission } = usePermissions();
 
   const totalPages = Math.ceil(totalCategories / perPage);
 
@@ -286,7 +288,10 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[125px]">Actions</th>
+                  {(hasPermission(5, "update") ||
+                    hasPermission(5, "delete")) && (
+                    <th className="min-w-[125px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -319,47 +324,57 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                           category.name
                         )}
                       </td>
-                      <td>
-                        {editingCategoryId === category.category_id ? (
-                          <>
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                              onClick={handleSaveEditClick}
-                              aria-label="Save"
-                            >
-                              <ImCheckmark color="green" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                              onClick={handleCancelEditClick}
-                              aria-label="Cancel"
-                            >
-                              <ImCross color="red" />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                              onClick={() =>
-                                handleEditClick(category.category_id)
-                              }
-                              aria-label="Edit"
-                            >
-                              <FaPencilAlt className="text-yellow-600" />
-                            </button>
-                            <button
-                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                              onClick={() =>
-                                handleDeleteCategory(category.category_id)
-                              }
-                              aria-label="Delete"
-                            >
-                              <FaTrash className="text-red-500" />
-                            </button>
-                          </>
-                        )}
-                      </td>
+
+                      {(hasPermission(5, "update") ||
+                        hasPermission(5, "delete")) && (
+                        <td>
+                          {editingCategoryId === category.category_id ? (
+                            hasPermission(5, "update") && (
+                              <>
+                                <button
+                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                  onClick={handleSaveEditClick}
+                                  aria-label="Save"
+                                >
+                                  <ImCheckmark color="green" />
+                                </button>
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  onClick={handleCancelEditClick}
+                                  aria-label="Cancel"
+                                >
+                                  <ImCross color="red" />
+                                </button>
+                              </>
+                            )
+                          ) : (
+                            <>
+                              {hasPermission(5, "update") && (
+                                <button
+                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleEditClick(category.category_id)
+                                  }
+                                  aria-label="Edit"
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                              )}
+                              {hasPermission(5, "delete") && (
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleDeleteCategory(category.category_id)
+                                  }
+                                  aria-label="Delete"
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

@@ -3,9 +3,11 @@ import CustomerTable from "./CustomerTable";
 import CustomerActivityReport from "../report/CustomerActivityReport";
 import NewCustomerReport from "../report/NewCustomerReport";
 import InActiveCustomerReport from "../report/InActiveCustomerReport";
+import { usePermissions } from "../../hooks";
 
 const Customer: React.FC = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
 
   const handleAddCustomer = () => {
     navigate("/customer/add");
@@ -26,11 +28,14 @@ const Customer: React.FC = () => {
               Customers
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button className="btn btn-primary" onClick={handleAddCustomer}>
-              <i className="ki-filled ki-plus-squared"></i>Add Customer
-            </button>
-          </div>
+
+          {hasPermission(8, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button className="btn btn-primary" onClick={handleAddCustomer}>
+                <i className="ki-filled ki-plus-squared"></i>Add Customer
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
