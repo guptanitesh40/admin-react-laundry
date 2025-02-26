@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
+import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -64,7 +65,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   }, [pageParams, perPageParams]);
 
   const handleViewOrder = (order_id: number) => {
-    navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
+    navigate(`/order/${order_id}`);
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -228,6 +229,10 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
+                  <th className="min-w-[280px]">Order Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>                
+
                   <th className="min-w-[200px]">Workshop Manager</th>
 
                   <th className="min-w-[140px]">
@@ -247,6 +252,54 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                   </th>
 
                   <th className="min-w-[280px]">Shipping address</th>
+
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "created_at"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("created_at")}
+                    >
+                      <span className="sort-label">Booking Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "estimated_pickup_time"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("estimated_pickup_time")}
+                    >
+                      <span className="sort-label">Estimated Pickup Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "estimated_delivery_time"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("estimated_delivery_time")}
+                    >
+                      <span className="sort-label">Delivery Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
                   <th className="min-w-[130px]">
                     <span
@@ -280,76 +333,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[220px]">Order Status</th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "estimated_delivery_time"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("estimated_delivery_time")}
-                    >
-                      <span className="sort-label">
-                        Estimated delivery time
-                      </span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[200px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "estimated_pickup_time"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("estimated_pickup_time")}
-                    >
-                      <span className="sort-label">Estimated pickup time</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "shipping_charges"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("shipping_charges")}
-                    >
-                      <span className="sort-label">Shipping charge</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[180px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "express_delivery_charges"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("express_delivery_charges")}
-                    >
-                      <span className="sort-label">
-                        Express delivery charges
-                      </span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[130px]">
                     <span
                       className={`sort ${
@@ -361,7 +344,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("sub_total")}
                     >
-                      <span className="sort-label">Sub total</span>
+                      <span className="sort-label">Bill Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -377,14 +360,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total</span>
+                      <span className="sort-label">Total Duo Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
                   <th className="min-w-[165px]">Payment type</th>
 
-                  <th className="min-w-[50px]">Action</th>                                    
+                  <th className="min-w-[50px]">Action</th>
                 </tr>
               </thead>
               {loading ? (
@@ -392,6 +375,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
                   {workshopOrders.map((order) => {
+                    const adminStatusClass = getOrderStatusLabel(
+                      order.order_status_details.admin_label
+                    );
+
+                    const nextStepClass = getOrderStatusLabel(
+                      order.order_status_details.next_step
+                    );
+
                     return (
                       <tr key={order.order_id}>
                         <td>#{order.order_id}</td>
@@ -400,6 +391,28 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         </td>
                         <td>{order.branch.branch_name}</td>
                         <td>{order.workshop.workshop_name}</td>
+                        <td>
+                          <span
+                            className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
+                          >
+                            {order.order_status_details.admin_label}
+                          </span>
+                        </td>
+
+                        <td>
+                          {order.order_status_details.next_step !== "NULL" && (
+                            <div className="tooltip-custom">
+                              <span
+                                className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
+                              >
+                                {order.order_status_details.next_step}
+                              </span>
+                              <div className="tooltip-text">
+                                {order.order_status_details.description}
+                              </div>
+                            </div>
+                          )}
+                        </td>
                         <td>
                           {order.workshop.workshopManagerMappings
                             .map(
@@ -410,29 +423,32 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         </td>
                         <td>{order.user.mobile_number}</td>
                         <td>{order.address_details}</td>
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
+
                         <td>
-                          <span className="badge badge-outline rounded-[30px]">
-                            {order.workshop_status_name}
-                          </span>
-                        </td>
-                        <td>
-                          <div className="flex flex-col">
-                            {dayjs(order.estimated_delivery_time).format(
-                              "DD-MM-YYYY"
-                            )}
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(order.created_at).format("DD-MM-YYYY")}
+                            <br />
+                            {dayjs(order.created_at).format("hh:mm:ss A")}
                           </div>
                         </td>
                         <td>
-                          <div className="flex flex-col">
+                          <div className="flex items-center gap-2.5">
                             {dayjs(order.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
                           </div>
                         </td>
-                        <td>{order.shipping_charges}</td>
-                        <td>{order.express_delivery_charges}</td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(order.estimated_delivery_time).format(
+                              "DD-MM-YYYY"
+                            )}
+                            <br />
+                          </div>
+                        </td>
+
+                        <td>{order.coupon_code}</td>
+                        <td>{order.coupon_discount}</td>
                         <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>

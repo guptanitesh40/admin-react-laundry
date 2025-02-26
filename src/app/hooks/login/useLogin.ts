@@ -1,52 +1,80 @@
-import { useState, useCallback } from 'react';
-import toast from 'react-hot-toast';
-import { LOGIN_URL } from '../../utils/constant';
+import { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { LOGIN_URL } from "../../utils/constant";
+import { login as loginAction } from "../../utils/authSlice";
+import { addUser } from "../../utils/userSlice";
+import useGetUserPermissions from "../roles/useGetUserPermissions";
 
 const useLogin = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const { fetchUserPermissions } = useGetUserPermissions();
 
   const login = useCallback(
-    async (username: string, password: string, roleId: number, deviceType: string, deviceToken: string): Promise<boolean> => {
-      const token = localStorage.getItem('authToken');
+    async (
+      username: string,
+      password: string,
+      roleId: number,
+      deviceType: string,
+      deviceToken: string
+    ): Promise<boolean> => {
       setLoading(true);
 
       try {
         const response = await fetch(LOGIN_URL, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ username, password, role_id: roleId, device_type: deviceType, device_token: deviceToken }),
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            password,
+            role_id: roleId,
+            device_type: deviceType,
+            device_token: deviceToken,
+          }),
         });
 
         const result = await response.json();
         const { statusCode, message, data } = result;
 
         if (!response.ok) {
-          toast.error(message, { position: 'top-center' });
+          toast.error(message, { position: "top-center" });
           return false;
         }
 
         const authToken = data?.token;
+        const user = data?.user;
 
-        if (statusCode === 200 && authToken) {
-          localStorage.setItem('authToken', authToken);
-          localStorage.setItem('user', JSON.stringify(data?.user));
-          toast.success(message, { position: 'top-center' });
+        if (statusCode === 200 && authToken && user) {
+          localStorage.setItem("authToken", authToken);
+          localStorage.setItem("user", JSON.stringify(user));
+
+          const permissions = await fetchUserPermissions();
+
+          dispatch(
+            loginAction({
+              isAuthenticated: true,
+              token: authToken,
+              permissions: permissions,
+              role_id: user.role_id,
+            })
+          );
+          dispatch(addUser(user));
+
+          toast.success(message, { position: "top-center" });
           return true;
         }
 
-        toast.error(message, { position: 'top-center' });
+        toast.error(message, { position: "top-center" });
         return false;
       } catch (error: any) {
-        toast.error(error?.message, { position: 'top-center' });
+        toast.error(error?.message || "Login failed", { position: "top-center" });
         return false;
       } finally {
         setLoading(false);
       }
     },
-    []
+    [dispatch, fetchUserPermissions]
   );
 
   return { loading, login };

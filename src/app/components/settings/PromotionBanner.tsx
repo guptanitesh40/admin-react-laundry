@@ -33,6 +33,7 @@ const PromotionBanner: React.FC = () => {
     image: null,
     title: "",
     price: "",
+    promotion_code: "",
     offer_validity: dayjs(),
   });
 
@@ -40,6 +41,7 @@ const PromotionBanner: React.FC = () => {
     image: null,
     title: "",
     price: "",
+    promotion_code: "",
     offer_validity: dayjs(),
   });
 
@@ -59,6 +61,7 @@ const PromotionBanner: React.FC = () => {
         ...formData,
         title: promotionBannerSettings.title || "",
         price: promotionBannerSettings.price || "",
+        promotion_code: promotionBannerSettings.promotion_code || "",
         offer_validity: dayjs(promotionBannerSettings.offer_validity),
         image: promotionBanner,
       };
@@ -125,6 +128,7 @@ const PromotionBanner: React.FC = () => {
       const updatedBannerData = {
         title: formData.title,
         price: formData.price,
+        promotion_code: formData.promotion_code,
         offer_validity: formData.offer_validity,
       };
 
@@ -240,8 +244,30 @@ const PromotionBanner: React.FC = () => {
                   </div>
                 </div>
               </div>
+
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label className="form-label flex items-center gap-1 max-w-56">
+                    Promotion code
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className="input"
+                      type="text"
+                      value={formData.promotion_code}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          promotion_code: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5 mt-3">
                   <label className="form-label flex items-center gap-1 max-w-56">
                     Offer Validity
                   </label>
@@ -266,6 +292,7 @@ const PromotionBanner: React.FC = () => {
                   </LocalizationProvider>
                 </div>
               </div>
+              
               <div className="flex relative justify-end pt-2.5">
                 <button
                   className="btn btn-primary"

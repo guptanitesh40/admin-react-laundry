@@ -260,35 +260,13 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const handleWorkshopStatus = async () => {
-    switch (order?.workshop_status_name) {
-      case "Order Received":
-        await handleStatusChange(5);
-        setConfirm(false);
-        break;
-      case "In Progress":
-        await handleStatusChange(6);
-        setConfirm(false);
-        break;
-      case "Completed":
-        await handleStatusChange(7);
-        setConfirm(false);
-        navigate("/workshop-order");
-        break;
-      default:
-        break;
-    }
-  };
 
   const handleStatusClick = async () => {
-    if (location?.state?.from === "OrderTable") {
       await handleOrderTableStatus();
-    } else {
-      await handleWorkshopStatus();
-    }
   };
 
   const getOrderStatus = () => {
+    
     return location.state?.from === "OrderTable"
       ? order?.order_status_details.next_step
       : order?.workshop_status_name;
