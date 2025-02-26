@@ -11,10 +11,12 @@ import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { VscFeedback } from "react-icons/vsc";
 import { BsBoxSeam } from "react-icons/bs";
 import { useGetUserPermissions, usePermissions } from "../../hooks";
+import { useSelector } from "react-redux";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const { hasPermission } = usePermissions();
+  const roleId = useSelector((state: any) => state.auth.role_id);
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -72,7 +74,6 @@ export const Sidebar: React.FC = () => {
             data-menu-accordion-expand-all="false"
             id="sidebar_menu"
           >
-            
             <Link to="/dashboard" onClick={() => handleItemClick("dashboard")}>
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -503,19 +504,23 @@ export const Sidebar: React.FC = () => {
                   </div>
                 </Link>
 
-                <Link to="/roles" onClick={() => handleItemClick("/roles")}>
-                  <div className={`menu-item ${getSubmenuItemClass("/roles")}`}>
+                {roleId === 1 && (
+                  <Link to="/roles" onClick={() => handleItemClick("/roles")}>
                     <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
+                      className={`menu-item ${getSubmenuItemClass("/roles")}`}
                     >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Roles and Permissions
-                      </span>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Roles and Permissions
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                )}
               </div>
             </div>
 
