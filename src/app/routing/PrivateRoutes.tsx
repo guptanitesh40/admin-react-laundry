@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import MasterLayout from "../components/layout/Index";
 import DashBoard from "../components/dashboard/Index";
@@ -6,6 +6,10 @@ import Shimmer from "../components/shimmer/Shimmer";
 import ListShimmer from "../components/shimmer/ListShimmer";
 import ProfileShimmer01 from "../components/shimmer/ProfileShimmer";
 import ProfileShimmer02 from "../components/shimmer/ProfileShimmer01";
+import { useGetUserPermissions, useValidateToken } from "../hooks";
+import { useDispatch } from "react-redux";
+import { login as loginAction } from "../utils/authSlice";
+import toast from "react-hot-toast";
 
 const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
@@ -53,7 +57,17 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/order/DeliveredOrder/DeliveredOrder")
   );
   const Roles = lazy(() => import("../components/roles-permissions/Roles"));
-  const Permissions = lazy(() => import("../components/roles-permissions/Permissions"))
+  const Permissions = lazy(
+    () => import("../components/roles-permissions/Permissions")
+  );
+
+  const token = localStorage.getItem("authToken");
+  const { fetchUserPermissions } = useGetUserPermissions();
+  const dispatch = useDispatch();
+  const [ fetching, setFethcing ] = useState<boolean>(false);
+  const { loading } = useValidateToken();
+
+  if(loading) return <h1>Loading data....</h1>
 
   return (
     <Routes>
@@ -113,7 +127,7 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
+      
         <Route
           path="/price"
           element={
@@ -130,7 +144,7 @@ const PrivateRoutes: React.FC = () => {
               <PriceContent />
             </Suspense>
           }
-        />
+        />  
 
         <Route
           path="/companies"
