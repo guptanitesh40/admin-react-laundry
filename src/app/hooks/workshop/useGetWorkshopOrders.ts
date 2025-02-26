@@ -6,6 +6,7 @@ const GET_WORKSHOPORDER_URL = `${
 }/admin/orders/workshop`;
 
 interface WorkshopOrders {
+  created_at:any;
   workshop_status_name: string;
   workshop: any;
   branch: any;
@@ -18,6 +19,7 @@ interface WorkshopOrders {
   order_id: number;
   user_id: number;
   order_status: number;
+  order_status_details: any;
   shipping_charge: number;
   express_delivery_charges: number;
   coupon_code: string;

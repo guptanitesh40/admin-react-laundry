@@ -10,9 +10,13 @@ import { IoIosPricetags } from "react-icons/io";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { VscFeedback } from "react-icons/vsc";
 import { BsBoxSeam } from "react-icons/bs";
+import { useGetUserPermissions, usePermissions } from "../../hooks";
+import { useSelector } from "react-redux";
 
 export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
+  const { hasPermission } = usePermissions();
+  const roleId = useSelector((state: any) => state.auth.role_id);
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -90,349 +94,381 @@ export const Sidebar: React.FC = () => {
               </div>
             </Link>
 
-            <Link to="/settings" onClick={() => handleItemClick("settings")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "settings"
-                )}`}
-              >
+            {hasPermission(2, "read") && (
+              <Link to="/settings" onClick={() => handleItemClick("settings")}>
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <li className="ki-filled ki-setting-2 text-lg"></li>
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Settings
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <div
-              className="menu-item"
-              data-menu-item-toggle="accordion"
-              data-menu-item-trigger="click"
-            >
-              <div
-                className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[17px] pl-[10px] pr-[10px] py-[6px] ml-1"
-                tabIndex={0}
-              >
-                <BsBoxSeam color="#cb9ad7" size={20} />
-                <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
-                  Orders
-                </span>
-                <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
-                  <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
-                  <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
-                </span>
-              </div>
-
-              <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
-                <Link to="/orders" onClick={() => handleItemClick("/orders")}>
-                  <div
-                    className={`menu-item ${getSubmenuItemClass("/orders")}`}
-                  >
-                    <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
-                    >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Orders List
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/pickup-orders"
-                  onClick={() => handleItemClick("/pickup-orders")}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "settings"
+                  )}`}
                 >
                   <div
-                    className={`menu-item ${getSubmenuItemClass(
-                      "/pickup-orders"
-                    )}`}
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <li className="ki-filled ki-setting-2 text-lg"></li>
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Settings
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(3, "read") && (
+              <div
+                className="menu-item"
+                data-menu-item-toggle="accordion"
+                data-menu-item-trigger="click"
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[17px] pl-[10px] pr-[10px] py-[6px] ml-1"
+                  tabIndex={0}
+                >
+                  <BsBoxSeam color="#cb9ad7" size={20} />
+                  <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                    Orders
+                  </span>
+                  <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
+                    <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
+                    <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                  </span>
+                </div>
+
+                <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                  <Link to="/orders" onClick={() => handleItemClick("/orders")}>
+                    <div
+                      className={`menu-item ${getSubmenuItemClass("/orders")}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Orders List
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/pickup-orders"
+                    onClick={() => handleItemClick("/pickup-orders")}
                   >
                     <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
+                      className={`menu-item ${getSubmenuItemClass(
+                        "/pickup-orders"
+                      )}`}
                     >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Pickup Orders
-                      </span>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Pickup Orders
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
 
-                <Link
-                  to="/delivered-orders"
-                  onClick={() => handleItemClick("/delivered-orders")}
+                  <Link
+                    to="/delivered-orders"
+                    onClick={() => handleItemClick("/delivered-orders")}
+                  >
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "/delivered-orders"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Delivered Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to="/booking-orders"
+                    onClick={() => handleItemClick("/booking-orders")}
+                  >
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "/booking-orders"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Booking Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {hasPermission(4, "read") && (
+              <Link to="/payments" onClick={() => handleItemClick("payments")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "payments"
+                  )}`}
                 >
                   <div
-                    className={`menu-item ${getSubmenuItemClass(
-                      "/delivered-orders"
-                    )}`}
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
                   >
-                    <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
-                    >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Delivered Orders
-                      </span>
-                    </div>
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaMoneyBillTransfer color="#cb9ad7" size={25} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Payments
+                    </span>
                   </div>
-                </Link>
+                </div>
+              </Link>
+            )}
 
-                <Link
-                  to="/booking-orders"
-                  onClick={() => handleItemClick("/booking-orders")}
+            {hasPermission(5, "read") && (
+              <Link to="/category" onClick={() => handleItemClick("category")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "category"
+                  )}`}
                 >
                   <div
-                    className={`menu-item ${getSubmenuItemClass(
-                      "/booking-orders"
-                    )}`}
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
                   >
-                    <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
-                    >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Booking Orders
-                      </span>
-                    </div>
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <MdCategory size={22} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Category
+                    </span>
                   </div>
-                </Link>
-              </div>
-            </div>
+                </div>
+              </Link>
+            )}
 
-            <Link to="/payments" onClick={() => handleItemClick("payments")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "payments"
-                )}`}
+            {hasPermission(6, "read") && (
+              <Link to="/product" onClick={() => handleItemClick("product")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "product"
+                  )}`}
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaProductHunt size={22} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Product
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(7, "read") && (
+              <Link to="/services" onClick={() => handleItemClick("services")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "services"
+                  )}`}
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <MdLocalLaundryService size={25} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Services
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(8, "read") && (
+              <Link
+                to="/customers"
+                onClick={() => handleItemClick("customers")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "customers"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaMoneyBillTransfer color="#cb9ad7" size={25} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Payments
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaUsers size={24} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Customers
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link to="/category" onClick={() => handleItemClick("category")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "category"
-                )}`}
+            {hasPermission(9, "read") && (
+              <Link to="/coupon" onClick={() => handleItemClick("coupon")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "coupon"
+                  )}`}
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <BiSolidCoupon color="#cb9ad7" size={25} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Coupon
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(10, "read") && (
+              <Link to="/price" onClick={() => handleItemClick("price")}>
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "price"
+                  )}`}
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <RiMoneyRupeeCircleLine color="#cb9ad7" size={25} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Price
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(11, "read") && (
+              <Link
+                to="/price-content"
+                onClick={() => handleItemClick("/price-content")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "/price-content"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdCategory size={22} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Category
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <IoIosPricetags color="#cb9ad7" size={25} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Price Content
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link to="/product" onClick={() => handleItemClick("product")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "product"
-                )}`}
+            {hasPermission(12, "read") && (
+              <Link
+                to="/companies"
+                onClick={() => handleItemClick("companies")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "companies"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaProductHunt size={22} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Product
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <RiBuilding2Fill color="#cb9ad7" size={23} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Company
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link to="/services" onClick={() => handleItemClick("services")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "services"
-                )}`}
-              >
+            {hasPermission(13, "read") && (
+              <Link to="/branches" onClick={() => handleItemClick("branches")}>
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "branches"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <MdLocalLaundryService size={25} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Services
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaBuilding color="#cb9ad7" size={20} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Branch
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link to="/customers" onClick={() => handleItemClick("customers")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "customers"
-                )}`}
-              >
+            {hasPermission(14, "read") && (
+              <Link to="/banner" onClick={() => handleItemClick("banner")}>
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "banner"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaUsers size={24} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Customers
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaImages color="#cb9ad7" size={23} />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Banner
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-
-            <Link to="/coupon" onClick={() => handleItemClick("coupon")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "coupon"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <BiSolidCoupon color="#cb9ad7" size={25} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Coupon
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link to="/price" onClick={() => handleItemClick("price")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "price"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <RiMoneyRupeeCircleLine color="#cb9ad7" size={25} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Price
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link
-              to="/price-content"
-              onClick={() => handleItemClick("/price-content")}
-            >
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "/price-content"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <IoIosPricetags color="#cb9ad7" size={25} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Price Content
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link to="/companies" onClick={() => handleItemClick("companies")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "companies"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <RiBuilding2Fill color="#cb9ad7" size={23} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Company
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link to="/branches" onClick={() => handleItemClick("branches")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "branches"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaBuilding color="#cb9ad7" size={20} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Branch
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link to="/banner" onClick={() => handleItemClick("banner")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "banner"
-                )}`}
-              >
-                <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
-                >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <FaImages color="#cb9ad7" size={23} />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Banner
-                  </span>
-                </div>
-              </div>
-            </Link>            
+              </Link>
+            )}
 
             <div
               className="menu-item"
@@ -455,9 +491,7 @@ export const Sidebar: React.FC = () => {
 
               <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
                 <Link to="/users" onClick={() => handleItemClick("/users")}>
-                  <div
-                    className={`menu-item ${getSubmenuItemClass("/users")}`}
-                  >
+                  <div className={`menu-item ${getSubmenuItemClass("/users")}`}>
                     <div
                       className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
                       tabIndex={0}
@@ -470,96 +504,100 @@ export const Sidebar: React.FC = () => {
                   </div>
                 </Link>
 
-                <Link
-                  to="/roles"
-                  onClick={() => handleItemClick("/roles")}
-                >
-                  <div
-                    className={`menu-item ${getSubmenuItemClass(
-                      "/roles"
-                    )}`}
-                  >
+                {roleId === 1 && (
+                  <Link to="/roles" onClick={() => handleItemClick("/roles")}>
                     <div
-                      className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
-                      tabIndex={0}
+                      className={`menu-item ${getSubmenuItemClass("/roles")}`}
                     >
-                      <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
-                      <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                        Roles and Permissions
-                      </span>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Roles and Permissions
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-
-               
+                  </Link>
+                )}
               </div>
             </div>
 
-            <Link to="/workshops" onClick={() => handleItemClick("workshops")}>
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "workshops"
-                )}`}
+            {hasPermission(15, "read") && (
+              <Link
+                to="/workshops"
+                onClick={() => handleItemClick("workshops")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "workshops"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={28} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Workshops
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <CiShop size={28} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Workshops
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link
-              to="/workshop-order"
-              onClick={() => handleItemClick("workshop-order")}
-            >
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "workshop-order"
-                )}`}
+            {hasPermission(16, "read") && (
+              <Link
+                to="/workshop-order"
+                onClick={() => handleItemClick("workshop-order")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "workshop-order"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <CiShop size={28} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Workshop Orders
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <CiShop size={28} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Workshop Orders
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
-            <Link
-              to="/customer-feedback"
-              onClick={() => handleItemClick("customer-feedback")}
-            >
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "customer-feedback"
-                )}`}
+            {hasPermission(17, "read") && (
+              <Link
+                to="/customer-feedback"
+                onClick={() => handleItemClick("customer-feedback")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "customer-feedback"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <VscFeedback size={25} color="#cb9ad7" />
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Customer Feedback
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <VscFeedback size={25} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Customer Feedback
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
           </div>
         </div>
       </div>

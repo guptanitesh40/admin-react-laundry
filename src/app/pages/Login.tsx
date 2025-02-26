@@ -77,19 +77,14 @@ const Login: React.FC = () => {
       );
 
       if (success) {
-        const token = localStorage.getItem("authToken");
-
-        const permissionsData = await fetchUserPermissions();
-
-        if (permissionsData) {
+      
           dispatch(
             loginAction({
               isAuthenticated: true,
-              token,
-              permissions: permissionsData,
+              token : localStorage.getItem("authToken"),
+              permissions: [],
             })
           );
-        }
         
         navigate("/dashboard");
       } else {
