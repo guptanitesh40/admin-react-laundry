@@ -65,35 +65,9 @@ const PrivateRoutes: React.FC = () => {
   const { fetchUserPermissions } = useGetUserPermissions();
   const dispatch = useDispatch();
   const [ fetching, setFethcing ] = useState<boolean>(false);
+  const { loading } = useValidateToken();
 
-  useEffect(() => {
-    const fetchPermissionData = async () => {
-
-      setFethcing(true);
-      try {
-        const permissions = await fetchUserPermissions();
-
-        if (permissions) {
-          dispatch(
-            loginAction({
-              isAuthenticated: true,
-              token,
-              permissions: permissions,
-            })
-          );
-        }
-      } catch {
-        toast.error("Fail to fetch Permissions data");
-      } finally {
-        setFethcing(false);
-      }
-    };
-    if(token) {
-      fetchPermissionData();
-    }
-  }, []);
-
-  if(fetching) return <h1>Loading</h1>
+  if(loading) return <h1>Loading data....</h1>
 
   return (
     <Routes>

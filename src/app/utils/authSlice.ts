@@ -1,44 +1,42 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface AuthState {
+export interface AuthState { 
   isAuthenticated: boolean;
   token: string | null;
-  permissions: any[]; 
+  permissions: any[];
+  role_id: number | null;
 }
 
-const getInitialAuthState = (): AuthState => {
-  const storedToken = localStorage.getItem('authToken');
-  return {
-    isAuthenticated: !!storedToken,
-    token: storedToken || null,
-    permissions: [],
-  };
+const initialState: AuthState = {
+  isAuthenticated: false,
+  token: null,
+  permissions: [],
+  role_id: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: getInitialAuthState(),
+  initialState,
   reducers: {
-    login: (state, action) => {
+    login: (state, action: PayloadAction<{ 
+      isAuthenticated: boolean;  
+      token: string; 
+      permissions: string[]; 
+      role_id?: number | null; 
+    }>) => {
       state.isAuthenticated = action.payload.isAuthenticated;
-      state.token = action.payload.token || null;
-      if (action.payload.isAuthenticated) {
-        localStorage.setItem('authToken', action.payload.token);
-      } else {
-        localStorage.removeItem('authToken');
-      }
-      state.permissions = action.payload.permissions; 
+      state.token = action.payload.token;
+      state.permissions = action.payload.permissions;
+      state.role_id = action.payload.role_id || null;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.token = null;
       state.permissions = [];
-      localStorage.removeItem('authToken');
-    }
-  }
+      state.role_id = null;
+    },
+  },
 });
 
 export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;
-
-
