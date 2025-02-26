@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useDeleteProduct, useGetProducts } from "../../hooks";
+import { useDeleteProduct, useGetProducts, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import {
   FaChevronLeft,
@@ -42,6 +42,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
     sortColumn,
     sortOrder
   );
+  const { hasPermission } = usePermissions();
 
   const totalPages = Math.ceil(totalProducts / perPage);
 
@@ -248,7 +249,10 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </div>
                   </th>
 
-                  <th className="min-w-[125px]">Actions</th>
+                  {(hasPermission(6, "update") ||
+                    hasPermission(6, "delete")) && (
+                    <th className="min-w-[125px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -274,22 +278,32 @@ const ProductTable: React.FC<ProductTableProps> = ({
                           src={product.image}
                         />
                       </td>
-                      <td>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => setEditProduct(product.product_id)}
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() =>
-                            handleDeleteProduct(product.product_id)
-                          }
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
+
+                      {(hasPermission(6, "update") ||
+                        hasPermission(6, "delete")) && (
+                        <td>
+                          {hasPermission(6, "update") && (
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                              onClick={() => setEditProduct(product.product_id)}
+                            >
+                              <FaPencilAlt className="text-yellow-600" />
+                            </button>
+                          )}
+
+                          {hasPermission(6, "delete") && (
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() =>
+                                handleDeleteProduct(product.product_id)
+                              }
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          )}
+
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

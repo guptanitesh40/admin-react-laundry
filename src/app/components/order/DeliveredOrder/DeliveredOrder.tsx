@@ -3,10 +3,12 @@ import DeliveredTable from "./DeliveredOrderTable";
 import { useState } from "react";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "../OrderTableFilter";
+import { usePermissions } from "../../../hooks";
 
 const DeliveredOrder: React.FC = () => {
   const navigate = useNavigate();
   const [isFilter, setIsFilter] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -19,7 +21,7 @@ const DeliveredOrder: React.FC = () => {
   });
 
   const handleAddOrder = () => {
-    navigate("/order/add", { state: { prevUrl: location.pathname }});
+    navigate("/order/add", { state: { prevUrl: location.pathname } });
   };
 
   const updateFilters = (newFilters: any) => {
@@ -35,11 +37,14 @@ const DeliveredOrder: React.FC = () => {
               Delivered Orders
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddOrder} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Order
-            </button>
-          </div>
+
+          {hasPermission(3, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddOrder} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Order
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
@@ -66,7 +71,7 @@ const DeliveredOrder: React.FC = () => {
                 updateFilters={updateFilters}
               />
             )}{" "}
-            <DeliveredTable filters={filters}/>
+            <DeliveredTable filters={filters} />
           </div>
         </div>
       </div>

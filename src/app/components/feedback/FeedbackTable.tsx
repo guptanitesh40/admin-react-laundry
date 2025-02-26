@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useApproveFeedback, useGetFeedbacks } from "../../hooks";
+import {
+  useApproveFeedback,
+  useGetFeedbacks,
+  usePermissions,
+} from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import { getPublishStatusLabel } from "../../utils/publishStatus";
@@ -36,6 +40,8 @@ const FeedbackTable: React.FC = () => {
     publishFilter
   );
   const { approveFeedback } = useApproveFeedback();
+
+  const { hasPermission } = usePermissions();
 
   const totalPages = Math.ceil(count / perPage);
 
@@ -230,7 +236,10 @@ const FeedbackTable: React.FC = () => {
                   <th className="min-w-[100px]">Rating</th>
                   <th className="min-w-[300px]">Comment</th>
                   <th className="min-w-[120px]">Date</th>
-                  <th className="min-w-[140px]">Publish</th>
+                  {(hasPermission(17, "create") ||
+                    hasPermission(17, "update")) && (
+                    <th className="min-w-[140px]">Publish</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -259,45 +268,48 @@ const FeedbackTable: React.FC = () => {
                           {dayjs(feedback.created_at).format("hh:mm:ss A")}
                         </div>
                       </td>
-                      <td>
-                        <select
-                          className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
-                            feedback.is_publish
-                          )}`}
-                          value={feedback.is_publish}
-                          onChange={(e) =>
-                            handleDropdownChange(
-                              feedback.feedback_id,
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option
-                            value="1"
-                            className="badge-danger badge-outline"
+                      {(hasPermission(17, "create") ||
+                        hasPermission(17, "update")) && (
+                        <td>
+                          <select
+                            className={`select select-lg w-[170px] text-sm ${getPublishStatusLabel(
+                              feedback.is_publish
+                            )}`}
+                            value={feedback.is_publish}
+                            onChange={(e) =>
+                              handleDropdownChange(
+                                feedback.feedback_id,
+                                e.target.value
+                              )
+                            }
                           >
-                            None
-                          </option>
-                          <option
-                            value="2"
-                            className="badge-info badge-outline"
-                          >
-                            Website
-                          </option>
-                          <option
-                            value="3"
-                            className="badge-warning badge-outline"
-                          >
-                            Mobile App
-                          </option>
-                          <option
-                            value="4"
-                            className="badge-secondary badge-outline"
-                          >
-                            Both
-                          </option>
-                        </select>
-                      </td>
+                            <option
+                              value="1"
+                              className="badge-danger badge-outline"
+                            >
+                              None
+                            </option>
+                            <option
+                              value="2"
+                              className="badge-info badge-outline"
+                            >
+                              Website
+                            </option>
+                            <option
+                              value="3"
+                              className="badge-warning badge-outline"
+                            >
+                              Mobile App
+                            </option>
+                            <option
+                              value="4"
+                              className="badge-secondary badge-outline"
+                            >
+                              Both
+                            </option>
+                          </select>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

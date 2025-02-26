@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import TableShimmer from "../shimmer/TableShimmer";
-import { useDeleteWorkshop, useGetWorkshops } from "../../hooks";
+import {
+  useDeleteWorkshop,
+  useGetWorkshops,
+  usePermissions,
+} from "../../hooks";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -61,7 +65,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
       sortOrder,
       workshopManagerFilter
     );
-
+  const { hasPermission } = usePermissions();
   const totalPages = Math.ceil(totalWorkshops / perPage);
 
   useEffect(() => {
@@ -224,7 +228,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                 )
               }
               className="lgmobile:min-w-[300px] vsmobile:min-w-[235px]"
-              isSearchInput={true}              
+              isSearchInput={true}
             />
           </div>
 
@@ -291,9 +295,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                   </span>
                 </th>
                 <th className="min-w-[230px]">Workshop manager</th>
-                <th className="min-w-[230px]">
-                  Address
-                </th>
+                <th className="min-w-[230px]">Address</th>
                 <th className="min-w-[250px]">
                   <span
                     className={`sort ${
@@ -324,7 +326,11 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                     <span className="sort-icon"></span>
                   </span>
                 </th>
-                <th className="min-w-[125px]">Actions</th>
+
+                {(hasPermission(15, "update") ||
+                  hasPermission(15, "delete")) && (
+                  <th className="min-w-[125px]">Actions</th>
+                )}
               </tr>
             </thead>
             {loading ? (
@@ -343,22 +349,33 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                     <td>{workshop.address}</td>
                     <td>{workshop.email}</td>
                     <td>{workshop.mobile_number}</td>
-                    <td>
-                      <button
-                        className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                        onClick={() => setUpdateWorkshop(workshop.workshop_id)}
-                      >
-                        <FaPencilAlt className="text-yellow-600" />
-                      </button>
-                      <button
-                        className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                        onClick={() =>
-                          handleDeleteWorkshop(workshop.workshop_id)
-                        }
-                      >
-                        <FaTrash className="text-red-500" />
-                      </button>
-                    </td>
+
+                    {(hasPermission(15, "update") ||
+                      hasPermission(15, "delete")) && (
+                      <td>
+                        {hasPermission(15, "update") && (
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            onClick={() =>
+                              setUpdateWorkshop(workshop.workshop_id)
+                            }
+                          >
+                            <FaPencilAlt className="text-yellow-600" />
+                          </button>
+                        )}
+
+                        {hasPermission(15, "delete") && (
+                          <button
+                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                            onClick={() =>
+                              handleDeleteWorkshop(workshop.workshop_id)
+                            }
+                          >
+                            <FaTrash className="text-red-500" />
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

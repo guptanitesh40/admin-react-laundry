@@ -5,6 +5,7 @@ import {
   useGetPrice,
   useGetProducts,
   useGetServices,
+  usePermissions,
 } from "../../hooks";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -69,6 +70,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const { hasPermission } = usePermissions();
 
   const getCombinations = useCallback(
     (
@@ -389,8 +391,12 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                   />
                                 ) : (
                                   <span
-                                    className="cursor-pointer h-full flex"
-                                    onClick={() => handleEditClick(key)}
+                                    className="cursor-pointer h-full flex"                                    
+                                    onClick={
+                                      hasPermission(10, "update") || hasPermission(10, "create")
+                                        ? () => handleEditClick(key)
+                                        : undefined
+                                    }
                                   >
                                     {updatedPrices[key] !== undefined
                                       ? updatedPrices[key]

@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import BranchTable from "./BranchTable";
+import { usePermissions } from "../../hooks";
 
 const Branch: React.FC = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
 
   const handleAddBranch = () => {
     navigate("/branch/add");
@@ -18,11 +20,15 @@ const Branch: React.FC = () => {
               Branch
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddBranch} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Branch
-            </button>
-          </div>
+
+          {hasPermission(13, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddBranch} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Branch
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   useAddSettings,
   useGetSettings,
+  usePermissions,
   useUpdatePromotionBanner,
 } from "../../hooks";
 import dayjs, { Dayjs } from "dayjs";
@@ -28,6 +29,7 @@ const PromotionBanner: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refetch, setRefetch] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const [formData, setFormData] = useState({
     image: null,
@@ -171,9 +173,13 @@ const PromotionBanner: React.FC = () => {
                   <div className="image-input" data-image-input="true">
                     <label
                       htmlFor="image-upload"
-                      className="btn btn-icon btn-icon-2xl btn-light absolute z-1 size-8 -top-0.5 -right-0.5 rounded-full"
+                      className={`btn btn-icon btn-icon-2xl btn-light absolute z-1 size-8 -top-0.5 -right-0.5 rounded-full ${
+                        !hasPermission(2, "update") ? "hidden" : ""
+                      }`}
                     >
-                      <FaPencilAlt className="text-blue-600" />
+                      {hasPermission(2, "update") && (
+                        <FaPencilAlt className="text-blue-600" />
+                      )}
                     </label>
                     <input
                       id="image-upload"
@@ -197,6 +203,7 @@ const PromotionBanner: React.FC = () => {
                   </div>
                 </div>
               </div>
+
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                   <label className="form-label flex items-center gap-1 max-w-56">
@@ -204,7 +211,11 @@ const PromotionBanner: React.FC = () => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.title}
                       onChange={(e) =>
@@ -213,6 +224,7 @@ const PromotionBanner: React.FC = () => {
                           title: e.target.value,
                         })
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.title || "\u00A0"}
@@ -228,7 +240,11 @@ const PromotionBanner: React.FC = () => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.price}
                       onChange={(e) =>
@@ -237,6 +253,7 @@ const PromotionBanner: React.FC = () => {
                           price: e.target.value,
                         })
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
                       {errors.price || "\u00A0"}
@@ -252,7 +269,11 @@ const PromotionBanner: React.FC = () => {
                   </label>
                   <div className="flex flex-col w-full">
                     <input
-                      className="input"
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
                       type="text"
                       value={formData.promotion_code}
                       onChange={(e) =>
@@ -261,6 +282,7 @@ const PromotionBanner: React.FC = () => {
                           promotion_code: e.target.value,
                         })
                       }
+                      readOnly={!hasPermission(2, "update")}
                     />
                   </div>
                 </div>
@@ -275,6 +297,7 @@ const PromotionBanner: React.FC = () => {
                     <DatePicker
                       value={formData.offer_validity}
                       onChange={handleDateChange}
+                      disabled={!hasPermission(2, "update")}
                       format="DD-MM-YYYY"
                       slotProps={{
                         textField: {
@@ -292,23 +315,25 @@ const PromotionBanner: React.FC = () => {
                   </LocalizationProvider>
                 </div>
               </div>
-              
-              <div className="flex relative justify-end pt-2.5">
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={adding || updating}
-                >
-                  {adding || updating ? (
-                    <>
-                      Saving...
-                      <LoadingSpinner />
-                    </>
-                  ) : (
-                    <>Save Changes</>
-                  )}
-                </button>
-              </div>
+
+              {hasPermission(2, "update") && (
+                <div className="flex relative justify-end pt-2.5">
+                  <button
+                    className="btn btn-primary"
+                    type="submit"
+                    disabled={adding || updating}
+                  >
+                    {adding || updating ? (
+                      <>
+                        Saving...
+                        <LoadingSpinner />
+                      </>
+                    ) : (
+                      <>Save Changes</>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         </div>

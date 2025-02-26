@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useDeleteService, useGetServices } from "../../hooks";
+import { useDeleteService, useGetServices, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import {
   FaChevronLeft,
@@ -42,6 +42,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
     sortColumn,
     sortOrder
   );
+  const { hasPermission } = usePermissions();
 
   const totalPages = Math.ceil(totalServices / perPage);
 
@@ -245,8 +246,10 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                   </th>
 
                   <th className="min-w-[125px]">Image</th>
-
-                  <th className="min-w-[125px]">Actions</th>
+                  {(hasPermission(7, "update") ||
+                    hasPermission(7, "delete")) && (
+                    <th className="min-w-[125px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -272,22 +275,31 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                           src={service.image}
                         />
                       </td>
-                      <td>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => setEditService(service.service_id)}
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() =>
-                            handleDeleteService(service.service_id)
-                          }
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
+
+                      {(hasPermission(7, "update") ||
+                        hasPermission(7, "delete")) && (
+                        <td>
+                          {hasPermission(7, "update") && (
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                              onClick={() => setEditService(service.service_id)}
+                            >
+                              <FaPencilAlt className="text-yellow-600" />
+                            </button>
+                          )}
+
+                          {hasPermission(7, "delete") && (
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() =>
+                                handleDeleteService(service.service_id)
+                              }
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

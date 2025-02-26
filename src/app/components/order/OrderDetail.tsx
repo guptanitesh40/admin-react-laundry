@@ -9,6 +9,7 @@ import {
   useAddNote,
   useDeleteNote,
   useGenerateInvoice,
+  usePermissions,
   useUpdateOrderStatus,
 } from "../../hooks";
 import toast from "react-hot-toast";
@@ -41,6 +42,7 @@ const OrderDetails: React.FC = () => {
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
+  const { hasPermission } = usePermissions();
 
   const [formData, setFormData] = useState({
     user_id: null,
@@ -260,13 +262,11 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-
   const handleStatusClick = async () => {
-      await handleOrderTableStatus();
+    await handleOrderTableStatus();
   };
 
   const getOrderStatus = () => {
-    
     return location.state?.from === "OrderTable"
       ? order?.order_status_details.next_step
       : order?.workshop_status_name;
@@ -347,30 +347,38 @@ const OrderDetails: React.FC = () => {
                 </button>
               )}
 
-              <button
-                className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
-                onClick={handleEditOrder}
-              >
-                <i className="ki-filled ki-pencil mr-2"></i>Edit Order
-              </button>
-              {order?.order_status < 8 && order?.refund_status !== 1 && (
+              {hasPermission(3, "update") && (
                 <button
-                  className="flex items-center font-semibold btn-danger sm:btn smmobile:btn-sm smmobile:btn"
-                  onClick={handleOrderCancel}
+                  className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
+                  onClick={handleEditOrder}
                 >
-                  <MdCancel size={20} />
-                  Cancel Order
+                  <i className="ki-filled ki-pencil mr-2"></i>Edit Order
                 </button>
               )}
-              {order.payment_status !== 1 && order.refund_status === 3 && (
-                <button
-                  className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
-                  onClick={handleOrderRefund}
-                >
-                  <HiReceiptRefund size={20} />
-                  Refund Order
-                </button>
-              )}
+
+              {hasPermission(3, "update") &&
+                order?.order_status < 8 &&
+                order?.refund_status !== 1 && (
+                  <button
+                    className="flex items-center font-semibold btn-danger sm:btn smmobile:btn-sm smmobile:btn"
+                    onClick={handleOrderCancel}
+                  >
+                    <MdCancel size={20} />
+                    Cancel Order
+                  </button>
+                )}
+
+              {hasPermission(3, "update") &&
+                order.payment_status !== 1 &&
+                order.refund_status === 3 && (
+                  <button
+                    className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
+                    onClick={handleOrderRefund}
+                  >
+                    <HiReceiptRefund size={20} />
+                    Refund Order
+                  </button>
+                )}
             </div>
           </div>
 
@@ -401,6 +409,7 @@ const OrderDetails: React.FC = () => {
                   <button
                     className={`${nextStepLabel} badge-outline badge-xl rounded-[30px]`}
                     onClick={handleStatusClick}
+                    disabled={!hasPermission(3, "update")}
                   >
                     {order.order_status_details.next_step}
                   </button>
@@ -799,140 +808,152 @@ const OrderDetails: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-6 card rounded-xl p-6 shadow">
-        <h2 className="text-lg font-medium text-gray-700 mb-4">Order Notes</h2>
+      {(hasPermission(3, "create") || hasPermission(3,"update")) && (
+        <div className="mt-6 card rounded-xl p-6 shadow">
+          <h2 className="text-lg font-medium text-gray-700 mb-4">
+            Order Notes
+          </h2>
 
-        <div>
-          <div className="relative border border-gray-300 rounded-md p-2">
-            <textarea
-              className="w-full h-16 p-3 border-none focus:outline-none focus:ring-0"
-              placeholder="Add a new note..."
-              value={formData.text_note || ""}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  text_note: e.target.value,
-                })
-              }
-              rows={5}
-            />
-            <div className="flex items-center mt-2">
-              <button
-                className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 rounded-full p-1 transition-all ease-in-out duration-200"
-                title="Attach image"
-                onClick={handleIconClick}
-              >
-                <BiImageAlt size={23} />
-              </button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                multiple
-                onChange={handleChange}
-                name="images"
+          <div>
+            <div className="relative border border-gray-300 rounded-md p-2">
+              <textarea
+                className="w-full h-16 p-3 border-none focus:outline-none focus:ring-0"
+                placeholder="Add a new note..."
+                value={formData.text_note || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    text_note: e.target.value,
+                  })
+                }
+                rows={5}
               />
+              <div className="flex items-center mt-2">
+                <button
+                  className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 rounded-full p-1 transition-all ease-in-out duration-200"
+                  title="Attach image"
+                  onClick={handleIconClick}
+                >
+                  <BiImageAlt size={23} />
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  multiple
+                  onChange={handleChange}
+                  name="images"
+                />
+              </div>
             </div>
+            <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
           </div>
-          <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
-        </div>
 
-        <div>
-          {formData.images.map((image, index) => (
-            <div key={index} className="relative inline-block mr-2 mb-2 group">
-              <img
-                src={URL.createObjectURL(image as File)}
-                alt={`Preview ${index}`}
-                className="w-32 h-32 object-cover rounded-md border"
-              />
-              <button
-                className="absolute top-0 right-0 rounded-full p-1 shadow-md text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                onClick={() => handleRemoveImage(index)}
+          <div>
+            {formData.images.map((image, index) => (
+              <div
+                key={index}
+                className="relative inline-block mr-2 mb-2 group"
               >
-                <RxCross2 size={20} />
-              </button>
-            </div>
-          ))}
-        </div>
+                <img
+                  src={URL.createObjectURL(image as File)}
+                  alt={`Preview ${index}`}
+                  className="w-32 h-32 object-cover rounded-md border"
+                />
+                <button
+                  className="absolute top-0 right-0 rounded-full p-1 shadow-md text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  <RxCross2 size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
 
-        <div className="flex relative justify-start pt-2.5">
-          <button
-            className={`px-4 py-2 btn btn-primary 
+          <div className="flex relative justify-start pt-2.5">
+            <button
+              className={`px-4 py-2 btn btn-primary 
           ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={hanldeAddNote}
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Add Note"}
-          </button>
-        </div>
+              onClick={hanldeAddNote}
+              disabled={loading}
+            >
+              {loading ? "Adding..." : "Add Note"}
+            </button>
+          </div>
 
-        <ul className="mt-4 space-y-4">
-          {order.notes?.map((note, index) => {
-            const formattedDate = dayjs(note.created_at).format(
-              "HH:mm, DD/MM/YYYY"
-            );
+          <ul className="mt-4 space-y-4">
+            {order.notes?.map((note, index) => {
+              const formattedDate = dayjs(note.created_at).format(
+                "HH:mm, DD/MM/YYYY"
+              );
 
-            return (
-              <div key={index} className="relative">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="block text-sm text-gray-600">
-                    • {note.user.first_name} {note.user.last_name}
-                  </span>
+              return (
+                <div key={index} className="relative">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="block text-sm text-gray-600">
+                      • {note.user.first_name} {note.user.last_name}
+                    </span>
 
-                  <span className="text-xs text-gray-500">{formattedDate}</span>
-                </div>
+                    <span className="text-xs text-gray-500">
+                      {formattedDate}
+                    </span>
+                  </div>
 
-                <li className="p-4 border rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 transition duration-200 relative">
-                  <p className="text-gray-800 mb-2">{note.text_note}</p>
+                  <li className="p-4 border rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 transition duration-200 relative">
+                    <p className="text-gray-800 mb-2">{note.text_note}</p>
 
-                  {note.images && note.images.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-3">
-                      {note.images.map((image: string, index: number) => (
-                        <img
-                          key={index}
-                          src={image}
-                          className="w-full h-auto rounded-md border shadow-sm"
-                          alt={`Note Attachment ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  )}
+                    {note.images && note.images.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-3">
+                        {note.images.map((image: string, index: number) => (
+                          <img
+                            key={index}
+                            src={image}
+                            className="w-full h-auto rounded-md border shadow-sm"
+                            alt={`Note Attachment ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                  <div className="menu absolute top-1 right-2" data-menu="true">
                     <div
-                      className="menu-item"
-                      data-menu-item-offset="0, 10px"
-                      data-menu-item-placement="bottom-end"
-                      data-menu-item-toggle="dropdown"
-                      data-menu-item-trigger="click|lg:click"
+                      className="menu absolute top-1 right-2"
+                      data-menu="true"
                     >
-                      <button className="menu-toggle btn btn-sm btn-icon btn-light btn-clear">
-                        <i className="ki-filled ki-dots-vertical"></i>
-                      </button>
                       <div
-                        className="menu-dropdown menu-default w-full max-w-[175px]"
-                        data-menu-dismiss="true"
+                        className="menu-item"
+                        data-menu-item-offset="0, 10px"
+                        data-menu-item-placement="bottom-end"
+                        data-menu-item-toggle="dropdown"
+                        data-menu-item-trigger="click|lg:click"
                       >
-                        <div className="menu-item">
-                          <button
-                            className="menu-link"
-                            onClick={() => hanldeDeleteNote(note.note_id)}
-                          >
-                            <span className="menu-icon">
-                              <i className="ki-filled ki-trash"></i>
-                            </span>
-                            <span className="menu-title">Remove</span>
-                          </button>
+                        <button className="menu-toggle btn btn-sm btn-icon btn-light btn-clear">
+                          <i className="ki-filled ki-dots-vertical"></i>
+                        </button>
+                        <div
+                          className="menu-dropdown menu-default w-full max-w-[175px]"
+                          data-menu-dismiss="true"
+                        >
+                          <div className="menu-item">
+                            <button
+                              className="menu-link"
+                              onClick={() => hanldeDeleteNote(note.note_id)}
+                            >
+                              <span className="menu-icon">
+                                <i className="ki-filled ki-trash"></i>
+                              </span>
+                              <span className="menu-title">Remove</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </li>
-              </div>
-            );
-          })}
-        </ul>
-      </div>
+                  </li>
+                </div>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       <PickupBoyModal
         orderStatus={

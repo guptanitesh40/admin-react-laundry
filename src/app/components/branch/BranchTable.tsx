@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDeleteBranch, useGetBranches, useGetCompanies } from "../../hooks";
+import {
+  useDeleteBranch,
+  useGetBranches,
+  useGetCompanies,
+  usePermissions,
+} from "../../hooks";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -42,6 +47,7 @@ const BranchTable: React.FC = () => {
     companyFilter,
     branchManagerFilter
   );
+  const { hasPermission } = usePermissions();
   const { deleteBranch } = useDeleteBranch();
   const { companies } = useGetCompanies(pageNumberForList, perPageForList);
   const { users, fetchUsersByRole } = useGetUsersByRole();
@@ -362,7 +368,12 @@ const BranchTable: React.FC = () => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-                  <th className="w-[50px]">Actions</th>
+
+                  {(hasPermission(13, "update") ||
+                    hasPermission(13, "delete") ||
+                    hasPermission(13, "read")) && (
+                    <th className="w-[50px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -412,28 +423,47 @@ const BranchTable: React.FC = () => {
                           {branch.company.company_name}
                         </div>
                       </td>
-                      <td>
-                        <div className="flex">
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewBranch(branch.branch_id)}
-                          >
-                            <FaEye size={18} className="text-gray-600" />
-                          </button>
-                          <button
-                            onClick={() => handleUpdateBranch(branch.branch_id)}
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          >
-                            <FaPencilAlt className="text-yellow-600" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteBranch(branch.branch_id)}
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
-                        </div>
-                      </td>
+
+                      {(hasPermission(13, "update") ||
+                        hasPermission(13, "delete") ||
+                        hasPermission(13, "read")) && (
+                        <td>
+                          <div className="flex">
+                            {hasPermission(12, "read") && (
+                              <button
+                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                                onClick={() =>
+                                  handleViewBranch(branch.branch_id)
+                                }
+                              >
+                                <FaEye size={18} className="text-gray-600" />
+                              </button>
+                            )}
+
+                            {hasPermission(12, "update") && (
+                              <button
+                                onClick={() =>
+                                  handleUpdateBranch(branch.branch_id)
+                                }
+                                className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                              >
+                                <FaPencilAlt className="text-yellow-600" />
+                              </button>
+                            )}
+
+                            {hasPermission(12, "delete") && (
+                              <button
+                                onClick={() =>
+                                  handleDeleteBranch(branch.branch_id)
+                                }
+                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              >
+                                <FaTrash className="text-red-500" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import WorkshopTable from "./WorkshopTable";
 import WorkshopModal from "./WorkshopModal";
+import { usePermissions } from "../../hooks";
 
 const Workshop: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [currentWorkshop, setCurrentWorkshop] = useState<any>(null);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const handleAddWorkshop = () => {
     setModalIsOpen(true);
@@ -26,11 +28,15 @@ const Workshop: React.FC = () => {
               Workshop
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddWorkshop} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Workshop
-            </button>
-          </div>
+
+          {hasPermission(15, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddWorkshop} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Workshop
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
 
