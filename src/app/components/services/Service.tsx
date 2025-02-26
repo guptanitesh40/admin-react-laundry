@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import ServiceModal from "./ServiceModal";
 import ServiceTable from "./ServiceTable";
+import { usePermissions } from "../../hooks";
 
 const Service: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [currentService, setCurrentService] = useState<any>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const handleAddService = () => {
     setEditMode(false);
@@ -29,11 +31,15 @@ const Service: React.FC = () => {
               Service
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddService} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Service
-            </button>
-          </div>
+
+          {hasPermission(7, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddService} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Service
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
 

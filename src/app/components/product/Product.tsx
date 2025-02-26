@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import ProductModal from "./ProductModal";
 import ProductTable from "./ProductTable";
+import { usePermissions } from "../../hooks";
 
 const Product: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [currentProduct, setCurrentProduct] = useState<any>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   const handleAddProduct = () => {
     setEditMode(false);
@@ -29,32 +31,36 @@ const Product: React.FC = () => {
               Products
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddProduct} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Product
-            </button>
+
+          {hasPermission(6, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddProduct} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Product
+              </button>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      <div className="container-fixed">
+        <div className="grid gap-5 lg:gap-7.5">
+          <div className="card card-grid min-w-full">
+            <ProductTable
+              isSubmit={isSubmit}
+              setIsSubmit={setIsSubmit}
+              setEditProduct={handleEditProduct}
+            />
           </div>
         </div>
       </div>
 
-        <div className="container-fixed">
-          <div className="grid gap-5 lg:gap-7.5">
-            <div className="card card-grid min-w-full">
-              <ProductTable
-                isSubmit={isSubmit}
-                setIsSubmit={setIsSubmit}
-                setEditProduct={handleEditProduct}
-              />
-            </div>
-          </div>
-        </div>
-
-        <ProductModal
-          setIsSubmit={setIsSubmit}
-          isOpen={modalIsOpen}
-          onClose={() => setModalIsOpen(false)}
-          product_id={currentProduct}
-        />
+      <ProductModal
+        setIsSubmit={setIsSubmit}
+        isOpen={modalIsOpen}
+        onClose={() => setModalIsOpen(false)}
+        product_id={currentProduct}
+      />
     </>
   );
 };

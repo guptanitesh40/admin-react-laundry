@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import CompanyTable from "./CompanyTable";
+import { usePermissions } from "../../hooks";
 
 const Company: React.FC = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
 
   const handleAddCompany = () => {
     navigate("/company/add");
@@ -18,11 +20,14 @@ const Company: React.FC = () => {
               Company
             </h1>
           </div>
-          <div className="flex items-center gap-2.5">
-            <button onClick={handleAddCompany} className="btn btn-primary">
-              <i className="ki-filled ki-plus-squared"></i>Add Company
-            </button>
-          </div>
+
+          {hasPermission(12, "create") && (
+            <div className="flex items-center gap-2.5">
+              <button onClick={handleAddCompany} className="btn btn-primary">
+                <i className="ki-filled ki-plus-squared"></i>Add Company
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

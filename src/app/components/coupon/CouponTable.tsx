@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDeleteCoupon, useGetCoupons } from "../../hooks";
+import { useDeleteCoupon, useGetCoupons, usePermissions } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
@@ -40,12 +40,12 @@ const CouponTable: React.FC = () => {
     discountTypeFiter,
     couponTypeFilter
   );
+  const { hasPermission } = usePermissions();
   const { deleteCoupon } = useDeleteCoupon();
 
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(totalCoupons / perPage);
-
 
   const handleDeleteCoupon = async (coupon_id: number) => {
     try {
@@ -174,7 +174,6 @@ const CouponTable: React.FC = () => {
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
           <div className="flex flex-wrap gap-2.5">
-          
             <select
               className="select select-lg w-[170px] text-sm"
               value={discountTypeFiter}
@@ -414,7 +413,10 @@ const CouponTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[125px]">Actions</th>
+                  {(hasPermission(9, "update") ||
+                    hasPermission(9, "delete")) && (
+                    <th className="min-w-[125px]">Actions</th>
+                  )}
                 </tr>
               </thead>
               {loading ? (
@@ -490,21 +492,30 @@ const CouponTable: React.FC = () => {
                           }
                         </div>
                       </td>
-                      <td>
-                        <button
-                          onClick={() => handleEditCoupon(coupon)}
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
+                      {(hasPermission(9, "update") ||
+                        hasPermission(9, "delete")) && (
+                        <td>
+                          {hasPermission(9, "update") && (
+                            <button
+                              onClick={() => handleEditCoupon(coupon)}
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            >
+                              <FaPencilAlt className="text-yellow-600" />
+                            </button>
+                          )}
 
-                        <button
-                          onClick={() => handleDeleteCoupon(coupon.coupon_id)}
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
+                          {hasPermission(9, "delete") && (
+                            <button
+                              onClick={() =>
+                                handleDeleteCoupon(coupon.coupon_id)
+                              }
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
