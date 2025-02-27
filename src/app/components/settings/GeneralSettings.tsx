@@ -247,7 +247,7 @@ const GeneralSettings: React.FC = ({}) => {
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                   <label className="form-label flex items-center gap-1 max-w-56">
-                    Shipping Charge (Rs)
+                    Normal Delivery Charge (Rs)
                   </label>
                   <div className="flex flex-col w-full">
                     <input

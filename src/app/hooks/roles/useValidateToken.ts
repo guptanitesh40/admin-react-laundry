@@ -23,24 +23,25 @@ const useValidateToken = () => {
         },
         body: JSON.stringify({ token }),
       });
-
+  
       const data = await response.json();
-
+  
       if (data?.data?.user) {
-        const permissions = await fetchUserPermissions();
-
+        const permissions = await fetchUserPermissions(token); 
+  
+        dispatch(addUser(data.data.user)); 
+  
         dispatch(
           login({
             isAuthenticated: true,
             token: data?.data?.token,
-            permissions: permissions,
+            permissions,
             role_id: data?.data?.user?.role_id,
           })
         );
-        dispatch(addUser(data.data.user));
       } else {
         toast.error("Failed to fetch login user details");
-        localStorage.removeItem("authToken"); 
+        localStorage.removeItem("authToken");
       }
     } catch (error) {
       toast.error("Invalid or expired token");

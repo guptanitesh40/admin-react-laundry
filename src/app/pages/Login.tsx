@@ -77,16 +77,20 @@ const Login: React.FC = () => {
       );
 
       if (success) {
-      
+        const token = localStorage.getItem("authToken");
+
+        if (token) {
           dispatch(
             loginAction({
               isAuthenticated: true,
-              token : localStorage.getItem("authToken"),
+              token,
               permissions: [],
             })
           );
-        
-        navigate("/dashboard");
+          navigate("/dashboard");
+        } else {
+          toast.error("Login failed: Unable to retrieve authentication token.");
+        }
       } else {
         dispatch(
           loginAction({ isAuthenticated: false, token: null, permissions: [] })
