@@ -7,7 +7,7 @@ const usePermissions = () => {
     const hasPermission = (moduleId: number, action: "create" | "update" | "read" | "delete") => {
         if (roleId === 1) return true;
         
-        const modulePermission = permissions.find((perm: any) => perm.module_id === moduleId);
+        const modulePermission = permissions?.find((perm: any) => perm?.module_id === moduleId);
         return modulePermission ? modulePermission[action] : false;
     };
 

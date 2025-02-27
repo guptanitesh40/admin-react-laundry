@@ -201,7 +201,7 @@ const BranchForm: React.FC = () => {
                 })
               }
             >
-              <option value="" disabled>
+              <option value="" selected>
                 Select Branch Manager
               </option>
               {users ? (

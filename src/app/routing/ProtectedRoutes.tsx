@@ -2,18 +2,24 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 interface ProtectedRouteProps {
-  moduleId: number; 
+  moduleId: number;
   action: "read" | "create" | "update" | "delete";
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ moduleId, action }) => {
-  const permissions = useSelector((state: any) => state.auth.permissions|| []);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  moduleId,
+  action,
+}) => {
+  const permissions = useSelector((state: any) => state.auth.permissions || []);
+  const roleId = useSelector((state: any) => state.auth.role_id);
 
-  const modulePermission = permissions.find((perm: any) => perm.module_id === moduleId);
+  if (roleId === 1) {
+    return <Outlet />;
+  }
 
-  console.log("modulePermission", modulePermission);
-  console.log("modulePermission[action]", modulePermission[action]);
-
+  const modulePermission = permissions.find(
+    (perm: any) => perm.module_id === moduleId
+  );
 
   if (!modulePermission || !modulePermission[action]) {
     return <Navigate to="/dashboard" replace />;

@@ -2,8 +2,6 @@ import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 
-const token = localStorage.getItem("authToken");
-
 interface UserPermissions {
   role_permission_id: number;
   role_id: number;
@@ -18,7 +16,7 @@ const useGetUserPermissions = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [userPermissions, setUserPermissions] = useState<UserPermissions | null>(null);
 
-  const fetchUserPermissions = async () => {
+  const fetchUserPermissions = async (token: any) => {
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/role-permission/list`, {
