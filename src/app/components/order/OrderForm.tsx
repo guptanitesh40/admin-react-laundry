@@ -1044,7 +1044,7 @@ const OrderForm: React.FC = () => {
                 htmlFor="express_delivery_charges"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Express Delivery Charges
+                Express Delivery Charge
               </label>
               <input
                 type="text"
@@ -1066,7 +1066,7 @@ const OrderForm: React.FC = () => {
                 htmlFor="shipping_charges"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                Shipping Charges
+                Normal Delivery Charge
               </label>
               <input
                 type="text"

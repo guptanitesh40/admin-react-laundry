@@ -192,7 +192,7 @@ const PrivateRoutes: React.FC = () => {
             path="/company/add"
             element={
               <Suspense fallback={<Shimmer />}>
-                <CompanyProfile />
+                <CompanyForm />
               </Suspense>
             }
           />

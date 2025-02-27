@@ -49,17 +49,26 @@ const useLogin = () => {
           localStorage.setItem("authToken", authToken);
           localStorage.setItem("user", JSON.stringify(user));
 
-          const permissions = await fetchUserPermissions();
-
           dispatch(
             loginAction({
               isAuthenticated: true,
               token: authToken,
-              permissions: permissions,
+              permissions: [],
               role_id: user.role_id,
             })
           );
           dispatch(addUser(user));
+
+          fetchUserPermissions(authToken).then((permissions) => {
+            dispatch(
+              loginAction({
+                isAuthenticated: true,
+                token: authToken,
+                permissions,
+                role_id: user.role_id,
+              })
+            );
+          });
 
           toast.success(message, { position: "top-center" });
           return true;
@@ -68,7 +77,9 @@ const useLogin = () => {
         toast.error(message, { position: "top-center" });
         return false;
       } catch (error: any) {
-        toast.error(error?.message || "Login failed", { position: "top-center" });
+        toast.error(error?.message || "Login failed", {
+          position: "top-center",
+        });
         return false;
       } finally {
         setLoading(false);
