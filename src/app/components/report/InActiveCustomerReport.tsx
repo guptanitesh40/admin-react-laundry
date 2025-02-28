@@ -2,29 +2,13 @@ import { useEffect } from "react";
 import { useGetInActiveCustomerData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 
-const customerData = [
-  { month: "Jan-2025", not_active_count: 120 },
-  { month: "Feb-2025", not_active_count: 95 },
-  { month: "Mar-2025", not_active_count: 110 },
-  { month: "Apr-2025", not_active_count: 130 },
-  { month: "May-2025", not_active_count: 105 },
-  { month: "Jun-2025", not_active_count: 115 },
-  { month: "Jul-2025", not_active_count: 140 },
-  { month: "Aug-2025", not_active_count: 125 },
-  { month: "Sep-2025", not_active_count: 100 },
-  { month: "Oct-2025", not_active_count: 135 },
-  { month: "Nov-2025", not_active_count: 90 },
-  { month: "Dec-2025", not_active_count: 150 },
-];
-
-
 const InActiveCustomerReport = () => {
-  // const { customerData, fetchInActiveCustomerData } =
-  //   useGetInActiveCustomerData();
+  const { customerData, fetchInActiveCustomerData } =
+    useGetInActiveCustomerData();
 
-  // useEffect(() => {
-  //   fetchInActiveCustomerData();
-  // }, []);
+  useEffect(() => {
+    fetchInActiveCustomerData();
+  }, []);
 
   const categories =
     customerData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
@@ -117,7 +101,7 @@ const InActiveCustomerReport = () => {
       },
       yaxis: {
         min: 0,
-        tickAmount: 5,
+        tickAmount: 1,
         axisTicks: {
           show: false,
         },

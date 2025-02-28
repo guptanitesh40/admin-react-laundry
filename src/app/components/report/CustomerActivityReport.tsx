@@ -2,28 +2,14 @@ import { useEffect } from "react";
 import { useGetCustomerActivityData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 
-const customerActivityData = [
-  { month: "Jan-2025", login_count: 5 },
-  { month: "Feb-2025", login_count: 2 },
-  { month: "Mar-2025", login_count: 8 },
-  { month: "Apr-2025", login_count: 6 },
-  { month: "May-2025", login_count: 10 },
-  { month: "Jun-2025", login_count: 7 },
-  { month: "Jul-2025", login_count: 9 },
-  { month: "Aug-2025", login_count: 4 },
-  { month: "Sep-2025", login_count: 11 },
-  { month: "Oct-2025", login_count: 3 },
-  { month: "Nov-2025", login_count: 6 },
-  { month: "Dec-2025", login_count: 12 },
-];
 
 const CustomerActivityReport: React.FC = () => {
-  // const { customerActivityData, fetchCustomerActivityData } =
-  //   useGetCustomerActivityData();
+  const { customerActivityData, fetchCustomerActivityData } =
+    useGetCustomerActivityData();
 
-  // useEffect(() => {
-  //   fetchCustomerActivityData();
-  // }, []);
+  useEffect(() => {
+    fetchCustomerActivityData();
+  }, []);
 
   const categories =
     customerActivityData?.map(
