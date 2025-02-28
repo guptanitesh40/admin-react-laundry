@@ -15,7 +15,6 @@ interface Order {
   user_id: number;
   order_status_details: any;
   order_status: number;
-  shipping_charge: number;
   express_delivery_charges: number;
   coupon_code: string;
   coupon_discount: number;
@@ -28,7 +27,7 @@ interface Order {
   items: any[];
   sub_total: number;
   total: number;
-  shipping_charges: number;
+  normal_delivery_charges: number;
   branch_id: number;
 }
 const useGetOrders = (

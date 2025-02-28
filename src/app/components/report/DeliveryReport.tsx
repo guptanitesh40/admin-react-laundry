@@ -1,8 +1,10 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGetDeliveryData } from "../../hooks";
 import DonutChart from "react-apexcharts";
 
 const DeliveryReport: React.FC = () => {
+  const navigate = useNavigate();
   const { deliveryData, fetchDeliveryData } = useGetDeliveryData();
 
   useEffect(() => {
@@ -10,22 +12,34 @@ const DeliveryReport: React.FC = () => {
   }, []);
 
   const deliveryCompleted = deliveryData?.reduce(
-    (sum: any, item: { completed: any }) => item.completed, 0
-  )
+    (sum: number, item: { completed: number }) => sum + item.completed,
+    0
+  ) || 0;
 
   const deliveryPending = deliveryData?.reduce(
-    (sum: any, item: { pending: any }) => item.pending, 0
-  )
+    (sum: number, item: { pending: number }) => sum + item.pending,
+    0
+  ) || 0;
 
-  const data = [ deliveryCompleted, deliveryPending]  
+  const labels = ["Delivery Completed", "Delivery Pending"];
+  const data = [deliveryCompleted, deliveryPending];
 
   const options = {
-    labels: ["Delivery Completed", "Delivery Pending"],
+    labels,
     fill: {
       colors: ["var(--tw-primary)", "var(--tw-brand)"],
     },
     chart: {
       type: "donut",
+      events: {
+        dataPointSelection: (_event: any, _chartContext: any, config: any) => {
+          if (config?.dataPointIndex === 0) {
+            navigate("/delivered-orders");
+          } else if (config?.dataPointIndex === 1) {
+            navigate("/orders");
+          }
+        },
+      },
     },
     stroke: {
       show: true,
@@ -75,14 +89,8 @@ const DeliveryReport: React.FC = () => {
         <div className="card-header border-none">
           <h3 className="card-title">Delivery Report</h3>
         </div>
-
         <div className="card-body grid gap-1 fmobile:justify-center">
-          <DonutChart
-            series={data}
-            options={options}
-            type="donut"
-            height={200}
-          />
+          <DonutChart series={data} options={options} type="donut" height={200} />
         </div>
       </div>
     </div>

@@ -11,6 +11,9 @@ interface User {
   mobile_number: string;
   gender: string;
   role_id: number;
+  companies: any;
+  branches: any;
+  workshops: any;
   branch_ids: [];
   company_ids: [];
 }
@@ -21,8 +24,8 @@ const useGetUsers = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  genders? : number[],
-  roles?: number | number [],
+  genders?: number[],
+  roles?: number | number[],
   companies_ids?: number[],
   branches_ids?: number[]
 ) => {
@@ -39,21 +42,27 @@ const useGetUsers = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (genders)  {
-      genders.forEach((g) => queryParams.append("genders" , g.toString()));
+    if (genders) {
+      genders.forEach((g) => queryParams.append("genders", g.toString()));
     }
-    if(roles !== undefined){
-    if (Array.isArray(roles)) {
-      roles.forEach((roles: any) => queryParams.append("roles" , roles.toString()));
-    } else {
-      queryParams.append("roles", roles.toString());
+    if (roles !== undefined) {
+      if (Array.isArray(roles)) {
+        roles.forEach((roles: any) =>
+          queryParams.append("roles", roles.toString())
+        );
+      } else {
+        queryParams.append("roles", roles.toString());
+      }
     }
-  }
     if (companies_ids) {
-      companies_ids.forEach((c) => queryParams.append("company_id", c.toString()));
+      companies_ids.forEach((c) =>
+        queryParams.append("company_id", c.toString())
+      );
     }
     if (branches_ids) {
-      branches_ids.forEach((b) => queryParams.append("branches_ids", b.toString()));
+      branches_ids.forEach((b) =>
+        queryParams.append("branches_ids", b.toString())
+      );
     }
 
     setLoading(true);
@@ -86,7 +95,17 @@ const useGetUsers = (
 
   useEffect(() => {
     fetchUsers();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, genders, roles, companies_ids, branches_ids]);
+  }, [
+    pageNumber,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder,
+    genders,
+    roles,
+    companies_ids,
+    branches_ids,
+  ]);
 
   return { users, count, loading, fetchUsers };
 };

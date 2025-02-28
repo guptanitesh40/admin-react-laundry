@@ -20,7 +20,7 @@ const GeneralSettings: React.FC = ({}) => {
     estimate_pickup_express_hour: "",
     estimate_pickup_normal_hour: "",
     gst_percentage: "",
-    shipping_charge: "",
+    normal_delivery_charges: "",
     express_delivery_charge: "",
   });
 
@@ -41,7 +41,7 @@ const GeneralSettings: React.FC = ({}) => {
         estimate_pickup_normal_hour:
           generalSettings.estimate_pickup_normal_hour || "",
         gst_percentage: generalSettings.gst_percentage || "",
-        shipping_charge: generalSettings.shipping_charge || "",
+        normal_delivery_charges: generalSettings.normal_delivery_charges || "",
         express_delivery_charge: generalSettings.express_delivery_charge || "",
       });
     }
@@ -257,14 +257,14 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
-                      value={formData.shipping_charge}
+                      value={formData.normal_delivery_charges}
                       onChange={(e) =>
-                        handleItemChange("shipping_charge", e.target.value)
+                        handleItemChange("normal_delivery_charges", e.target.value)
                       }
                       readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
-                      {errors.shipping_charge || "\u00A0"}
+                      {errors.normal_delivery_charges || "\u00A0"}
                     </p>
                   </div>
                 </div>
