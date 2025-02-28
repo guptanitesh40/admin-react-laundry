@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OrderTable from "./OrderTable";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isFilter, setIsFilter] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
 
@@ -28,6 +29,17 @@ const Order: React.FC = () => {
     setFilters(newFilters);
   };
 
+  useEffect(() => {
+    if (location?.state?.paymentType) {
+      setIsFilter(true);
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        paymentTypeFilter:
+          location.state.paymentType === "Cash On Delivery" ? 1 : 2,
+      }));
+    }
+  }, [location?.state?.paymentType]);
+  
   return (
     <>
       <div className="container-fixed">
@@ -45,7 +57,6 @@ const Order: React.FC = () => {
               </button>
             </div>
           )}
-
         </div>
 
         <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">

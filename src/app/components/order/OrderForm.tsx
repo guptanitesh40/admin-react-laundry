@@ -41,7 +41,7 @@ interface FormData {
   coupon_code: string;
   coupon_discount: number;
   express_delivery_charges: number;
-  shipping_charges: number;
+  normal_delivery_charges: number;
   payment_type: number;
   payment_status: number;
   sub_total: number;
@@ -97,7 +97,7 @@ const OrderForm: React.FC = () => {
     coupon_code: "",
     coupon_discount: null,
     express_delivery_charges: null,
-    shipping_charges: null,
+    normal_delivery_charges: null,
     payment_type: null,
     payment_status: null,
     sub_total: 0,
@@ -129,7 +129,7 @@ const OrderForm: React.FC = () => {
     coupon_code: "",
     coupon_discount: null,
     express_delivery_charges: null,
-    shipping_charges: null,
+    normal_delivery_charges: null,
     payment_type: null,
     payment_status: null,
     sub_total: 0,
@@ -218,7 +218,7 @@ const OrderForm: React.FC = () => {
         coupon_code: order.coupon_code || "",
         coupon_discount: order.coupon_discount || null,
         express_delivery_charges: order.express_delivery_charges || null,
-        shipping_charges: order.shipping_charges || null,
+        normal_delivery_charges: order.normal_delivery_charges || null,
         payment_type: order.payment_type || null,
         payment_status: order.payment_status || null,
         sub_total: order.sub_total || 0,
@@ -251,7 +251,7 @@ const OrderForm: React.FC = () => {
         total:
           (order.sub_total || 0) +
           (order.express_delivery_charges || 0) +
-          (order.shipping_charges || 0),
+          (order.normal_delivery_charges || 0),
         branch_id: order.branch_id,
         order_status: order.order_status,
       };
@@ -278,7 +278,7 @@ const OrderForm: React.FC = () => {
         ...formData,
         address_id: Number(formData.address_id),
         coupon_discount: Number(formData.coupon_discount),
-        shipping_charges: Number(formData.shipping_charges),
+        normal_delivery_charges: Number(formData.normal_delivery_charges),
         paid_amount: Number(formData.paid_amount),
         express_delivery_charges: Number(formData.express_delivery_charges),
         payment_type: Number(formData.payment_type),
@@ -381,7 +381,7 @@ const OrderForm: React.FC = () => {
       const newTotal =
         newSubTotal +
         Number(formData.express_delivery_charges || 0) +
-        Number(formData.shipping_charges || 0);
+        Number(formData.normal_delivery_charges || 0);
 
       return { ...newFormData, sub_total: newSubTotal, total: newTotal };
     });
@@ -471,7 +471,7 @@ const OrderForm: React.FC = () => {
       const newTotal =
         updatedSubTotal +
         Number(prev.express_delivery_charges || 0) +
-        Number(prev.shipping_charges || 0);
+        Number(prev.normal_delivery_charges || 0);
 
       return { ...newFormData, sub_total: updatedSubTotal, total: newTotal };
     });
@@ -493,7 +493,7 @@ const OrderForm: React.FC = () => {
     const newTotal =
       Number(couponData.finalTotal || 0) +
       Number(formData.express_delivery_charges || 0) +
-      Number(formData.shipping_charges || 0);
+      Number(formData.normal_delivery_charges || 0);
 
     if (couponData) {
       setFormData((prev) => ({
@@ -519,7 +519,7 @@ const OrderForm: React.FC = () => {
       const newTotal =
         Number(updatedFormData.sub_total || 0) +
         Number(updatedFormData.express_delivery_charges || 0) +
-        Number(updatedFormData.shipping_charges || 0);
+        Number(updatedFormData.normal_delivery_charges || 0);
 
       return { ...updatedFormData, total: newTotal };
     });
@@ -552,6 +552,16 @@ const OrderForm: React.FC = () => {
   };
 
   const handleSendCustomerData = async () => {
+    const missingFields = [];
+
+    if (!formData.paid_amount) missingFields.push("Paid amount");
+    if (!formData.username) missingFields.push("Customer name");
+
+    if (missingFields.length > 0) {
+      toast.error(`Please add Missing Fields: ${missingFields.join(", ")}`);
+      return;
+    }
+
     const customerInfo = {
       amount: formData.paid_amount,
       currency: "INR",
@@ -1054,7 +1064,12 @@ const OrderForm: React.FC = () => {
                 onChange={(e) =>
                   handleChargeChange("express_delivery_charges", e.target.value)
                 }
-                className="input border border-gray-300 rounded-md p-2"
+                className={`${
+                  formData.normal_delivery_charges > 0
+                    ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
+                    : "input border border-gray-300 rounded-md p-2"
+                }`}
+                readOnly={formData.normal_delivery_charges > 0} 
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.express_delivery_charges || "\u00A0"}
@@ -1063,23 +1078,28 @@ const OrderForm: React.FC = () => {
 
             <div className="flex flex-col">
               <label
-                htmlFor="shipping_charges"
+                htmlFor="normal_delivery_charges"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Normal Delivery Charge
               </label>
               <input
                 type="text"
-                id="shipping_charges"
+                id="normal_delivery_charges"
                 min="0"
-                value={formData.shipping_charges || ""}
+                value={formData.normal_delivery_charges || ""}
                 onChange={(e) =>
-                  handleChargeChange("shipping_charges", e.target.value)
+                  handleChargeChange("normal_delivery_charges", e.target.value)
                 }
-                className="input border border-gray-300 rounded-md p-2"
+                className={`${
+                  formData.express_delivery_charges > 0
+                    ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
+                    : "input border border-gray-300 rounded-md p-2"
+                }`}
+                readOnly={formData.express_delivery_charges > 0}
               />
               <p className="w-full text-red-500 text-sm">
-                {errors.shipping_charges || "\u00A0"}
+                {errors.normal_delivery_charges || "\u00A0"}
               </p>
             </div>
 
@@ -1166,6 +1186,7 @@ const OrderForm: React.FC = () => {
               {!order_id && formData.payment_type === 2 && (
                 <div>
                   <button
+                    type="button"
                     className="-mt-2 badge text-sm badge-info badge-outline"
                     onClick={handleSendCustomerData}
                   >

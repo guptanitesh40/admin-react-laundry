@@ -120,7 +120,7 @@ const UserForm: React.FC = () => {
       }));
       setWorkshopOptions(workshopData);
     }
-  }, [branches]);
+  }, [workshops]);
 
   useEffect(() => {
     if (user) {

@@ -112,7 +112,7 @@ const UserProfile: React.FC = () => {
                     </td>
                   </tr>
 
-                  {user.role_id === 5 ? (
+                  {user?.image !== "" && (
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Profile Photo :
@@ -121,12 +121,14 @@ const UserProfile: React.FC = () => {
                         <span className="">
                           <img
                             className="h-14 w-14 rounded-full"
-                            src={`${BASE_URL}/images/user/1735042941768.jpeg`}
+                            src={user.image}
                           />
                         </span>
                       </td>
                     </tr>
-                  ) : (
+                  )}
+
+                  {user.role_id !== 5 && (
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Role:
@@ -138,6 +140,40 @@ const UserProfile: React.FC = () => {
                       >
                         {Role[user.role_id as unknown as keyof typeof Role]}
                       </span>
+                    </tr>
+                  )}
+                  {user?.companies?.length > 0 && (
+                    <tr>
+                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                        Company:
+                      </td>
+                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        {user.companies
+                          .map((company: any) => company)
+                          .join(",")}{" "}
+                      </td>
+                    </tr>
+                  )}
+                  {user?.branches?.length > 0 && (
+                    <tr>
+                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                        Branch:
+                      </td>
+                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        {user.branches.map((branch: any) => branch).join(", ")}{" "}
+                      </td>
+                    </tr>
+                  )}
+                  {user?.workshops?.length > 0 && (
+                    <tr>
+                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                        Workshop:
+                      </td>
+                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        {user.workshops
+                          .map((workshop: any) => workshop)
+                          .join(", ")}{" "}
+                      </td>
                     </tr>
                   )}
                 </tbody>

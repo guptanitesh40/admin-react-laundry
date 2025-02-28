@@ -11,7 +11,7 @@ const InActiveCustomerReport = () => {
   }, []);
 
   const categories =
-    customerData?.map((item: { month: any }) => item.month) || [];
+    customerData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const customerCount =
     customerData?.map(
       (item: { not_active_count: number }) => item.not_active_count
@@ -49,8 +49,8 @@ const InActiveCustomerReport = () => {
         padding: {
           top: 0,
           right: 0,
-          bottom: 20,
-          left: 0,
+          bottom: 2,
+          left: 8,
         },
       },
       stroke: {
@@ -63,18 +63,32 @@ const InActiveCustomerReport = () => {
         show: false,
       },
       xaxis: {
+        type: "category",
         categories: categories,
         labels: {
-          show: false,
+          show: true,
+          style: {
+            colors: "#6B7280",
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6,
         },
         axisBorder: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
         },
         crosshairs: {
-          show: false,
+          position: "front",
+          stroke: {
+            color: "#3B82F6",
+            width: 1,
+            dashArray: 3,
+          },
         },
       },
       markers: {
@@ -86,7 +100,23 @@ const InActiveCustomerReport = () => {
         },
       },
       yaxis: {
-        show: false,
+        min: 0,
+        tickAmount: 1,
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "var(--tw-gray-500)",
+            fontSize: "12px",
+          },
+          formatter: (value: any) => {
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            }
+            return value.toString();
+          },
+        },
       },
       tooltip: {
         x: {
@@ -104,7 +134,7 @@ const InActiveCustomerReport = () => {
         </div>
       </div>
 
-      <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+      <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-3">
         <AreaChart
           options={data.options}
           series={data.series}

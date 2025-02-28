@@ -8,6 +8,7 @@ import AreaChart from "react-apexcharts";
 import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
+
 const OrderReport = () => {
   const [formData, setFormData] = useState({
     start_time: "",
@@ -34,7 +35,7 @@ const OrderReport = () => {
   };
 
   const categories = orderData
-    ? (orderData || []).map((item: { month: any }) => item.month)
+    ? (orderData || []).map((item: { month: any }) => item.month.split("-")[0])
     : [];
   const orders = orderData
     ? (orderData || []).map((item: { count: any }) => item.count)
@@ -88,30 +89,56 @@ const OrderReport = () => {
         padding: {
           top: 0,
           right: 0,
-          bottom: 60,
-          left: 0,
+          bottom: 10,
+          left: 10,
         },
       },
       yaxis: {
-        show: false,
+        min: 0,
+        tickAmount: 5,
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "var(--tw-gray-500)",
+            fontSize: "12px",
+          },
+          formatter: (value: any) => {
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            }
+            return value.toString();
+          },
+        },
       },
       xaxis: {
         type: "category",
         categories: categories,
-        style: {
-          colors: "#6c757d",
-        },
         labels: {
-          show: false,
+          show: true,
+          style: {
+            colors: "#6B7280",
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6,
         },
         axisBorder: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
         },
         crosshairs: {
-          show: false,
+          position: "front",
+          stroke: {
+            color: "#3B82F6",
+            width: 1,
+            dashArray: 3,
+          },
         },
       },
       markers:
@@ -155,17 +182,23 @@ const OrderReport = () => {
         className="card pb-2.5 max-h-[300px] cursor-pointer"
         onClick={handleNavigateToOrderList}
       >
-        <div className="flex justify-between ml-8 mt-2">
-          <div>
-            <h3 className="card-title">Orders</h3>
-            <span className="text-gray-500 font-medium">{orderCount}</span>
-          </div>
-          <div className="mr-10 mt-2">
-            <FiShoppingCart size={23} color="rgb(13 202 240)" />
+        <div className="card-header border-none flex mt-2 items-start w-full">
+          <div className="flex justify-between items-center w-full">
+            <div>
+              <h3 className="card-title">Orders</h3>
+              <h5 className="block text-gray-500 text-sm font-bold">
+                <div className="flex flex-wrap flex-row gap-x-2">
+                  <span className="ml-1">{orderCount}</span>
+                </div>
+              </h5>
+            </div>
+            <div className="self-end mb-3">
+              <FiShoppingCart size={23} color="rgb(13 202 240)" />
+            </div>
           </div>
         </div>
 
-        <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
+        <div className="card-body flex flex-col justify-end items-stretch grow px-3 py-1">
           <AreaChart
             options={data.options}
             series={data.series}

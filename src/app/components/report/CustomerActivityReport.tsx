@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useGetCustomerActivityData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 
+
 const CustomerActivityReport: React.FC = () => {
   const { customerActivityData, fetchCustomerActivityData } =
     useGetCustomerActivityData();
@@ -11,7 +12,9 @@ const CustomerActivityReport: React.FC = () => {
   }, []);
 
   const categories =
-    customerActivityData?.map((item: { month: any }) => item.month) || [];
+    customerActivityData?.map(
+      (item: { month: any }) => item.month.split("-")[0]
+    ) || [];
   const loginCount =
     customerActivityData?.map(
       (item: { login_count: number }) => item.login_count
@@ -49,8 +52,8 @@ const CustomerActivityReport: React.FC = () => {
         padding: {
           top: 0,
           right: 0,
-          bottom: 31,
-          left: 0,
+          bottom: 20,
+          left: 8,
         },
       },
       stroke: {
@@ -63,18 +66,32 @@ const CustomerActivityReport: React.FC = () => {
         show: false,
       },
       xaxis: {
+        type: "category",
         categories: categories,
         labels: {
-          show: false,
+          show: true,
+          style: {
+            colors: "#6B7280",
+            fontSize: "12px",
+            fontWeight: 500,
+          },
         },
         axisTicks: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
+          height: 6,
         },
         axisBorder: {
-          show: false,
+          show: true,
+          color: "#D1D5DB",
         },
         crosshairs: {
-          show: false,
+          position: "front",
+          stroke: {
+            color: "#3B82F6",
+            width: 1,
+            dashArray: 3,
+          },
         },
       },
       markers: {
@@ -86,7 +103,23 @@ const CustomerActivityReport: React.FC = () => {
         },
       },
       yaxis: {
-        show: false,
+        min: 0,
+        tickAmount: 5,
+        axisTicks: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "var(--tw-gray-500)",
+            fontSize: "12px",
+          },
+          formatter: (value: any) => {
+            if (value >= 1000) {
+              return `₹${(value / 1000).toFixed(0)}K`;
+            }
+            return value.toString();
+          },
+        },
       },
       responsive: [
         {
@@ -107,7 +140,7 @@ const CustomerActivityReport: React.FC = () => {
   };
 
   return (
-    <div className="card pb-2.5 max-h-[250px] rounded-md">
+    <div className="card w-full pb-2.5 max-h-[250px] rounded-md">
       <div className="flex justify-between ml-6 mt-2">
         <div>
           <h3 className="card-title text-lg">Activity</h3>
@@ -118,7 +151,7 @@ const CustomerActivityReport: React.FC = () => {
       </div>
 
       <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
-        <AreaChart
+      <AreaChart
           options={data.options}
           series={data.series}
           type={data.options.chart.type}

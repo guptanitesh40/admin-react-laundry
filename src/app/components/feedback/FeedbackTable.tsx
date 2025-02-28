@@ -244,7 +244,7 @@ const FeedbackTable: React.FC = () => {
               </thead>
               {loading ? (
                 <TableShimmer />
-              ) : feedbacks ? (
+              ) : feedbacks?.length > 0 ? (
                 <tbody>
                   {feedbacks.map((feedback) => (
                     <tr key={feedback.feedback_id}>

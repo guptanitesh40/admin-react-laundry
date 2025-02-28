@@ -40,7 +40,7 @@ interface Order {
   items: any[];
   sub_total: number;
   total: number;
-  shipping_charges: number;
+  normal_delivery_charges: number;
   branch_id: number;
 }
 
