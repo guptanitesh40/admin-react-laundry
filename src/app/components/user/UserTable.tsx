@@ -309,12 +309,17 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                   </th>
 
                   <th className="min-w-[250px]">
-                    <span className="sort-label">Companies</span>
+                    <span className="sort-label">Company</span>
                   </th>
 
                   <th className="min-w-[250px]">
-                    <span className="sort-label">Branches</span>
+                    <span className="sort-label">Branch</span>
                   </th>
+
+                  <th className="min-w-[250px]">
+                    <span className="sort-label">Workshop</span>
+                  </th>
+
                   <th className="min-w-[150px]">Actions</th>
                 </tr>
               </thead>
@@ -362,25 +367,23 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                           {user.role_id === 5 && (user.total_due_amount)}
                         </td>
                         <td>
-                          {companies
-                            .filter((company) =>
-                              (user.company_ids as number[])?.includes(
-                                company.company_id
-                              )
-                            )
-                            .map((company) => company.company_name)
+                          {user?.companies
+                            .map((company:any) => company)
                             .join(", ")}
                         </td>
                         <td>
-                          {branches
-                            .filter((branch) =>
-                              (user.branch_ids as number[])?.includes(
-                                branch.branch_id
-                              )
-                            )
-                            .map((branch) => branch.branch_name)
+                          {user?.branches
+                            
+                            .map((branch: any) => branch)
                             .join(", ")}{" "}
                         </td>
+                        <td>
+                          {user?.workshops
+                            
+                            .map((workshop: any) => workshop)
+                            .join(", ")}{" "}
+                        </td>
+
                         <td className="flex">
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"

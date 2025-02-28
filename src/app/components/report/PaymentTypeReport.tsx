@@ -1,27 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useGetPaymentTypeData } from "../../hooks";
 import DonutChart from "react-apexcharts";
+import { useNavigate } from "react-router-dom";
 
 const PaymentTypeReport = () => {
   const { paymentTypeData, fetchPaymentTypeData } = useGetPaymentTypeData();
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     fetchPaymentTypeData();
   }, []);
-
-  const cashOnDelivery = paymentTypeData?.reduce(
-    (sum: any , item: { cash_on_delivery: any}) => sum + item.cash_on_delivery, 
+  
+  const cashOnDelivery = (paymentTypeData ?? []).reduce(
+    (sum: number, item: { cash_on_delivery?: number }) => sum + (item.cash_on_delivery ?? 0),
     0
-  )
-
-  const onlinePayment = paymentTypeData?.reduce(
-    (sum: any , item: { online_payment: any}) => sum + item.online_payment, 
+  );
+  
+  const onlinePayment = (paymentTypeData ?? []).reduce(
+    (sum: number, item: { online_payment?: number }) => sum + (item.online_payment ?? 0),
     0
-  )
-
-
+  );
+  
+  const labels = ["Cash On Delivery", "Online Payment"];
   const data = [cashOnDelivery, onlinePayment];
-
+  
   const options = {
     labels: ["Cash On Delivery", "Online payment"],
     fill: {
@@ -29,6 +31,15 @@ const PaymentTypeReport = () => {
     },
     chart: {
       type: "donut",
+      events: {
+        dataPointSelection: (_event: any, _chartContext: any, config: any) => {
+          if (config?.dataPointIndex !== undefined) {
+            navigate("/orders", {
+              state: { paymentType: labels[config.dataPointIndex] },
+            });
+          }
+        },
+      },
     },
     stroke: {
       show: true,
@@ -40,7 +51,7 @@ const PaymentTypeReport = () => {
     },
     plotOptions: {
       pie: {
-        expandOnClick: false,
+        expandOnClick: true,
       },
     },
     legend: {
@@ -56,20 +67,20 @@ const PaymentTypeReport = () => {
         width: 8,
         height: 8,
       },
-      },
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: "bottom",
-            },
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
           },
         },
-      ],
+      },
+    ],
   };
 
   return (
@@ -80,7 +91,12 @@ const PaymentTypeReport = () => {
         </div>
 
         <div className="card-body grid gap-1 fmobile:justify-center">
-            <DonutChart series={data} options={options} type="donut" height={200} />
+          <DonutChart
+            series={data}
+            options={options}
+            type="donut"
+            height={200}
+          />
         </div>
       </div>
     </div>

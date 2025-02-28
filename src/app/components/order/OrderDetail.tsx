@@ -238,6 +238,9 @@ const OrderDetails: React.FC = () => {
         break;
       case "Mark as Received at Branch":
         await handleStatusChange(9);
+        if (location.state?.from === "WorkshopOrderTable") {
+          navigate("/workshop-order");
+        }
         break;
       case "Items Received at Branch":
       case "Pickup Complete":
@@ -560,23 +563,27 @@ const OrderDetails: React.FC = () => {
                       </td>
                     </tr>
 
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Shipping Charges:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.shipping_charges}
-                      </td>
-                    </tr>
+                    {order.normal_delivery_charges !== 0 && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Normal Delivery Charge:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          ₹{order.normal_delivery_charges}
+                        </td>
+                      </tr>
+                    )}
 
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Express Delivery Charges:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.express_delivery_charges}
-                      </td>
-                    </tr>
+                    {order.express_delivery_charges !== 0 && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Express Delivery Charge:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          ₹{order.express_delivery_charges}
+                        </td>
+                      </tr>
+                    )}
 
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
@@ -587,23 +594,27 @@ const OrderDetails: React.FC = () => {
                       </td>
                     </tr>
 
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Coupon Code:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {order.coupon_code}
-                      </td>
-                    </tr>
+                    {order.coupon_code !== "" && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Coupon Code:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.coupon_code}
+                        </td>
+                      </tr>
+                    )}
 
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Coupon Discount
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.coupon_discount}
-                      </td>
-                    </tr>
+                    {order.coupon_discount !== 0 && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Coupon Discount
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          ₹{order.coupon_discount}
+                        </td>
+                      </tr>
+                    )}
 
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
@@ -808,7 +819,7 @@ const OrderDetails: React.FC = () => {
         </div>
       </div>
 
-      {(hasPermission(3, "create") || hasPermission(3,"update")) && (
+      {(hasPermission(3, "create") || hasPermission(3, "update")) && (
         <div className="mt-6 card rounded-xl p-6 shadow">
           <h2 className="text-lg font-medium text-gray-700 mb-4">
             Order Notes

@@ -9806,3 +9806,8 @@ label.rating-label {
 .block-element {
   display:block !important;
 }
+
+
+.apexcharts-datalabel, .apexcharts-pie {
+  cursor: pointer !important;
+}

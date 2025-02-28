@@ -6,10 +6,14 @@ export const branchSchema = Yup.object().shape({
   branch_address: Yup.string().required("Please add branch address"),
 
   branch_phone_number: Yup.string()
-    .nullable()  
+    .nullable()
     .test("required", "Please add mobile number", (value) => {
       if (value === null || value === "") return false;
       return true;
+    })
+    .test("is-numeric", "Mobile number must be a positive number", (value) => {
+      if (!value) return true;
+      return /^\d+$/.test(value);
     }),
 
   branch_email: Yup.string()

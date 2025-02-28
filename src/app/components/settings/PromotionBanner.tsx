@@ -19,6 +19,18 @@ const schema = Yup.object().shape({
     .required("Please enter price")
     .typeError("Price must be a number")
     .min(0, "Price must be a positive number"),
+  promotion_code: Yup.string()
+    .notRequired()
+    .matches(
+      /^[a-zA-Z0-9]*$/,
+      "Coupon code can only contain letters and numbers"
+    )
+    .test(
+      "length",
+      "Coupon code must be between 3 and 30 characters long",
+      (value) => !value || (value.length >= 3 && value.length <= 30)
+    )
+    .nullable(),
 });
 
 const PromotionBanner: React.FC = () => {
@@ -284,6 +296,9 @@ const PromotionBanner: React.FC = () => {
                       }
                       readOnly={!hasPermission(2, "update")}
                     />
+                    <p className="text-red-500 text-sm">
+                      {errors.promotion_code || "\u00A0"}
+                    </p>
                   </div>
                 </div>
               </div>
