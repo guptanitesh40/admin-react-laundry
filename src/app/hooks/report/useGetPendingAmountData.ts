@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface PendingAmount {
   count: number;
@@ -18,6 +17,7 @@ const useGetPendingAmountData = () => {
     start_date?: string,
     end_date?: string
   ) => {
+    const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
     if (start_date) queryParams.append("startDate", start_date);

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
-const token = localStorage.getItem("authToken");
 
 interface PaymentTransactionData {
   month: string;
@@ -14,7 +13,10 @@ const useGetPaymentTransactionData = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchPaymentTransactionData = async () => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(false);
+    
     try {
       const response = await fetch(`${BASE_URL}/report/payment-transaction`, {
         method: "GET",

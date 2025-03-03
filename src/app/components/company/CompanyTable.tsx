@@ -321,9 +321,25 @@ const CompanyTable: React.FC = () => {
                             : "desc"
                           : ""
                       }`}
+                      onClick={() => handleSort("phone_number")}
+                    >
+                      <span className="sort-label">Phone No 1</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[215px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
                       onClick={() => handleSort("mobile_number")}
                     >
-                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-label">Phone No 2</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -396,6 +412,11 @@ const CompanyTable: React.FC = () => {
                       <td>
                         <div className="flex items-center gap-2.5">
                           {company.email}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {company.phone_number}
                         </div>
                       </td>
                       <td>

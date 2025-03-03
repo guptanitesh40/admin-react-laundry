@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGetCustomerRatingData } from "../../hooks";
+import { ratingStarClasses } from "../../utils/ratingStarClasses";
 
 const CustomerRatingReport: React.FC = () => {
   const { customerRatingData, fetchCustomerRatingData } =
@@ -101,7 +102,7 @@ const CustomerRatingReport: React.FC = () => {
                       key={index}
                       className="rating-label custom-rating checked"
                     >
-                      <i className="custom-rating-on rating-on ki-solid ki-star text-base leading-none"></i>
+                      <i className={`${ratingStarClasses(Number(rating.label))} rating-on ki-solid ki-star text-base leading-none`}></i>
                     </div>
                   </div>
                   

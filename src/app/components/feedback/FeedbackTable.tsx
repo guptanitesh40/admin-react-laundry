@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import toast from "react-hot-toast";
 import TableShimmer from "../shimmer/TableShimmer";
+import { ratingStarClasses } from "../../utils/ratingStarClasses";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,12 +98,17 @@ const FeedbackTable: React.FC = () => {
   };
 
   const renderRatingStars = (rating: number) => {
+    
     return Array.from({ length: 5 }).map((_, index) => (
       <div
         key={index}
         className={`rating-label ${index < rating ? "checked" : ""}`}
       >
-        <i className="rating-on custom-rating-on ki-solid ki-star text-base leading-none"></i>
+        <i
+          className={`rating-on ki-solid ki-star text-base leading-none ${
+            index < rating ? ratingStarClasses(rating) : ""
+          }`}
+        ></i>
         <i className="rating-off ki-outline ki-star text-base leading-none"></i>
       </div>
     ));
@@ -123,7 +129,7 @@ const FeedbackTable: React.FC = () => {
       <div className="flex items-center" key={index}>
         <div className="mr-1">{index + 1}</div>
         <div className="rating-label checked mb-1">
-          <i className="rating-on custom-rating-on ki-solid ki-star text-base leading-none"></i>
+          <i className={`rating-on ${ratingStarClasses(index+1)} ki-solid ki-star text-base leading-none`}></i>
           <i className="rating-off ki-outline ki-star text-base leading-none"></i>
         </div>
       </div>
