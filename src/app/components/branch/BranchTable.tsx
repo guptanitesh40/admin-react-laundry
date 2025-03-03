@@ -330,9 +330,25 @@ const BranchTable: React.FC = () => {
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("mobile_number")}
+                      onClick={() => handleSort("branch_phone_number")}
                     >
-                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-label">Phone No 1</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[200px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("branch_mobile_number")}
+                    >
+                      <span className="sort-label">Phone No 2</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -410,6 +426,11 @@ const BranchTable: React.FC = () => {
                       <td>
                         <div className="flex items-center gap-2.5">
                           {branch.branch_phone_number}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          {branch.branch_mobile_number}
                         </div>
                       </td>
                       <td>

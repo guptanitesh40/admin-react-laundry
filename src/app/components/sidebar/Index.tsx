@@ -6,7 +6,7 @@ import { BiSolidCoupon } from "react-icons/bi";
 import { RiBuilding2Fill, RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { LiaUserCircle } from "react-icons/lia";
 import { CiShop } from "react-icons/ci";
-import { IoIosPricetags } from "react-icons/io";
+import { IoIosPricetags, IoMdChatboxes } from "react-icons/io";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { VscFeedback } from "react-icons/vsc";
 import { BsBoxSeam } from "react-icons/bs";
@@ -598,6 +598,29 @@ export const Sidebar: React.FC = () => {
                 </div>
               </Link>
             )}
+
+            <Link
+              to="/contact-requests"
+              onClick={() => handleItemClick("contact-requests")}
+            >
+              <div
+                className={`menu-item transition-colors duration-200 ${getItemClass(
+                  "contact-requests"
+                )}`}
+              >
+                <div
+                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <IoMdChatboxes size={25} color="#cb9ad7"/>
+                  </span>
+                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Contact Request
+                  </span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

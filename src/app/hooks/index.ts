@@ -126,3 +126,5 @@ export { default as useGetUserPermissions } from './roles/useGetUserPermissions.
 
 export { default as usePermissions } from './roles/usePermissions.ts';
 export { default as useValidateToken } from './roles/useValidateToken.ts';
+
+export { default as useGetContactRequestData } from './contect-request/useGetContactRequestData.ts';
