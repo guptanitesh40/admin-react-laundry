@@ -267,7 +267,7 @@ const CompanyForm: React.FC = () => {
 
           <div className="flex flex-col">
             <label className="block text-gray-700 font-semibold" htmlFor="phone_number">
-              Phone number
+              Phone number 1
             </label>
             <input
               type="text"
@@ -284,7 +284,7 @@ const CompanyForm: React.FC = () => {
 
           <div className="flex flex-col">
             <label className="block text-gray-700 font-semibold" htmlFor="mobile_number">
-              Mobile number
+             Phone number 2
             </label>
             <input
               type="text"

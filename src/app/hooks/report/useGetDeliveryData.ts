@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
-const token = localStorage.getItem("authToken");
 
 interface DeliveryData {
   month: string;
@@ -14,6 +13,8 @@ const useGetDeliveryData = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchDeliveryData = async () => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/report/delivery-report`, {
