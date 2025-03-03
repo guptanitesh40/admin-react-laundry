@@ -1,7 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
-const token = localStorage.getItem("authToken");
 
 interface RefundAmount {
   month: string;
@@ -15,6 +14,7 @@ const useGetRefundAmountData = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchRefundAmountData = async (start_date?: string, end_date?: string) => {
+    const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
     if (start_date) queryParams.append("startDate", start_date);

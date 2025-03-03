@@ -2,8 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import userReducer from "./userSlice";
 
-const storedToken = localStorage.getItem("authToken");
-const storedRole = localStorage.getItem("authRole");
+const storedToken = localStorage.getItem("authToken") || null;
 
 const store = configureStore({
   reducer: {
@@ -12,10 +11,10 @@ const store = configureStore({
   },
   preloadedState: {
     auth: {
-      isAuthenticated: !!storedToken,
-      token: storedToken || null,
+      isAuthenticated: !!storedToken ,
+      token: storedToken, 
       permissions: [],
-      role: storedRole || null,
+      role_id: null,
     },
     user: {
       id: null,

@@ -9781,10 +9781,6 @@ label.rating-label {
   unicode-bidi: isolate;
 }
 
-.custom-rating-on {
-  color: #bfb494 !important;
-}
-
 .custom-body {
   padding: 15px;
 }
@@ -9810,4 +9806,28 @@ label.rating-label {
 
 .apexcharts-datalabel, .apexcharts-pie {
   cursor: pointer !important;
+}
+
+.custom-rating-on {
+  color: #bfb494 !important;
+}
+
+.one-star-rating {
+  color: rgb(239 68 68 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.two-star-rating {
+  color: rgb(34 197 94 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.three-star-rating {
+  color: rgb(234 179 8 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.four-star-rating {
+  color: rgb(249 115 22 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.five-star-rating {
+  color: rgb(59 130 246 / var(--tw-bg-opacity, 1)) !important;
 }
