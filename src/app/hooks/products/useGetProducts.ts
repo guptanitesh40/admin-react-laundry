@@ -1,7 +1,6 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-
-const GET_PRODUCT_URL = `${import.meta.env.VITE_BASE_URL}/admin/products`;
+import { BASE_URL } from '../../utils/constant';
 
 interface Product {
   product_id: number;
@@ -33,7 +32,7 @@ const useGetProducts = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_PRODUCT_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/products?${queryParams}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",

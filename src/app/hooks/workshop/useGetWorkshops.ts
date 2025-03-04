@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const GET_WORKSHOP_URL = `${import.meta.env.VITE_BASE_URL}/workshops`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Workshop {
   workshop_id: number;
@@ -39,7 +38,7 @@ const useGetWorkshops = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_WORKSHOP_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/workshops?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

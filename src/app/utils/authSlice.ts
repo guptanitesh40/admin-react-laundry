@@ -19,6 +19,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action: PayloadAction<{ 
+      isAuthenticated: boolean;
       token: string; 
       permissions: any[]; 
       role_id: number | null;
@@ -28,7 +29,7 @@ const authSlice = createSlice({
       state.permissions = action.payload.permissions;
       state.role_id = action.payload.role_id;
     },
-    logout: (state) => {
+    logout: (state) => {  
       state.isAuthenticated = false;
       state.token = null;
       state.permissions = [];
