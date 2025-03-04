@@ -330,13 +330,13 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="logo">
+            <label className="block text-gray-700 font-semibold" htmlFor="image">
               Logo
             </label>
             <input
               type="file"
-              id="logo"
-              name="logo"
+              id="image"
+              name="image" 
               accept="image/*"
               onChange={handleChange}
               className="border border-gray-300 rounded-md p-2"

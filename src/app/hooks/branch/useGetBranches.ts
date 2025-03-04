@@ -13,6 +13,7 @@ interface Branch {
   branch_address: string;
   branch_manager_id: string;
   branch_phone_number: string;
+  branch_mobile_number: string;
   branch_email: string;
   branch_registration_number: string;
   company: {
@@ -41,7 +42,7 @@ const useGetBranches = (
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
     if (perPage) queryParams.append("per_page", perPage.toString());
     if (search) queryParams.append("search", search);
-    if (sortColumn) queryParams.append("sortBy", sortColumn);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (company_id) {
       company_id.forEach((c) =>

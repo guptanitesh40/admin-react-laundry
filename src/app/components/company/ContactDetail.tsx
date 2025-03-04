@@ -17,11 +17,11 @@ const ContactDetail: React.FC<ContactDetailProps> = ({ company }) => {
           <table className="table align-middle text-sm text-gray-500">
             <tbody>
             <tr>
-              <td className="py-2">Phone Number</td>
+              <td className="py-2">Phone No 1</td>
               <td className="py-2 text-gray-700">{company.phone_number}</td>
             </tr>
             <tr>
-              <td className="py-2">Mobile Number</td>
+              <td className="py-2">Phone No 2</td>
               <td className="py-2 text-gray-700">{company.mobile_number}</td>
             </tr>
             <tr>

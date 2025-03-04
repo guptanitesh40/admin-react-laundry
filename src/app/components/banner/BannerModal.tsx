@@ -214,16 +214,21 @@ const BannerModal: React.FC<BannerModalProps> = ({
             </div>
 
             <div className="col-span-1">
-              <label className="mb-2 font-semibold" htmlFor="image">
-                Image
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="font-semibold" htmlFor="image">
+                  Image
+                </label>
+                <span className="text-sm text-gray-500">
+                  (JPG, JPEG, PNG | 689×668 px)
+                </span>
+              </div>
               <input
                 type="file"
                 id="image"
                 name="image"
                 accept="image/*"
                 onChange={handleChange}
-                className="input border border-gray-300 rounded-md p-2"
+                className="input border border-gray-300 rounded-md p-2 mt-1"
               />
               <p className="text-red-500 text-sm">
                 {errors.image ? errors.image : "\u00A0"}
