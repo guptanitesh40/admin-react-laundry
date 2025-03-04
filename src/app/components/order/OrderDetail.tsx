@@ -324,8 +324,7 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
-  console.log("order notes", order?.notes);
-
+  
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">

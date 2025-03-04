@@ -72,8 +72,6 @@ const ContactRequestTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
-  console.log("search value", search)
-
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
