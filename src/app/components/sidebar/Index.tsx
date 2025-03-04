@@ -599,28 +599,30 @@ export const Sidebar: React.FC = () => {
               </Link>
             )}
 
-            <Link
-              to="/contact-requests"
-              onClick={() => handleItemClick("contact-requests")}
-            >
-              <div
-                className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "contact-requests"
-                )}`}
+            {hasPermission(18, "read") && (
+              <Link
+                to="/contact-requests"
+                onClick={() => handleItemClick("contact-requests")}
               >
                 <div
-                  className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
-                  tabIndex={0}
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    "contact-requests"
+                  )}`}
                 >
-                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                    <IoMdChatboxes size={25} color="#cb9ad7"/>
-                  </span>
-                  <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Contact Request
-                  </span>
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <IoMdChatboxes size={25} color="#cb9ad7" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Contact Request
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            )}
           </div>
         </div>
       </div>

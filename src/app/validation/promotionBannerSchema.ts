@@ -23,17 +23,29 @@ export const promotionBannerSchema = Yup.object().shape({
     .nullable(),
 
   image: Yup.mixed<FileValue>()
-    .test("fileSize", "Allowed Size : 300 * 425", (value) => {
-      if (value && value instanceof File) {
-        return value.size <= 2 * 300 * 425;
-      }
-      return true;
-    })
     .test("fileType", "Allowed Format : jpg, jpeg, png, ", (value) => {
       if (value && value instanceof File) {
         return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
       }
-      return true;
+      return true;  
+    })
+    .test("dimensions", "image dimention 632×445 pixels allowed", (value) => {
+      if (!value || !(value instanceof File)) {
+        return true;
+      }
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(value);
+
+        img.onload = () => {
+          URL.revokeObjectURL(img.src);
+          resolve(img.width === 632 && img.height === 445);
+        };
+
+        img.onerror = () => {
+          resolve(false);
+        };
+      });
     })
     .nullable(),
 });

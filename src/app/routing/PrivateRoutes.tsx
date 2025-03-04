@@ -506,14 +506,16 @@ const PrivateRoutes: React.FC = () => {
           />
         </Route>
 
-        <Route
-          path="/contact-requests"
-          element={
-            <Suspense fallback={<Shimmer />}>
-              <ContactRequest />
-            </Suspense>
-          }
-        />
+        <Route element={<ProtectedRoute moduleId={18} action="read" />}>
+          <Route
+            path="/contact-requests"
+            element={
+              <Suspense fallback={<Shimmer />}>
+                <ContactRequest />
+              </Suspense>
+            }
+          />
+        </Route>
 
         <Route
           path="/profile"

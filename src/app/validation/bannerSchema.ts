@@ -31,23 +31,21 @@ export const bannerSchema = (
       })
       .test(
         "dimensions",
-        "Max image dimention 300×425 pixels allowed",
+        "image dimention 689×668 pixels allowed",
         (value) => {
           if (!value || !(value instanceof File)) {
             return true;
           }
-
           return new Promise((resolve) => {
             const img = new Image();
             img.src = URL.createObjectURL(value);
 
             img.onload = () => {
-              URL.revokeObjectURL(img.src);
-              resolve(img.width <= 300 && img.height <= 425);
+              URL.revokeObjectURL(img.src); 
+              resolve(img.width === 689 && img.height === 668);
             };
 
             img.onerror = () => {
-              console.error("Error loading image file.");
               resolve(false);
             };
           });
