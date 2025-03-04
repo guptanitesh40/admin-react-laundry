@@ -44,23 +44,23 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   useEffect(() => {
     if (isOpen && service && service_id) {
       const fetchedData = {
-          name: service.name,
-          image: service.image,
-      }
+        name: service.name,
+        image: service.image,
+      };
 
-        setFormData(fetchedData);
-        setInitialFormData(fetchedData);
-      } else {
-        setFormData({
-          name: "",
-          image: "",
-        });
-        setInitialFormData({
-          name: "",
-          image: "",
-        });
-        setErrors({});
-      }
+      setFormData(fetchedData);
+      setInitialFormData(fetchedData);
+    } else {
+      setFormData({
+        name: "",
+        image: "",
+      });
+      setInitialFormData({
+        name: "",
+        image: "",
+      });
+      setErrors({});
+    }
   }, [isOpen, service]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,17 +87,22 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       await schema.validate(formData, { abortEarly: false });
 
       const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some((key) => {
-          if (key === "image") {
-            return formData.image instanceof File || formData.image !== initialFormData.image;
+        return (Object.keys(formData) as (keyof typeof formData)[]).some(
+          (key) => {
+            if (key === "image") {
+              return (
+                formData.image instanceof File ||
+                formData.image !== initialFormData.image
+              );
+            }
+            return formData[key] !== initialFormData[key];
           }
-          return formData[key] !== initialFormData[key];
-        });
+        );
       };
 
-      if (!isDataChanged()) {             
+      if (!isDataChanged()) {
         onClose();
-        return; 
+        return;
       }
 
       const formDataObj = new FormData();
@@ -130,7 +135,10 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
+      <div
+        className="fixed inset-0 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 z-10 zx:min-w-[85%] relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
@@ -159,9 +167,14 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold" htmlFor="image">
-              Image
-            </label>
+            <div className="flex items-center gap-2 mb-2">
+              <label className="font-semibold" htmlFor="image">
+                Image
+              </label>
+              <span className="text-sm text-gray-500">
+                (JPG, JPEG, PNG | 85×85 px)
+              </span>
+            </div>
             <input
               type="file"
               id="image"

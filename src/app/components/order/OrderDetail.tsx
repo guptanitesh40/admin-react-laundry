@@ -324,6 +324,7 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
+  
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">
@@ -926,38 +927,40 @@ const OrderDetails: React.FC = () => {
                       </div>
                     )}
 
-                    <div
-                      className="menu absolute top-1 right-2"
-                      data-menu="true"
-                    >
+                    {order.order_status !== 13 && (
                       <div
-                        className="menu-item"
-                        data-menu-item-offset="0, 10px"
-                        data-menu-item-placement="bottom-end"
-                        data-menu-item-toggle="dropdown"
-                        data-menu-item-trigger="click|lg:click"
+                        className="menu absolute top-1 right-2"
+                        data-menu="true"
                       >
-                        <button className="menu-toggle btn btn-sm btn-icon btn-light btn-clear">
-                          <i className="ki-filled ki-dots-vertical"></i>
-                        </button>
                         <div
-                          className="menu-dropdown menu-default w-full max-w-[175px]"
-                          data-menu-dismiss="true"
+                          className="menu-item"
+                          data-menu-item-offset="0, 10px"
+                          data-menu-item-placement="bottom-end"
+                          data-menu-item-toggle="dropdown"
+                          data-menu-item-trigger="click|lg:click"
                         >
-                          <div className="menu-item">
-                            <button
-                              className="menu-link"
-                              onClick={() => hanldeDeleteNote(note.note_id)}
-                            >
-                              <span className="menu-icon">
-                                <i className="ki-filled ki-trash"></i>
-                              </span>
-                              <span className="menu-title">Remove</span>
-                            </button>
+                          <button className="menu-toggle btn btn-sm btn-icon btn-light btn-clear">
+                            <i className="ki-filled ki-dots-vertical"></i>
+                          </button>
+                          <div
+                            className="menu-dropdown menu-default w-full max-w-[175px]"
+                            data-menu-dismiss="true"
+                          >
+                            <div className="menu-item">
+                              <button
+                                className="menu-link"
+                                onClick={() => hanldeDeleteNote(note.note_id)}
+                              >
+                                <span className="menu-icon">
+                                  <i className="ki-filled ki-trash"></i>
+                                </span>
+                                <span className="menu-title">Remove</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </li>
                 </div>
               );

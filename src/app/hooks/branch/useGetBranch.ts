@@ -11,6 +11,7 @@ interface Branch {
   branch_address: string;
   branch_manager_id: number;
   branch_phone_number: string;
+  branch_mobile_number: string;
   branch_email: string;
   branch_registration_number: string;
   company: {

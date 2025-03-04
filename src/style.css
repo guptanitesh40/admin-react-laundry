@@ -9831,3 +9831,7 @@ label.rating-label {
 .five-star-rating {
   color: rgb(59 130 246 / var(--tw-bg-opacity, 1)) !important;
 }
+
+.block {
+  display: inline-block;
+}

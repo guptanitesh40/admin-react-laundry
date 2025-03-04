@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { login as loginAction } from "../utils/authSlice";
 import toast from "react-hot-toast";
 import ProtectedRoute from "./ProtectedRoutes";
+import ContactRequest from "../components/contact-request/ContactRequest";
 
 const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
@@ -500,6 +501,17 @@ const PrivateRoutes: React.FC = () => {
             element={
               <Suspense fallback={<ListShimmer />}>
                 <Feedback />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={18} action="read" />}>
+          <Route
+            path="/contact-requests"
+            element={
+              <Suspense fallback={<Shimmer />}>
+                <ContactRequest />
               </Suspense>
             }
           />

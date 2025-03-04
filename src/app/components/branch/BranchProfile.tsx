@@ -9,6 +9,7 @@ interface Branch {
   branch_address: string;
   branch_manager_id: string;
   branch_phone_number: string;
+  branch_mobile_number: string;
   branch_email: string;
   branch_registration_number: string;
   company_id: number;
@@ -54,15 +55,24 @@ const BranchProfile: React.FC = () => {
                   Manager:
                 </td>
                 <td className="text-sm font-medium text-gray-800 pb-3">
-                  {branch.branchManager.first_name} {branch.branchManager.last_name}
+                  {branch.branchManager.first_name}{" "}
+                  {branch.branchManager.last_name}
                 </td>
               </tr>
               <tr>
                 <td className="text-sm font-medium text-gray-500 pb-3 pe-4 lg:pe-10">
-                  Phone:
+                  Phone no 1:
                 </td>
                 <td className="text-sm font-medium text-gray-800 pb-3">
                   {branch.branch_phone_number}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-sm font-medium text-gray-500 pb-3 pe-4 lg:pe-10">
+                  Phone no 2:
+                </td>
+                <td className="text-sm font-medium text-gray-800 pb-3">
+                  {branch.branch_mobile_number}
                 </td>
               </tr>
               <tr>

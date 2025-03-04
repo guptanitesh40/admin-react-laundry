@@ -168,9 +168,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
             </div>
 
             <div className="col-span-1">
-              <label className="mb-2 font-semibold" htmlFor="image">
-                Image
-              </label>
+              <div className="flex items-center gap-2 mb-2">
+                <label className="font-semibold" htmlFor="image">
+                  Image
+                </label>
+                <span className="text-sm text-gray-500">
+                  (JPG, JPEG, PNG | 85×85 px)
+                </span>
+              </div>
               <input
                 type="file"
                 id="image"

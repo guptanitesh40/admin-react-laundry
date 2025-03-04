@@ -12,26 +12,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import LoadingSpinner from "../shimmer/Loading";
-
-const schema = Yup.object().shape({
-  title: Yup.string().required("Title is required"),
-  price: Yup.number()
-    .required("Please enter price")
-    .typeError("Price must be a number")
-    .min(0, "Price must be a positive number"),
-  promotion_code: Yup.string()
-    .notRequired()
-    .matches(
-      /^[a-zA-Z0-9]*$/,
-      "Coupon code can only contain letters and numbers"
-    )
-    .test(
-      "length",
-      "Coupon code must be between 3 and 30 characters long",
-      (value) => !value || (value.length >= 3 && value.length <= 30)
-    )
-    .nullable(),
-});
+import { promotionBannerSchema } from "../../validation/promotionBannerSchema";
 
 const PromotionBanner: React.FC = () => {
   const { settingsData, fetchSetting, loading } = useGetSettings();
@@ -107,7 +88,7 @@ const PromotionBanner: React.FC = () => {
     e.preventDefault();
 
     try {
-      await schema.validate(formData, { abortEarly: false });
+      await promotionBannerSchema.validate(formData, { abortEarly: false });
 
       let success;
 
@@ -182,7 +163,7 @@ const PromotionBanner: React.FC = () => {
             <div className="card-body grid gap-4">
               <div className="flex items-center flex-wrap gap-2.5">
                 <div className="flex justify-end flex-wrap grow gap-2.5">
-                  <div className="image-input" data-image-input="true">
+                  <div className="image-input relative" data-image-input="true">
                     <label
                       htmlFor="image-upload"
                       className={`btn btn-icon btn-icon-2xl btn-light absolute z-1 size-8 -top-0.5 -right-0.5 rounded-full ${
@@ -200,17 +181,22 @@ const PromotionBanner: React.FC = () => {
                       style={{ display: "none" }}
                       onChange={handleBannerImageChange}
                     />
-                    <div className="image-input-placeholder rounded-md border-2">
-                      <img
-                        className="h-[200px] w-[300px] rounded-sm"
-                        src={
-                          preview ||
-                          (typeof formData.image === "string" &&
-                            formData.image) ||
-                          ""
-                        }
-                        alt="Promotion Banner"
-                      />
+                    <div className="flex flex-col items-center w-[300px]">
+                      <div className="image-input-placeholder rounded-md border-2">
+                        <img
+                          className="h-[200px] w-[300px] rounded-sm"
+                          src={
+                            preview ||
+                            (typeof formData.image === "string" &&
+                              formData.image) ||
+                            ""
+                          }
+                          alt="Promotion Banner"
+                        />
+                      </div>
+                      <p className="text-red-500 text-sm min-h-[20px] block w-full text-center">
+                        {errors.image || "\u00A0"}
+                      </p>
                     </div>
                   </div>
                 </div>

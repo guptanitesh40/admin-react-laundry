@@ -16,6 +16,7 @@ interface FormData {
   branch_address: string;
   branch_manager_id: number;
   branch_phone_number: string;
+  branch_mobile_number: string;
   branch_email: string;
   branch_registration_number: string;
   company_id: number;
@@ -41,6 +42,7 @@ const BranchForm: React.FC = () => {
     branch_address: "",
     branch_manager_id: null,
     branch_phone_number: "",
+    branch_mobile_number: "",
     branch_email: "",
     branch_registration_number: "",
     company_id: null,
@@ -51,6 +53,7 @@ const BranchForm: React.FC = () => {
     branch_address: "",
     branch_manager_id: null,
     branch_phone_number: "",
+    branch_mobile_number: "",
     branch_email: "",
     branch_registration_number: "",
     company_id: null,
@@ -73,6 +76,7 @@ const BranchForm: React.FC = () => {
         branch_address: branch.branch_address,
         branch_manager_id: branch.branch_manager_id,
         branch_phone_number: branch.branch_phone_number,
+        branch_mobile_number: branch.branch_mobile_number,
         branch_email: branch.branch_email,
         branch_registration_number: branch.branch_registration_number,
         company_id: branch.company_id,
@@ -260,7 +264,7 @@ const BranchForm: React.FC = () => {
               className="block text-gray-700 font-semibold"
               htmlFor="branch_phone_number"
             >
-              Mobile number
+              Phone number 1
             </label>
             <input
               type="text"
@@ -272,6 +276,26 @@ const BranchForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">
               {errors.branch_phone_number || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="branch_mobile_number"
+            >
+              Phone number 2
+            </label>
+            <input
+              type="text"
+              id="branch_mobile_number"
+              name="branch_mobile_number"
+              value={formData.branch_mobile_number || ""}
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.branch_mobile_number || "\u00A0"}
             </p>
           </div>
 
