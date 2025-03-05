@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-hot-toast";
-
-const GET_PRICE_URL = `${import.meta.env.VITE_BASE_URL}/prices`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Price {
   [key: string]: any;
@@ -16,7 +15,7 @@ const useGetPrice = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(GET_PRICE_URL, {
+      const response = await fetch(`${BASE_URL}/prices`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
