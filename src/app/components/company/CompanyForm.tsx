@@ -93,12 +93,33 @@ const CompanyForm: React.FC = () => {
     }
   }, [company]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files : value,
-    }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const target = e.target;
+
+    if (target instanceof HTMLInputElement) {
+      const { name, value, files } = target;
+
+      if (name === "image" && files && files.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          logo: files[0],
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    } else if (target instanceof HTMLTextAreaElement) {
+      const { name, value } = target;
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleDateChange = (newValue: dayjs.Dayjs | null) => {
@@ -110,7 +131,6 @@ const CompanyForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const schema = companySchema(!!company_id);
       await schema.validate(formData, { abortEarly: false });
@@ -130,7 +150,7 @@ const CompanyForm: React.FC = () => {
       };
 
       if (!isDataChanged()) {
-        navigate("/branches");
+        navigate("/companies");
         return;
       }
 
@@ -160,7 +180,6 @@ const CompanyForm: React.FC = () => {
     navigate("/companies");
   };
 
-
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
       <h1 className="text-2xl font-bold mb-6">
@@ -170,7 +189,10 @@ const CompanyForm: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="company_name">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="company_name"
+            >
               Company name
             </label>
             <input
@@ -187,7 +209,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="address">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="address"
+            >
               Address
             </label>
             <input
@@ -217,7 +242,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="state">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="state"
+            >
               State
             </label>
             <input
@@ -232,7 +260,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="zip_code">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="zip_code"
+            >
               Zip code
             </label>
             <input
@@ -249,7 +280,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="company_owner_name">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="company_owner_name"
+            >
               Company owner name
             </label>
             <input
@@ -266,7 +300,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="phone_number">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="phone_number"
+            >
               Phone number 1
             </label>
             <input
@@ -283,8 +320,11 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="mobile_number">
-             Phone number 2
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="mobile_number"
+            >
+              Phone number 2
             </label>
             <input
               type="text"
@@ -300,7 +340,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="email">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -315,7 +358,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="website">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="website"
+            >
               Website
             </label>
             <input
@@ -329,23 +375,34 @@ const CompanyForm: React.FC = () => {
             <p className="text-red-500 text-sm">{errors.website || "\u00A0"}</p>
           </div>
 
-          <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="image">
-              Logo
-            </label>
+          <div className="col-span-1">
+            <div className="flex items-center gap-2">
+              <label
+                className="block text-gray-700 font-semibold"
+                htmlFor="image"
+              >
+                Logo
+              </label>
+              <span className="text-sm text-gray-600">
+                (JPG, JPEG, PNG | 92×92 px)
+              </span>
+            </div>
             <input
               type="file"
               id="image"
-              name="image" 
+              name="image"
               accept="image/*"
               onChange={handleChange}
-              className="border border-gray-300 rounded-md p-2"
+              className="input border border-gray-300 rounded-md p-2 mt-1"
             />
             <p className="text-red-500 text-sm">{errors.logo || "\u00A0"}</p>
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="registration_number">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="registration_number"
+            >
               Registration Number
             </label>
             <input
@@ -362,7 +419,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="registration_date">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="registration_date"
+            >
               Registration Date
             </label>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -390,7 +450,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="gstin">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="gstin"
+            >
               GSTIN
             </label>
             <input
@@ -405,7 +468,10 @@ const CompanyForm: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 font-semibold" htmlFor="company_ownedby">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="company_ownedby"
+            >
               Company owned by
             </label>
             <select
@@ -432,7 +498,10 @@ const CompanyForm: React.FC = () => {
 
           {formData.company_ownedby === 2 && (
             <div className="flex flex-col">
-              <label className="block text-gray-700 font-semibold" htmlFor="contract_document">
+              <label
+                className="block text-gray-700 font-semibold"
+                htmlFor="contract_document"
+              >
                 Contract Document
               </label>
               <input

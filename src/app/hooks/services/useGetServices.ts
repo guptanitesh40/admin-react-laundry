@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const GET_SERVICE_URL = `${import.meta.env.VITE_BASE_URL}/admin/services`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Service {
   service_id: number;
@@ -22,7 +21,6 @@ const useGetServices = (
 
   const fetchServices = async () => {
     const token = localStorage.getItem("authToken");
-
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
@@ -31,11 +29,9 @@ const useGetServices = (
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
 
-    const url = `${GET_SERVICE_URL}?${queryParams}`;
-
     setLoading(true);
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${BASE_URL}/admin/services?${queryParams}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",

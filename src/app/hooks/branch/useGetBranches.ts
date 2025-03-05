@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-
-const GET_BRANCH_URL = `${import.meta.env.VITE_BASE_URL}/branches`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Branch {
   branchManager: {
@@ -57,7 +56,7 @@ const useGetBranches = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_BRANCH_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/branches?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

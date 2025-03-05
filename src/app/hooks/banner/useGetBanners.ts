@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast, { Toast } from "react-hot-toast";
-
-const GET_BANNER_URL = `${import.meta.env.VITE_BASE_URL}/admin/banners`;
+import { BASE_URL } from "../../utils/constant";
 
 const useGetBanners = (
   pageNumber: number = 1,
@@ -29,7 +28,7 @@ const useGetBanners = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_BANNER_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/banners?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
