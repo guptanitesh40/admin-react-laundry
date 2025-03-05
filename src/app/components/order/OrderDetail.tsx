@@ -324,7 +324,6 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
-  
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">
@@ -546,6 +545,23 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {order?.description && (
+            <div className="card rounded-xl">
+              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="card-title">Order Instruction</h3>
+                    </div>
+                    <div className="text-2sm font-medium text-gray-700">
+                      {order.description}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="col-span-2 lg:col-span-1 flex">
             <div className="card grow">

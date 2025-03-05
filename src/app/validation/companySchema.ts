@@ -64,7 +64,7 @@ export const companySchema = (isEdit: boolean = false) => {
       .required("Email is required")
       .email("Enter a valid email")
       .test("required", "Email is required", (value) => !!value),
-
+      
     website: Yup.string()
       .nullable()
       .url("Please enter a valid website URL")
@@ -72,25 +72,35 @@ export const companySchema = (isEdit: boolean = false) => {
 
     logo: Yup.mixed<FileValue>()
       .nullable()
-      .test("fileSize", "Logo file is too large", (value) => {
-        if (!value) return true;
-        if (value instanceof File) {
-          return value.size <= 2000000;
-        }
-        return true;
-      })
-      .test("fileType", "Unsupported logo format", (value) => {
-        if (!value) return true;
-        if (value instanceof File) {
-          return ["image/jpeg", "image/png", "image/gif"].includes(value.type);
-        }
-        return true;
-      })
       .test("required", "Logo is required", (value) => {
         if (!isEdit) {
           return !!value;
         }
         return true;
+      })
+      .test("fileType", "Allowed Format : jpg, jpeg, png, ", (value) => {
+        if (value && value instanceof File) {
+          return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+        }
+        return true;
+      })
+      .test("dimensions", "Logo must be 92×92 pixels", (value) => {
+        if (!value || !(value instanceof File)) {
+          return true;
+        }
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = URL.createObjectURL(value);
+
+          img.onload = () => {
+            URL.revokeObjectURL(img.src);
+            resolve(img.width === 92 && img.height === 92);
+          };
+
+          img.onerror = () => {
+            resolve(false);
+          };
+        });
       }),
 
     registration_number: Yup.string()

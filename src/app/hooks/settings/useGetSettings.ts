@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface settingsData {
   data: any;
@@ -13,6 +12,8 @@ const useGetSettings = () => {
   const [settingsData, setSettingsData] = useState<settingsData | undefined>();
 
   const fetchSetting = async () => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/admin/settings`, {

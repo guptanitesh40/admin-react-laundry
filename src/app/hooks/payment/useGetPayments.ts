@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface Payments {
   created_at: string;
@@ -32,6 +31,8 @@ const useGetPayments = (
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchPayments = async () => {
+    const token = localStorage.getItem("authToken");
+
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());

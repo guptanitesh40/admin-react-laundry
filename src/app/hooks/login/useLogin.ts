@@ -51,6 +51,7 @@ const useLogin = () => {
 
           dispatch(
             loginAction({
+              isAuthenticated: true,
               token: authToken,
               permissions: [],
               role_id: user.role_id,
@@ -62,12 +63,12 @@ const useLogin = () => {
           fetchUserPermissions(authToken).then((permissions) => {
             dispatch(
               loginAction({
+                isAuthenticated: true,
                 token: authToken,
                 permissions,
                 role_id: user.role_id,
               })
             );
-
           });
 
           toast.success(message, { position: "top-center" });

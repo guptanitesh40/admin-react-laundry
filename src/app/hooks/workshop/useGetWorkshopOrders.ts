@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
-const GET_WORKSHOPORDER_URL = `${
-  import.meta.env.VITE_BASE_URL
-}/admin/orders/workshop`;
+import { BASE_URL } from "../../utils/constant";
 
 interface WorkshopOrders {
   created_at:any;
@@ -97,7 +94,7 @@ const useGetWorkshopOrders = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_WORKSHOPORDER_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/orders/workshop?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

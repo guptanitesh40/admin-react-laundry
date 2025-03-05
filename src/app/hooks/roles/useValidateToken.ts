@@ -32,30 +32,34 @@ const useValidateToken = () => {
 
       const data = await response.json();
 
-      if (response.ok && data?.data?.user) {
-        const permissions = await fetchUserPermissions(storedToken).catch(() => []);
-        
+      if (response.ok) {
+        const permissions = await fetchUserPermissions(storedToken);
+
         dispatch(addUser(data.data.user));
 
         dispatch(
           login({
+            isAuthenticated: true,
             token: data?.data?.token || storedToken,
             permissions,
-            role_id: data?.data?.user?.role_id ?? null, 
+            role_id: data?.data?.user?.role_id ?? null,
           })
         );
-
-        if (data?.data?.token) {
-          localStorage.setItem("authToken", data?.data?.token);
-        }
-      } 
+      } else {
+        handleLogout();
+      }
     } catch (error) {
-      toast.error("Invalid or expired token");
-      localStorage.removeItem("authToken");
-      dispatch(logout());
+      toast.error("Oops! Something went wrong. Please log in again.", {
+        className: "toast-error",
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    dispatch(logout());
   };
 
   useEffect(() => {

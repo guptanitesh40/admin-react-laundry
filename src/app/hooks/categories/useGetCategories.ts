@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-
-const GET_CATEGORIES_URL = `${import.meta.env.VITE_BASE_URL}/admin/categories`;
+import { BASE_URL } from "../../utils/constant";
 
 interface Category {
   category_id: number;
@@ -32,7 +31,7 @@ const useGetCategories = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${GET_CATEGORIES_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/categories?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
