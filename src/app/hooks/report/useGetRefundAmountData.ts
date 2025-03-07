@@ -22,7 +22,7 @@ const useGetRefundAmountData = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/refund-report`, {
+      const response = await fetch(`${BASE_URL}/report/refund-report?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

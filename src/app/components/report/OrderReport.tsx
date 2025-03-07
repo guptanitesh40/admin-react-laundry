@@ -1,13 +1,10 @@
 import { useGetOrdersData } from "../../hooks";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import AreaChart from "react-apexcharts";
-import { FiShoppingCart } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { DatePicker } from "antd";
 
+const { RangePicker } = DatePicker;
 
 const OrderReport = () => {
   const [formData, setFormData] = useState({
@@ -27,11 +24,18 @@ const OrderReport = () => {
     }
   }, [formData]);
 
-  const handleDateChange = (newDate: dayjs.Dayjs, field: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: newDate ? newDate.format("DD-MM-YYYY") : "",
-    }));
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
   };
 
   const categories = orderData
@@ -179,21 +183,29 @@ const OrderReport = () => {
   return (
     <>
       <div
-        className="card pb-2.5 max-h-[300px] cursor-pointer"
+        className="card max-h-[317px] cursor-pointer"
         onClick={handleNavigateToOrderList}
       >
-        <div className="card-header border-none flex mt-2 items-start w-full">
-          <div className="flex justify-between items-center w-full">
-            <div>
+        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
+          <div
+            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <RangePicker
+              className="min-w-[80px] sm:w-[250px]"
+              dropdownClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+            />
+          </div>
+
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
+            <div className="fmobile:flex fmobile:gap-2">
               <h3 className="card-title">Orders</h3>
               <h5 className="block text-gray-500 text-sm font-bold">
-                <div className="flex flex-wrap flex-row gap-x-2">
+                <div className="flex flex-wrap align-items flex-row gap-x-2">
                   <span className="ml-1">{orderCount}</span>
                 </div>
               </h5>
-            </div>
-            <div className="self-end mb-3">
-              <FiShoppingCart size={23} color="rgb(13 202 240)" />
             </div>
           </div>
         </div>
@@ -203,7 +215,7 @@ const OrderReport = () => {
             options={data.options}
             series={data.series}
             type={data.options.chart.type}
-            height={240}
+            height={250}
           />
         </div>
       </div>
