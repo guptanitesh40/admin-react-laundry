@@ -1,13 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BarChart from "react-apexcharts";
 import { useGetRefundAmountData } from "../../hooks";
+import { DatePicker } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const RefundAmountReport: React.FC = () => {
   const { refundAmountData, fetchRefundAmountData } = useGetRefundAmountData();
 
+  const [formData, setFormData] = useState({
+    start_time: "",
+    end_time: "",
+  });
+
   useEffect(() => {
-    fetchRefundAmountData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+      fetchRefundAmountData(formData.start_time, formData.end_time);
+    } else {
+      fetchRefundAmountData();
+    }
+  }, [formData]);
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
 
   const categories = refundAmountData?.map((item: any) => item.month) || [];
   const refundAmounts =
@@ -101,8 +127,20 @@ const RefundAmountReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card w-full">
-        <div className="card-header border-none">
-          <h2 className="card-title">Refund Amount Report</h2>
+        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
+          <div
+            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+          >
+            <RangePicker
+              className="min-w-[80px] sm:w-[250px]"
+              dropdownClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+            />
+          </div>
+
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
+            <h2 className="card-title">Refund Amount Report</h2>
+          </div>
         </div>
 
         <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">

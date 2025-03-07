@@ -1,13 +1,39 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetNewCustomerData } from "../../hooks";
 import BarChart from "react-apexcharts";
+import { DatePicker } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const NewCustomerReport: React.FC = () => {
+  const [formData, setFormData] = useState({
+      start_time: "",
+      end_time: "",
+    });
+
   const { customerData, fetchNewCustomerData } = useGetNewCustomerData();
 
   useEffect(() => {
-    fetchNewCustomerData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+      fetchNewCustomerData(formData.start_time, formData.end_time);
+    } else {
+      fetchNewCustomerData();
+    }
+  }, [formData]);
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
 
   const categories =
     customerData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
@@ -147,7 +173,14 @@ const NewCustomerReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card w-full rounded-md">
-        <div className="card-header border-none">
+        <div className="self-end p-3 sm:mt-0">
+          <RangePicker
+            className="min-w-[80px] sm:w-[250px]"
+            dropdownClassName="custom-rangepicker-dropdown"
+            onChange={handleDateChange}
+          />
+        </div>
+        <div className="card-header pt-0  border-none">
           <div className="flex flex-col justify-between">
             <h3 className="card-title">New Customer</h3>
           </div>
@@ -163,7 +196,7 @@ const NewCustomerReport: React.FC = () => {
             options={data.options}
             series={data.series}
             type={data.options.chart.type}
-            height={170}
+            height={163}
           />
         </div>
       </div>

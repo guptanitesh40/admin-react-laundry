@@ -2,16 +2,41 @@ import { useEffect, useState } from "react";
 import { useGetPaymentTransactionData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
+import { DatePicker } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const PaymentTransactionReport: React.FC = () => {
   const { paymentTransactionData, fetchPaymentTransactionData } =
     useGetPaymentTransactionData();
-
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    start_time: "",
+    end_time: "",
+  });
+
   useEffect(() => {
-    fetchPaymentTransactionData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+      fetchPaymentTransactionData(formData.start_time, formData.end_time);
+    } else {
+      fetchPaymentTransactionData();
+    }
+  }, [formData]);
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
 
   const categories =
     paymentTransactionData?.map((item: { month: any }) => item.month) || [];
@@ -21,7 +46,8 @@ const PaymentTransactionReport: React.FC = () => {
     ) || [];
 
   const totalReceivedAmount = paymentTransactionData?.reduce(
-    (sum: any, item: { total_transaction_amount: number }) => sum + item.total_transaction_amount,
+    (sum: any, item: { total_transaction_amount: number }) =>
+      sum + item.total_transaction_amount,
     0
   );
 
@@ -82,7 +108,7 @@ const PaymentTransactionReport: React.FC = () => {
         labels: {
           show: true,
           style: {
-            colors: "#6B7280", 
+            colors: "#6B7280",
             fontSize: "12px",
             fontWeight: 500,
           },
@@ -90,10 +116,10 @@ const PaymentTransactionReport: React.FC = () => {
         axisTicks: {
           show: true,
           color: "#D1D5DB",
-          height: 6, 
+          height: 6,
         },
         axisBorder: {
-          show: true, 
+          show: true,
           color: "#D1D5DB",
         },
         crosshairs: {
@@ -104,7 +130,7 @@ const PaymentTransactionReport: React.FC = () => {
             dashArray: 3,
           },
         },
-      },    
+      },
       yaxis: {
         min: 0,
         tickAmount: 5,
@@ -160,14 +186,29 @@ const PaymentTransactionReport: React.FC = () => {
       onClick={handleNavigateToPaymentList}
     >
       <div className="card w-full">
-        <div className="card-header border-none flex flex-col mt-2 items-start">
-          <h3 className="card-title">Payment Report</h3>
-          <h5 className="block text-gray-500 text-sm font-bold">
-            <div className="flex flex-wrap flex-row gap-x-2">
-              <span>Total Received Amount</span>
-              <span> ₹{totalReceivedAmount?.toLocaleString()} </span>
+        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full gap-x-2">
+          <div
+            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <RangePicker
+              className="min-w-[70px] sm:w-[250px]"
+              dropdownClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+            />
+          </div>
+
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
+            <div className="fmobile:flex fmobile:gap-2">
+              <h3 className="card-title">Payment Report</h3>
+              <h5 className="block text-gray-500 text-sm font-bold">
+                <div className="flex flex-wrap flex-row gap-x-2">
+                  <span>Total Received Amount</span>
+                  <span> ₹{totalReceivedAmount?.toLocaleString()} </span>
+                </div>
+              </h5>
             </div>
-          </h5>
+          </div>
         </div>
 
         <div className="card-body flex flex-col justify-end items-stretch grow px-3 py-1">

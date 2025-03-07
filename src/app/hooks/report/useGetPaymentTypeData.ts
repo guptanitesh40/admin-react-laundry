@@ -11,12 +11,16 @@ const useGetPaymentTypeData = () => {
   const [paymentTypeData, setPaymentTypeData] = useState<PaymentTypeData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchPaymentTypeData = async () => {
+  const fetchPaymentTypeData = async (start_date?: string, end_date?: string) => {
     const token = localStorage.getItem("authToken");
+    const queryParams = new URLSearchParams();
+
+    if (start_date) queryParams.append("startDate", start_date);
+    if (end_date) queryParams.append("endDate", end_date);
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/payment-type-report`, {
+      const response = await fetch(`${BASE_URL}/report/payment-type-report?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

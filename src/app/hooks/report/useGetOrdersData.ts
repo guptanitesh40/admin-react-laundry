@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
 
 interface OrderData {
   day: string;
@@ -17,11 +18,9 @@ const useGetOrdersData = () => {
     if (start_date) queryParams.append("startDate", start_date);
     if (end_date) queryParams.append("endDate", end_date);
 
-    const GET_ORDERDATA_URL = `${import.meta.env.VITE_BASE_URL}/report/total-orders`;
-
     setLoading(true);
     try {
-      const response = await fetch(`${GET_ORDERDATA_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/report/total-orders?${queryParams}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +38,7 @@ const useGetOrdersData = () => {
 
       setOrderData(data);
     } catch {
-      toast.error("Network error: Failed to fetch.");
+      toast.error("Network error: Failed to fetch orders data.");
     } finally {
       setLoading(false);
     }
