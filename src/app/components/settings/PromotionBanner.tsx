@@ -100,6 +100,7 @@ const PromotionBanner: React.FC = () => {
 
         success = await updatePromotionBanner(formDataToSend);
         if (success) {
+          setErrors({});
           setRefetch(true);
         }
         setPreview(null);

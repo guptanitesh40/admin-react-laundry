@@ -65,7 +65,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   }, [pageParams, perPageParams]);
 
   const handleViewOrder = (order_id: number) => {
-    navigate(`/order/${order_id}`);
+    navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

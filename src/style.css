@@ -9874,3 +9874,8 @@ input[date-range="start"] {
   font-size: 10px !important;
 }
 }
+
+
+.scroll-auto {
+  overflow-y: hidden;
+}
