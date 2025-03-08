@@ -235,12 +235,12 @@ const OrderDetails: React.FC = () => {
         break;
       case "Work Completed by Workshop":
         await handleStatusChange(8);
-        break;
-      case "Mark as Received at Branch":
-        await handleStatusChange(9);
         if (location.state?.from === "WorkshopOrderTable") {
           navigate("/workshop-order");
         }
+        break;
+      case "Mark as Received at Branch":
+        await handleStatusChange(9);
         break;
       case "Items Received at Branch":
       case "Pickup Complete":

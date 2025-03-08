@@ -1,25 +1,53 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetDeliveryData } from "../../hooks";
 import DonutChart from "react-apexcharts";
+import { DatePicker } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const DeliveryReport: React.FC = () => {
   const navigate = useNavigate();
   const { deliveryData, fetchDeliveryData } = useGetDeliveryData();
 
+  const [formData, setFormData] = useState({
+    start_time: "",
+    end_time: "",
+  });
+
   useEffect(() => {
-    fetchDeliveryData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+      fetchDeliveryData(formData.start_time, formData.end_time);
+    } else {
+      fetchDeliveryData();
+    }
+  }, [formData]);
 
-  const deliveryCompleted = deliveryData?.reduce(
-    (sum: number, item: { completed: number }) => sum + item.completed,
-    0
-  ) || 0;
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
 
-  const deliveryPending = deliveryData?.reduce(
-    (sum: number, item: { pending: number }) => sum + item.pending,
-    0
-  ) || 0;
+  const deliveryCompleted =
+    deliveryData?.reduce(
+      (sum: number, item: { completed: number }) => sum + item.completed,
+      0
+    ) || 0;
+
+  const deliveryPending =
+    deliveryData?.reduce(
+      (sum: number, item: { pending: number }) => sum + item.pending,
+      0
+    ) || 0;
 
   const labels = ["Delivery Completed", "Delivery Pending"];
   const data = [deliveryCompleted, deliveryPending];
@@ -86,11 +114,30 @@ const DeliveryReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card">
-        <div className="card-header border-none">
-          <h3 className="card-title">Delivery Report</h3>
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
+          <div
+            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 desktop:!order-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <RangePicker
+              className="min-w-[80px] sm:w-[250px]"
+              dropdownClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+            />
+          </div>
+
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
+            <h3 className="card-title">Delivery Report</h3>
+          </div>
         </div>
+
         <div className="card-body grid gap-1 fmobile:justify-center">
-          <DonutChart series={data} options={options} type="donut" height={200} />
+          <DonutChart
+            series={data}
+            options={options}
+            type="donut"
+            height={200}
+          />
         </div>
       </div>
     </div>

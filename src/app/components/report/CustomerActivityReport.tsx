@@ -1,15 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetCustomerActivityData } from "../../hooks";
 import AreaChart from "react-apexcharts";
+import { DatePicker } from "antd";
 
+const { RangePicker } = DatePicker;
 
 const CustomerActivityReport: React.FC = () => {
+  const [formData, setFormData] = useState({
+    start_time: "",
+    end_time: "",
+  });
+
   const { customerActivityData, fetchCustomerActivityData } =
     useGetCustomerActivityData();
 
   useEffect(() => {
-    fetchCustomerActivityData();
-  }, []);
+    if (formData.start_time && formData.end_time) {
+      fetchCustomerActivityData(formData.start_time, formData.end_time);
+    } else {
+      fetchCustomerActivityData();
+    }
+  }, [formData]);
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
 
   const categories =
     customerActivityData?.map(
@@ -104,7 +129,7 @@ const CustomerActivityReport: React.FC = () => {
       },
       yaxis: {
         min: 0,
-        tickAmount: 5,
+        tickAmount: 1,
         axisTicks: {
           show: false,
         },
@@ -140,8 +165,15 @@ const CustomerActivityReport: React.FC = () => {
   };
 
   return (
-    <div className="card w-full pb-2.5 max-h-[250px] rounded-md">
-      <div className="flex justify-between ml-6 mt-2">
+    <div className="card w-full pb-2.5 max-h-[300px] rounded-md">
+      <div className="self-end p-3 sm:mt-0">
+        <RangePicker
+          className="min-w-[80px] sm:w-[250px]"
+          dropdownClassName="custom-rangepicker-dropdown"
+          onChange={handleDateChange}
+        />
+      </div>
+      <div className="flex justify-between ml-6">
         <div>
           <h3 className="card-title text-lg">Activity</h3>
           <span className="text-gray-500 font-medium">
@@ -151,7 +183,7 @@ const CustomerActivityReport: React.FC = () => {
       </div>
 
       <div className="card-body flex flex-col justify-end items-stretch grow px-0 py-1">
-      <AreaChart
+        <AreaChart
           options={data.options}
           series={data.series}
           type={data.options.chart.type}

@@ -176,7 +176,7 @@ const CouponTable: React.FC = () => {
           <div className="flex flex-wrap gap-2.5">
             <select
               className="select select-lg w-[170px] text-sm"
-              value={discountTypeFiter}
+              value={couponTypeFilter}
               onChange={(e) => {
                 setCouponTypeFilter(Number(e.target.value));
               }}

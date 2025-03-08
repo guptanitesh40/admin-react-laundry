@@ -12,12 +12,16 @@ const useGetDeliveryData = () => {
   const [deliveryData, setDeliveryData] = useState<DeliveryData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchDeliveryData = async () => {
+  const fetchDeliveryData = async (start_date?: string, end_date?: string) => {
     const token = localStorage.getItem("authToken");
+    const queryParams = new URLSearchParams();
+
+    if (start_date) queryParams.append("startDate", start_date);
+    if (end_date) queryParams.append("endDate", end_date);
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/delivery-report`, {
+      const response = await fetch(`${BASE_URL}/report/delivery-report?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

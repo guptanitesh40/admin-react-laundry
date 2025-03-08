@@ -1,14 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useGetSalesData } from "../../hooks";
 import AreaChart from "react-apexcharts";
+import { DatePicker } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const SalesBookingReport = () => {
   const { salesData, fetchSalesData } = useGetSalesData();
 
+  const [formData, setFormData] = useState({
+    start_time: "",
+    end_time: "",
+  });
+
   useEffect(() => {
-    fetchSalesData();
-  }, []);
-  
+    if (formData.start_time && formData.end_time) {
+      fetchSalesData(formData.start_time, formData.end_time);
+    } else {
+      fetchSalesData();
+    }
+  }, [formData]);
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setFormData({
+        start_time: dateStrings[0],
+        end_time: dateStrings[1],
+      });
+    } else {
+      setFormData({
+        start_time: "",
+        end_time: "",
+      });
+    }
+  };
+
   const categories = salesData?.map((item: { month: any }) => item.month) || [];
   const totalSales =
     salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
@@ -89,7 +115,7 @@ const SalesBookingReport = () => {
         labels: {
           show: true,
           style: {
-            colors: "#6B7280", 
+            colors: "#6B7280",
             fontSize: "12px",
             fontWeight: 500,
           },
@@ -97,10 +123,10 @@ const SalesBookingReport = () => {
         axisTicks: {
           show: true,
           color: "#D1D5DB",
-          height: 6, 
+          height: 6,
         },
         axisBorder: {
-          show: true, 
+          show: true,
           color: "#D1D5DB",
         },
         crosshairs: {
@@ -111,7 +137,7 @@ const SalesBookingReport = () => {
             dashArray: 3,
           },
         },
-      },      
+      },
       markers: {
         size: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
@@ -165,14 +191,28 @@ const SalesBookingReport = () => {
   return (
     <div className="col-span-2">
       <div className="card w-full">
-        <div className="card-header border-none flex flex-col mt-2 items-start">
-          <h3 className="card-title">Sales Booking</h3>
-          <h5 className="block text-gray-500 text-sm font-bold">
-            <div className="flex flex-wrap flex-row gap-x-2">
-              <span>Total Order Amount</span>
-              <span>₹{totalOrderAmount?.toLocaleString()} </span>
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
+          <div
+            className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last"
+          >
+            <RangePicker
+              className="min-w-[80px] sm:w-[250px]"
+              dropdownClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+            />
+          </div>
+
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full">
+            <div className="fmobile:flex fmobile:gap-2 fmobile:items-center">
+              <h3 className="card-title">Sales Booking</h3>
+              <h5 className="block text-gray-500 text-sm font-bold">
+                <div className="flex flex-wrap align-items flex-row gap-x-2">
+                  <span>Total Order Amount</span>
+                  <span>₹{totalOrderAmount?.toLocaleString()} </span>
+                </div>
+              </h5>
             </div>
-          </h5>
+          </div>
         </div>
 
         <div className="card-body flex flex-col justify-end items-stretch grow px-3 py-1">

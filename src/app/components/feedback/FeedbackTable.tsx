@@ -98,7 +98,6 @@ const FeedbackTable: React.FC = () => {
   };
 
   const renderRatingStars = (rating: number) => {
-    
     return Array.from({ length: 5 }).map((_, index) => (
       <div
         key={index}
@@ -129,7 +128,11 @@ const FeedbackTable: React.FC = () => {
       <div className="flex items-center" key={index}>
         <div className="mr-1">{index + 1}</div>
         <div className="rating-label checked mb-1">
-          <i className={`rating-on ${ratingStarClasses(index+1)} ki-solid ki-star text-base leading-none`}></i>
+          <i
+            className={`rating-on ${ratingStarClasses(
+              index + 1
+            )} ki-solid ki-star text-base leading-none`}
+          ></i>
           <i className="rating-off ki-outline ki-star text-base leading-none"></i>
         </div>
       </div>
@@ -235,13 +238,83 @@ const FeedbackTable: React.FC = () => {
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="min-w-[70px]">Order Id</th>
-                  <th className="min-w-[250px]">Customer name</th>
-                  <th className="min-w-[250px]">Email</th>
-                  <th className="min-w-[130px]">Mobile no</th>
+                  <th className="min-w-[70px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "order_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("order_id")}
+                    >
+                      <span className="sort-label">Order Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">Customer name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
+                    >
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
+                    >
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
                   <th className="min-w-[100px]">Rating</th>
                   <th className="min-w-[300px]">Comment</th>
-                  <th className="min-w-[120px]">Date</th>
+                  <th className="min-w-[120px]">
+                  <span
+                      className={`sort ${
+                        sortColumn === "created_at"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("created_at")}
+                    >
+                      <span className="sort-label">Date</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
                   {(hasPermission(17, "create") ||
                     hasPermission(17, "update")) && (
                     <th className="min-w-[140px]">Publish</th>

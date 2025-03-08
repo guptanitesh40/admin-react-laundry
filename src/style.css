@@ -9835,3 +9835,47 @@ label.rating-label {
 .block {
   display: inline-block;
 }
+
+@media (max-width: 640px) {
+  .custom-rangepicker-dropdown .ant-picker-panels {
+    flex-direction: column !important;
+  }
+  .custom-rangepicker-dropdown .ant-picker-panel-container {
+    width: 100% !important;
+    position: relative;
+    left: 0 !important;
+    transform: translateX(-0%);
+  }
+}
+
+@media (max-width: 340px) {
+  .custom-rangepicker-dropdown .ant-picker-panels {
+    flex-direction: column !important; 
+  }
+  
+  .custom-rangepicker-dropdown .ant-picker-panel-container {
+    width: 100% !important; 
+    position: relative;
+    left: 0 !important;
+    transform: translateX(15%) !important; 
+  }
+}
+
+@media (max-width: 340px) {
+.ant-picker-input {
+  font-size: 20px !important;
+}
+
+input[date-range="end"] {
+  font-size: 10px !important;
+}
+
+input[date-range="start"] {
+  font-size: 10px !important;
+}
+}
+
+
+.scroll-auto {
+  overflow-y: hidden;
+}

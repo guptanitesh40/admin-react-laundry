@@ -622,7 +622,7 @@ const OrderForm: React.FC = () => {
               />
 
               {users && userSearch && isSearchMode && (
-                <ul className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm">
+                <ul className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm max-h-[400px] overflow-y-auto">
                   {users.length > 0 ? (
                     users.map((user: any) => (
                       <li

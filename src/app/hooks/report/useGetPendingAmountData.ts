@@ -25,7 +25,7 @@ const useGetPendingAmountData = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/pending-amount-report`, {
+      const response = await fetch(`${BASE_URL}/report/pending-amount-report?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

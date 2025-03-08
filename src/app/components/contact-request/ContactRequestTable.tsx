@@ -72,6 +72,15 @@ const ContactRequestTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC");
+    } else {
+      setSortColumn(column);
+      setSortOrder("ASC");
+    }
+  };
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -124,11 +133,81 @@ const ContactRequestTable: React.FC = () => {
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="min-w-[70px]">Request Id</th>
-                  <th className="min-w-[250px]">Full name</th>
-                  <th className="min-w-[150px]">Request Time</th>
-                  <th className="min-w-[130px]">Email</th>
-                  <th className="min-w-[100px]">Mobile No</th>
+                  <th className="min-w-[70px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "contact_us_id"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("contact_us_id")}
+                    >
+                      <span className="sort-label">Order Id</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[250px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "full_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("full_name")}
+                    >
+                      <span className="sort-label">Full name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "created_at"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("created_at")}
+                    >
+                      <span className="sort-label">Request time</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "email"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("email")}
+                    >
+                      <span className="sort-label">Email</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+                  <th className="min-w-[130px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "mobile_number"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("mobile_number")}
+                    >
+                      <span className="sort-label">Mobile no</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
                   <th className="min-w-[350px]">Message</th>
                 </tr>
               </thead>

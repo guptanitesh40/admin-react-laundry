@@ -2,7 +2,6 @@ import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 
-const token = localStorage.getItem("authToken");
 
 interface CustomerActivityData {
   month: string;
@@ -14,10 +13,16 @@ const useGetCustomerActivityData = () => {
     useState<CustomerActivityData | null>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchCustomerActivityData = async () => {
+  const fetchCustomerActivityData = async (start_date?: string, end_date?: string) => {
+    const token = localStorage.getItem("authToken");
+    const queryParams = new URLSearchParams();
+
+    if (start_date) queryParams.append("startDate", start_date);
+    if (end_date) queryParams.append("endDate", end_date);
+
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/report/customer-activity`, {
+      const response = await fetch(`${BASE_URL}/report/customer-activity?${queryParams}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -34,7 +39,7 @@ const useGetCustomerActivityData = () => {
 
       setCustomerActivityData(data);
     } catch {
-      toast.error("Network error: Failed to fetch data.");
+      toast.error("Network error: Failed to fetch customer activity data.");
     } finally {
       setLoading(false);
     }
