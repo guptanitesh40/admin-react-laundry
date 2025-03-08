@@ -186,9 +186,9 @@ const OrderReport = () => {
         className="card max-h-[317px] cursor-pointer"
         onClick={handleNavigateToOrderList}
       >
-        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
           <div
-            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+            className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last"
             onClick={(e) => e.stopPropagation()}
           >
             <RangePicker
@@ -198,8 +198,8 @@ const OrderReport = () => {
             />
           </div>
 
-          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
-            <div className="fmobile:flex fmobile:gap-2">
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full">
+            <div className="mobile:flex mobile:gap-2 items-center">
               <h3 className="card-title">Orders</h3>
               <h5 className="block text-gray-500 text-sm font-bold">
                 <div className="flex flex-wrap align-items flex-row gap-x-2">

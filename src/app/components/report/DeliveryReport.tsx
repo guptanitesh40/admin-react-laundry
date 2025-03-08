@@ -114,9 +114,9 @@ const DeliveryReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card">
-        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
           <div
-            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 desktop:!order-2"
             onClick={(e) => e.stopPropagation()}
           >
             <RangePicker

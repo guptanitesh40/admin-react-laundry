@@ -127,9 +127,9 @@ const RefundAmountReport: React.FC = () => {
   return (
     <div className="col-span-1">
       <div className="card w-full">
-        <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
           <div
-            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
+            className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:!order-last"
           >
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
@@ -138,7 +138,7 @@ const RefundAmountReport: React.FC = () => {
             />
           </div>
 
-          <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
+          <div className="flex justify-between smmobile:flex-wrap items-center w-full">
             <h2 className="card-title">Refund Amount Report</h2>
           </div>
         </div>
