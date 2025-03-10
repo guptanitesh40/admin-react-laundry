@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { useAssignPickupBoy } from "../../hooks";
@@ -34,6 +34,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
     comment: "",
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const dropdownRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -62,6 +63,23 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
       pickup_boy_id: user.user_id,
     });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchMode(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (!modelOpen) {
@@ -109,7 +127,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
-        ></div>
+      ></div>
 
       <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] z-10 relative">
         <button
@@ -137,7 +155,10 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
             />
 
             {users && userSearch && isSearchMode && (
-              <ul className="absolute mt-[68px] bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm">
+              <ul
+                ref={dropdownRef}
+                className="absolute mt-[68px] bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm"
+              >
                 {users.length > 0 ? (
                   users.map((user: any) => (
                     <li
