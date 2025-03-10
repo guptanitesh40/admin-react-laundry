@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
@@ -90,6 +90,7 @@ const OrderForm: React.FC = () => {
 
   const [productCache, setProductCache] = useState<Record<number, any[]>>({});
   const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
+  const dropdownRef = useRef<HTMLUListElement>(null);
 
   const navigate = useNavigate();
 
@@ -158,6 +159,23 @@ const OrderForm: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchMode(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -576,6 +594,36 @@ const OrderForm: React.FC = () => {
     await generatePaymentLink(customerInfo);
   };
 
+  const handleCustomerSelect = (customer: any, address: any) => {
+    if (customer) {
+      const fullName = `${customer.first_name} ${customer.last_name}`;
+      setUserSearch(fullName);
+      setIsSearchMode(false);
+
+      setFormData({
+        ...formData,
+        username: fullName,
+        user_id: customer.user_id,
+      });
+    }
+
+    if (address) {
+      setFormData((prev) => ({
+        ...prev,
+        address_id: address.address_id,
+      }));
+    }
+  };
+
+  const handleAddressSelect = (address: any) => {
+    if (address) {
+      setFormData((prev) => ({
+        ...prev,
+        address_id: address.address_id,
+      }));
+    }
+  };
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -622,7 +670,10 @@ const OrderForm: React.FC = () => {
               />
 
               {users && userSearch && isSearchMode && (
-                <ul className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm max-h-[400px] overflow-y-auto">
+                <ul
+                  ref={dropdownRef}
+                  className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm max-h-[400px] overflow-y-auto"
+                >
                   {users.length > 0 ? (
                     users.map((user: any) => (
                       <li
@@ -1069,7 +1120,7 @@ const OrderForm: React.FC = () => {
                     ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
                     : "input border border-gray-300 rounded-md p-2"
                 }`}
-                readOnly={formData.normal_delivery_charges > 0} 
+                readOnly={formData.normal_delivery_charges > 0}
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.express_delivery_charges || "\u00A0"}
@@ -1300,12 +1351,15 @@ const OrderForm: React.FC = () => {
         </form>
 
         <AddressModal
+          onAddressAdded={handleAddressSelect}
           isOpen={modalIsOpen}
           setIsSubmit={setIsSubmit}
           onClose={() => setModalIsOpen(false)}
           userId={formData.user_id}
+          fullname={formData.username}
         />
         <CustomerModal
+          onCustomerCreated={handleCustomerSelect}
           isOpen={userModalIsOpen}
           setIsSubmit={setIsSubmit}
           onClose={() => setUserModalIsOpen(false)}

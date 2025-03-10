@@ -9875,7 +9875,15 @@ input[date-range="start"] {
 }
 }
 
-
 .scroll-auto {
   overflow-y: hidden;
 }
+
+.custom-ul {
+  font-family: inherit;
+  font-size: 14px;
+  width: 100%;
+  font-weight: 400;
+  color: var(--tw-gray-800);
+}
+

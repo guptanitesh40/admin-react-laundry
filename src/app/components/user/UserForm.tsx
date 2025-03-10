@@ -336,30 +336,29 @@ const UserForm: React.FC = () => {
             </p>
           </div>
 
-          {!isCustomer &&
-            user_id && (
-              <div className="flex flex-col">
-                <label
-                  htmlFor="password"
-                  className="block text-gray-700 font-semibold"
-                >
-                  Password
-                </label>
-                <input
-                  type="text"
-                  id="password"
-                  name="password"
-                  value={formData.password || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="input border border-gray-300 rounded-md p-2"
-                />
-                <p className="text-red-500 text-sm">
-                  {errors.password || "\u00A0"}
-                </p>
-              </div>
-            )}
+          {!isCustomer && user_id && (
+            <div className="flex flex-col">
+              <label
+                htmlFor="password"
+                className="block text-gray-700 font-semibold"
+              >
+                Password
+              </label>
+              <input
+                type="text"
+                id="password"
+                name="password"
+                value={formData.password || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                className="input border border-gray-300 rounded-md p-2"
+              />
+              <p className="text-red-500 text-sm">
+                {errors.password || "\u00A0"}
+              </p>
+            </div>
+          )}
 
           {!isCustomer && (
             <div className="flex flex-col">
@@ -383,6 +382,7 @@ const UserForm: React.FC = () => {
                 <option value="" disabled>
                   Select Role
                 </option>
+                <option value={1}>Super Admin</option>
                 <option value={2}>Sub Admin</option>
                 <option value={3}>Branch Manager</option>
                 <option value={4}>Delivery and Pickup</option>
@@ -396,7 +396,7 @@ const UserForm: React.FC = () => {
             </div>
           )}
 
-          {formData.role_id === 2 && (
+          {formData.role_id === 2 || formData.role_id === 1 && (
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 font-semibold"
