@@ -2,34 +2,39 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useAddAddress from "../../hooks/address/useAddAddress";
 import * as Yup from "yup";
+import { addressSchema } from "../../validation/addressSchema";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from "react-places-autocomplete";
 
 interface AddressModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId?: number;
   setIsSubmit: (value: boolean) => void;
+  onAddressAdded: (address: any) => void;
+  fullname: string;
 }
-
-const schema = Yup.object().shape({
-  pincode: Yup.string()
-    .required("Pin Code is required")
-    .matches(/^[0-9]{6}$/, "Pincode must be 6 digit"),
-  address_type: Yup.number().required("Address type is required"),
-});
 
 const AddressModal: React.FC<AddressModalProps> = ({
   isOpen,
   onClose,
   userId,
   setIsSubmit,
+  onAddressAdded,
+  fullname,
 }) => {
   const { addAddress, loading } = useAddAddress();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLatLng, setIsLatLng] = useState(false);
 
   const [addressData, setAddressData] = useState({
     building_number: "",
     area: "",
+    lat: null,
+    long: null,
     landmark: "",
     pincode: "",
     city: "",
@@ -37,7 +42,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
     country: "",
     user_id: null,
     address_type: null,
+    full_name: "",
   });
+
+  const [suggesionIsOpen, setSuggesionIsOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,6 +53,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         setAddressData((prevData) => ({
           ...prevData,
           user_id: userId,
+          full_name: fullname,
         }));
       }
     } else {
@@ -54,26 +63,57 @@ const AddressModal: React.FC<AddressModalProps> = ({
         landmark: "",
         pincode: "",
         city: "",
+        lat: null,
+        long: null,
         state: "",
         country: "",
         user_id: null,
         address_type: null,
+        full_name: "",
       });
       setErrors({});
     }
   }, [isOpen, userId]);
 
+  const handleAddressChange = (newAddress: any) => {
+    setAddressData({ ...addressData, area: newAddress });
+    setSuggesionIsOpen(true);
+  };
+
+  const handleAddressSelect = async (selectedAddress: string) => {
+    setAddressData({ ...addressData, area: selectedAddress });
+    try {
+      const result = await geocodeByAddress(selectedAddress);
+      const latLng = await getLatLng(result[0]);
+
+      if (latLng) {
+        setAddressData((prev) => ({
+          ...prev,
+          lat: latLng?.lat,
+          long: latLng?.lng,
+        }));
+      }
+    } catch {
+      toast.error("Failed to fetch address detail", {
+        className: "toast-error",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await schema.validate(addressData, { abortEarly: false });
+      await addressSchema.validate(addressData, { abortEarly: false });
 
       if (userId) {
-        await addAddress(addressData);
+        const addressResponse = await addAddress(addressData);
+        if (addressResponse) {
+          onAddressAdded(addressResponse);
+          onClose();
+          setIsSubmit(true);
+        }
       }
-      setIsSubmit(true);
-      onClose();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const formErrors: Record<string, string> = {};
@@ -108,6 +148,38 @@ const AddressModal: React.FC<AddressModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label
+                htmlFor="country"
+                className="block text-gray-700 font-semibold"
+              >
+                Address Type
+              </label>
+              <select
+                className="select select-lg text-sm"
+                onChange={(e) =>
+                  setAddressData({
+                    ...addressData,
+                    address_type: Number(e.target.value),
+                  })
+                }
+              >
+                <option
+                  value=""
+                  selected
+                  disabled
+                  className="badge-danger badge-outline"
+                >
+                  Select Address Type
+                </option>
+                <option value="1">Home</option>
+                <option value="2">Office</option>
+                <option value="3">Other</option>
+              </select>
+              <p className="w-full text-red-500 text-sm">
+                {errors.address_type || "\u00A0"}
+              </p>
+            </div>
+            <div>
+              <label
                 htmlFor="building_number"
                 className="block text-gray-700 font-semibold"
               >
@@ -126,6 +198,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
+              <p className="w-full text-red-500 text-sm">
+                {errors.building_number || "\u00A0"}
+              </p>
             </div>
 
             <div>
@@ -135,19 +210,71 @@ const AddressModal: React.FC<AddressModalProps> = ({
               >
                 Area
               </label>
-              <input
-                type="text"
-                id="area"
-                name="area"
-                value={addressData.area}
-                onChange={(e) =>
-                  setAddressData({
-                    ...addressData,
-                    area: e.target.value,
-                  })
-                }
-                className="w-full input border border-gray-300 rounded-md p-2"
-              />
+
+              <div className="relative">
+                <div className="relative">
+                  <PlacesAutocomplete
+                    value={addressData.area}
+                    onChange={handleAddressChange}
+                    onSelect={handleAddressSelect}
+                  >
+                    {({
+                      getInputProps,
+                      suggestions,
+                      getSuggestionItemProps,
+                      loading,
+                    }) => (
+                      <>
+                        <input
+                          {...getInputProps({
+                            className:
+                              "w-full input border border-gray-300 rounded-md p-2",
+                            id: "area",
+                            type: "text",
+                            onFocus: () => setSuggesionIsOpen(true),
+                            onBlur: () => setSuggesionIsOpen(false),
+                          })}
+                        />
+                        {suggesionIsOpen && suggestions.length > 0 && (
+                          <div className="absolute bg-white border z-10 border-gray-200 rounded-lg w-full text-sm max-h-[150px] overflow-y-auto">
+                            <ul className="custom-ul">
+                              {loading && (
+                                <li className="block px-4 py-[0.8rem] hover:bg-gray-100 w-full">
+                                  Loading...
+                                </li>
+                              )}
+                              {!loading &&
+                                suggestions.map((suggestion, index) => {
+                                  const { ...props } =
+                                    getSuggestionItemProps(suggestion);
+                                  return (
+                                    <li
+                                      key={index}
+                                      {...props}
+                                      className="block px-2 py-[0.8rem] hover:bg-gray-100 w-full cursor-pointer font-style"
+                                    >
+                                      {suggestion?.description}
+                                    </li>
+                                  );
+                                })}
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </PlacesAutocomplete>
+                </div>
+                {(errors.area && (
+                  <p className="w-full text-red-500 text-sm">
+                    {errors.area || "\u00A0"}
+                  </p>
+                )) ||
+                  (isLatLng && (
+                    <p className="aam-error-label">
+                      please select valid area from dropdown
+                    </p>
+                  ))}
+              </div>
             </div>
 
             <div>
@@ -170,6 +297,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
+              <p className="w-full text-red-500 text-sm">
+                {errors.landmark || "\u00A0"}
+              </p>
             </div>
 
             <div>
@@ -193,8 +323,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
               <p className="w-full text-red-500 text-sm">
-              {errors.pincode || "\u00A0"}
-            </p>
+                {errors.pincode || "\u00A0"}
+              </p>
             </div>
 
             <div>
@@ -217,6 +347,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
+              <p className="w-full text-red-500 text-sm">
+                {errors.city || "\u00A0"}
+              </p>
             </div>
 
             <div>
@@ -239,6 +372,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
+              <p className="w-full text-red-500 text-sm">
+                {errors.state || "\u00A0"}
+              </p>
             </div>
 
             <div>
@@ -261,31 +397,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 }
                 className="w-full input border border-gray-300 rounded-md p-2"
               />
-            </div>
-
-            <div>
-              <label
-                htmlFor="country"
-                className="block text-gray-700 font-semibold"
-              >
-                Address Type
-              </label>
-              <select 
-              className="select select-lg text-sm"
-              onChange={(e) => setAddressData({
-                ...addressData,
-                address_type: Number(e.target.value)
-              })}
-              >
-                <option value="" selected disabled className="badge-danger badge-outline">
-                  Select Address Type
-                </option>
-                <option value="1">Home</option>
-                <option value="2">Office</option>
-                <option value="3">Other</option>
-              </select>
               <p className="w-full text-red-500 text-sm">
-                {errors.address_type || "\u00A0"}
+                {errors.country || "\u00A0"}
               </p>
             </div>
           </div>

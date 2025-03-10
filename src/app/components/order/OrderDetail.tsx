@@ -350,7 +350,7 @@ const OrderDetails: React.FC = () => {
                 </button>
               )}
 
-              {hasPermission(3, "update") && (
+              {order?.order_status !== 11 && hasPermission(3, "update") && (
                 <button
                   className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
                   onClick={handleEditOrder}
@@ -358,7 +358,7 @@ const OrderDetails: React.FC = () => {
                   <i className="ki-filled ki-pencil mr-2"></i>Edit Order
                 </button>
               )}
-
+              
               {hasPermission(3, "update") &&
                 order?.order_status < 8 &&
                 order?.refund_status !== 1 && (
