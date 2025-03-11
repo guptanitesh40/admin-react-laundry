@@ -69,6 +69,7 @@ const DeliveredOrder: React.FC = () => {
               <OrderTableFilter
                 filters={filters}
                 updateFilters={updateFilters}
+                showOrderStatusFilter={false}
               />
             )}{" "}
             <DeliveredTable filters={filters} />

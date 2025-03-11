@@ -292,6 +292,7 @@ const OrderForm: React.FC = () => {
         quantity: Number(item.quantity),
       }));
 
+
       const dataToValidate = {
         ...formData,
         address_id: Number(formData.address_id),
@@ -301,7 +302,7 @@ const OrderForm: React.FC = () => {
         express_delivery_charges: Number(formData.express_delivery_charges),
         payment_type: Number(formData.payment_type),
         payment_status: Number(formData.payment_status),
-        order_status: 4,
+        order_status: !!order_id ? formData.order_status : 4,
         items: formattedItems,
       };
 
@@ -961,7 +962,7 @@ const OrderForm: React.FC = () => {
                         />
                       </div>
 
-                      <div>
+                      <div className="flex flex-col">
                         <label
                           htmlFor="description_checkbox"
                           className="block text-gray-700 text-sm font-bold mb-2"
@@ -969,7 +970,7 @@ const OrderForm: React.FC = () => {
                           Description
                         </label>
                         <input
-                          className="checkbox checkbox-lg mt-2 ml-5"
+                          className="checkbox checkbox-lg ml-5"
                           id="description_checkbox"
                           data-datatable-check="true"
                           type="checkbox"
@@ -991,7 +992,7 @@ const OrderForm: React.FC = () => {
                     <div>
                       {item.showDescription && (
                         <div>
-                          <div className="flex smmobile:w-[100%] smmobile:justify-self-start flex-col md:w-[350px] lg:w-[420px] sm:w-[300px] h-[80px] mb-2">
+                          <div className="flex mt-2 smmobile:w-[100%] smmobile:justify-self-start flex-col md:w-[350px] lg:w-[420px] sm:w-[300px] h-[80px] mb-2">
                             <label
                               htmlFor="description"
                               className="block text-gray-700 text-sm font-bold mb-2"

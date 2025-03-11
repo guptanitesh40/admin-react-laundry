@@ -475,7 +475,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                 <tbody>
                   <tr>
                     <td colSpan={5} className="text-center">
-                      No Orders available
+                      No Order available
                     </td>
                   </tr>
                 </tbody>
@@ -487,7 +487,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {workshopOrders.length} of {count} Workshop order
+                  Showing {workshopOrders.length} of {count} orders
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button

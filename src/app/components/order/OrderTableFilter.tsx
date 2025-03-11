@@ -21,11 +21,13 @@ interface OrderTableFilterProps {
     branchFilter: number[];
   };
   updateFilters: (filters: any) => void;
+  showOrderStatusFilter: boolean;
 }
 
 const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   filters,
   updateFilters,
+  showOrderStatusFilter = true,
 }) => {
   const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
   const [pickupBoyOptions, setPickupBoyOptions] = useState<OptionType[]>([]);
@@ -113,33 +115,35 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             isSearchInput={true}
           />
 
-          <MultiSelect
-            options={orderStatusOptions}
-            displayValue="label"
-            placeholder="Select Order Status"
-            selectedValues={filters.orderStatusFilter}
-            onSelect={(selectedList: any) => {
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
-              updateFilters({
-                ...filters,
-                orderStatusFilter: selectedValues,
-              });
-            }}
-            onRemove={(selectedList: any) => {
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
-              updateFilters({
-                ...filters,
-                orderStatusFilter: selectedValues,
-              });
-            }}
-            isCustomLabel={true}
-            className="w-full"
-            isSearchInput={true}
-          />
+          {showOrderStatusFilter && (
+            <MultiSelect
+              options={orderStatusOptions}
+              displayValue="label"
+              placeholder="Select Order Status"
+              selectedValues={filters.orderStatusFilter}
+              onSelect={(selectedList: any) => {
+                const selectedValues = selectedList.map(
+                  (item: any) => item.value
+                );
+                updateFilters({
+                  ...filters,
+                  orderStatusFilter: selectedValues,
+                });
+              }}
+              onRemove={(selectedList: any) => {
+                const selectedValues = selectedList.map(
+                  (item: any) => item.value
+                );
+                updateFilters({
+                  ...filters,
+                  orderStatusFilter: selectedValues,
+                });
+              }}
+              isCustomLabel={true}
+              className="w-full"
+              isSearchInput={true}
+            />
+          )}
 
           <MultiSelect
             options={branches?.map((branch) => ({
@@ -250,7 +254,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             }}
             sliceCount={2}
             isSearchInput={false}
-            className="w-full"            
+            className="w-full"
           />
 
           <select

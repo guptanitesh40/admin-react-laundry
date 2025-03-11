@@ -18,6 +18,7 @@ interface Order {
   payment_status: number | null;
   current_paid: number | null;
   current_total: number | null;
+  order_status: number | null;
 }
 
 const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
@@ -39,11 +40,11 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
       fetchUser(userId);
     }
   }, [modalOpen, userId]);
-
+  
   useEffect(() => {
     if (user?.orders) {
       const paymentDueOrders = user.orders.filter(
-        (order: Order) => order.payment_status !== 2
+        (order: Order) => ![2].includes(order.payment_status) && ![12,13].includes(order.order_status)
       );
       paymentDueOrders.map((order: Order) => ({
         ...order,

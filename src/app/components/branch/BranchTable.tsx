@@ -492,7 +492,7 @@ const BranchTable: React.FC = () => {
                 <tbody>
                   <tr>
                     <td colSpan={4} className="text-center">
-                      No branches available.
+                      No branch available.
                     </td>
                   </tr>
                 </tbody>
@@ -504,7 +504,7 @@ const BranchTable: React.FC = () => {
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {branches.length} of {totalBranches} Companies
+                  Showing {branches.length} of {totalBranches} branches
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button

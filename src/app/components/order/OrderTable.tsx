@@ -429,8 +429,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
 
                   <th className="min-w-[165px]">Payment type</th>
 
-                  <th className="min-w-[160px]">Receipt</th>
-
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
                     hasPermission(3, "delete")) && (
@@ -517,30 +515,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                               order.payment_type as keyof typeof PaymentType
                             ]
                           }
-                        </td>
-                        <td>
-                          <button
-                            className="flex items-center mr-2 btn btn-light btn-sm"
-                            onClick={() =>
-                              handleGenerateInvoice(order.order_id)
-                            }
-                            disabled={
-                              generating && invoiceId === order.order_id
-                            }
-                          >
-                            {generating && invoiceId === order.order_id ? (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt <LoadingSpinner />
-                              </>
-                            ) : (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt
-                              </>
-                            )}
-                          </button>
-                        </td>
+                        </td>                        
 
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||
