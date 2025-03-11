@@ -379,7 +379,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
       {totalBanners > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">
-            Showing {banners.length} of {totalBanners} Branches
+            Showing {banners.length} of {totalBanners} banners
           </span>
           <div className="pagination" data-datatable-pagination="true">
             <button

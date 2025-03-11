@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MdCategory, MdLocalLaundryService } from "react-icons/md";
 import { FaProductHunt, FaBuilding, FaImages, FaUsers } from "react-icons/fa";
 import { BiSolidCoupon } from "react-icons/bi";
@@ -17,15 +17,12 @@ export const Sidebar: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<string>("");
   const { hasPermission } = usePermissions();
   const roleId = useSelector((state: any) => state.auth.role_id);
+  const location = useLocation();
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
     setSelectedItem(path);
   }, [location]);
-
-  const handleItemClick = (item: string) => {
-    setSelectedItem(item);
-  };
 
   const getItemClass = (item: string) =>
     selectedItem === item
@@ -47,7 +44,7 @@ export const Sidebar: React.FC = () => {
         className="cursor-pointer sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0"
         id="sidebar_header"
       >
-        <Link to="/dashboard" onClick={() => handleItemClick("dashboard")}>
+        <Link to="/dashboard">
           <img
             className="default-logo min-h-[22px] max-w-none"
             src="/media/app/Group 34972.png"
@@ -74,7 +71,7 @@ export const Sidebar: React.FC = () => {
             data-menu-accordion-expand-all="false"
             id="sidebar_menu"
           >
-            <Link to="/dashboard" onClick={() => handleItemClick("dashboard")}>
+            <Link to="/dashboard">
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
                   "dashboard"
@@ -95,7 +92,7 @@ export const Sidebar: React.FC = () => {
             </Link>
 
             {hasPermission(2, "read") && (
-              <Link to="/settings" onClick={() => handleItemClick("settings")}>
+              <Link to="/settings">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "settings"
@@ -137,9 +134,9 @@ export const Sidebar: React.FC = () => {
                 </div>
 
                 <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
-                  <Link to="/orders" onClick={() => handleItemClick("/orders")}>
+                  <Link to="/orders">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("/orders")}`}
+                      className={`menu-item ${getSubmenuItemClass("orders")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -153,13 +150,10 @@ export const Sidebar: React.FC = () => {
                     </div>
                   </Link>
 
-                  <Link
-                    to="/pickup-orders"
-                    onClick={() => handleItemClick("/pickup-orders")}
-                  >
+                  <Link to="/pickup-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "/pickup-orders"
+                        "pickup-orders"
                       )}`}
                     >
                       <div
@@ -174,13 +168,10 @@ export const Sidebar: React.FC = () => {
                     </div>
                   </Link>
 
-                  <Link
-                    to="/delivered-orders"
-                    onClick={() => handleItemClick("/delivered-orders")}
-                  >
+                  <Link to="/delivered-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "/delivered-orders"
+                        "delivered-orders"
                       )}`}
                     >
                       <div
@@ -195,13 +186,10 @@ export const Sidebar: React.FC = () => {
                     </div>
                   </Link>
 
-                  <Link
-                    to="/booking-orders"
-                    onClick={() => handleItemClick("/booking-orders")}
-                  >
+                  <Link to="/booking-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "/booking-orders"
+                        "booking-orders"
                       )}`}
                     >
                       <div
@@ -220,7 +208,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(4, "read") && (
-              <Link to="/payments" onClick={() => handleItemClick("payments")}>
+              <Link to="/payments">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "payments"
@@ -242,7 +230,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(5, "read") && (
-              <Link to="/category" onClick={() => handleItemClick("category")}>
+              <Link to="/category">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "category"
@@ -264,7 +252,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(6, "read") && (
-              <Link to="/product" onClick={() => handleItemClick("product")}>
+              <Link to="/product">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "product"
@@ -286,7 +274,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(7, "read") && (
-              <Link to="/services" onClick={() => handleItemClick("services")}>
+              <Link to="/services">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "services"
@@ -308,10 +296,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(8, "read") && (
-              <Link
-                to="/customers"
-                onClick={() => handleItemClick("customers")}
-              >
+              <Link to="/customers">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "customers"
@@ -333,7 +318,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(9, "read") && (
-              <Link to="/coupon" onClick={() => handleItemClick("coupon")}>
+              <Link to="/coupon">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "coupon"
@@ -355,7 +340,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(10, "read") && (
-              <Link to="/price" onClick={() => handleItemClick("price")}>
+              <Link to="/price">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "price"
@@ -377,13 +362,10 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(11, "read") && (
-              <Link
-                to="/price-content"
-                onClick={() => handleItemClick("/price-content")}
-              >
+              <Link to="/price-content">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "/price-content"
+                    "price-content"
                   )}`}
                 >
                   <div
@@ -402,10 +384,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(12, "read") && (
-              <Link
-                to="/companies"
-                onClick={() => handleItemClick("companies")}
-              >
+              <Link to="/companies">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "companies"
@@ -427,7 +406,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(13, "read") && (
-              <Link to="/branches" onClick={() => handleItemClick("branches")}>
+              <Link to="/branches">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "branches"
@@ -449,7 +428,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(14, "read") && (
-              <Link to="/banner" onClick={() => handleItemClick("banner")}>
+              <Link to="/banner">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "banner"
@@ -491,9 +470,9 @@ export const Sidebar: React.FC = () => {
                 </div>
 
                 <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
-                  <Link to="/users" onClick={() => handleItemClick("/users")}>
+                  <Link to="/users">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("/users")}`}
+                      className={`menu-item ${getSubmenuItemClass("users")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -507,9 +486,9 @@ export const Sidebar: React.FC = () => {
                     </div>
                   </Link>
 
-                  <Link to="/roles" onClick={() => handleItemClick("/roles")}>
+                  <Link to="/roles">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("/roles")}`}
+                      className={`menu-item ${getSubmenuItemClass("roles")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -525,12 +504,9 @@ export const Sidebar: React.FC = () => {
                 </div>
               </div>
             )}
-            
+
             {hasPermission(15, "read") && (
-              <Link
-                to="/workshops"
-                onClick={() => handleItemClick("workshops")}
-              >
+              <Link to="/workshops">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "workshops"
@@ -552,10 +528,7 @@ export const Sidebar: React.FC = () => {
             )}
 
             {hasPermission(16, "read") && (
-              <Link
-                to="/workshop-order"
-                onClick={() => handleItemClick("workshop-order")}
-              >
+              <Link to="/workshop-order">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "workshop-order"
@@ -579,8 +552,7 @@ export const Sidebar: React.FC = () => {
             {hasPermission(17, "read") && (
               <Link
                 to="/customer-feedback"
-                onClick={() => handleItemClick("customer-feedback")}
-              >
+                >
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "customer-feedback"
@@ -604,7 +576,6 @@ export const Sidebar: React.FC = () => {
             {hasPermission(18, "read") && (
               <Link
                 to="/contact-requests"
-                onClick={() => handleItemClick("contact-requests")}
               >
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(

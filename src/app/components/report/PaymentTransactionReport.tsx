@@ -176,20 +176,15 @@ const PaymentTransactionReport: React.FC = () => {
     },
   };
 
-  const handleNavigateToPaymentList = () => {
-    navigate("/payments");
-  };
 
   return (
     <div
-      className="col-span-1 cursor-pointer"
-      onClick={handleNavigateToPaymentList}
+      className="col-span-1"
     >
       <div className="card w-full">
         <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full gap-x-2">
           <div
             className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
-            onClick={(e) => e.stopPropagation()}
           >
             <RangePicker
               className="min-w-[70px] sm:w-[250px]"
