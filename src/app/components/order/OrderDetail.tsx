@@ -373,7 +373,7 @@ const OrderDetails: React.FC = () => {
 
               {hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
-                order.refund_status === 3 && (
+                order.refund_status === 3 && order.order_status !== 11 && (
                   <button
                     className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
                     onClick={handleOrderRefund}

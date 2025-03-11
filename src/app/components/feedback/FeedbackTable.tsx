@@ -396,7 +396,7 @@ const FeedbackTable: React.FC = () => {
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No Feedbacks data available
+                      No feedback data available
                     </td>
                   </tr>
                 </tbody>
@@ -408,7 +408,7 @@ const FeedbackTable: React.FC = () => {
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {feedbacks.length} of {count} Users
+                  Showing {feedbacks.length} of {count} feedbacks
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button

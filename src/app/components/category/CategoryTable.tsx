@@ -382,7 +382,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 <tbody>
                   <tr>
                     <td colSpan={6} className="text-center">
-                      No Categories available
+                      No Category available
                     </td>
                   </tr>
                 </tbody>
@@ -394,7 +394,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {categories.length} of {totalCategories} Users
+                  Showing {categories.length} of {totalCategories} categories
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button

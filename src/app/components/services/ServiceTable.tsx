@@ -319,7 +319,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
             <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700">
-                  Showing {services.length} of {totalServices} Users
+                  Showing {services.length} of {totalServices} services
                 </span>
                 <div className="pagination" data-datatable-pagination="true">
                   <button

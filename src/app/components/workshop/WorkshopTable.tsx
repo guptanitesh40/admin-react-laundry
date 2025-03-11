@@ -383,7 +383,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
               <tbody>
                 <tr>
                   <td colSpan={5} className="text-center">
-                    No Workshop available
+                    No workshop available
                   </td>
                 </tr>
               </tbody>
@@ -395,7 +395,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
       {totalWorkshops > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">
-            Showing {workshops.length} of {totalWorkshops} Branches
+            Showing {workshops.length} of {totalWorkshops} workshops
           </span>
           <div className="pagination" data-datatable-pagination="true">
             <button

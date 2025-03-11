@@ -216,7 +216,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           />
 
           <select
-            className="select select-lg w-[200px] text-sm mt-4"
+            className="select select-lg w-[200px] text-sm"
             value={filters.paymentTypeFilter || ""}
             onChange={(e) =>
               updateFilters({

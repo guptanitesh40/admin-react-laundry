@@ -536,7 +536,7 @@ const CouponTable: React.FC = () => {
       {totalCoupons > perPage && (
         <div className="flex items-center gap-4 mt-4">
           <span className="text-gray-700">
-            Showing {coupons.length} of {totalCoupons} Coupons
+            Showing {coupons.length} of {totalCoupons} coupons
           </span>
           <div className="pagination" data-datatable-pagination="true">
             <button
