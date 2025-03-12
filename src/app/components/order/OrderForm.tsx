@@ -87,10 +87,12 @@ const OrderForm: React.FC = () => {
   const { transactionId, generatePaymentLink } = useGeneratePaymentLink();
   const user = userData?.user;
   const location = useLocation();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [productCache, setProductCache] = useState<Record<number, any[]>>({});
   const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const [focusOn, setFocusOn] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -164,14 +166,16 @@ const OrderForm: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
       ) {
         setIsSearchMode(false);
+        setFocusOn(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -219,12 +223,15 @@ const OrderForm: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (userSearch && isSearchMode) {
+      if (focusOn && (!userSearch || userSearch.trim() === "")) {
+        setIsSearchMode(true);
+        await fetchUsersByRole(5);
+      } else if (userSearch && isSearchMode) {
         await fetchUsersByRole(5, userSearch);
       }
     };
     fetchUserData();
-  }, [userSearch, isSearchMode]);
+  }, [focusOn, userSearch, isSearchMode]);
 
   useEffect(() => {
     if (order) {
@@ -291,7 +298,6 @@ const OrderForm: React.FC = () => {
         price: Number(item.price),
         quantity: Number(item.quantity),
       }));
-
 
       const dataToValidate = {
         ...formData,
@@ -663,14 +669,19 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="username"
+                ref={inputRef}
                 autoComplete="off"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
                 placeholder="Search customer..."
+                onFocus={() => {
+                  setFocusOn(true);
+                  setIsSearchMode(true);
+                }}
               />
 
-              {users && userSearch && isSearchMode && (
+              {users && isSearchMode && (
                 <ul
                   ref={dropdownRef}
                   className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm max-h-[400px] overflow-y-auto"
