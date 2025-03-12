@@ -6,7 +6,7 @@ interface Product {
   product_id: number;
   name: string;
   image: string; 
-  totalProducts:number;
+  count: number;
 }
 
 const useGetProducts = (
@@ -17,7 +17,7 @@ const useGetProducts = (
   sortOrder?: string
 ) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [totalProducts,setTotalProducts] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchProducts = async () => {
@@ -51,7 +51,7 @@ const useGetProducts = (
       const totalCount = data?.data?.count || 0;
 
       setProducts(allProducts);
-      setTotalProducts(totalCount);
+      setCount(totalCount);
     } catch (error: any) {
       toast.error(error?.message || 'Network error: Failed to fetch.', {
         position: "top-center",
@@ -65,7 +65,7 @@ const useGetProducts = (
     fetchProducts();
   }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
-  return { products, loading, totalProducts, fetchProducts };
+  return { products, loading, count, fetchProducts };
 };
 
 export default useGetProducts;

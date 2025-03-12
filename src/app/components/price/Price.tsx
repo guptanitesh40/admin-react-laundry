@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PriceTable from "./PriceTable";
-import LoadingSpinner from "../shimmer/Loading";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { usePermissions } from "../../hooks";
 
 const Price: React.FC = () => {

@@ -21,13 +21,17 @@ interface OrderTableFilterProps {
     branchFilter: number[];
   };
   updateFilters: (filters: any) => void;
-  showOrderStatusFilter: boolean;
+  showOrderStatusFilter?: boolean;
+  orderStatusOptions: any;
+  showSearchInput: boolean;
 }
 
 const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   filters,
   updateFilters,
   showOrderStatusFilter = true,
+  orderStatusOptions,
+  showSearchInput = true,
 }) => {
   const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
   const [pickupBoyOptions, setPickupBoyOptions] = useState<OptionType[]>([]);
@@ -39,9 +43,6 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   const { branches } = useGetBranches();
   const { fetchUsersByRole } = useGetUsersByRole();
 
-  const orderStatusOptions = Object.entries(OrderStatus)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
   const paymentStatusOptions = Object.entries(PaymentStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
@@ -141,7 +142,7 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               }}
               isCustomLabel={true}
               className="w-full"
-              isSearchInput={true}
+              isSearchInput={showSearchInput}
             />
           )}
 

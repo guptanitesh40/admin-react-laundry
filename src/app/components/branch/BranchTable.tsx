@@ -7,8 +7,6 @@ import {
   usePermissions,
 } from "../../hooks";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaEye,
   FaPencilAlt,
   FaTrash,
@@ -19,6 +17,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import Pagination from "../pagination/Pagination";
 
 const BranchTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +37,7 @@ const BranchTable: React.FC = () => {
   const [companyFilter, setCompanyFilter] = useState<number[]>([]);
   const [branchManagerFilter, setBranchManagerFilter] = useState<number[]>([]);
 
-  const { branches, fetchBranches, totalBranches, loading } = useGetBranches(
+  const { branches, fetchBranches, count, loading } = useGetBranches(
     currentPage,
     perPage,
     search,
@@ -54,7 +53,7 @@ const BranchTable: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(totalBranches / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -500,44 +499,14 @@ const BranchTable: React.FC = () => {
             </table>
           </div>
 
-          {totalBranches > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {branches.length} of {totalBranches} branches
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={branches?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="branch"
+          />
         </div>
       </div>
     </>

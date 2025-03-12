@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
@@ -31,7 +31,7 @@ const useGetBranches = (
   branch_manager_ids?: number[]
 ) => {
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [totalBranches, setTotalBranches] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchBranches = async () => {
@@ -72,7 +72,7 @@ const useGetBranches = (
       }
 
       setBranches(data?.data?.result || []);
-      setTotalBranches(data?.data?.count || 0);
+      setCount(data?.data?.count || 0);
     } catch (error) {
       toast.error("An error occurred while fetching data");
     } finally {
@@ -84,7 +84,7 @@ const useGetBranches = (
     fetchBranches();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, company_id, branch_manager_ids]);
 
-  return { branches, totalBranches, loading, fetchBranches };
+  return { branches, count, loading, fetchBranches };
 };
 
 export default useGetBranches;

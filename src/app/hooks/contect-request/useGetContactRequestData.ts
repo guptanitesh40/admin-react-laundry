@@ -51,7 +51,7 @@ const useGetContactRequestData = (
         return;
       }
 
-      setContactRequestData(data?.data?.result);
+      setContactRequestData(data?.data?.result || []);
       setCount(data?.data?.count);
     } catch {
       toast.error("Network Error: Failt to  fetch contect request data");

@@ -4,7 +4,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
   permissions: any[];
-  role_id: number | null;
+  role_id?: number | null;
 }
 
 const initialState: AuthState = {
@@ -22,7 +22,7 @@ const authSlice = createSlice({
       isAuthenticated: boolean;
       token: string; 
       permissions: any[]; 
-      role_id: number | null;
+      role_id?: number | null;
     }>) => {
       state.isAuthenticated = true;
       state.token = action.payload.token;

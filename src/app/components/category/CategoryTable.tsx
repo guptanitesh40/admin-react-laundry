@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -19,7 +17,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
 import { ImCheckmark, ImCross } from "react-icons/im";
-import { IoMdCheckmark } from "react-icons/io";
+import Pagination from "../pagination/Pagination";
 
 interface Category {
   category_id: number;
@@ -53,14 +51,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { categories, totalCategories, fetchCategories, loading } =
+  const { categories, count, fetchCategories, loading } =
     useGetCategories(currentPage, perPage, search, sortColumn, sortOrder);
   const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory();
   const { hasPermission } = usePermissions();
 
-  const totalPages = Math.ceil(totalCategories / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     if (isSubmit) {
@@ -390,44 +388,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
             </table>
           </div>
 
-          {totalCategories > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {categories.length} of {totalCategories} categories
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={categories?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="category"
+          />
         </div>
       </div>
     </>

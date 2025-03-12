@@ -11,7 +11,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FaPencilAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
-import LoadingSpinner from "../shimmer/Loading";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { promotionBannerSchema } from "../../validation/promotionBannerSchema";
 
 const PromotionBanner: React.FC = () => {

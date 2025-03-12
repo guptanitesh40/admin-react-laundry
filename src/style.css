@@ -2901,8 +2901,7 @@ video {
   border-color: var(--tw-primary-clarity);
 }
 
-.btn-outline.
--primary i {
+.btn-outline.primary i {
   color: var(--tw-primary);
 }
 
@@ -9887,3 +9886,7 @@ input[date-range="start"] {
   color: var(--tw-gray-800);
 }
 
+.active-btn {
+  background-color: #1b84ff !important;
+  color: #ffffff !important;
+}
