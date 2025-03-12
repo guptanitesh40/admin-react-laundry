@@ -11,7 +11,7 @@ const useGetBanners = (
   banner_types?: number
 ) => {
   const [banners, setBanners] = useState([]);
-  const [totalBanners, setTotalBanners] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchBanners = async () => {
@@ -44,7 +44,7 @@ const useGetBanners = (
       }
 
       setBanners(data?.data?.banner || []);
-      setTotalBanners(data?.data?.count || 0);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -58,7 +58,7 @@ const useGetBanners = (
     fetchBanners();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, banner_types]);
 
-  return { banners, totalBanners, loading, fetchBanners };
+  return { banners, count, loading, fetchBanners };
 };
 
 export default useGetBanners;

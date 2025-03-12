@@ -18,7 +18,7 @@ import Swal from "sweetalert2";
 import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
-import LoadingSpinner from "../shimmer/Loading";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 import OrderCalcelModal from "./OrderCancelModal";
 import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";

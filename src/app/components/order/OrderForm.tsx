@@ -587,7 +587,7 @@ const OrderForm: React.FC = () => {
       user_id: formData.user_id,
       customer: {
         name: formData.username,
-        mobile_number: Number(user?.mobile_number),
+        mobile_number: user?.mobile_number,
         email: user?.email,
       },
     };

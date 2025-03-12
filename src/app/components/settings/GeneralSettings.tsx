@@ -3,7 +3,7 @@ import { useAddSettings, useGetSettings, usePermissions } from "../../hooks";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { settingSchema } from "../../validation/settingSchema";
-import LoadingSpinner from "../shimmer/Loading";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 
 const GeneralSettings: React.FC = ({}) => {
   const { settingsData, fetchSetting, loading } = useGetSettings();

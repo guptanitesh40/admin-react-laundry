@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "../OrderTableFilter";
 import { usePermissions } from "../../../hooks";
+import { OrderStatus } from "../../../../types/enums";
 
 const BookingOrder: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +27,21 @@ const BookingOrder: React.FC = () => {
   const updateFilters = (newFilters: any) => {
     setFilters(newFilters);
   };
+
+  const getOrderStatusOptions = (allowedKeys: (keyof typeof OrderStatus)[]) => {
+    return Object.entries(OrderStatus)
+      .filter(([key]) => allowedKeys.includes(key as keyof typeof OrderStatus))
+      .map(([label, value]) => ({ label, value: value as number }));
+  };
+
+  const bookingOrderStatusOptions = getOrderStatusOptions([
+    "Items Received at Branch",
+    "Workshop Assigned",
+    "Order Received at Workshop",
+    "Order Work In Progress",
+    "Order Completed",
+    "Ready for delivery",
+  ]);
 
   return (
     <>
@@ -68,6 +84,8 @@ const BookingOrder: React.FC = () => {
               <OrderTableFilter
                 filters={filters}
                 updateFilters={updateFilters}
+                orderStatusOptions={bookingOrderStatusOptions}
+                showSearchInput={false}
               />
             )}{" "}
             <BookingOrderTable filters={filters} />

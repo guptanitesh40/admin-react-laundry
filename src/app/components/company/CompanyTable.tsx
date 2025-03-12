@@ -3,12 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   useDeleteCompany,
   useGetCompanies,
-  useGetCompany,
   usePermissions,
 } from "../../hooks";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaEye,
   FaPencilAlt,
   FaTrash,
@@ -19,6 +16,7 @@ import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CompanyOwed } from "../../../types/enums";
+import Pagination from "../pagination/Pagination";
 
 const CompanyTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +34,7 @@ const CompanyTable: React.FC = () => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-  const { companies, fetchCompanies, loading, totalCount } = useGetCompanies(
+  const { companies, fetchCompanies, loading, count } = useGetCompanies(
     currentPage,
     perPage,
     search,
@@ -47,7 +45,7 @@ const CompanyTable: React.FC = () => {
   const { hasPermission } = usePermissions();
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(totalCount / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   const { deleteCompany } = useDeleteCompany();
 
@@ -278,21 +276,7 @@ const CompanyTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[230px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "company_ownedby"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("company_ownedby")}
-                    >
-                      <span className="sort-label">Company Ownership</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[230px]">Company Ownership</th>
 
                   <th className="min-w-[320px]">Address</th>
 
@@ -497,44 +481,14 @@ const CompanyTable: React.FC = () => {
             </table>
           </div>
 
-          {totalCount > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {companies.length} of {totalCount} Companies
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={companies?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="company"
+          />
         </div>
       </div>
     </>

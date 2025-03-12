@@ -33,7 +33,7 @@ const useGetCompany = (
 ) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [totalCount, setTotalCount] = useState<number>(0);
+  const [count, setCount] = useState<number>(0);
 
   const fetchCompanies = async () => {
     const token = localStorage.getItem("authToken");
@@ -65,7 +65,7 @@ const useGetCompany = (
       }
 
       setCompanies(data?.data?.result || []);
-      setTotalCount(data?.data?.count || 0);
+      setCount(data?.data?.count || 0);
     } catch (error) {
       toast.error("An error occurred while fetching data");
     } finally {
@@ -77,7 +77,7 @@ const useGetCompany = (
     fetchCompanies();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, companies_ownedby]);
 
-  return { companies, loading, totalCount, fetchCompanies };
+  return { companies, loading, count, fetchCompanies };
 };
 
 export default useGetCompany;

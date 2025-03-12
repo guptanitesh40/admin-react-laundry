@@ -110,7 +110,7 @@ const useGetWorkshopOrders = (
         return;
       }
 
-      setWorkshopOrders(data?.data?.workshopOrders);
+      setWorkshopOrders(data?.data?.workshopOrders || []);
       setCount(data?.data?.count);
     } catch {
       toast.error("Network error: Failed to fetch workshop orders.");

@@ -5,11 +5,8 @@ import {
   useGetWorkshops,
   usePermissions,
 } from "../../hooks";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import { useSearchParams } from "react-router-dom";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -18,6 +15,7 @@ import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
+import Pagination from "../pagination/Pagination";
 
 interface OptionType {
   label: string;
@@ -56,17 +54,16 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
 
   const { fetchUsersByRole } = useGetUsersByRole();
 
-  const { workshops, totalWorkshops, loading, fetchWorkshops } =
-    useGetWorkshops(
-      currentPage,
-      perPage,
-      search,
-      sortColumn,
-      sortOrder,
-      workshopManagerFilter
-    );
+  const { workshops, count, loading, fetchWorkshops } = useGetWorkshops(
+    currentPage,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder,
+    workshopManagerFilter
+  );
   const { hasPermission } = usePermissions();
-  const totalPages = Math.ceil(totalWorkshops / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     const refetchData = async () => {
@@ -392,38 +389,14 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
         </div>
       </div>
 
-      {totalWorkshops > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {workshops.length} of {totalWorkshops} workshops
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        count={count}
+        currentPage={currentPage}
+        totalRecords={workshops?.length}
+        perPage={perPage}
+        onPageChange={handlePageChange}
+        label="workshops"
+      />
     </>
   );
 };

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface Feedback {
   created_at: any;
@@ -33,7 +32,7 @@ const useGetFeedbacks = (
   const [count, setCount] = useState(0);
 
   const fetchFeedbacks = async () => {
-
+    const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
@@ -63,7 +62,7 @@ const useGetFeedbacks = (
         return;
       }
 
-      setFeedbacks(data?.data?.feedbacks);
+      setFeedbacks(data?.data?.feedbacks || []);
       setCount(data?.data?.count);
     } catch (error: any) {
       toast.error(error || "Network Error : Failed to fetch feedbacks");

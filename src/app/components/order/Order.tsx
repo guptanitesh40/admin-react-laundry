@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
+import { OrderStatus } from "../../../types/enums";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +40,28 @@ const Order: React.FC = () => {
       }));
     }
   }, [location?.state?.paymentType]);
-  
+
+  const getOrderStatusOptions = (excludedKey: (keyof typeof OrderStatus)[]) => {
+    return Object.entries(OrderStatus)
+      .filter(([key]) => excludedKey.includes(key as keyof typeof OrderStatus))
+      .map(([label, value]) => ({ label, value: value as number }));
+  };
+
+  const orderListStatusOptions = getOrderStatusOptions([
+    "Order Placed",
+    "Branch Assigned",
+    "Pickup Boy Assigned",
+    "Pickup Complete",
+    "Items Received at Branch",
+    "Workshop Assigned",
+    "Order Received at Workshop",
+    "Order Work In Progress",
+    "Order Completed",
+    "Ready for delivery",
+    "Cancelled By Admin",
+    "Cancelled By Customer",
+  ]);
+
   return (
     <>
       <div className="container-fixed">
@@ -81,6 +103,7 @@ const Order: React.FC = () => {
               <OrderTableFilter
                 filters={filters}
                 updateFilters={updateFilters}
+                orderStatusOptions={orderListStatusOptions}
               />
             )}{" "}
             <OrderTable filters={filters} />
