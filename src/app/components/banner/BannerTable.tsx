@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
@@ -12,9 +10,8 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
-import MultiSelect from "../MultiSelect/MultiSelect";
-import { getPublishStatusLabel } from "../../utils/publishStatus";
 import { getBannerTypeLabel } from "../../utils/bannerTypeLabel";
+import Pagination from "../pagination/Pagination";
 
 interface BannerTableProps {
   setEditBanner: (banner_id: number) => void;
@@ -43,7 +40,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
 
   const [bannerTypeFilter, setBannerTypeFilter] = useState<number>();
 
-  const { banners, fetchBanners, totalBanners, loading } = useGetBanners(
+  const { banners, fetchBanners, count, loading } = useGetBanners(
     currentPage,
     perPage,
     search,
@@ -53,7 +50,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
   );
   const { hasPermission } = usePermissions();
 
-  const totalPages = Math.ceil(totalBanners / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     const refetchData = async () => {
@@ -376,38 +373,14 @@ const BannerTable: React.FC<BannerTableProps> = ({
         </div>
       </div>
 
-      {totalBanners > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {banners.length} of {totalBanners} banners
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        count={count}
+        currentPage={currentPage}
+        totalRecords={banners?.length}
+        perPage={perPage}
+        onPageChange={handlePageChange}
+        label="banners"
+      />
     </>
   );
 };

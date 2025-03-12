@@ -388,6 +388,11 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                       )
                                     }
                                     onBlur={() => handleInputBlur(key)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        setIsSave(true);
+                                      }
+                                    }}
                                   />
                                 ) : (
                                   <span

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useGetPayments } from "../../hooks";
 import { useSearchParams } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import Pagination from "../pagination/Pagination";
 
 interface OptionType {
   label: string;
@@ -328,44 +328,14 @@ const PaymentsTable: React.FC = () => {
             </table>
           </div>
 
-          {count > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {payments.length} of {count} records
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={payments?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="records"
+          />
         </div>
       </div>
     </>

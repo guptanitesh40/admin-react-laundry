@@ -3,16 +3,15 @@ import { useDeleteCoupon, useGetCoupons, usePermissions } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaPencilAlt,
-  FaTrash,
+  FaTrash
 } from "react-icons/fa";
 import dayjs from "dayjs";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CouponType, DiscountType } from "../../../types/enums";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
+import Pagination from "../pagination/Pagination";
 
 const CouponTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +30,7 @@ const CouponTable: React.FC = () => {
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
 
-  const { coupons, fetchCoupons, loading, totalCoupons } = useGetCoupons(
+  const { coupons, fetchCoupons, loading, count } = useGetCoupons(
     currentPage,
     perPage,
     search,
@@ -45,7 +44,7 @@ const CouponTable: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(totalCoupons / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   const handleDeleteCoupon = async (coupon_id: number) => {
     try {
@@ -533,38 +532,14 @@ const CouponTable: React.FC = () => {
         </div>
       </div>
 
-      {totalCoupons > perPage && (
-        <div className="flex items-center gap-4 mt-4">
-          <span className="text-gray-700">
-            Showing {coupons.length} of {totalCoupons} coupons
-          </span>
-          <div className="pagination" data-datatable-pagination="true">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-            >
-              <FaChevronLeft />
-            </button>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <button
-                key={index}
-                className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => handlePageChange(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`btn ${currentPage === totalPages ? "disabled" : ""}`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        count={count}
+        currentPage={currentPage}
+        totalRecords={coupons?.length}
+        perPage={perPage}
+        onPageChange={handlePageChange}
+        label="coupons"
+      />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
@@ -16,7 +16,7 @@ const useGetServices = (
   sortOrder?: string) => {
 
   const [services, setServices] = useState<Service[]>([]);
-  const [totalServices, setTotalServices] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchServices = async () => {
@@ -46,12 +46,11 @@ const useGetServices = (
       }
 
       const data = await response.json();
-      const allServices = data?.data?.services || [];
-      const totalServices = data?.data?.count || 0;
-      setServices(allServices);
-      setTotalServices(totalServices);
+
+      setServices(data?.data?.services || []);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
-      toast.error(error?.message || "Network error: Failed to fetch.", {
+      toast.error(error?.message || "Network error: Failed to fetch services.", {
         position: "top-center",
       });
     } finally {
@@ -63,7 +62,7 @@ const useGetServices = (
     fetchServices();
   }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
-  return { services, totalServices, fetchServices, loading };
+  return { services, count, fetchServices, loading };
 };
 
 export default useGetServices;

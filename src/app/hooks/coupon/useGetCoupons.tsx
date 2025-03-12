@@ -1,7 +1,6 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-
-const FETCH_COUPON_URL = `${import.meta.env.VITE_BASE_URL}/admin/coupon`;
+import { BASE_URL } from '../../utils/constant';
 
 interface Coupon {
   coupon_id: number;
@@ -28,7 +27,7 @@ const useGetCoupons = (
 ) => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [totalCoupons,setTotalCoupons] = useState(0);
+  const [count, setCount] = useState(0);
 
   const fetchCoupons = async () => {
     const token = localStorage.getItem("authToken");
@@ -45,7 +44,7 @@ const useGetCoupons = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${FETCH_COUPON_URL}?${queryParams}`, {
+      const response = await fetch(`${BASE_URL}/admin/coupon?${queryParams}`, {
         method: 'GET',
         headers: {
           "Content-Type": "application/json",
@@ -53,18 +52,15 @@ const useGetCoupons = (
         },
       });
       
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(data.message, { position: 'top-center' });
         return;
       }
 
-      const data = await response.json();
-      const allCoupon = data?.data?.result || [];
-      const totalCount = data?.data?.count || 0;
-      
-      setCoupons(allCoupon);
-      setTotalCoupons(totalCount);
+      setCoupons(data?.data?.result || []);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error?.message || 'Network error: Failed to fetch.', {
         position: "top-center",
@@ -78,7 +74,7 @@ const useGetCoupons = (
     fetchCoupons();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, coupon_types, discount_types]);
 
-  return { coupons, totalCoupons, loading, fetchCoupons };
+  return { coupons, count, loading, fetchCoupons };
 };
 
 export default useGetCoupons;

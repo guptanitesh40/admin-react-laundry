@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import PermissionTable from "./PermissionTable";
 import { useState } from "react";
-import LoadingSpinner from "../shimmer/Loading";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 
 const Permissions: React.FC = () => {
   const [isSave, setIsSave] = useState<boolean>(false);

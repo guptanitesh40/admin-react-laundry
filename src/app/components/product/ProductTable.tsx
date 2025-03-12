@@ -3,14 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import { useDeleteProduct, useGetProducts, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaPencilAlt,
   FaTrash,
 } from "react-icons/fa";
 import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import { searchSchema } from "../../validation/searchSchema";
+import Pagination from "../pagination/Pagination";
 
 interface ProductTableProps {
   setEditProduct: (product_id: number) => void;
@@ -35,7 +34,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { products, totalProducts, loading, fetchProducts } = useGetProducts(
+  const { products, count, loading, fetchProducts } = useGetProducts(
     currentPage,
     perPage,
     search,
@@ -44,7 +43,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   );
   const { hasPermission } = usePermissions();
 
-  const totalPages = Math.ceil(totalProducts / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     if (isSubmit) {
@@ -301,7 +300,6 @@ const ProductTable: React.FC<ProductTableProps> = ({
                               <FaTrash className="text-red-500" />
                             </button>
                           )}
-
                         </td>
                       )}
                     </tr>
@@ -319,44 +317,14 @@ const ProductTable: React.FC<ProductTableProps> = ({
             </table>
           </div>
 
-          {totalProducts > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {products.length} of {totalProducts} products
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={products?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="products"
+          />
         </div>
       </div>
     </>

@@ -47,7 +47,7 @@ const useGetOrders = (
   orderList: string = "",
 ) => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [totalOrders, setTotalOrders] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchOrders = async () => {
@@ -117,7 +117,7 @@ const useGetOrders = (
       }
 
       setOrders(data?.data?.orders || []);
-      setTotalOrders(data?.data?.count || 0);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -144,7 +144,7 @@ const useGetOrders = (
     payment_statuses,
   ]);
 
-  return { orders, totalOrders, loading, fetchOrders };
+  return { orders, count, loading, fetchOrders };
 };
 
 export default useGetOrders;

@@ -4,6 +4,7 @@ import { useState } from "react";
 import OrderTableFilter from "../OrderTableFilter";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import { usePermissions } from "../../../hooks";
+import { OrderStatus } from "../../../../types/enums";
 
 const PickupOrder: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,21 @@ const PickupOrder: React.FC = () => {
   const updateFilters = (newFilters: any) => {
     setFilters(newFilters);
   };
+
+
+  const getOrderStatusOptions = (allowedKeys: (keyof typeof OrderStatus)[]) => {
+    return Object.entries(OrderStatus)
+      .filter(([key]) => allowedKeys.includes(key as keyof typeof OrderStatus))
+      .map(([label, value]) => ({ label, value: value as number }));
+  };
+  
+  const pickupOrderStatusOptions = getOrderStatusOptions([
+    "Order Placed",
+    "Branch Assigned",
+    "Pickup Boy Assigned",
+    "Pickup Complete",
+  ]);
+  
 
   return (
     <>
@@ -70,6 +86,8 @@ const PickupOrder: React.FC = () => {
               <OrderTableFilter
                 filters={filters}
                 updateFilters={updateFilters}
+                orderStatusOptions={pickupOrderStatusOptions}
+                showSearchInput={false}
               />
             )}{" "}
             <PickupOrderTable filters={filters} />

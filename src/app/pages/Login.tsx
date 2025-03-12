@@ -21,7 +21,7 @@ const validationSchema = Yup.object({
     .min(6, "Password must be at least 6 characters long")
     .required("password is required"),
 
-  userId: Yup.number().required("Please select the user"),
+  userId: Yup.number().required("Please select the user role"),
 });
 
 const Login: React.FC = () => {
@@ -36,7 +36,6 @@ const Login: React.FC = () => {
   );
   const dispatch = useDispatch();
   const { login, loading } = useLogin();
-  const { fetchUserPermissions } = useGetUserPermissions();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -108,20 +107,20 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1 w-full">
-      <div className="card max-w-[450px]">
+    <div className="flex justify-center items-center p-5 order-2 lg:order-1 w-full">
+      <div className="card max-w-[400px]">
         <form
           onSubmit={handleSubmit}
-          className="card-body flex flex-col gap-3 p-10 w-[370px]"
+          className="card-body flex flex-col gap-3 p-10"
           id="log_in_form"
         >
           <div className="flex justify-center">
             <img
-              className="default-logo min-h-[22px] max-w-none"
+              className="default-logo min-h-[20px] max-w-none"
               src="/media/app/Group 34972.png"
             />
           </div>
-          <div className="text-center mt-3">
+          <div className="text-center mt-2">
             <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
               Log in to your account
             </h3>
@@ -190,7 +189,7 @@ const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <span
-                  className="btn btn-icon cursor-pointer ml-2"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? (

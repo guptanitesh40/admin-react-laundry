@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useGetWorkshopOrders } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TableShimmer from "../shimmer/TableShimmer";
-import { PaymentStatus, PaymentType } from "../../../types/enums";
+import { PaymentType } from "../../../types/enums";
 import dayjs from "dayjs";
-import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
+import Pagination from "../pagination/Pagination";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -231,7 +231,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                   <th className="min-w-[280px]">Order Status</th>
 
-                  <th className="min-w-[280px]">Next Status</th>                
+                  <th className="min-w-[280px]">Next Status</th>
 
                   <th className="min-w-[200px]">Workshop Manager</th>
 
@@ -483,44 +483,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
             </table>
           </div>
 
-          {count > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {workshopOrders.length} of {count} orders
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={workshopOrders?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="orders"
+          />
         </div>
       </div>
     </>

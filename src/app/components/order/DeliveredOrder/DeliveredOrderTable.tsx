@@ -9,18 +9,17 @@ import {
   usePermissions,
 } from "../../../hooks";
 import {
-  FaChevronLeft,
-  FaChevronRight,
   FaEye,
   FaPencilAlt,
-  FaTrash,
+  FaTrash
 } from "react-icons/fa";
-import LoadingSpinner from "../../shimmer/Loading";
+import LoadingSpinner from "../../shimmer/LoadingSpinner";
 import TableShimmer from "../../shimmer/TableShimmer";
 import { getOrderStatusLabel } from "../../../utils/orderStatusClasses";
 import dayjs from "dayjs";
 import { PaymentType } from "../../../../types/enums";
 import Swal from "sweetalert2";
+import Pagination from "../../pagination/Pagination";
 
 interface DeliveredOrderTableProps {
   filters: {
@@ -53,7 +52,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   let list = "order_list";
   let orderList = "delivered_order";
 
-  const { orders, loading, totalOrders, fetchOrders } = useGetOrders(
+  const { orders, loading, count, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
@@ -75,7 +74,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
   const navigate = useNavigate();
 
-  const totalPages = Math.ceil(totalOrders / perPage);
+  const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
     if (pageParams) {
@@ -632,44 +631,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
             </table>
           </div>
 
-          {totalOrders > perPage && (
-            <div className="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700">
-                  Showing {orders.length} of {totalOrders} Orders
-                </span>
-                <div className="pagination" data-datatable-pagination="true">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className={`btn ${currentPage === 1 ? "disabled" : ""}`}
-                  >
-                    <FaChevronLeft />
-                  </button>
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      className={`btn ${
-                        currentPage === index + 1 ? "active" : ""
-                      }`}
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className={`btn ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <Pagination
+            count={count}
+            currentPage={currentPage}
+            totalRecords={orders?.length}
+            perPage={perPage}
+            onPageChange={handlePageChange}
+            label="orders"
+          />
         </div>
       </div>
     </>

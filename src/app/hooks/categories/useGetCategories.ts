@@ -5,7 +5,7 @@ import { BASE_URL } from "../../utils/constant";
 interface Category {
   category_id: number;
   name: string;
-  totalCategories: number;
+  count: number;
 }
 
 const useGetCategories = (
@@ -16,7 +16,7 @@ const useGetCategories = (
   sortOrder?: string
 ) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [totalCategories,setTotalCategories] = useState(0);
+  const [count,setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCategories = async () => {
@@ -48,7 +48,7 @@ const useGetCategories = (
       }
 
       setCategories(data?.data?.result || []);
-      setTotalCategories(data?.data?.count);
+      setCount(data?.data?.count);
     } catch {
       toast.error("Network error: Failed to fetch categories.");
     } finally {
@@ -60,7 +60,7 @@ const useGetCategories = (
     fetchCategories();
   }, [pageNumber, perPage, search, sortColumn, sortOrder]);
 
-  return { categories, loading, totalCategories, fetchCategories };
+  return { categories, loading, count, fetchCategories };
 };
 
 export default useGetCategories;

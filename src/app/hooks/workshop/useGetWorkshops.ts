@@ -20,7 +20,7 @@ const useGetWorkshops = (
   workshop_manager_ids?: number[],
 ) => {
   const [workshops, setWorkshops] = useState<Workshop[]>();
-  const [totalWorkshops, setTotalWorkshops] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchWorkshops = async () => {
@@ -55,7 +55,7 @@ const useGetWorkshops = (
       }
 
       setWorkshops(data?.data?.workshops || []);
-      setTotalWorkshops(data?.data?.count);
+      setCount(data?.data?.count);
     } catch {
       toast.error("Network error: Failed to fetch workshops.");
     } finally {
@@ -67,7 +67,7 @@ const useGetWorkshops = (
     fetchWorkshops();
   }, [pageNumber, perPage, search, sortColumn, sortOrder, workshop_manager_ids]);
 
-  return { workshops, totalWorkshops, loading, fetchWorkshops };
+  return { workshops, count, loading, fetchWorkshops };
 };
 
 export default useGetWorkshops;

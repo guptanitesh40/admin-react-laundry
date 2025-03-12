@@ -15,8 +15,11 @@ const validationSchema = Yup.object({
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { resetPassword } = useResetPassword();
+  const { resetPassword, loading } = useResetPassword();
   const location = useLocation();
   const mobile_number = location.state.mobileNumber;
   const otp = location.state.otpValue;
@@ -47,69 +50,85 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 grow">
-      <div className="flex justify-center items-center p-8 lg:p-10 order-2 lg:order-1">
-        <div className="card max-w-[370px] w-full">
-          <form
-            className="card-body flex flex-col gap-1 p-10"
-            onSubmit={handleSubmit}
-          >
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Reset Password
-              </h3>
-              <span className="text-2sm font-medium text-gray-600">
-                Enter your new password
+    <div className="flex justify-center items-center p-5 order-2 lg:order-1 w-full">
+      <div className="card max-w-[370px] w-full">
+        <form
+          className="card-body flex flex-col gap-3 p-6 sm:p-10"
+          onSubmit={handleSubmit}
+        >
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Reset Password
+            </h3>
+            <span className="text-sm font-medium text-gray-600">
+              Enter your new password
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="form-label text-gray-900">New Password</label>
+            <div className="relative">
+              <input
+                name="new_password"
+                placeholder="Enter a new password"
+                type={showPassword ? "text" : "password"}
+                value={newPassword || ""}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="input pr-10 w-full"
+              />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? (
+                  <i className="ki-filled ki-eye-slash text-gray-500"></i>
+                ) : (
+                  <i className="ki-filled ki-eye text-gray-500"></i>
+                )}
               </span>
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="form-label text-gray-900">New Password</label>
-              <label className="input" data-toggle-password="true">
-                <input
-                  name="new_password"
-                  placeholder="Enter a new password"
-                  type="password"
-                  value={newPassword || ""}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <div className="btn btn-icon" data-toggle-password-trigger="true">
-                  <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
-                  <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
-                </div>
-              </label>
-              <p className="text-red-500 text-sm">
-                {errors.newPassword || "\u00A0"}
-              </p>
+            <p className="text-red-500 text-sm">
+              {errors.newPassword || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="form-label text-gray-900">
+              Confirm New Password
+            </label>
+            <div className="relative">
+              <input
+                name="confirm_password"
+                placeholder="Re-enter new password"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword || ""}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input pr-10 w-full"
+              />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+              >
+                {showConfirmPassword ? (
+                  <i className="ki-filled ki-eye-slash text-gray-500"></i>
+                ) : (
+                  <i className="ki-filled ki-eye text-gray-500"></i>
+                )}
+              </span>
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="form-label text-gray-900">
-                Confirm New Password
-              </label>
-              <label className="input" data-toggle-password="true">
-                <input
-                  name="confirm_password"
-                  placeholder="Re-enter a new Password"
-                  type="password"
-                  value={confirmPassword || ""}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <div
-                  className="btn btn-icon"
-                  data-toggle-password-trigger="true"
-                >
-                  <i className="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
-                  <i className="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
-                </div>
-              </label>
-              <p className="right-[0.2rem] text-red-500 text-sm w-80">
-                {errors.confirmPassword || "\u00A0"}
-              </p>
-            </div>
-            <button className="btn btn-primary flex justify-center grow">
-              Reset Password
-            </button>
-          </form>
-        </div>
+            <p className="text-red-500 text-sm">
+              {errors.confirmPassword || "\u00A0"}
+            </p>
+          </div>
+
+          <button
+            className="btn btn-primary flex justify-center w-full"
+            type="button"
+            disabled={loading}
+          >
+            {loading ? <>Resetting password..</> : <>Reset password</>}
+          </button>
+        </form>
       </div>
     </div>
   );
