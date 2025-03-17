@@ -40,20 +40,18 @@ const useGetProducts = (
         },
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(data.message, { position: 'top-center' });
+        setLoading(false);
         return;
       }
 
-      const data = await response.json();
-      const allProducts = data?.data?.result || [];
-      const totalCount = data?.data?.count || 0;
-
-      setProducts(allProducts);
-      setCount(totalCount);
+      setProducts(data?.data?.result || []);
+      setCount(data?.data?.count || 0);
     } catch (error: any) {
-      toast.error(error?.message || 'Network error: Failed to fetch.', {
+      toast.error(error?.message || 'Network error: Failed to fetch products.', {
         position: "top-center",
       });
     } finally {

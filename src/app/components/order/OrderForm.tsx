@@ -23,6 +23,7 @@ import CustomerModal from "./CustomerModal";
 import useGetValidCoupon from "../../hooks/coupon/useGetValidCoupons";
 import { RiShareForwardFill } from "react-icons/ri";
 import useGetUser from "../../hooks/user/useGetuser";
+import LoadingSpinner from "../shimmer/LoadingSpinner";
 
 interface item {
   category_id: number;
@@ -84,13 +85,19 @@ const OrderForm: React.FC = () => {
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
   const { userData, fetchUser } = useGetUser();
-  const { transactionId, generatePaymentLink } = useGeneratePaymentLink();
+  const {
+    transactionId,
+    generatePaymentLink,
+    loading: sendingLink,
+  } = useGeneratePaymentLink();
   const user = userData?.user;
   const location = useLocation();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [productCache, setProductCache] = useState<Record<number, any[]>>({});
   const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const [focusOn, setFocusOn] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -164,14 +171,16 @@ const OrderForm: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
       ) {
         setIsSearchMode(false);
+        setFocusOn(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -219,12 +228,15 @@ const OrderForm: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (userSearch && isSearchMode) {
+      if (focusOn && (!userSearch || userSearch.trim() === "")) {
+        setIsSearchMode(true);
+        await fetchUsersByRole(5);
+      } else if (userSearch && isSearchMode) {
         await fetchUsersByRole(5, userSearch);
       }
     };
     fetchUserData();
-  }, [userSearch, isSearchMode]);
+  }, [focusOn, userSearch, isSearchMode]);
 
   useEffect(() => {
     if (order) {
@@ -291,7 +303,6 @@ const OrderForm: React.FC = () => {
         price: Number(item.price),
         quantity: Number(item.quantity),
       }));
-
 
       const dataToValidate = {
         ...formData,
@@ -587,7 +598,7 @@ const OrderForm: React.FC = () => {
       user_id: formData.user_id,
       customer: {
         name: formData.username,
-        mobile_number: user?.mobile_number,
+        contact: user?.mobile_number,
         email: user?.email,
       },
     };
@@ -663,14 +674,19 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="username"
+                ref={inputRef}
                 autoComplete="off"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
                 className="input border border-gray-300 rounded-md p-2 w-full mb-2"
                 placeholder="Search customer..."
+                onFocus={() => {
+                  setFocusOn(true);
+                  setIsSearchMode(true);
+                }}
               />
 
-              {users && userSearch && isSearchMode && (
+              {users && isSearchMode && (
                 <ul
                   ref={dropdownRef}
                   className="absolute -mt-2 bg-white border z-10 border-gray-300 rounded-md p-2 w-full text-sm max-h-[400px] overflow-y-auto"
@@ -928,11 +944,12 @@ const OrderForm: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
                           Quantity
                         </label>
                         <input
                           type="text"
+                          id="quantity"
                           value={item.quantity ?? 1}
                           onChange={(e) =>
                             handleItemChange(index, "quantity", e.target.value)
@@ -1054,7 +1071,7 @@ const OrderForm: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="coupon_code">
                 Coupon Code
               </label>
               <select
@@ -1111,6 +1128,7 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="express_delivery_charges"
+                autoComplete="off"
                 min="0"
                 value={formData.express_delivery_charges || ""}
                 onChange={(e) =>
@@ -1139,6 +1157,7 @@ const OrderForm: React.FC = () => {
                 type="text"
                 id="normal_delivery_charges"
                 min="0"
+                autoComplete="off"
                 value={formData.normal_delivery_charges || ""}
                 onChange={(e) =>
                   handleChargeChange("normal_delivery_charges", e.target.value)
@@ -1192,6 +1211,7 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="paid_amount"
+                autoComplete="off"
                 value={formData.paid_amount || ""}
                 onChange={(e) => {
                   setFormData({
@@ -1239,11 +1259,18 @@ const OrderForm: React.FC = () => {
                 <div>
                   <button
                     type="button"
-                    className="-mt-2 badge text-sm badge-info badge-outline"
+                    className="relative min-w-[160px] min-h-[40px] flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-100 transition disabled:opacity-50"
                     onClick={handleSendCustomerData}
+                    disabled={sendingLink}
                   >
-                    <RiShareForwardFill color="blue" />
-                    {"  "} Send Payment Link
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      {sendingLink ? (
+                        <LoadingSpinner />
+                      ) : (
+                        <RiShareForwardFill className="w-4 h-4 text-blue-600" />
+                      )}
+                    </div>
+                    <span>Send Payment Link</span>
                   </button>
                 </div>
               )}

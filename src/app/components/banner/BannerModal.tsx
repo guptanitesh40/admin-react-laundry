@@ -189,6 +189,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
                 type="text"
                 id="title"
                 name="title"
+                autoComplete="off"
                 value={formData.title}
                 onChange={handleChange}
                 className="input border border-gray-300 rounded-md p-2"

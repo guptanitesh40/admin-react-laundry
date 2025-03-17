@@ -231,6 +231,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_name"
               name="branch_name"
+              autoComplete="off"
               value={formData.branch_name || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -270,6 +271,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_phone_number"
               name="branch_phone_number"
+              autoComplete="off"
               value={formData.branch_phone_number || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -290,6 +292,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_mobile_number"
               name="branch_mobile_number"
+              autoComplete="off"
               value={formData.branch_mobile_number || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -310,6 +313,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_email"
               name="branch_email"
+              autoComplete="off"
               value={formData.branch_email || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -330,6 +334,7 @@ const BranchForm: React.FC = () => {
               type="text"
               id="branch_registration_number"
               name="branch_registration_number"
+              autoComplete="off"
               value={formData.branch_registration_number || ""}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"

@@ -199,6 +199,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="company_name"
               name="company_name"
+              autoComplete="off"
               value={formData.company_name}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -219,6 +220,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="address"
               name="address"
+              autoComplete="off"
               value={formData.address}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -234,6 +236,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="city"
               name="city"
+              autoComplete="off"
               value={formData.city}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -252,6 +255,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="state"
               name="state"
+              autoComplete="off"
               value={formData.state}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -270,6 +274,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="zip_code"
               name="zip_code"
+              autoComplete="off"
               value={formData.zip_code}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -290,6 +295,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="company_owner_name"
               name="company_owner_name"
+              autoComplete="off"
               value={formData.company_owner_name}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -310,6 +316,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="phone_number"
               name="phone_number"
+              autoComplete="off"
               value={formData.phone_number}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -330,6 +337,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="mobile_number"
               name="mobile_number"
+              autoComplete="off"
               value={formData.mobile_number}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -350,6 +358,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="email"
               name="email"
+              autoComplete="off"
               value={formData.email}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -368,6 +377,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="website"
               name="website"
+              autoComplete="off"
               value={formData.website}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -409,6 +419,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="registration_number"
               name="registration_number"
+              autoComplete="off"
               value={formData.registration_number}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"
@@ -460,6 +471,7 @@ const CompanyForm: React.FC = () => {
               type="text"
               id="gstin"
               name="gstin"
+              autoComplete="off"
               value={formData.gstin}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"

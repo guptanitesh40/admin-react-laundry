@@ -154,6 +154,7 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
                 type="text"
                 id="category"
                 name="category"
+                autoComplete="off"
                 className="input border border-gray-300 rounded-md p-2 w-full"
                 value={formData.category_name ?? ""}
                 onChange={(e) =>
@@ -215,6 +216,7 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
                 type="text"
                 id="price"
                 name="price"
+                autoComplete="off"
                 className="input border border-gray-300 rounded-md p-2 w-full"
                 value={formData.price ?? ""}
                 onChange={(e) =>

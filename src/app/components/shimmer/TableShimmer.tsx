@@ -4,12 +4,15 @@ const TableShimmer: React.FC = () => {
   return (
     <div className="container-fixed">
       <div className="mt-5">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div className="flex justify-between items-center mb-4" key={index}>
-            <div className="bg-gray-200 animate-pulse h-4 w-[340px] rounded-md"></div>
-            <div className="bg-gray-200 animate-pulse h-4 w-[340px] rounded-md"></div>
-            <div className="bg-gray-200 animate-pulse h-4 w-[240px] rounded-md"></div>
-            <div className="bg-gray-200 animate-pulse h-8 w-[240px] rounded-md"></div>
+        {Array.from({ length: 15 }).map((_, index) => (
+          <div
+            className="flex justify-between items-center mb-4 gap-3"
+            key={index}
+          >
+            <div className="bg-gray-200 animate-pulse h-6 w-[340px] rounded-md"></div>
+            <div className="bg-gray-200 animate-pulse h-6 w-[340px] rounded-md"></div>
+            <div className="bg-gray-200 animate-pulse h-6 w-[240px] rounded-md"></div>
+            <div className="bg-gray-200 animate-pulse h-6 w-[240px] rounded-md"></div>
           </div>
         ))}
       </div>

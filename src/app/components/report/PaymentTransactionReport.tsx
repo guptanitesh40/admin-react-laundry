@@ -39,7 +39,7 @@ const PaymentTransactionReport: React.FC = () => {
   };
 
   const categories =
-    paymentTransactionData?.map((item: { month: any }) => item.month) || [];
+    paymentTransactionData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const receivedAmount =
     paymentTransactionData?.map(
       (item: { total_amount: any }) => item.total_amount

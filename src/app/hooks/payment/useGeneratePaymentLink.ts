@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 const useGeneratePaymentLink = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [transactionId, setTransactionId] = useState();  
 
   const generatePaymentLink = async (formData: any) => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(true);
 
     try {
@@ -33,7 +34,7 @@ const useGeneratePaymentLink = () => {
       }
 
       toast.success(data?.message || "Payments Link sent successfully");
-      setTransactionId(data?.data?.razorpay?.razorpay_order_id);
+      setTransactionId(data?.data?.razorpay?.razorpay_payment_link_id);
     } catch {
         toast.error("Fail to generate payment link try again later");
     } finally {
