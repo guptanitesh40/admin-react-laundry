@@ -358,7 +358,7 @@ const OrderDetails: React.FC = () => {
                   <i className="ki-filled ki-pencil mr-2"></i>Edit Order
                 </button>
               )}
-              
+
               {hasPermission(3, "update") &&
                 order?.order_status < 8 &&
                 order?.refund_status !== 1 && (
@@ -373,7 +373,8 @@ const OrderDetails: React.FC = () => {
 
               {hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
-                order.refund_status === 3 && order.order_status !== 11 && (
+                order.refund_status === 3 &&
+                order.order_status !== 11 && (
                   <button
                     className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
                     onClick={handleOrderRefund}
@@ -602,14 +603,16 @@ const OrderDetails: React.FC = () => {
                       </tr>
                     )}
 
-                    <tr>
-                      <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
-                        Kasar Amount:
-                      </td>
-                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.kasar_amount}
-                      </td>
-                    </tr>
+                    {order.kasar_amount !== 0 && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Kasar Amount:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          ₹{order.kasar_amount}
+                        </td>
+                      </tr>
+                    )}
 
                     {order.coupon_code !== "" && (
                       <tr>

@@ -261,6 +261,7 @@ const UserForm: React.FC = () => {
               type="text"
               id="first_name"
               name="first_name"
+              autoComplete="off"
               value={formData.first_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, first_name: e.target.value })
@@ -283,6 +284,7 @@ const UserForm: React.FC = () => {
               type="text"
               id="last_name"
               name="last_name"
+              autoComplete="off"
               value={formData.last_name || ""}
               onChange={(e) =>
                 setFormData({ ...formData, last_name: e.target.value })
@@ -305,6 +307,7 @@ const UserForm: React.FC = () => {
               type="text"
               id="email"
               name="email"
+              autoComplete="off"
               value={formData.email || ""}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -325,6 +328,7 @@ const UserForm: React.FC = () => {
               type="text"
               id="mobile_number"
               name="mobile_number"
+              autoComplete="off"
               value={formData.mobile_number || ""}
               onChange={(e) =>
                 setFormData({ ...formData, mobile_number: e.target.value })
@@ -400,7 +404,6 @@ const UserForm: React.FC = () => {
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 font-semibold"
-                htmlFor="role_id"
               >
                 Company
               </label>
@@ -438,7 +441,6 @@ const UserForm: React.FC = () => {
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 font-semibold"
-                htmlFor="role_id"
               >
                 Branch
               </label>
@@ -473,7 +475,6 @@ const UserForm: React.FC = () => {
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 font-semibold"
-                htmlFor="role_id"
               >
                 Workshop
               </label>

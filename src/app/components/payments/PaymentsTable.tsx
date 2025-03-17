@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import Pagination from "../pagination/Pagination";
+import TableShimmer from "../shimmer/TableShimmer";
 
 interface OptionType {
   label: string;
@@ -31,7 +32,7 @@ const PaymentsTable: React.FC = () => {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState([]);
   const [userFilter, setUserFilter] = useState<number[]>([]);
 
-  const { payments, count } = useGetPayments(
+  const { payments, count, loading } = useGetPayments(
     currentPage,
     perPage,
     search,
@@ -115,8 +116,6 @@ const PaymentsTable: React.FC = () => {
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
-
-  if (!payments) return;
 
   return (
     <>
@@ -292,7 +291,9 @@ const PaymentsTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              {payments.length > 0 ? (
+              {loading ? (
+                <TableShimmer />
+              ) : payments?.length > 0 ? (
                 <tbody>
                   {payments.map((payment) => (
                     <tr key={payment.razorpay_transaction_id}>

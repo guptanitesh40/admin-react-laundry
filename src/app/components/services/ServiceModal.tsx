@@ -159,6 +159,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
               type="text"
               id="name"
               name="name"
+              autoComplete="off"
               value={formData.name}
               onChange={handleChange}
               className="input border border-gray-300 rounded-md p-2"

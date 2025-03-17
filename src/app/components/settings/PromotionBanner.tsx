@@ -205,7 +205,7 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="title">
                     Title
                   </label>
                   <div className="flex flex-col w-full">
@@ -216,6 +216,8 @@ const PromotionBanner: React.FC = () => {
                           : ""
                       }`}
                       type="text"
+                      id="title"
+                      autoComplete="off"
                       value={formData.title}
                       onChange={(e) =>
                         setFormData({
@@ -234,7 +236,7 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="price">
                     Price (Rs)
                   </label>
                   <div className="flex flex-col w-full">
@@ -245,6 +247,8 @@ const PromotionBanner: React.FC = () => {
                           : ""
                       }`}
                       type="text"
+                      id="price"
+                      autoComplete="off"
                       value={formData.price}
                       onChange={(e) =>
                         setFormData({
@@ -263,7 +267,7 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="promotion_code">
                     Promotion code
                   </label>
                   <div className="flex flex-col w-full">
@@ -274,6 +278,8 @@ const PromotionBanner: React.FC = () => {
                           : ""
                       }`}
                       type="text"
+                      id="promotion_code"
+                      autoComplete="off"
                       value={formData.promotion_code}
                       onChange={(e) =>
                         setFormData({

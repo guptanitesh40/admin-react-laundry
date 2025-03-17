@@ -1,5 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
 
 interface Branch {
   branch_id: number;
@@ -16,19 +17,18 @@ const useGetBranchesOnId = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [branches, setBranches] = useState<Branch | any>(null);
 
-  const fetchBranchesOnId = async (company_id: number) => {
+  const fetchBranchesOnId = async (company_id: any) => {
     if (!company_id) {
       setBranches(null);
       return;
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_BRANCHES_URL = `${import.meta.env.VITE_BASE_URL}/branches/companies?company_ids=${company_id}`;
 
     setLoading(true);
 
     try {
-      const response = await fetch(GET_BRANCHES_URL, {
+      const response = await fetch(`${BASE_URL}/branches/companies?company_ids=${company_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

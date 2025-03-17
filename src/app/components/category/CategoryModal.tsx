@@ -76,6 +76,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                 type="text"
                 id="name"
                 name="name"
+                autoComplete="off"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })

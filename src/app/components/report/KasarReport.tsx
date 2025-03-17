@@ -35,7 +35,7 @@ const KasarReport = () => {
     }
   };
 
-  const categories = kasarData?.map((item: { month: any }) => item.month) || [];
+  const categories = kasarData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const kasarAmount =
     kasarData?.map(
       (item: { total_kasar_amount: any }) => item.total_kasar_amount
