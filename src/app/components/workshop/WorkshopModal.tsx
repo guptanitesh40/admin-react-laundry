@@ -169,6 +169,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 type="text"
                 id="workshop_name"
                 name="workshop_name"
+                autoComplete="off"
                 value={formData.workshop_name || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, workshop_name: e.target.value })
@@ -213,6 +214,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                   type="text"
                   id="mobile_number"
                   name="mobile_number"
+                  autoComplete="off"
                   value={formData.mobile_number}
                   onChange={(e) =>
                     setFormData({ ...formData, mobile_number: e.target.value })
@@ -235,6 +237,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                   type="text"
                   id="email"
                   name="email"
+                  autoComplete="off"
                   value={formData.email || ""}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })

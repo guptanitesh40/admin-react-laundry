@@ -104,9 +104,9 @@ const GeneralSettings: React.FC = ({}) => {
             <div className="card-body grid gap-1">
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="estimate_pickup_normal_hour">
                     Estimate Pickup Normal Hour (In Hour)
-                  </label>
+                  </label>  
                   <div className="flex flex-col w-full">
                     <input
                       className={`input ${
@@ -115,6 +115,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="estimate_pickup_normal_hour"
+                      autoComplete="off"
                       value={formData.estimate_pickup_normal_hour || ""}
                       onChange={(e) =>
                         handleItemChange(
@@ -133,7 +135,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="estimate_pickup_express_hour">
                     Estimate Pickup Express Hour (In Hour)
                   </label>
                   <div className="flex flex-col w-full">
@@ -144,6 +146,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="estimate_pickup_express_hour"
+                      autoComplete="off"
                       value={formData.estimate_pickup_express_hour || ""}
                       onChange={(e) =>
                         handleItemChange(
@@ -162,7 +166,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="gst_percentage">
                     GST Percentage (%)
                   </label>
                   <div className="flex flex-col w-full">
@@ -173,6 +177,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="gst_percentage"
+                      autoComplete="off"
                       value={formData.gst_percentage}
                       onChange={(e) =>
                         handleItemChange("gst_percentage", e.target.value)
@@ -188,7 +194,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="estimate_delivery_normal_day">
                     Estimate Delivery Normal Day (Day)
                   </label>
                   <div className="flex flex-col w-full">
@@ -199,6 +205,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="estimate_delivery_normal_day"
+                      autoComplete="off"
                       value={formData.estimate_delivery_normal_day}
                       onChange={(e) =>
                         handleItemChange(
@@ -217,7 +225,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="estimate_delivery_express_day">
                     Estimate Delivery Express Day (Day)
                   </label>
                   <div className="flex flex-col w-full">
@@ -228,6 +236,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="estimate_delivery_express_day"
+                      autoComplete="off"
                       value={formData.estimate_delivery_express_day}
                       onChange={(e) =>
                         handleItemChange(
@@ -246,7 +256,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="normal_delivery_charges">
                     Normal Delivery Charge (Rs)
                   </label>
                   <div className="flex flex-col w-full">
@@ -257,6 +267,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="normal_delivery_charges"
+                      autoComplete="off"
                       value={formData.normal_delivery_charges}
                       onChange={(e) =>
                         handleItemChange("normal_delivery_charges", e.target.value)
@@ -272,7 +284,7 @@ const GeneralSettings: React.FC = ({}) => {
 
               <div className="w-full">
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56">
+                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="express_delivery_charge">
                     Express Delivery Charge (Rs)
                   </label>
                   <div className="flex flex-col w-full">
@@ -283,6 +295,8 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
+                      id="express_delivery_charge"
+                      autoComplete="off"
                       value={formData.express_delivery_charge}
                       onChange={(e) =>
                         handleItemChange(

@@ -35,7 +35,7 @@ const SalesBookingReport = () => {
     }
   };
 
-  const categories = salesData?.map((item: { month: any }) => item.month) || [];
+  const categories = salesData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const totalSales =
     salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
   const totalCollection =

@@ -35,13 +35,20 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [focusOn, setFocusOn] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      await fetchUsersByRole(4, userSearch);
+      if (focusOn && (!userSearch || userSearch.trim() === "")) {
+        await fetchUsersByRole(4);
+      } else if (userSearch && isSearchMode) {
+        await fetchUsersByRole(4, userSearch);
+      }
     };
     fetchUserData();
-  }, [userSearch, isSearchMode]);
+  }, [focusOn, userSearch, isSearchMode]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserSearch(e.target.value);
@@ -68,14 +75,16 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
       ) {
         setIsSearchMode(false);
+        setFocusOn(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -148,16 +157,22 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
             <input
               type="text"
               id="username"
+              ref={inputRef}
+              autoComplete="off"
               value={userSearch || ""}
               onChange={handleSearchChange}
               className="input border border-gray-300 rounded-md p-2 w-full"
               placeholder="Search name..."
+              onFocus={() => {
+                setFocusOn(true);
+                setIsSearchMode(true);
+              }}
             />
 
-            {users && userSearch && isSearchMode && (
+            {users && isSearchMode && (
               <ul
                 ref={dropdownRef}
-                className="absolute mt-[68px] bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm"
+                className="absolute mt-[64px] bg-white z-10 border border-gray-300 rounded-md p-2 w-full text-sm"
               >
                 {users.length > 0 ? (
                   users.map((user: any) => (

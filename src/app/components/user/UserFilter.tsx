@@ -120,7 +120,6 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
               });
             }}
             className="basis-1/4"
-            isSearchInput={true}
           />
         </div>
       </div>

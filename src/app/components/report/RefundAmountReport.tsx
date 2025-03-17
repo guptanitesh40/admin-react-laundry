@@ -35,7 +35,7 @@ const RefundAmountReport: React.FC = () => {
     }
   };
 
-  const categories = refundAmountData?.map((item: any) => item.month) || [];
+  const categories = refundAmountData?.map((item: any) => item.month.split("-")[0]) || [];
   const refundAmounts =
     refundAmountData?.map((item: any) => item.total_refund_amount) || [];
   const totalAmounts =

@@ -157,11 +157,16 @@ const CouponModal: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="coupon_code"
+            >
               Code
             </label>
             <input
               type="text"
+              id="coupon_code"
+              autoComplete="off"
               value={formData.code ?? ""}
               onChange={(e) =>
                 setFormData({ ...formData, code: e.target.value })
@@ -174,11 +179,16 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="title"
+            >
               Title
             </label>
             <input
               type="text"
+              id="title"
+              autoComplete="off"
               value={formData.title ?? ""}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
@@ -189,10 +199,14 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col md:col-span-2">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="description"
+            >
               Description
             </label>
             <textarea
+              id="description"
               value={formData.description ?? ""}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
@@ -205,10 +219,14 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="discount_type"
+            >
               Discount Type
             </label>
             <select
+              id="discount_type"
               className="select border border-gray-300 rounded-md p-2 w-full text-sm"
               value={formData.discount_type ?? ""}
               onChange={(e) =>
@@ -230,10 +248,14 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="discount_value"
+            >
               Discount Value
             </label>
             <input
+              id="discount_value"
               type="text"
               value={formData.discount_value ?? ""}
               onChange={(e) =>
@@ -283,11 +305,16 @@ const CouponModal: React.FC = () => {
           </LocalizationProvider>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="maximum_usage_count_per_user"
+            >
               Max Usage Per User
             </label>
             <input
               type="text"
+              id="maximum_usage_count_per_user"
+              autoComplete="off"
               value={formData.maximum_usage_count_per_user ?? ""}
               onChange={(e) =>
                 setFormData({
@@ -303,11 +330,16 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="total_usage_count"
+            >
               Total Usage Count
             </label>
             <input
               type="text"
+              id="total_usage_count"
+              autoComplete="off"
               value={formData.total_usage_count ?? ""}
               onChange={(e) =>
                 setFormData({
@@ -323,10 +355,14 @@ const CouponModal: React.FC = () => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="coupon_type"
+            >
               Coupon Type
             </label>
             <select
+              id="coupon_type"
               className="select border border-gray-300 rounded-md p-2 w-full text-sm"
               value={formData.coupon_type ?? ""}
               onChange={(e) =>
