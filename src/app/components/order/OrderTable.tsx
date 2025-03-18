@@ -277,13 +277,13 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
-                        sortColumn === "branch_id"
+                        sortColumn === "branch_name"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("branch_id")}
+                      onClick={() => handleSort("branch_name")}
                     >
                       <span className="sort-label">Assigned Branch</span>
                       <span className="sort-icon"></span>

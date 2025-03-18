@@ -20,6 +20,8 @@ interface MultiSelectProps {
   className?: string;
   sliceCount?: number;
   isCustomLabel?: boolean;
+  defaultOption?: string; 
+  noDataAvailableLabel?: string;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -35,6 +37,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   className = "",
   sliceCount = 1,
   isCustomLabel = false,
+  defaultOption,
+  noDataAvailableLabel, 
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState(search);
@@ -201,8 +205,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               })
             ) : showNoCustomers ? (
               <li className="no-search">No customers found</li>
+            ) : noDataAvailableLabel ? (
+              <li className="no-search">{noDataAvailableLabel}</li>
             ) : showNoResults ? (
               <li className="no-search">No results match</li>
+            ) : defaultOption ? (
+              <li className="no-search">{defaultOption}</li>
             ) : null}
           </ul>
         </div>

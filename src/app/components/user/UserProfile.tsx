@@ -9,6 +9,7 @@ import OrderListModal from "./DuoOrderListModal.tsx";
 import { getRoleClass } from "../../utils/roleClasses";
 import { BASE_URL } from "../../utils/constant";
 import DuoOrderListModal from "./DuoOrderListModal.tsx";
+import CustomerOrders from "./CustomerOrders.tsx";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +18,7 @@ const UserProfile: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>();
   const [refetch, setRefetch] = useState<boolean>(false);
 
-  const { userData, fetchUser } = useGetUser();
+  const { userData, fetchUser, count } = useGetUser();
 
   const user = userData?.user;
 
@@ -25,10 +26,6 @@ const UserProfile: React.FC = () => {
     fetchUser(user_id);
     setRefetch(false);
   }, [user_id, refetch]);
-
-  const handleViewOrder = (order_id: number) => {
-    window.open(`/order/${order_id}`, "_blank");
-  };
 
   if (!user) return;
 
@@ -183,111 +180,8 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      {user.role_id === 5 && (
-        <div className="grid gap-5 lg:gap-7.5 mt-5">
-          <div className="card card-grid min-w-full">
-            <div className="card-header">
-              <h3 className="text-xl font-semibold mb-1">Orders</h3>
-              <span className="text-gray-700 text-lg font-semibold px-3 py-1 rounded-lg">
-                Total Orders: {user?.orders?.length}
-              </span>
-            </div>
-
-            <div className="scrollable-x-auto">
-              <table className="table table-auto table-border">
-                <thead>
-                  <tr>
-                    <th>Id</th>
-                    <th className="min-w-[220px]">Status</th>
-                    <th className="min-w-[60px]">Item Count</th>
-                    <th>Total</th>
-                    <th className="min-w-[80px]">Paid Amount</th>
-                    <th className="">Kasar Amount</th>
-                    <th className="min-w-[140px]">Payment Type</th>
-                    <th className="min-w-[135px]">Payment Status</th>
-                    <th className="min-w-[130px]">Actions</th>
-                  </tr>
-                </thead>
-                {user.orders.length > 0 ? (
-                  <tbody>
-                    {user.orders.map((order: any) => {
-                      const paymentStatusClass = getPaymentStatusLabel(
-                        order.payment_status
-                      );
-                      const orderStatusLabel = getOrderStatusLabel(
-                        order.admin_order_status.admin_label
-                      );
-                      const itemCount = order.items.length;
-
-                      return (
-                        <tr key={order.order_id}>
-                          <td>#{order.order_id}</td>
-                          <td>
-                            <span
-                              className={`${orderStatusLabel} badge-outline badge-xl rounded-[30px]`}
-                            >
-                              {order.admin_order_status.admin_label}
-                            </span>
-                          </td>
-                          <td>{itemCount}</td>
-                          <td>₹{order.total}</td>
-                          <td>
-                            ₹
-                            {order.paid_amount === "" || 0
-                              ? 0
-                              : order.paid_amount}
-                          </td>
-                          <td>
-                            ₹
-                            {order.kasar_amount === "" || 0
-                              ? 0
-                              : order.kasar_amount}
-                          </td>
-                          <td>
-                            <span className="badge badge-outline">
-                              {
-                                PaymentType[
-                                  order.payment_type as unknown as keyof typeof PaymentType
-                                ]
-                              }
-                            </span>
-                          </td>
-                          <td>
-                            <span
-                              className={`${paymentStatusClass} badge-outline`}
-                            >
-                              {
-                                PaymentStatus[
-                                  order.payment_status as unknown as keyof typeof PaymentStatus
-                                ]
-                              }
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-sm btn-primary"
-                              onClick={() => handleViewOrder(order.order_id)}
-                            >
-                              View Order
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                ) : (
-                  <tbody>
-                    <tr>
-                      <td colSpan={9} className="text-center">
-                        No Orders available
-                      </td>
-                    </tr>
-                  </tbody>
-                )}
-              </table>
-            </div>
-          </div>
-        </div>
+      {user?.role_id === 5 && user && (
+        <CustomerOrders user={user} userId={user_id} count={count}/>
       )}
 
       {user?.orders.length > 0 && (

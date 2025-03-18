@@ -9890,3 +9890,7 @@ input[date-range="start"] {
   background-color: #1b84ff !important;
   color: #ffffff !important;
 }
+
+.custom-rounded {
+  border-radius: 5px;
+}

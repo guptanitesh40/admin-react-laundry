@@ -10,7 +10,7 @@ import { IoIosPricetags, IoMdChatboxes } from "react-icons/io";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { VscFeedback } from "react-icons/vsc";
 import { BsBoxSeam } from "react-icons/bs";
-import { useGetUserPermissions, usePermissions } from "../../hooks";
+import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
 
 export const Sidebar: React.FC = () => {

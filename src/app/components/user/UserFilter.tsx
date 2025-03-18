@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { Gender, Role } from "../../../types/enums";
-import { useGetBranches, useGetCompanies } from "../../hooks";
+import { useGetBranchesOnId, useGetCompanies } from "../../hooks";
 import MultiSelect from "../MultiSelect/MultiSelect";
 
 interface UserFilterProps {
@@ -13,8 +14,14 @@ interface UserFilterProps {
 }
 
 const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
-  const { branches } = useGetBranches(1, 1000);
+  const { branches, fetchBranchesOnId } = useGetBranchesOnId();
   const { companies } = useGetCompanies(1, 1000);
+
+  const [selectedCompanies, setSelectedCompanies] = useState<number[]>();
+
+  useEffect(() => {
+    fetchBranchesOnId(selectedCompanies);
+  }, [selectedCompanies]);
 
   const genderOptions = Object.entries(Gender)
     .filter(([key, value]) => typeof value === "number")
@@ -23,6 +30,12 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
   const roleOptions = Object.entries(Role)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
+
+  useEffect(() => {
+    if (filters.companyFilter) {
+      setSelectedCompanies(filters.companyFilter);
+    }
+  }, [filters.companyFilter]);
 
   return (
     <>
@@ -47,7 +60,7 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
                 genderFilter: selectedValues,
               });
             }}
-            className="basis-1/4"            
+            className="basis-1/4"
           />
 
           <MultiSelect
@@ -98,10 +111,12 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
           />
 
           <MultiSelect
-            options={branches?.map((branch) => ({
-              label: branch.branch_name,
-              value: branch.branch_id,
-            }))}
+            options={branches?.map(
+              (branch: { branch_name: any; branch_id: any }) => ({
+                label: branch.branch_name,
+                value: branch.branch_id,
+              })
+            )}
             displayValue="branch_name"
             placeholder="Select Branch"
             selectedValues={filters.branchFilter}
@@ -119,6 +134,11 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
                 branchFilter: selectedValues,
               });
             }}
+            {...(!filters?.companyFilter || filters?.companyFilter.length === 0
+              ? { defaultOption: "Please select branch" }
+              : branches && branches?.length === 0
+              ? { noDataAvailableLabel: "No Branch Available" }
+              : {})}
             className="basis-1/4"
           />
         </div>
