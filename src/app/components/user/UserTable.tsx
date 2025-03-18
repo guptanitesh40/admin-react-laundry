@@ -291,22 +291,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
 
                   <th className="min-w-[80px]">Gender</th>
 
-                  <th className="min-w-[150px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "total_pending_amount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("total_pending_amount")}
-                    >
-                      <span className="sort-label">Total Pending Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[250px]">
                     <span className="sort-label">Company</span>
                   </th>
@@ -361,9 +345,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                               user.gender as unknown as keyof typeof Gender
                             ]
                           }
-                        </td>
-                        <td>
-                          {user.role_id === 5 && (user.total_due_amount)}
                         </td>
                         <td>
                           {user?.companies

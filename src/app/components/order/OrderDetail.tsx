@@ -350,14 +350,16 @@ const OrderDetails: React.FC = () => {
                 </button>
               )}
 
-              {order?.order_status !== 11 && hasPermission(3, "update") && (
-                <button
-                  className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
-                  onClick={handleEditOrder}
-                >
-                  <i className="ki-filled ki-pencil mr-2"></i>Edit Order
-                </button>
-              )}
+              {location?.state?.from !== "WorkshopOrderTable" &&
+                order?.order_status !== 11 &&
+                hasPermission(3, "update") && (
+                  <button
+                    className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
+                    onClick={handleEditOrder}
+                  >
+                    <i className="ki-filled ki-pencil mr-2"></i>Edit Order
+                  </button>
+                )}
 
               {hasPermission(3, "update") &&
                 order?.order_status < 8 &&
@@ -371,7 +373,8 @@ const OrderDetails: React.FC = () => {
                   </button>
                 )}
 
-              {hasPermission(3, "update") &&
+              {location?.state?.from !== "WorkshopOrderTable" &&
+                hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
                 order.refund_status === 3 &&
                 order.order_status !== 11 && (
@@ -553,7 +556,7 @@ const OrderDetails: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2.5">
-                      <h3 className="card-title">Order Instruction</h3>
+                      <h3 className="card-title">Customer Instruction</h3>
                     </div>
                     <div className="text-2sm font-medium text-gray-700">
                       {order.description}

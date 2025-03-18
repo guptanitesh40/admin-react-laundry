@@ -26,9 +26,24 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
   filters,
   updateFilters,
 }) => {
-  const [customerSearch, setCustomerSearch] = useState("");
+  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
+    []
+  );
   const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
-  const [workshopManagers, setWorkshopManagers] = useState<OptionType[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<OptionType[]>([]);
+
+  const [allWorkshopManagerOptions, setAllWorkshopManagerOptions] = useState<
+    OptionType[]
+  >([]);
+  const [workshopManagerOptions, setWorkshopManagerOptions] = useState<
+    OptionType[]
+  >([]);
+  const [selectedWorkshopManagers, setSelectedWorkshopManagers] = useState<
+    OptionType[]
+  >([]);
+
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [workshopManagerSearch, setWorkshopManagerSearch] = useState("");
 
   const { fetchUsersByRole } = useGetUsersByRole();
   const { branches } = useGetBranches();
@@ -43,32 +58,69 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
     .map(([label, value]) => ({ label, value: value as number }));
 
   useEffect(() => {
-    const fetchManagers = async () => {
-      const managers = await fetchUsersByRole(6);
-      if (managers) {
-        const formattedOptions = managers.map((manager: any) => ({
-          label: `${manager.first_name} ${manager.last_name} (${manager.mobile_number})`,
-          value: manager.user_id,
+    const fetchInitialUsers = async () => {
+      const customers = await fetchUsersByRole(5);
+      const workshopManagers = await fetchUsersByRole(6);
+
+      const formatOptions = (users: any[]) =>
+        users.map((user) => ({
+          label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+          value: user.user_id,
         }));
-        setWorkshopManagers(formattedOptions);
-      }
+
+      setAllCustomerOptions(formatOptions(customers));
+      setAllWorkshopManagerOptions(formatOptions(workshopManagers));
     };
-    fetchManagers();
+
+    fetchInitialUsers();
   }, []);
 
   useEffect(() => {
-    const fetchCustomer = async () => {
+    const fetchFilteredUsers = async () => {
       const customers = await fetchUsersByRole(5, customerSearch);
-      const formattedOptions = customers?.map((user: any) => ({
+      const formattedOptions = customers.map((user: any) => ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
       }));
+
       setCustomerOptions(formattedOptions);
     };
+
     if (customerSearch) {
-      fetchCustomer();
+      fetchFilteredUsers();
+    } else {
+      setCustomerOptions(allCustomerOptions);
     }
-  }, [customerSearch]);
+  }, [customerSearch, allCustomerOptions]);
+
+  useEffect(() => {
+    const fetchFilteredUsers = async () => {
+      const workshopManagers = await fetchUsersByRole(6, workshopManagerSearch);
+      const formattedOptions = workshopManagers.map((user: any) => ({
+        label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+        value: user.user_id,
+      }));
+
+      setWorkshopManagerOptions(formattedOptions);
+    };
+
+    if (workshopManagerSearch) {
+      fetchFilteredUsers();
+    } else {
+      setWorkshopManagerOptions(allWorkshopManagerOptions);
+    }
+  }, [workshopManagerOptions, allWorkshopManagerOptions]);
+
+  const getCombinedOptions = (
+    selectedOptions: OptionType[],
+    filteredOptions: OptionType[]
+  ): OptionType[] => [
+    ...selectedOptions.filter(
+      (selected) =>
+        !filteredOptions.some((option) => option.value === selected.value)
+    ),
+    ...filteredOptions,
+  ];
 
   return (
     <>
@@ -98,31 +150,43 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           />
 
           <MultiSelect
-            options={workshopManagers}
+            options={getCombinedOptions(
+              selectedWorkshopManagers,
+              workshopManagerOptions
+            )}
             displayValue="label"
             placeholder="Select Workshop Manager"
             selectedValues={filters.workshopManagerFilter}
-            onSelect={(selectedList) =>
+            onSelect={(selectedList: any) => {
+              setSelectedWorkshopManagers(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
-                workshopManagerFilter: selectedList.map((item) => item.value),
-              })
-            }
-            onRemove={(selectedList) =>
+                workshopManagerFilter: selectedValues,
+              });
+            }}
+            onRemove={(selectedList: any) => {
+              setSelectedWorkshopManagers(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
-                workshopManagerFilter: selectedList.map((item) => item.value),
-              })
-            }
+                workshopManagerFilter: selectedValues,
+              });
+            }}
             className="w-full"
           />
 
           <MultiSelect
-            options={customerOptions}
+            options={getCombinedOptions(selectedCustomers, customerOptions)}
             displayValue="label"
             placeholder="Search Customer"
-            selectedValues={filters.customerFilter}
+            selectedValues={selectedCustomers.map((customer) => customer.value)}
             onSelect={(selectedList: any) => {
+              setSelectedCustomers(selectedList);
               const selectedValues = selectedList.map(
                 (item: any) => item.value
               );
@@ -132,6 +196,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
               });
             }}
             onRemove={(selectedList: any) => {
+              setSelectedCustomers(selectedList);
               const selectedValues = selectedList.map(
                 (item: any) => item.value
               );
@@ -189,7 +254,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
                 ),
               })
             }
-            isSearchInput={false}            
+            isSearchInput={false}
             className="w-full"
           />
 

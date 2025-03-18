@@ -944,7 +944,10 @@ const OrderForm: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
+                        <label
+                          className="block text-gray-700 text-sm font-bold mb-2"
+                          htmlFor="quantity"
+                        >
                           Quantity
                         </label>
                         <input
@@ -1071,7 +1074,10 @@ const OrderForm: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="coupon_code">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="coupon_code"
+              >
                 Coupon Code
               </label>
               <select
@@ -1316,9 +1322,15 @@ const OrderForm: React.FC = () => {
               <input
                 type="text"
                 id="transaction_id"
-                value={transactionId || ""}
-                className="input border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
-                readOnly
+                autoComplete="off"
+                value={formData.transaction_id ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    transaction_id: e.target.value,
+                  })
+                }
+                className="input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
               />
             </div>
 
