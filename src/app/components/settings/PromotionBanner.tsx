@@ -15,7 +15,7 @@ import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { promotionBannerSchema } from "../../validation/promotionBannerSchema";
 
 const PromotionBanner: React.FC = () => {
-  const { settingsData, fetchSetting, loading } = useGetSettings();
+  const { settingsData, fetchSetting, loading: loadingData } = useGetSettings();
   const { addSetting, loading: adding } = useAddSettings();
   const { updatePromotionBanner, loading: updating } =
     useUpdatePromotionBanner();

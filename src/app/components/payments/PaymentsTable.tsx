@@ -177,7 +177,7 @@ const PaymentsTable: React.FC = () => {
             />
           </div>
 
-          <div className="flex">
+          <div className="flex flex-col">
             <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
