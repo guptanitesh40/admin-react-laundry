@@ -196,6 +196,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="first_name"
                     name="first_name"
+                    autoComplete="off"
                     value={formData.first_name || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, first_name: e.target.value })
@@ -218,6 +219,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="last_name"
                     name="last_name"
+                    autoComplete="off"
                     value={formData.last_name}
                     onChange={(e) =>
                       setFormData({
@@ -243,6 +245,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="email"
                     name="email"
+                    autoComplete="off"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({
@@ -268,6 +271,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="mobile_number"
                     name="mobile_number"
+                    autoComplete="off"
                     value={formData.mobile_number}
                     onChange={(e) =>
                       setFormData({
@@ -390,6 +394,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="building_number"
                     name="building_number"
+                    autoComplete="off"
                     value={addressData.building_number}
                     onChange={(e) =>
                       setAddressData({
@@ -489,6 +494,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="landmark"
                     name="landmark"
+                    autoComplete="off"
                     value={addressData.landmark}
                     onChange={(e) =>
                       setAddressData({
@@ -514,6 +520,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="pincode"
                     name="pincode"
+                    autoComplete="off"
                     value={addressData.pincode}
                     onChange={(e) =>
                       setAddressData({
@@ -539,6 +546,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="city"
                     name="city"
+                    autoComplete="off"
                     value={addressData.city}
                     onChange={(e) =>
                       setAddressData({
@@ -564,6 +572,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="state"
                     name="state"
+                    autoComplete="off"
                     value={addressData.state}
                     onChange={(e) =>
                       setAddressData({
@@ -589,6 +598,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     type="text"
                     id="country"
                     name="country"
+                    autoComplete="off"
                     value={addressData.country}
                     onChange={(e) =>
                       setAddressData({

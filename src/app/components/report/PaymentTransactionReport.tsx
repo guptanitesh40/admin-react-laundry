@@ -3,6 +3,7 @@ import { useGetPaymentTransactionData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -27,8 +28,8 @@ const PaymentTransactionReport: React.FC = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -39,7 +40,9 @@ const PaymentTransactionReport: React.FC = () => {
   };
 
   const categories =
-    paymentTransactionData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
+    paymentTransactionData?.map(
+      (item: { month: any }) => item.month.split("-")[0]
+    ) || [];
   const receivedAmount =
     paymentTransactionData?.map(
       (item: { total_amount: any }) => item.total_amount
@@ -176,20 +179,16 @@ const PaymentTransactionReport: React.FC = () => {
     },
   };
 
-
   return (
-    <div
-      className="col-span-1"
-    >
+    <div className="col-span-1">
       <div className="card w-full">
         <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full gap-x-2">
-          <div
-            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
-          >
+          <div className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2">
             <RangePicker
               className="min-w-[70px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 

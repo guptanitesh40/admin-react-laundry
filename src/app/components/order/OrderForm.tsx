@@ -85,11 +85,7 @@ const OrderForm: React.FC = () => {
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
   const { userData, fetchUser } = useGetUser();
-  const {
-    transactionId,
-    generatePaymentLink,
-    loading: sendingLink,
-  } = useGeneratePaymentLink();
+  const { generatePaymentLink, loading: sendingLink } = useGeneratePaymentLink();
   const user = userData?.user;
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -207,15 +203,6 @@ const OrderForm: React.FC = () => {
     };
     fetchData();
   }, [formData.user_id, isSubmit]);
-
-  useEffect(() => {
-    if (transactionId) {
-      setFormData({
-        ...formData,
-        transaction_id: transactionId,
-      });
-    }
-  }, [transactionId]);
 
   useEffect(() => {
     if (!order_id) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AreaChart from "react-apexcharts";
 import { useGetKasarData } from "../../hooks";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -24,8 +25,8 @@ const KasarReport = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -35,7 +36,8 @@ const KasarReport = () => {
     }
   };
 
-  const categories = kasarData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
+  const categories =
+    kasarData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const kasarAmount =
     kasarData?.map(
       (item: { total_kasar_amount: any }) => item.total_kasar_amount
@@ -192,6 +194,7 @@ const KasarReport = () => {
                 className="min-w-[80px] sm:w-[250px]"
                 dropdownClassName="custom-rangepicker-dropdown"
                 onChange={handleDateChange}
+                format="DD-MM-YYYY"
               />
             </div>
 

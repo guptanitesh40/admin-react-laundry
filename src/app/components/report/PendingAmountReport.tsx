@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PieChart from "react-apexcharts";
 import { useGetPendingAmountData } from "../../hooks";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -25,8 +26,8 @@ const PendingAmountReport: React.FC = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -95,13 +96,12 @@ const PendingAmountReport: React.FC = () => {
     <div className="col-span-1">
       <div className="card">
         <div className="card-header border-none flex flex-col sm:flex-row mt-2 items-start w-full">
-          <div
-            className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2"
-          >
+          <div className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2">
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 

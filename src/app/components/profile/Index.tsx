@@ -34,7 +34,7 @@ const Profile: React.FC = () => {
                   <div className="card-table scrollable-x-auto pb-3">
                     <table className="table align-middle text-sm text-gray-500">
                       <tbody>
-                        {!!user.image && (
+                        {/* {!!user.image && (
                           <tr>
                             <td className="py-2 min-w-28">Photo</td>
 
@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
                               </span>
                             </td>
                           </tr>
-                        )}
+                        )} */}
                         <tr>
                           <td className="py-2">Name</td>
                           <td className="py-2 text-gray-700 text-sm">

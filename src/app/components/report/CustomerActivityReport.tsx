@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useGetCustomerActivityData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -25,8 +26,8 @@ const CustomerActivityReport: React.FC = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -120,6 +121,7 @@ const CustomerActivityReport: React.FC = () => {
         },
       },
       markers: {
+        size: loginCount?.length === 1 ? 3 : 0,
         colors: "#4154f1",
         strokeColors: "#4154f1",
         strokeWidth: 4,
@@ -171,6 +173,7 @@ const CustomerActivityReport: React.FC = () => {
           className="min-w-[80px] sm:w-[250px]"
           dropdownClassName="custom-rangepicker-dropdown"
           onChange={handleDateChange}
+          format="DD-MM-YYYY"
         />
       </div>
       <div className="flex justify-between ml-6">
