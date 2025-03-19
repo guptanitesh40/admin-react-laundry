@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useGetSalesData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -24,8 +25,8 @@ const SalesBookingReport = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -35,7 +36,8 @@ const SalesBookingReport = () => {
     }
   };
 
-  const categories = salesData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
+  const categories =
+    salesData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
   const totalSales =
     salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
   const totalCollection =
@@ -192,13 +194,12 @@ const SalesBookingReport = () => {
     <div className="col-span-2">
       <div className="card w-full">
         <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
-          <div
-            className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last"
-          >
+          <div className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last">
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 

@@ -728,16 +728,41 @@ const OrderDetails: React.FC = () => {
           </div>
 
           {order.branch && (
-            <div className="card rounded-xl">
-              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <h3 className="card-title">Branch Information</h3>
-                    </div>
-                    <div className="text-2sm font-medium text-gray-700">
-                      {order.branch.branch_name}
-                    </div>
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">Branch Information</h3>
+                </div>
+                <div className="card-body pt-4 pb-2">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Branch Name:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.branch.branch_name}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Email:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.branch.branch_email}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Phone Number:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.branch.branch_phone_number}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>

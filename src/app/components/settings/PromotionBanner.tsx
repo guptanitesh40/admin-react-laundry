@@ -319,6 +319,7 @@ const PromotionBanner: React.FC = () => {
                           },
                         },
                       }}
+                      disablePast
                     />
                   </LocalizationProvider>
                 </div>
