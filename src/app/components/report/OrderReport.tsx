@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AreaChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -27,8 +28,8 @@ const OrderReport = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -145,29 +146,24 @@ const OrderReport = () => {
           },
         },
       },
-      markers:
-        orderData?.length === 1
-          ? {
-              size: 2,
-              colors: "#1976d2",
-              strokeColors: "#1976d2",
-              strokeWidth: 4,
-              strokeOpacity: 1,
-              strokeDashArray: 0,
-              fillOpacity: 1,
-              shape: "circle",
-              radius: 2,
-              offsetX: 0,
-              offsetY: 0,
-              showNullDataPoints: true,
-              hover: {
-                size: 4,
-                sizeOffset: 0,
-              },
-            }
-          : {
-              size: 0,
-            },
+      markers: {
+        size: orders?.length === 1 ? 3 : 0,
+        colors: "#1976d2",
+        strokeColors: "#1976d2",
+        strokeWidth: 4,
+        strokeOpacity: 1,
+        strokeDashArray: 0,
+        fillOpacity: 1,
+        shape: "circle",
+        radius: 2,
+        offsetX: 0,
+        offsetY: 0,
+        showNullDataPoints: true,
+        hover: {
+          size: 4,
+          sizeOffset: 0,
+        },
+      },
       tooltip: {
         x: {
           format: "MMM yyyy",
@@ -195,6 +191,7 @@ const OrderReport = () => {
               className="min-w-[80px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 

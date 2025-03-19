@@ -3,6 +3,7 @@ import { useGetPaymentTypeData } from "../../hooks";
 import DonutChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -26,8 +27,8 @@ const PaymentTypeReport = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -121,6 +122,7 @@ const PaymentTypeReport = () => {
               className="min-w-[80px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 

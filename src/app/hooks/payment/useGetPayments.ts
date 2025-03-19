@@ -38,7 +38,7 @@ const useGetPayments = (
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
     if (perPage) queryParams.append("per_page", perPage.toString());
     if (search) queryParams.append("search", search);
-    if (sortColumn) queryParams.append("sortBy", sortColumn);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (user_id) {
       user_id.forEach((u) => queryParams.append("user_id", u.toString()));

@@ -189,6 +189,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="building_number"
                 name="building_number"
+                autoComplete="off"
                 value={addressData.building_number}
                 onChange={(e) =>
                   setAddressData({
@@ -288,6 +289,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="landmark"
                 name="landmark"
+                autoComplete="off"
                 value={addressData.landmark}
                 onChange={(e) =>
                   setAddressData({
@@ -313,6 +315,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="pincode"
                 name="pincode"
+                autoComplete="off"
                 value={addressData.pincode}
                 onChange={(e) =>
                   setAddressData({
@@ -338,6 +341,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="city"
                 name="city"
+                autoComplete="off"
                 value={addressData.city}
                 onChange={(e) =>
                   setAddressData({
@@ -363,6 +367,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="state"
                 name="state"
+                autoComplete="off"
                 value={addressData.state}
                 onChange={(e) =>
                   setAddressData({
@@ -388,6 +393,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 type="text"
                 id="country"
                 name="country"
+                autoComplete="off"
                 value={addressData.country}
                 onChange={(e) =>
                   setAddressData({

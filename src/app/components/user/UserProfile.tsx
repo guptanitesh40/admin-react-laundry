@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useGetUser from "../../hooks/user/useGetuser";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
-import { PaymentStatus, PaymentType, Role } from "../../../types/enums";
+import { Gender, PaymentStatus, PaymentType, Role } from "../../../types/enums";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import OrderListModal from "./DuoOrderListModal.tsx";
@@ -108,6 +108,14 @@ const UserProfile: React.FC = () => {
                       {user.mobile_number}
                     </td>
                   </tr>
+                  <tr>
+                    <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                      Gender:
+                    </td>
+                    <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                      {Gender[user.gender as unknown as keyof typeof Gender]}
+                    </td>
+                  </tr>
 
                   {user?.image !== "" && (
                     <tr>
@@ -181,7 +189,7 @@ const UserProfile: React.FC = () => {
       </div>
 
       {user?.role_id === 5 && user && (
-        <CustomerOrders user={user} userId={user_id} count={count}/>
+        <CustomerOrders user={user} userId={user_id} count={count} />
       )}
 
       {user?.orders.length > 0 && (

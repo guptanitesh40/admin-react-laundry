@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import BarChart from "react-apexcharts";
 import { useGetRefundAmountData } from "../../hooks";
 import { DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -24,8 +25,8 @@ const RefundAmountReport: React.FC = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
-        start_time: dateStrings[0],
-        end_time: dateStrings[1],
+        start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
@@ -35,7 +36,8 @@ const RefundAmountReport: React.FC = () => {
     }
   };
 
-  const categories = refundAmountData?.map((item: any) => item.month.split("-")[0]) || [];
+  const categories =
+    refundAmountData?.map((item: any) => item.month.split("-")[0]) || [];
   const refundAmounts =
     refundAmountData?.map((item: any) => item.total_refund_amount) || [];
   const totalAmounts =
@@ -128,13 +130,12 @@ const RefundAmountReport: React.FC = () => {
     <div className="col-span-1">
       <div className="card w-full">
         <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
-          <div
-            className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:!order-last"
-          >
+          <div className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:!order-last">
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
               dropdownClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
+              format="DD-MM-YYYY"
             />
           </div>
 
