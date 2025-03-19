@@ -135,7 +135,7 @@ const UserFilter: React.FC<UserFilterProps> = ({ filters, updateFilters }) => {
               });
             }}
             {...(!filters?.companyFilter || filters?.companyFilter.length === 0
-              ? { defaultOption: "Please select branch" }
+              ? { defaultOption: "Please select company" }
               : branches && branches?.length === 0
               ? { noDataAvailableLabel: "No Branch Available" }
               : {})}

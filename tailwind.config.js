@@ -371,6 +371,7 @@ export default {
 				  12.5: '3.125rem', 	// 40px
 			  },
 			  screens: {
+				  mdmobile: {max:'420px'},
 				  zx: {max:'400px'},
 				  mobile: {max:'525px'},
 				  fmobile: {max:'500px'},

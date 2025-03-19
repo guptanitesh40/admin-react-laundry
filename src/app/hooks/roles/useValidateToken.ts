@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 import { login, logout } from "../../utils/authSlice";
-import { addUser, removeUser } from "../../utils/userSlice";
+import { addUser } from "../../utils/userSlice";
 import useGetUserPermissions from "./useGetUserPermissions";
 
 const useValidateToken = () => {
@@ -34,15 +34,28 @@ const useValidateToken = () => {
 
       if (response.ok) {
         const permissions = await fetchUserPermissions(storedToken);
+        const user = data?.data?.user || {};
 
-        dispatch(addUser(data.data.user));
+        dispatch(
+          addUser({
+            user_id: user.user_id ?? null,
+            first_name: user.first_name ?? "",
+            last_name: user.last_name ?? "",
+            mobile_number: user.mobile_number ?? "",
+            email: user.email ?? "",
+            role: user.role ?? "",
+            gender: user.gender ?? null,
+            role_id: user.role_id ?? null,
+            image: user.image ?? "",
+          })
+        );
 
         dispatch(
           login({
             isAuthenticated: true,
             token: data?.data?.token || storedToken,
             permissions,
-            role_id: data?.data?.user?.role_id ?? null,
+            role_id: user.role_id ?? null,
           })
         );
       } else {
