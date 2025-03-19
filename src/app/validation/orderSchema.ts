@@ -52,7 +52,14 @@ export const orderSchema = Yup.object().shape({
 
   paid_amount: Yup.number()
     .typeError("Paid amount must be a number")
-    .min(0, "Paid amount must be a positive number"),
+    .min(0, "Paid amount must be a positive number")
+    .test(
+      "max-paid",
+      "paid amount cannot be greater than the total amount",
+      function (value) {
+        return value !== undefined && value <= this.options.context?.total;
+      }
+    ),
 
   branch_id: Yup.number()
     .required("Please select branch")

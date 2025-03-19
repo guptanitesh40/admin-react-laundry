@@ -11,16 +11,20 @@ const store = configureStore({
   },
   preloadedState: {
     auth: {
-      isAuthenticated: !!storedToken ,
-      token: storedToken, 
+      isAuthenticated: !!storedToken,
+      token: storedToken,
       permissions: [],
       role_id: null,
     },
     user: {
-      id: null,
-      name: "",
+      user_id: null,
+      first_name: "",
+      last_name: "",
+      mobile_number: "",
       email: "",
       role: "",
+      gender: null,
+      role_id: null,
     },
   },
 });

@@ -317,7 +317,9 @@ const OrderForm: React.FC = () => {
         items: formattedItems,
       };
 
-      await orderSchema.validate(dataToValidate, { abortEarly: false });
+      const total = formData.sub_total + formData.express_delivery_charges + formData.normal_delivery_charges;
+      
+      await orderSchema.validate(dataToValidate, { abortEarly: false, context: { total } });
 
       const isDataChanged = () => {
         return (Object.keys(formData) as (keyof typeof formData)[]).some(

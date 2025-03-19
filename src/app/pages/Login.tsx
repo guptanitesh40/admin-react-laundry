@@ -6,7 +6,6 @@ import { login as loginAction } from "../utils/authSlice";
 import toast from "react-hot-toast";
 import useLogin from "../hooks/login/useLogin";
 import * as Yup from "yup";
-import { useGetUserPermissions } from "../hooks";
 
 const device_type = "sasas";
 const device_token = "sdlknoin";
@@ -25,11 +24,14 @@ const validationSchema = Yup.object({
 });
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    userId: undefined as number | undefined,
+  });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [userId, setUserId] = useState<number>();
 
   const isAuthenticated = useSelector(
     (state: any) => state.auth.isAuthenticated
@@ -44,23 +46,30 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "userId" ? Number(value) : value,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await validationSchema.validate(
-        { username, password, userId },
-        { abortEarly: false }
-      );
+      await validationSchema.validate(formData, { abortEarly: false });
 
-      if (username.length > 50) {
+      if (formData.username.length > 50) {
         toast.error("Username must be 50 characters or fewer.", {
           position: "top-center",
         });
         return;
       }
 
-      if (password.length > 50) {
+      if (formData.password.length > 50) {
         toast.error("Password must be 50 characters or fewer.", {
           position: "top-center",
         });
@@ -68,9 +77,9 @@ const Login: React.FC = () => {
       }
 
       const success = await login(
-        username,
-        password,
-        userId,
+        formData.username,
+        formData.password,
+        formData.userId,
         device_type,
         device_token
       );
@@ -86,14 +95,23 @@ const Login: React.FC = () => {
               permissions: [],
             })
           );
+
+          setFormData({
+            username: "",
+            password: "",
+            userId: undefined,
+          });
           navigate("/dashboard");
         } else {
           toast.error("Login failed: Unable to retrieve authentication token.");
+          dispatch(
+            loginAction({
+              isAuthenticated: false,
+              token: null,
+              permissions: [],
+            })
+          );
         }
-      } else {
-        dispatch(
-          loginAction({ isAuthenticated: false, token: null, permissions: [] })
-        );
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -107,40 +125,41 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center p-5 order-2 lg:order-1 w-full">
-      <div className="card max-w-[400px]">
+    <div className="flex justify-center items-center min-h-screen p-6 smmobile:p-5 w-full">
+      <div className="card w-full max-w-[400px] smobile:max-w-[350px] vsmobile:max-w-[320px]">
         <form
           onSubmit={handleSubmit}
-          className="card-body flex flex-col gap-3 p-10"
+          className="card-body flex flex-col gap-3 p-10 smobile:p-6 vsmobile:p-4"
           id="log_in_form"
         >
           <div className="flex justify-center">
             <img
-              className="default-logo min-h-[20px] max-w-none"
+              className="default-logo h-10 smobile:h-8 vsmobile:h-7"
               src="/media/app/Group 34972.png"
+              alt="Logo"
             />
           </div>
+
           <div className="text-center mt-2">
-            <h3 className="text-lg font-semibold text-gray-900 leading-none mb-2.5">
+            <h3 className="text-lg smobile:text-base vsmobile:text-sm font-semibold text-gray-900 leading-none mb-2.5">
               Log in to your account
             </h3>
-          </div>
+          </div>  
 
           <div className="flex flex-col gap-1">
             <label
-              htmlFor="payment_status"
-              className="form-label text-gray-900 mb-1"
+              htmlFor="userId"
+              className="form-label text-gray-900 text-sm vsmobile:text-xs mb-1"
             >
               Login As
             </label>
             <select
-              className="select select-lg w-full text-sm"
-              value={userId}
-              onChange={(e) => {
-                setUserId(Number(e.target.value));
-              }}
+              className="select select-lg w-full text-sm vsmobile:text-xs p-2 border rounded-md"
+              name="userId"
+              value={formData.userId || ""}
+              onChange={handleChange}
             >
-              <option value="" selected>
+              <option value="" disabled>
                 Select User
               </option>
               <option value={1}>Super Admin</option>
@@ -148,30 +167,35 @@ const Login: React.FC = () => {
               <option value={3}>Branch Manager</option>
               <option value={6}>Workshop Manager</option>
             </select>
-            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+            <p className="text-red-500 text-xs vsmobile:text-[10px]">
               {errors.userId || "\u00A0"}
             </p>
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="form-label text-gray-900" htmlFor="username">
+            <label
+              className="form-label text-gray-900 text-sm vsmobile:text-xs"
+              htmlFor="username"
+            >
               Email
             </label>
             <input
               id="username"
-              className="input border border-gray-300 rounded-md p-2"
+              autoComplete="off"
+              className="input border border-gray-300 rounded-md p-2 text-sm vsmobile:text-xs"
               placeholder="email@example.com"
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
             />
-            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+            <p className="text-red-500 text-xs vsmobile:text-[10px]">
               {errors.username || "\u00A0"}
             </p>
           </div>
 
           <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center justify-between gap-1">
               <label className="form-label text-gray-900" htmlFor="password">
                 Password
               </label>
@@ -180,34 +204,34 @@ const Login: React.FC = () => {
               </Link>
             </div>
             <div className="relative">
-              <label className="input" data-toggle-password="true">
-                <input
-                  name="password"
-                  placeholder="Enter Password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <span
+              <input
+                name="password"
+                autoComplete="off"
+                placeholder="Enter Password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2 text-sm vsmobile:text-xs w-full"
+              />
+              <span
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
                   onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? (
+              >
+                {showPassword ? (
                     <i className="ki-filled ki-eye-slash text-gray-500"></i>
                   ) : (
                     <i className="ki-filled ki-eye text-gray-500"></i>
                   )}
-                </span>
-              </label>
+              </span>
             </div>
-            <p className="right-[0.2rem] text-red-500 text-sm w-80">
+            <p className="text-red-500 text-xs vsmobile:text-[10px]">
               {errors.password || "\u00A0"}
             </p>
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary flex justify-center grow"
+            className="btn btn-primary flex justify-center grow text-sm vsmobile:text-xs p-2"
             disabled={loading}
           >
             {loading ? "Logging In..." : "Log In"}
