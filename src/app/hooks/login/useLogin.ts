@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { LOGIN_URL } from "../../utils/constant";
 import { login as loginAction } from "../../utils/authSlice";
-import { addUser } from "../../utils/userSlice";
 import useGetUserPermissions from "../roles/useGetUserPermissions";
 
 const useLogin = () => {
@@ -56,10 +55,8 @@ const useLogin = () => {
               permissions: [],
               role_id: user.role_id,
             })
-          );
-
-          dispatch(addUser(user));
-
+          );         
+  
           fetchUserPermissions(authToken).then((permissions) => {
             dispatch(
               loginAction({

@@ -19,7 +19,14 @@ const schema = Yup.object().shape({
   refund_amount: Yup.number()
     .required("Refund amount is required")
     .typeError("Refund amount must be a number")
-    .min(0, "Paid amount must be a positive number"),
+    .min(0, "Refund amount must be a positive number")
+    .test(
+      "max-refund",
+      "Refund amount cannot be greater than the paid amount",
+      function (value) {
+        return value !== undefined && value <= this.options.context?.PaidAmount;
+      }
+    ),
   refund_status: Yup.number()
     .required("Please choose refund status")
     .test("required", "Please choose refund status", (value) => !!value),
@@ -66,7 +73,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
     e.preventDefault();
 
     try {
-      await schema.validate(formData, { abortEarly: false });
+      await schema.validate(formData, { abortEarly: false, context: { PaidAmount } });
 
       const formattedData = {
         ...formData,
@@ -100,7 +107,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[85%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[440px] smobile:min-w-[85%] z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -181,7 +188,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
             </label>
             <select
               id="refund_status"
-              className="select select-lg w-[170px] text-sm"
+              className="select select-lg w-[200px] text-sm"
               value={formData.refund_status || ""}
               onChange={(e) =>
                 setFormData({
