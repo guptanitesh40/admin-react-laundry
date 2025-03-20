@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface BranchSalesData {
   branch_id: number;
@@ -16,11 +15,17 @@ const useGetBranchSalesData = () => {
   const [branchSalesData, setBranchSalesData] = useState<BranchSalesData[]>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchBranchSalesData = async () => {
+  const fetchBranchSalesData = async (start_date?: string, end_date?: string) => {
+    const token = localStorage.getItem("authToken");
+    const queryParams = new URLSearchParams();
+
+    if (start_date) queryParams.append("startDate", start_date);
+    if (end_date) queryParams.append("endDate", end_date);
+
     setLoading(true);
     try {
       const response = await fetch(
-        `${BASE_URL}/report/branch-wise-sales-collections`,
+        `${BASE_URL}/report/branch-wise-sales-collections?${queryParams}`,
         {
           method: "GET",
           headers: {

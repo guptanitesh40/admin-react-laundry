@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { useDeleteCoupon, useGetCoupons, usePermissions } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import {
-  FaPencilAlt,
-  FaTrash
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import dayjs from "dayjs";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CouponType, DiscountType } from "../../../types/enums";
@@ -268,37 +265,9 @@ const CouponTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[180px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "title"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("title")}
-                    >
-                      <span className="sort-label">Title</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[180px]">Title</th>
 
-                  <th className="min-w-[240px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "description"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("description")}
-                    >
-                      <span className="sort-label">Description</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[240px]">Description</th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -316,21 +285,7 @@ const CouponTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[170px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "discount_type"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("discount_type")}
-                    >
-                      <span className="sort-label">Discount type</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[170px]">Discount type</th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -396,21 +351,7 @@ const CouponTable: React.FC = () => {
                     </span>
                   </th>
 
-                  <th className="min-w-[170px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "branch_id"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_type")}
-                    >
-                      <span className="sort-label">Coupon Type</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[170px]">Coupon Type</th>
 
                   {(hasPermission(9, "update") ||
                     hasPermission(9, "delete")) && (

@@ -27,8 +27,13 @@ const PaymentsTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const [customerSearch, setCustomerSearch] = useState("");
+  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
+    []
+  );
+  const [selectedCustomers, setSelectedCustomers] = useState<OptionType[]>([]);
   const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
+  const [customerSearch, setCustomerSearch] = useState("");
+
   const [paymentStatusFilter, setPaymentStatusFilter] = useState([]);
   const [userFilter, setUserFilter] = useState<number[]>([]);
 
@@ -53,18 +58,38 @@ const PaymentsTable: React.FC = () => {
   const totalPages = Math.ceil(count / perPage);
 
   useEffect(() => {
-    const fetchCustomer = async () => {
+    const fetchInitialUsers = async () => {
+      const customers = await fetchUsersByRole(5);
+
+      const formatOptions = (users: any[]) =>
+        users.map((user) => ({
+          label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
+          value: user.user_id,
+        }));
+
+      setAllCustomerOptions(formatOptions(customers));
+    };
+
+    fetchInitialUsers();
+  }, []);
+
+  useEffect(() => {
+    const fetchFilteredUsers = async () => {
       const customers = await fetchUsersByRole(5, customerSearch);
-      const formattedOptions = customers?.map((user: any) => ({
+      const formattedOptions = customers.map((user: any) => ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
       }));
+
       setCustomerOptions(formattedOptions);
     };
+
     if (customerSearch) {
-      fetchCustomer();
+      fetchFilteredUsers();
+    } else {
+      setCustomerOptions(allCustomerOptions);
     }
-  }, [customerSearch]);
+  }, [customerSearch, allCustomerOptions]);
 
   useEffect(() => {
     if (pageParams) {
@@ -117,6 +142,17 @@ const PaymentsTable: React.FC = () => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const getCombinedOptions = (
+    selectedOptions: OptionType[],
+    filteredOptions: OptionType[]
+  ): OptionType[] => [
+    ...selectedOptions.filter(
+      (selected) =>
+        !filteredOptions.some((option) => option.value === selected.value)
+    ),
+    ...filteredOptions,
+  ];
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -157,22 +193,22 @@ const PaymentsTable: React.FC = () => {
             />
 
             <MultiSelect
-              options={customerOptions}
-              displayValue="user_name"
-              placeholder="Select Customer"
-              selectedValues={userFilter}
-              onSelect={(selectedList: any) =>
-                setUserFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              onRemove={(selectedList: any) =>
-                setUserFilter(
-                  selectedList.map((item: { value: any }) => item.value)
-                )
-              }
-              className="sm:min-w-[320px] smmobile:min-w-[290px] smobile:min-w-[300px] vsmobile:min-w-[240px]"
+              options={getCombinedOptions(selectedCustomers, customerOptions)}
+              displayValue="label"
+              placeholder="Search Customer"
+              selectedValues={selectedCustomers.map(
+                (customer) => customer.value
+              )}
+              onSelect={(selectedList: any) => {
+                setSelectedCustomers(selectedList);
+                setUserFilter(selectedList.map((item: any) => item.value));
+              }}
+              onRemove={(selectedList: any) => {
+                setSelectedCustomers(selectedList);
+                setUserFilter(selectedList.map((item: any) => item.value));
+              }}
               setSearch={setCustomerSearch}
+              className="sm:min-w-[320px] smmobile:min-w-[290px] smobile:min-w-[300px] vsmobile:min-w-[240px]"
               isSearchInput={true}
             />
           </div>
