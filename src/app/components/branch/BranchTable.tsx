@@ -307,13 +307,13 @@ const BranchTable: React.FC = () => {
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
-                        sortColumn === "email"
+                        sortColumn === "branch_email"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("email")}
+                      onClick={() => handleSort("branch_email")}
                     >
                       <span className="sort-label">Email</span>
                       <span className="sort-icon"></span>
@@ -355,13 +355,13 @@ const BranchTable: React.FC = () => {
                   <th className="min-w-[230px]">
                     <span
                       className={`sort ${
-                        sortColumn === "branch_manager"
+                        sortColumn === "first_name"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("branch_manager")}
+                      onClick={() => handleSort("first_name")}
                     >
                       <span className="sort-label">Branch Manager Name</span>
                       <span className="sort-icon"></span>
@@ -371,13 +371,13 @@ const BranchTable: React.FC = () => {
                   <th className="min-w-[190px]">
                     <span
                       className={`sort ${
-                        sortColumn === "company_name"
+                        sortColumn === "company_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("company_name")}
+                      onClick={() => handleSort("company_id")}
                     >
                       <span className="sort-label">Company Name</span>
                       <span className="sort-icon"></span>

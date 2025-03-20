@@ -372,6 +372,7 @@ export default {
 			  },
 			  screens: {
 				  mdmobile: {max:'420px'},
+				  bnmobile: {max:'425px'},
 				  zx: {max:'400px'},
 				  mobile: {max:'525px'},
 				  fmobile: {max:'500px'},
@@ -383,6 +384,7 @@ export default {
 				  vsmobile: {max: '390px'},
 				  mdscreen: '635px',
 				  mini: '350px',
+				  bndesktop: '425px',
 				  lgmobile:'390px',
 				  desktop:'525px',
 				  sm: '640px',

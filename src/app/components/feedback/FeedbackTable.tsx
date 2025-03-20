@@ -55,6 +55,17 @@ const FeedbackTable: React.FC = () => {
     }
   }, [pageParams, perPageParams]);
 
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
+
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -301,7 +312,7 @@ const FeedbackTable: React.FC = () => {
                   <th className="min-w-[100px]">Rating</th>
                   <th className="min-w-[300px]">Comment</th>
                   <th className="min-w-[120px]">
-                  <span
+                    <span
                       className={`sort ${
                         sortColumn === "created_at"
                           ? sortOrder === "ASC"
