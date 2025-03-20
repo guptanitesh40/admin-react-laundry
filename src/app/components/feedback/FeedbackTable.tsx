@@ -56,15 +56,19 @@ const FeedbackTable: React.FC = () => {
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
-    }
+    setCurrentPage(1);
+    setSearchParams(
+      search
+        ? { search, page: "1", perPage: perPage.toString() }
+        : { page: "1", perPage: perPage.toString() }
+    );
   }, [search]);
+
+  useEffect(() => {
+    if (publishFilter !== undefined || ratingFilter.length > 0) {
+      setCurrentPage(1);
+    }
+  }, [publishFilter, ratingFilter]);
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

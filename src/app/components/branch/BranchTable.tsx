@@ -6,11 +6,7 @@ import {
   useGetCompanies,
   usePermissions,
 } from "../../hooks";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import TableShimmer from "../shimmer/TableShimmer";
 import * as Yup from "yup";
@@ -371,13 +367,13 @@ const BranchTable: React.FC = () => {
                   <th className="min-w-[190px]">
                     <span
                       className={`sort ${
-                        sortColumn === "company_id"
+                        sortColumn === "company_name"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("company_id")}
+                      onClick={() => handleSort("company_name")}
                     >
                       <span className="sort-label">Company Name</span>
                       <span className="sort-icon"></span>
@@ -396,21 +392,20 @@ const BranchTable: React.FC = () => {
               ) : branches.length > 0 ? (
                 <tbody>
                   {branches.map((branch) => (
-                    <tr key={branch.branch_id}>
+                    <tr
+                      key={branch.branch_id}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        navigate(`/branch-profile/${branch.branch_id}`)
+                      }
+                    >
                       <td>
                         <div className="flex items-center gap-2.5">
                           {branch.branch_id}
                         </div>
                       </td>
                       <td>
-                        <div
-                          className="flex items-center gap-2.5 cursor-pointer hover:text-primary"
-                          onClick={() =>
-                            navigate(`/branch-profile/${branch.branch_id}`)
-                          }
-                        >
-                          {branch.branch_name}
-                        </div>
+                        <div>{branch.branch_name}</div>
                       </td>
                       <td>
                         <div className="flex items-center gap-2.5">
