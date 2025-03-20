@@ -163,7 +163,7 @@ const PromotionBanner: React.FC = () => {
           <form onSubmit={handleSaveSettings}>
             <div className="card-body grid gap-4">
               <div className="flex items-center flex-wrap gap-2.5">
-                <div className="flex justify-end flex-wrap grow gap-2.5">
+                <div className="flex justify-end bnmobile:justify-center flex-wrap grow gap-2.5">
                   <div className="image-input relative" data-image-input="true">
                     <label
                       htmlFor="image-upload"
@@ -182,7 +182,7 @@ const PromotionBanner: React.FC = () => {
                       style={{ display: "none" }}
                       onChange={handleBannerImageChange}
                     />
-                    <div className="flex flex-col items-center w-[300px]">
+                    <div className="flex flex-col items-center max-w-[300px] bnmobile:w-[95%]">
                       <div className="image-input-placeholder rounded-md border-2">
                         <img
                           className="h-[200px] w-[300px] rounded-sm"
@@ -205,7 +205,10 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="title">
+                  <label
+                    className="form-label flex items-center gap-1 max-w-56"
+                    htmlFor="title"
+                  >
                     Title
                   </label>
                   <div className="flex flex-col w-full">
@@ -236,7 +239,10 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="price">
+                  <label
+                    className="form-label flex items-center gap-1 max-w-56"
+                    htmlFor="price"
+                  >
                     Price (Rs)
                   </label>
                   <div className="flex flex-col w-full">
@@ -267,7 +273,10 @@ const PromotionBanner: React.FC = () => {
 
               <div>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label className="form-label flex items-center gap-1 max-w-56" htmlFor="promotion_code">
+                  <label
+                    className="form-label flex items-center gap-1 max-w-56"
+                    htmlFor="promotion_code"
+                  >
                     Promotion code
                   </label>
                   <div className="flex flex-col w-full">

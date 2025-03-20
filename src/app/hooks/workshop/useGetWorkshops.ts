@@ -30,7 +30,7 @@ const useGetWorkshops = (
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());
     if (perPage) queryParams.append("per_page", perPage.toString());
     if (search) queryParams.append("search", search);
-    if (sortColumn) queryParams.append("sortBy", sortColumn);
+    if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (workshop_manager_ids) {
       workshop_manager_ids.forEach((m) => queryParams.append("workshop_manager_ids", m.toString()));

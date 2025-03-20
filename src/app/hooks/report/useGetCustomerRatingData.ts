@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface CustomerRatingData {
   rating: number;
@@ -15,6 +14,8 @@ const useGetCustomerRatingData = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCustomerRatingData = async () => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/report/customers-feedback`, {

@@ -33,6 +33,7 @@ const useGetFeedbacks = (
 
   const fetchFeedbacks = async () => {
     const token = localStorage.getItem("authToken");
+    
     const queryParams = new URLSearchParams();
 
     if (pageNumber) queryParams.append("page_number", pageNumber.toString());

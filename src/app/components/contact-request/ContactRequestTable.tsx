@@ -55,6 +55,17 @@ const ContactRequestTable: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);

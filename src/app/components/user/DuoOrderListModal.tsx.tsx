@@ -40,11 +40,13 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
       fetchUser(userId);
     }
   }, [modalOpen, userId]);
-  
+
   useEffect(() => {
     if (user?.orders) {
       const paymentDueOrders = user.orders.filter(
-        (order: Order) => ![2].includes(order.payment_status) && ![12,13].includes(order.order_status)
+        (order: Order) =>
+          ![2].includes(order.payment_status) &&
+          ![12, 13].includes(order.order_status)
       );
       paymentDueOrders.map((order: Order) => ({
         ...order,
@@ -54,7 +56,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
       }));
       setFilteredOrders(paymentDueOrders);
     }
-  }, [user]); 
+  }, [user]);
 
   const handleInputChange = (orderId: number, field: string, value: number) => {
     const updated = filteredOrders.map((order) => {
@@ -68,7 +70,12 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
           (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0) ||
           0;
 
-        if (updatedOrder.current_total === order.total || updatedOrder.current_total === order.total - order.paid_amount) {
+        if (updatedOrder.current_total === 0) {
+          updatedOrder.payment_status = 1;
+        } else if (
+          updatedOrder.current_total === order.total ||
+          updatedOrder.current_total === order.total - order.paid_amount
+        ) {
           setFullPayment(true);
           updatedOrder.payment_status = 2;
         } else {
@@ -99,12 +106,10 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   };
 
   const handleSave = async () => {
-
-    if(updatedOrders.length === 0){
+    if (updatedOrders.length === 0) {
       onClose();
       return;
     }
-      
 
     const payload = {
       user_id: userId,
@@ -247,10 +252,11 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
                                 <option
                                   value="1"
                                   className={`${paymentStatusClass}`}
+                                  disabled={fullPayment || !fullPayment}
                                 >
                                   Pending
                                 </option>
-                                <option value="2" disabled={!fullPayment}>
+                                <option value="2" disabled={!fullPayment || order.paid_amount === 0}>
                                   Received
                                 </option>
                                 <option value="3" disabled={fullPayment}>

@@ -70,7 +70,7 @@ const SalesBookingReport = () => {
     ],
     options: {
       chart: {
-        height: 200,
+        height: 300,
         type: "area",
         toolbar: {
           show: false,
@@ -102,6 +102,12 @@ const SalesBookingReport = () => {
           },
         },
       },
+      markers: {
+        size: categories?.length === 1 ? 5 : 0,
+        hover : {
+          size : 7,
+        }
+      },
       stroke: {
         curve: "smooth",
         show: true,
@@ -111,6 +117,7 @@ const SalesBookingReport = () => {
       legend: {
         show: false,
       },
+      
       xaxis: {
         type: "category",
         categories: categories,
@@ -140,28 +147,6 @@ const SalesBookingReport = () => {
           },
         },
       },
-      markers: {
-        size: 2,
-        colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
-        strokeColors: [
-          "var(--tw-primary)",
-          "var(--tw-brand)",
-          "var(--tw-warning)",
-        ],
-        strokeWidth: 4,
-        strokeOpacity: 1,
-        strokeDashArray: 0,
-        fillOpacity: 1,
-        shape: "circle",
-        radius: 2,
-        offsetX: 0,
-        offsetY: 0,
-        showNullDataPoints: true,
-        hover: {
-          size: 4,
-          sizeOffset: 0,
-        },
-      },
       yaxis: {
         min: 0,
         tickAmount: 5,
@@ -181,7 +166,6 @@ const SalesBookingReport = () => {
           },
         },
       },
-
       tooltip: {
         x: {
           format: "MMM yyyy",

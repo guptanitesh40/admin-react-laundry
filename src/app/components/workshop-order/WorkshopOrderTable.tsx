@@ -84,6 +84,17 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     }
   };
 
+  useEffect(() => {
+    if (search) {
+      setCurrentPage(1);
+      setSearchParams({
+        search: search,
+        page: "1",
+        perPage: perPage.toString(),
+      });
+    }
+  }, [search]);
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
