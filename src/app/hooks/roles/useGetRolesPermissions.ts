@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface PermissionData {
   role_id: number;
@@ -17,6 +16,8 @@ const useGetRolesPermissions = () => {
   const [permissionsData, setPermissionsData] = useState<PermissionData[]>();
 
   const fetchRolesPermissions = async () => {
+    const token = localStorage.getItem("authToken");
+
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/role-permission`, {
@@ -44,7 +45,7 @@ const useGetRolesPermissions = () => {
 
   useEffect(() => {
     fetchRolesPermissions();
-  }, [])
+  }, []);
 
   return { permissionsData, fetchRolesPermissions, loading };
 };

@@ -350,14 +350,13 @@ const CompanyTable: React.FC = () => {
               ) : companies.length > 0 ? (
                 <tbody>
                   {companies.map((company) => (
-                    <tr
-                      key={company.company_id}
-                      className="cursor-pointer"
-                      onClick={() =>
-                        navigate(`/company-profile/${company.company_id}`)
-                      }
-                    >
-                      <td>
+                    <tr key={company.company_id}>
+                      <td
+                        className="cursor-pointer"
+                        onClick={() =>
+                          navigate(`/company-profile/${company.company_id}`)
+                        }
+                      >
                         <div className="flex items-center gap-2.5">
                           {company.company_id}
                         </div>

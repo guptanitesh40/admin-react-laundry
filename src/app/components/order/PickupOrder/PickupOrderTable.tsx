@@ -8,11 +8,7 @@ import {
   useGetOrders,
   usePermissions,
 } from "../../../hooks";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash
-} from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import TableShimmer from "../../shimmer/TableShimmer";
 import { getOrderStatusLabel } from "../../../utils/orderStatusClasses";
 import dayjs from "dayjs";
@@ -191,7 +187,6 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
     await generateInvoice(order_id);
   };
 
-  
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -483,7 +478,12 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order.order_id}>
-                        <td>#{order.order_id}</td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => navigate(`/order/${order.order_id}`)}
+                        >
+                          #{order.order_id}
+                        </td>
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
@@ -548,7 +548,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                             ]
                           }
                         </td>
-                        
+
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (

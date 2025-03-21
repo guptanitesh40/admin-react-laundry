@@ -29,9 +29,7 @@ const BranchProfile: React.FC = () => {
     return <ProfileShimmer01 />;
   }
 
-  if (!branch) {
-    return <p className="text-gray-600">No Branch data available</p>;
-  }
+  if (!branch) return null;
 
   return (
     <div className="container-fixed">

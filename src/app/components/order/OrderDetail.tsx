@@ -416,8 +416,8 @@ const OrderDetails: React.FC = () => {
                   <button
                     className={`${nextStepLabel} badge-outline badge-xl rounded-[30px]`}
                     onClick={handleStatusClick}
-                    disabled={!hasPermission(3, "update")}
-                  >
+                    disabled={!hasPermission(3, "update") && !hasPermission(16, "update")}
+                    >
                     {order.order_status_details.next_step}
                   </button>
                 </div>

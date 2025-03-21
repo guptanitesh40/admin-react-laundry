@@ -49,6 +49,7 @@ const ResetPassword = () => {
     }
   };
 
+
   return (
     <div className="flex justify-center items-center p-5 order-2 lg:order-1 w-full">
       <div className="card max-w-[370px] w-full">
@@ -125,6 +126,7 @@ const ResetPassword = () => {
             className="btn btn-primary flex justify-center w-full"
             type="button"
             disabled={loading}
+            onClick={handleSubmit}
           >
             {loading ? <>Resetting password..</> : <>Reset password</>}
           </button>

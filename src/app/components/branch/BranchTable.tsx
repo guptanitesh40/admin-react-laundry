@@ -392,14 +392,13 @@ const BranchTable: React.FC = () => {
               ) : branches.length > 0 ? (
                 <tbody>
                   {branches.map((branch) => (
-                    <tr
-                      key={branch.branch_id}
-                      className="cursor-pointer"
-                      onClick={() =>
-                        navigate(`/branch-profile/${branch.branch_id}`)
-                      }
-                    >
-                      <td>
+                    <tr key={branch.branch_id}>
+                      <td
+                        className="cursor-pointer"
+                        onClick={() =>
+                          navigate(`/branch-profile/${branch.branch_id}`)
+                        }
+                      >
                         <div className="flex items-center gap-2.5">
                           {branch.branch_id}
                         </div>

@@ -353,7 +353,6 @@ const PrivateRoutes: React.FC = () => {
           />
         </Route>
 
-        <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/order/:id"
             element={
@@ -362,7 +361,6 @@ const PrivateRoutes: React.FC = () => {
               </Suspense>
             }
           />
-        </Route>
 
         <Route
           path="/users"
