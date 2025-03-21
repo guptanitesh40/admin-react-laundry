@@ -25,7 +25,7 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({
 
   useEffect(() => {
     setCustomerOrders(user?.orders);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -158,7 +158,7 @@ const CustomerOrders: React.FC<CustomerOrdersProps> = ({
           </div>
         </div>
       </div>
-      
+
       {customerOrders?.length < count && (
         <div className="mt-2 flex justify-center items-center">
           <button

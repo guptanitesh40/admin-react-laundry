@@ -7,6 +7,7 @@ import RefundAmountReport from "../report/RefundAmountReport";
 import PaymentTransactionReport from "../report/PaymentTransactionReport";
 import DeliveryReport from "../report/DeliveryReport";
 import SalesBookingReport from "../report/SalesBookingReport";
+import BranchSalesCollectionReport from "../report/BranchSalesCollectionReport";
 
 const DashBoard: React.FC = () => {
   return (
@@ -18,6 +19,9 @@ const DashBoard: React.FC = () => {
         </div>
         <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
           <SalesBookingReport />
+        </div>
+        <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
+          <BranchSalesCollectionReport />
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
           <RefundAmountReport />

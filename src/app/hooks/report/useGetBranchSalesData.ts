@@ -15,12 +15,13 @@ const useGetBranchSalesData = () => {
   const [branchSalesData, setBranchSalesData] = useState<BranchSalesData[]>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchBranchSalesData = async (start_date?: string, end_date?: string) => {
+  const fetchBranchSalesData = async (start_date?: string, end_date?: string, branch_id?: number) => {
     const token = localStorage.getItem("authToken");
     const queryParams = new URLSearchParams();
 
     if (start_date) queryParams.append("startDate", start_date);
     if (end_date) queryParams.append("endDate", end_date);
+    if (branch_id) queryParams.append("branch_id", branch_id.toString());
 
     setLoading(true);
     try {

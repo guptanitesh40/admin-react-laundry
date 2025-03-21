@@ -6,11 +6,7 @@ import {
   usePermissions,
 } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash
-} from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import TableShimmer from "../shimmer/TableShimmer";
 import { PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
@@ -448,7 +444,12 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order.order_id}>
-                        <td>#{order.order_id}</td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => navigate(`/order/${order.order_id}`)}
+                        >
+                          #{order.order_id}
+                        </td>
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>

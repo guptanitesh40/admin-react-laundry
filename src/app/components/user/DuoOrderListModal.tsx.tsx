@@ -8,6 +8,7 @@ interface DuoOrderListModalProps {
   onClose: () => void;
   userId: number;
   setRefetch: (value: boolean) => void;
+  count: number;
 }
 
 interface Order {
@@ -26,8 +27,9 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   onClose,
   userId,
   setRefetch,
+  count,
 }) => {
-  const { userData, fetchUser } = useGetUser();
+  const { userData, fetchUser, loading: loadingOrders } = useGetUser();
   const { clearDueAmount, loading } = useClearDueAmount();
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [updatedOrders, setUpdatedOrders] = useState<Order[]>([]);

@@ -94,21 +94,24 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
 
   const handleCheckboxChange = (module_id: number, field: keyof Permission) => {
     setPermissions((prevPermissions) =>
-      prevPermissions.map((perm) =>
-        perm.role_id === roleId && perm.module_id === module_id
-          ? {
-              ...perm,
-              [field]: !perm[field], 
-              read:
-                field === "read"
-                  ? !perm.read 
-                  : (field === "create" || field === "update" || field === "delete") &&
-                    (!perm.read || (perm.create && perm.update && perm.delete))
-                    ? true
-                    : perm.read,
+      prevPermissions.map((perm) => {
+        if (perm.role_id === roleId && perm.module_id === module_id) {
+          const updatedPerm = {
+            ...perm,
+            [field]: !perm[field], 
+          };
+  
+          if (field === "read") {
+            updatedPerm.read = !perm.read;
+          } else if (field === "create" || field === "update") {
+            if (updatedPerm.create || updatedPerm.update) {
+              updatedPerm.read = true;
             }
-          : perm
-      )
+          }
+          return updatedPerm;
+        }
+        return perm; 
+      })
     );
   };
   

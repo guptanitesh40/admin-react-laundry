@@ -361,7 +361,8 @@ const OrderDetails: React.FC = () => {
                   </button>
                 )}
 
-              {hasPermission(3, "update") &&
+              {location?.state?.from !== "WorkshopOrderTable" &&
+                hasPermission(3, "update") &&
                 order?.order_status < 8 &&
                 order?.refund_status !== 1 && (
                   <button
@@ -372,7 +373,6 @@ const OrderDetails: React.FC = () => {
                     Cancel Order
                   </button>
                 )}
-
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
@@ -416,8 +416,8 @@ const OrderDetails: React.FC = () => {
                   <button
                     className={`${nextStepLabel} badge-outline badge-xl rounded-[30px]`}
                     onClick={handleStatusClick}
-                    disabled={!hasPermission(3, "update")}
-                  >
+                    disabled={!hasPermission(3, "update") && !hasPermission(16, "update")}
+                    >
                     {order.order_status_details.next_step}
                   </button>
                 </div>
@@ -840,7 +840,7 @@ const OrderDetails: React.FC = () => {
                           {paymentStatusLabel}
                         </td>
                       </tr>
-                      {order?.pending_due_amount && (
+                      {order?.pending_due_amount > 0 && (
                         <tr>
                           <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                             Pending amount:
