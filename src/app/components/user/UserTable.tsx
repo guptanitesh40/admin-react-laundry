@@ -6,11 +6,7 @@ import {
 } from "../../hooks";
 import TableShimmer from "../shimmer/TableShimmer";
 import { useEffect, useState } from "react";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash
-} from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Gender, Role } from "../../../types/enums";
 import Swal from "sweetalert2";
@@ -311,10 +307,9 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
               ) : users.length > 0 ? (
                 <tbody>
                   {users.map((user) => {
-
                     return (
                       <tr key={user.user_id}>
-                        <td>
+                        <td className="cursor-pointer" onClick={() => handleViewUser(user.user_id)}>
                           <div className="flex items-center gap-2.5">
                             {user.user_id}
                           </div>
@@ -348,18 +343,18 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                         </td>
                         <td>
                           {user?.companies
-                            .map((company:any) => company)
+                            .map((company: any) => company)
                             .join(", ")}
                         </td>
                         <td>
                           {user?.branches
-                            
+
                             .map((branch: any) => branch)
                             .join(", ")}{" "}
                         </td>
                         <td>
                           {user?.workshops
-                            
+
                             .map((workshop: any) => workshop)
                             .join(", ")}{" "}
                         </td>
@@ -386,7 +381,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                         </td>
                       </tr>
                     );
-
                   })}
                 </tbody>
               ) : (

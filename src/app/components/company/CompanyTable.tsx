@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  useDeleteCompany,
-  useGetCompanies,
-  usePermissions,
-} from "../../hooks";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { useDeleteCompany, useGetCompanies, usePermissions } from "../../hooks";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import { searchSchema } from "../../validation/searchSchema";
@@ -359,20 +351,18 @@ const CompanyTable: React.FC = () => {
                 <tbody>
                   {companies.map((company) => (
                     <tr key={company.company_id}>
-                      <td>
+                      <td
+                        className="cursor-pointer"
+                        onClick={() =>
+                          navigate(`/company-profile/${company.company_id}`)
+                        }
+                      >
                         <div className="flex items-center gap-2.5">
                           {company.company_id}
                         </div>
                       </td>
                       <td>
-                        <span
-                          className="cursor-pointer hover:text-primary"
-                          onClick={() =>
-                            navigate(`/company-profile/${company.company_id}`)
-                          }
-                        >
-                          {company.company_name}
-                        </span>
+                        <span>{company.company_name}</span>
                       </td>
                       <td>
                         <div className="flex items-center gap-2.5">

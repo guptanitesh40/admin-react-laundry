@@ -396,7 +396,12 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order.order_id}>
-                        <td>#{order.order_id}</td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => navigate(`/order/${order.order_id}`)}
+                        >
+                          #{order.order_id}
+                        </td>
                         <td>
                           {order.user.first_name} {order.user.last_name}
                         </td>

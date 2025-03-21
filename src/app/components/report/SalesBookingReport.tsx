@@ -111,7 +111,7 @@ const SalesBookingReport = () => {
       stroke: {
         curve: "smooth",
         show: true,
-        width: 3,
+        width: 2,
         colors: ["var(--tw-primary)", "var(--tw-brand)", "var(--tw-warning)"],
       },
       legend: {

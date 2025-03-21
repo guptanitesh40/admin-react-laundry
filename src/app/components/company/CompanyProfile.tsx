@@ -21,9 +21,7 @@ const CompanyProfile: React.FC = () => {
     return <Shimmer02 />;
   }
 
-  if (!loading && !company) {
-    return <p>No company data available.</p>;
-  }
+  if (!company) return null;
 
   return (
     <div>

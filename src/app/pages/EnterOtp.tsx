@@ -6,7 +6,9 @@ import { MdOutlineVerifiedUser } from "react-icons/md";
 const EnterOtp: React.FC = () => {
   const { validateOtp, loading: validating } = useValidateOtp();
   const location = useLocation();
-  const mobileNumber = location.state.mobileNumber;
+  const formData = location.state.formData;
+  const mobileNumber = location.state.formData.mobile_number;
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
   const { sendOtp, loading: sending } = useSendOtp();
@@ -68,10 +70,11 @@ const EnterOtp: React.FC = () => {
   };
 
   const handleSendOtp = async () => {
-    if (mobileNumber) {
-      await sendOtp(mobileNumber);
+    if (formData) {
+      await sendOtp(formData);
     }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen p-5 w-full">

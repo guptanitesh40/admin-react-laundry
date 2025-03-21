@@ -255,6 +255,7 @@ const UserProfile: React.FC = () => {
         onClose={() => setModalOpen(false)}
         userId={user_id}
         setRefetch={setRefetch}
+        count={count}
       />
     </div>
   );

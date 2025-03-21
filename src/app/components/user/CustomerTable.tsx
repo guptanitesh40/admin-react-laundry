@@ -4,11 +4,7 @@ import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TableShimmer from "../shimmer/TableShimmer";
 import { Gender } from "../../../types/enums";
-import {
-  FaEye,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useDeleteUser, useGetUsers, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import MultiSelect from "../MultiSelect/MultiSelect";
@@ -317,7 +313,10 @@ const CustomerTable: React.FC = () => {
                   {users?.map((customer: any) => {
                     return (
                       <tr key={customer.user_id}>
-                        <td>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => handleViewCustomer(customer.user_id)}
+                        >
                           <div className="flex items-center gap-2.5">
                             {customer.user_id}
                           </div>

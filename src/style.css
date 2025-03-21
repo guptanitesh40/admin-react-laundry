@@ -9894,3 +9894,10 @@ input[date-range="start"] {
 .custom-rounded {
   border-radius: 5px;
 }
+
+.payment-btn {
+  color:rgb(63, 63, 221) !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgb(209, 209, 255) !important;
+}
+

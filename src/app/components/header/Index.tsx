@@ -1,15 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../utils/authSlice";
 import { RootState } from "../../utils/store";
+import SendPaymentLinkModal from "../sidebar/SendPaymentLinkModal";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const user = useSelector((state: RootState) => state.user);
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -33,19 +38,32 @@ export const Header: React.FC = () => {
       data-sticky-name="header"
       id="header"
     >
-      <div className="container-fixed flex items-stretch lg:gap-4" id="header_container">
+      <div
+        className="container-fixed flex items-stretch lg:gap-4"
+        id="header_container"
+      >
         <div className="flex gap-1 lg:hidden items-center -ml-1">
           <a className="shrink-0">
             <img className="max-h-[25px] w-full" src="/media/app/Favicon.png" />
           </a>
           <div className="flex items-center">
-            <button className="btn btn-icon btn-light btn-clear btn-sm" data-drawer-toggle="#sidebar">
+            <button
+              className="btn btn-icon btn-light btn-clear btn-sm"
+              data-drawer-toggle="#sidebar"
+            >
               <i className="ki-filled ki-menu"></i>
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 lg:gap-3.5 justify-end flex-1">
+        <div className="flex items-center gap-2 lg:gap-10 justify-end flex-1">
+          <button
+            className="btn btn-sm btn-primary payment-btn"
+            onClick={() => setModalOpen(true)}
+          >
+            Send Payment Link
+          </button>
+
           <div className="menu" data-menu="true">
             <div
               className="menu-item"
@@ -55,13 +73,21 @@ export const Header: React.FC = () => {
               data-menu-item-trigger="click|lg:click"
             >
               <div className="menu-toggle btn btn-icon rounded-full">
-                <img alt="" className="size-9 rounded-full border-2 border-success shrink-0" src="/media/images/blank.png" />
+                <img
+                  alt=""
+                  className="size-9 rounded-full border-2 border-success shrink-0"
+                  src="/media/images/blank.png"
+                />
               </div>
 
               <div className="menu-dropdown menu-default light:border-gray-300 w-full max-w-[250px] margin-x">
                 <div className="flex items-center justify-between px-5 py-1.5 gap-1.5">
                   <div className="flex items-center gap-2">
-                    <img alt="" className="size-9 rounded-full border-2 border-success" src="/media/images/blank.png"  />
+                    <img
+                      alt=""
+                      className="size-9 rounded-full border-2 border-success"
+                      src="/media/images/blank.png"
+                    />
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-800 font-semibold leading-none">
                         {user.first_name} {user.last_name}
@@ -90,7 +116,10 @@ export const Header: React.FC = () => {
 
                 <div className="flex flex-col">
                   <div className="menu-item px-4 py-1.5 items-center">
-                    <button className="btn btn-sm btn-light" onClick={handleLogout}>
+                    <button
+                      className="btn btn-sm btn-light"
+                      onClick={handleLogout}
+                    >
                       Log out
                     </button>
                   </div>
@@ -100,6 +129,11 @@ export const Header: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <SendPaymentLinkModal
+        onClose={() => setModalOpen(false)}
+        modalOpen={modalOpen}
+      />
     </header>
   );
 };
