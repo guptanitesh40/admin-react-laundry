@@ -388,8 +388,7 @@ const BranchTable: React.FC = () => {
                   </th>
 
                   {(hasPermission(13, "update") ||
-                    hasPermission(13, "delete") ||
-                    hasPermission(13, "read")) && (
+                    hasPermission(13, "delete") ) && (
                     <th className="w-[50px]">Actions</th>
                   )}
                 </tr>
@@ -446,8 +445,7 @@ const BranchTable: React.FC = () => {
                       </td>
 
                       {(hasPermission(13, "update") ||
-                        hasPermission(13, "delete") ||
-                        hasPermission(13, "read")) && (
+                        hasPermission(13, "delete")) && (
                         <td>
                           <div className="flex">
                             {hasPermission(12, "read") && (
