@@ -79,15 +79,30 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
     }
   }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [
+    filters.paymentStatusFilter,
+    filters.orderStatusFilter,
+    filters.paymentTypeFilter,
+    filters.customerFilter,
+    filters.pickupBoyFilter,
+    filters.deliveryBoyFilter,
+    filters.branchFilter,
+  ]);
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });

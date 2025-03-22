@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums"; // Ensure these enums are defined
+import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums"; 
 import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt } from "react-icons/bi";
 import dayjs from "dayjs";
@@ -373,6 +373,7 @@ const OrderDetails: React.FC = () => {
                     Cancel Order
                   </button>
                 )}
+                
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
@@ -867,7 +868,7 @@ const OrderDetails: React.FC = () => {
         </div>
       </div>
 
-      {(hasPermission(3, "create") || hasPermission(3, "update")) && (
+      {(hasPermission(3, "update") || hasPermission(16, "update")) && (
         <div className="mt-6 card rounded-xl p-6 shadow">
           <h2 className="text-lg font-medium text-gray-700 mb-4">
             Order Notes

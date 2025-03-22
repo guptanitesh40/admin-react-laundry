@@ -68,15 +68,22 @@ const BranchTable: React.FC = () => {
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
     }
   }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [companyFilter, branchManagerFilter]);
 
   const handleUpdateBranch = (branch_id: number) => {
     navigate(`/branch/edit/${branch_id}`);

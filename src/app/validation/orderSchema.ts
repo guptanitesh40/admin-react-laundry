@@ -17,11 +17,21 @@ const itemSchema = Yup.object().shape({
     .test("required", "Please select a service", (value) => !!value),
 
   price: Yup.number()
-    .nullable() 
-    .when(['category_id', 'product_id', 'service_id'], 
-      ([category_id, product_id, service_id]: [number | null, number | null, number | null], schema: Yup.NumberSchema) => {
+    .nullable()
+    .when(
+      ["category_id", "product_id", "service_id"],
+      (
+        [category_id, product_id, service_id]: [
+          number | null,
+          number | null,
+          number | null
+        ],
+        schema: Yup.NumberSchema
+      ) => {
         return category_id && product_id && service_id
-          ? schema.required("Price is not available for the combination, please add a price")
+          ? schema.required(
+              "Price is not available for the combination, please add a price"
+            )
           : schema.nullable();
       }
     ),
@@ -44,7 +54,7 @@ export const orderSchema = Yup.object().shape({
 
   payment_type: Yup.number()
     .required("Please choose payment type")
-    .test("required", "Please choose order status", (value) => !!value),
+    .test("required", "Please choose payment type", (value) => !!value),
 
   payment_status: Yup.number()
     .required("Please choose payment status")
@@ -55,18 +65,18 @@ export const orderSchema = Yup.object().shape({
     .min(0, "Paid amount must be a positive number")
     .test(
       "max-paid",
-      "paid amount cannot be greater than the total amount",
+      "Paid amount cannot be greater than the total amount",
       function (value) {
-        return value !== undefined && value <= this.options.context?.total;
+        if (value === undefined || value === null || value === 0) {
+          return true;
+        }
+        return value <= this.options.context?.total;
       }
     ),
 
   branch_id: Yup.number()
     .required("Please select branch")
     .test("required", "Please select branch", (value) => !!value),
-    
+
   items: Yup.array().of(itemSchema),
 });
-
-
-  

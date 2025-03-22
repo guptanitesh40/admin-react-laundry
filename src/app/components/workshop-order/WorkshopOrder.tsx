@@ -3,6 +3,7 @@ import WorkshopOrderTable from "./WorkshopOrderTable";
 import { useState } from "react";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import WorkshopOrderFilter from "./WorkshopOrderFilter";
+import { OrderStatus } from "../../../types/enums";
 
 const WorkshopOrder: React.FC = () => {
   const [isFilter, setIsFilter] = useState<boolean>(false);
@@ -20,6 +21,18 @@ const WorkshopOrder: React.FC = () => {
   const updateFilters = (newFilters: any) => {
     setFilters(newFilters);
   };
+
+ const getOrderStatusOptions = (excludedKey: (keyof typeof OrderStatus)[]) => {
+    return Object.entries(OrderStatus)
+      .filter(([key]) => excludedKey.includes(key as keyof typeof OrderStatus))
+      .map(([label, value]) => ({ label, value: value as number }));
+  };
+
+  const workshopOrderStatusOptions = getOrderStatusOptions([
+    "Workshop Assigned",
+    "Order Received at Workshop",
+    "Order Work In Progress",
+  ]);
 
   return (
     <>
@@ -54,6 +67,7 @@ const WorkshopOrder: React.FC = () => {
               <WorkshopOrderFilter
                 filters={filters}
                 updateFilters={updateFilters}
+                workshopOrderStatusOptions={workshopOrderStatusOptions}
               />
             )}{" "}
             <WorkshopOrderTable filters={filters} />

@@ -57,16 +57,21 @@ const FeedbackTable: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-    setSearchParams(
-      search
-        ? { search, page: "1", perPage: perPage.toString() }
-        : { page: "1", perPage: perPage.toString() }
-    );
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
   }, [search]);
 
   useEffect(() => {
     if (publishFilter !== undefined || ratingFilter.length > 0) {
       setCurrentPage(1);
+      if(search !== ""){
+        setSearchParams({ search, page: "1", perPage: perPage.toString() });
+      } else {
+        setSearchParams({ page: "1", perPage: perPage.toString() });
+      }
     }
   }, [publishFilter, ratingFilter]);
 

@@ -20,11 +20,13 @@ interface WorkshopOrderFilterProps {
     workshopManagerFilter: number[];
   };
   updateFilters: (filters: any) => void;
+  workshopOrderStatusOptions: any;
 }
 
 const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
   filters,
   updateFilters,
+  workshopOrderStatusOptions,
 }) => {
   const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
     []
@@ -50,10 +52,6 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
   const { workshops } = useGetWorkshops(1, 1000);
 
   const paymentStatusOptions = Object.entries(PaymentStatus)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
-
-  const orderStatusOptions = Object.entries(WorkshopOrderStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
 
@@ -234,7 +232,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           />
 
           <MultiSelect
-            options={orderStatusOptions}
+            options={workshopOrderStatusOptions}
             displayValue="label"
             placeholder="Select Order Status"
             selectedValues={filters.workshopOrderStatusFilter}
@@ -254,6 +252,7 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
                 ),
               })
             }
+            isCustomLabel={true}
             isSearchInput={false}
             className="w-full"
           />
