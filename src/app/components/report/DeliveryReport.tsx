@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetDeliveryData } from "../../hooks";
+import { useGetDeliveryData, usePermissions } from "../../hooks";
 import DonutChart from "react-apexcharts";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -10,6 +10,7 @@ const { RangePicker } = DatePicker;
 const DeliveryReport: React.FC = () => {
   const navigate = useNavigate();
   const { deliveryData, fetchDeliveryData } = useGetDeliveryData();
+  const { hasPermission } = usePermissions();
 
   const [formData, setFormData] = useState({
     start_time: "",
@@ -62,14 +63,16 @@ const DeliveryReport: React.FC = () => {
       type: "donut",
       events: {
         dataPointSelection: (_event: any, _chartContext: any, config: any) => {
-          if (config?.dataPointIndex === 0) {
-            navigate("/delivered-orders");
-          } else if (config?.dataPointIndex === 1) {
-            navigate("/orders");
+          if (hasPermission(3, "read")) { 
+            if (config?.dataPointIndex === 0) {
+              navigate("/delivered-orders");
+            } else if (config?.dataPointIndex === 1) {
+              navigate("/orders");
+            }
           }
         },
       },
-    },
+    },    
     stroke: {
       show: true,
       width: 2,

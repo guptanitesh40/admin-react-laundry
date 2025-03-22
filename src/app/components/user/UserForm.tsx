@@ -352,6 +352,7 @@ const UserForm: React.FC = () => {
                 type="text"
                 id="password"
                 name="password"
+                autoComplete="off"
                 value={formData.password || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
@@ -400,7 +401,7 @@ const UserForm: React.FC = () => {
             </div>
           )}
 
-          {formData.role_id === 2 || formData.role_id === 1 && (
+          {(formData.role_id === 2 || formData.role_id === 1) && (
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 font-semibold"

@@ -7,6 +7,7 @@ import App from "../../App";
 import { ForgotPassword } from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import EnterOtp from "../pages/EnterOtp";
+import NotFound from "../pages/NotFount";
 
 const AppRoutes: React.FC = () => {
   const isAuthenticated = useSelector(

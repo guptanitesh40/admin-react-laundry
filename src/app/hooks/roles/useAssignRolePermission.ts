@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { BASE_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
-const token = localStorage.getItem("authToken");
 
 interface RolePermission {
   role_id: number;
@@ -16,6 +15,7 @@ const useAssignRolePermission = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const assignRolePermission = async (rolePermission: any) => {
+    const token = localStorage.getItem("authToken");
 
     setLoading(true);
     try {

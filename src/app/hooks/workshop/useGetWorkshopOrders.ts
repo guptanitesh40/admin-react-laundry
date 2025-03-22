@@ -24,14 +24,14 @@ interface WorkshopOrders {
   description: string;
   address_id: number | null;
   paid_amount: number;
-  payment_type: string;
-  payment_status: number;
+  payment_types: string;
+  payment_statuses: number;
   kasar_amount: number;
   items: any[];
   sub_total: number;
   total: number;
   shipping_charges: number;
-  branch_id: number;
+  branches_ids: number;
 }
 
 const useGetWorkshopOrders = (
@@ -40,13 +40,13 @@ const useGetWorkshopOrders = (
   search: string = "",
   sortColumn?: string,
   sortOrder?: string,
-  orderstatus?: number[],
-  customer_id?: number[],
-  branch_id?: number[],
-  payment_type?: number,
-  payment_status?: number[],
-  workshop_id?: number[],
-  workshop_manager_id?: number[]
+  order_statuses?: number[],
+  customer_ids?: number[],
+  branches_ids?: number[],
+  payment_types?: number,
+  payment_statuses?: number[],
+  workshop_ids?: number[],
+  workshop_manager_ids?: number[]
 ) => {
   const [workshopOrders, setWorkshopOrders] = useState<WorkshopOrders[]>();
   const [count, setCount] = useState(0);
@@ -61,36 +61,36 @@ const useGetWorkshopOrders = (
     if (search) queryParams.append("search", search);
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
-    if (orderstatus) {
-      orderstatus.forEach((o) =>
-        queryParams.append("orderstatus", o.toString())
+    if (order_statuses) {
+      order_statuses.forEach((o) =>
+        queryParams.append("order_statuses", o.toString())
       );
     }
-    if (customer_id) {
-      customer_id.forEach((c) =>
-        queryParams.append("customer_id", c.toString())
+    if (customer_ids) {
+      customer_ids.forEach((c) =>
+        queryParams.append("customer_ids", c.toString())
       );
     }
-    if (branch_id) {
-      branch_id.forEach((b) => queryParams.append("branch_id", b.toString()));
+    if (branches_ids) {
+      branches_ids.forEach((b) => queryParams.append("branches_ids", b.toString()));
     }
-    if (payment_status) {
-      payment_status.forEach((p) =>
-        queryParams.append("payment_status", p.toString())
+    if (payment_statuses) {
+      payment_statuses.forEach((p) =>
+        queryParams.append("payment_statuses", p.toString())
       );
     }
-    if (workshop_id) {
-      workshop_id.forEach((w) =>
-        queryParams.append("workshop_id", w.toString())
+    if (workshop_ids) {
+      workshop_ids.forEach((w) =>
+        queryParams.append("workshop_ids", w.toString())
       );
     }
-    if (workshop_manager_id) {
-      workshop_manager_id.forEach((p) =>
-        queryParams.append("workshop_manager_id", p.toString())
+    if (workshop_manager_ids) {
+      workshop_manager_ids.forEach((p) =>
+        queryParams.append("workshop_manager_ids", p.toString())
       );
     }
-    if (payment_type)
-      queryParams.append("payment_type", payment_type.toString());
+    if (payment_types)
+      queryParams.append("payment_types", payment_types.toString());
 
     setLoading(true);
     try {
@@ -127,13 +127,13 @@ const useGetWorkshopOrders = (
     search,
     sortColumn,
     sortOrder,
-    orderstatus,
-    customer_id,
-    branch_id,
-    payment_type,
-    payment_status,
-    workshop_id,
-    workshop_manager_id,
+    order_statuses,
+    customer_ids,
+    branches_ids,
+    payment_types,
+    payment_statuses,
+    workshop_ids,
+    workshop_manager_ids,
   ]);
 
   return { workshopOrders, loading, count };

@@ -100,6 +100,24 @@ const PaymentsTable: React.FC = () => {
     }
   }, [pageParams, perPageParams]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({ page: "1", perPage: perPage.toString() });
+    }
+  }, [paymentStatusFilter, userFilter]);
+
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {

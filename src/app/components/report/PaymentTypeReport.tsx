@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useGetPaymentTypeData } from "../../hooks";
+import { useGetPaymentTypeData, usePermissions } from "../../hooks";
 import DonutChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "antd";
@@ -10,6 +10,7 @@ const { RangePicker } = DatePicker;
 const PaymentTypeReport = () => {
   const { paymentTypeData, fetchPaymentTypeData } = useGetPaymentTypeData();
   const navigate = useNavigate();
+  const { hasPermission } = usePermissions();
 
   const [formData, setFormData] = useState({
     start_time: "",
@@ -62,10 +63,12 @@ const PaymentTypeReport = () => {
       type: "donut",
       events: {
         dataPointSelection: (_event: any, _chartContext: any, config: any) => {
-          if (config?.dataPointIndex !== undefined) {
-            navigate("/orders", {
-              state: { paymentType: labels[config.dataPointIndex] },
-            });
+          if (hasPermission(3, "read")) {
+            if (config?.dataPointIndex !== undefined) {
+              navigate("/orders", {
+                state: { paymentType: labels[config.dataPointIndex] },
+              });
+            }
           }
         },
       },
