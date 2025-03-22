@@ -6,10 +6,7 @@ import {
   usePermissions,
 } from "../../hooks";
 import { useSearchParams } from "react-router-dom";
-import {
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
@@ -99,15 +96,22 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
     }
   }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [workshopManagerFilter]);
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

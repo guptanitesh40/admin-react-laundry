@@ -72,15 +72,27 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   }, [pageParams, perPageParams]);
 
   useEffect(() => {
-    if (search) {
-      setCurrentPage(1);
-      setSearchParams({
-        search: search,
-        page: "1",
-        perPage: perPage.toString(),
-      });
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
     }
   }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [
+    filters.genderFilter,
+    filters.roleFilter,
+    filters.companyFilter,
+    filters.branchFilter,
+  ]);
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -309,7 +321,10 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                   {users.map((user) => {
                     return (
                       <tr key={user.user_id}>
-                        <td className="cursor-pointer" onClick={() => handleViewUser(user.user_id)}>
+                        <td
+                          className="cursor-pointer"
+                          onClick={() => handleViewUser(user.user_id)}
+                        >
                           <div className="flex items-center gap-2.5">
                             {user.user_id}
                           </div>

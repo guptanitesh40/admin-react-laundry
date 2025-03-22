@@ -353,15 +353,6 @@ const PrivateRoutes: React.FC = () => {
           />
         </Route>
 
-          <Route
-            path="/order/:id"
-            element={
-              <Suspense fallback={<Shimmer />}>
-                <OrderDetail />
-              </Suspense>
-            }
-          />
-
         <Route
           path="/users"
           element={
@@ -371,7 +362,7 @@ const PrivateRoutes: React.FC = () => {
           }
         />
 
-        <Route element={<ProtectedRoute moduleId={3} action="read" />}>
+        <Route element={<ProtectedRoute moduleIds={[3, 16]} action="read" />}>
           <Route
             path="/order/:id"
             element={

@@ -396,7 +396,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                   />
                                 ) : (
                                   <span
-                                    className="cursor-pointer h-full flex"                                    
+                                    className={`${hasPermission(10, "update") || hasPermission(10, "create") ? "cursor-pointer h-full flex" : "h-full flex"}`}                                 
                                     onClick={
                                       hasPermission(10, "update") || hasPermission(10, "create")
                                         ? () => handleEditClick(key)

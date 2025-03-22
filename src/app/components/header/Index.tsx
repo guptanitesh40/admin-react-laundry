@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../utils/authSlice";
 import { RootState } from "../../utils/store";
 import SendPaymentLinkModal from "../sidebar/SendPaymentLinkModal";
+import { RiShareForwardFill } from "react-icons/ri";
+import { usePermissions } from "../../hooks";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ export const Header: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -57,12 +60,15 @@ export const Header: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 lg:gap-10 justify-end flex-1">
-          <button
-            className="btn btn-sm btn-primary payment-btn"
-            onClick={() => setModalOpen(true)}
-          >
-            Send Payment Link
-          </button>
+          {hasPermission(3, "read") && (
+            <button
+              className="btn btn-sm btn-primary payment-btn"
+              onClick={() => setModalOpen(true)}
+            >
+              <RiShareForwardFill className="w-4 h-4 text-blue-600" />
+              Request Payment
+            </button>
+          )}
 
           <div className="menu" data-menu="true">
             <div

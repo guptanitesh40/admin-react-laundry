@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useResetPassword } from "../hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import LoadingSpinner from "../components/shimmer/LoadingSpinner";
 
 const validationSchema = Yup.object({
   newPassword: Yup.string()
@@ -128,7 +129,7 @@ const ResetPassword = () => {
             disabled={loading}
             onClick={handleSubmit}
           >
-            {loading ? <>Resetting password..</> : <>Reset password</>}
+            {loading ? <><LoadingSpinner /></> : <>Reset password</>}
           </button>
         </form>
       </div>

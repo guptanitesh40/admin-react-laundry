@@ -1,4 +1,4 @@
-import { useGetOrdersData } from "../../hooks";
+import { useGetOrdersData, usePermissions } from "../../hooks";
 import { useEffect, useState } from "react";
 import AreaChart from "react-apexcharts";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ const OrderReport = () => {
   const navigate = useNavigate();
 
   const { orderData, fetchOrdersData } = useGetOrdersData();
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     if (formData.start_time && formData.end_time) {
@@ -179,9 +180,9 @@ const OrderReport = () => {
   return (
     <>
       <div
-        className="card max-h-[317px] cursor-pointer"
-        onClick={handleNavigateToOrderList}
-      >
+        className={`${hasPermission(3, "read") ? "card max-h-[317px] cursor-pointer" : "card max-h-[317px]" }`}
+        onClick={hasPermission(3, "read") ? handleNavigateToOrderList : undefined}
+        >
         <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
           <div
             className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last"

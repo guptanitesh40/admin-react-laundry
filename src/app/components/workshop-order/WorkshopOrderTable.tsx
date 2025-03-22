@@ -64,6 +64,32 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     }
   }, [pageParams, perPageParams]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [
+    filters.workshopOrderStatusFilter,
+    filters.customerFilter,
+    filters.branchFilter,
+    filters.paymentTypeFilter,
+    filters.paymentStatusFilter,
+    filters.workshopFilter,
+    filters.workshopManagerFilter,
+  ]);
+
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
   };
@@ -211,13 +237,13 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
-                        sortColumn === "branch_id"
+                        sortColumn === "branch_name"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("branch_id")}
+                      onClick={() => handleSort("branch_name")}
                     >
                       <span className="sort-label">Branch</span>
                       <span className="sort-icon"></span>
