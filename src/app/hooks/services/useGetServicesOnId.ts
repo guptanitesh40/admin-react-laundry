@@ -1,14 +1,15 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
-const token = localStorage.getItem("authToken");
 
 
 const useGetServicesOnId = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchServicesOnId = async (category_id: number, product_id: number) => {
+    const token = localStorage.getItem("authToken");
 
+    setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/category/${category_id}/product/${product_id}/service`, {
         method: "GET",

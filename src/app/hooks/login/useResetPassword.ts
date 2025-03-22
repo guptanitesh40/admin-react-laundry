@@ -6,7 +6,7 @@ const RESET_PASSWORD_URL = `${import.meta.env.VITE_BASE_URL}/auth/reset-password
 const useResetPassword = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const resetPassword = async (mobile_number: number, otp: number, new_password: string) => {
+  const resetPassword = async (mobile_number: number, otp: number, new_password: string, role_id: number) => {
     setLoading(true);
 
     try {
@@ -15,7 +15,7 @@ const useResetPassword = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({mobile_number, otp, new_password }),
+        body: JSON.stringify({mobile_number, otp, new_password, role_id }),
       });
 
       if (!response.ok) {

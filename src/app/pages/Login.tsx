@@ -77,8 +77,8 @@ const Login: React.FC = () => {
       }
 
       const success = await login(
-        formData.username,
-        formData.password,
+        formData.username.trim(),
+        formData.password.trim(),
         formData.userId,
         device_type,
         device_token
@@ -144,7 +144,7 @@ const Login: React.FC = () => {
             <h3 className="text-lg smobile:text-base vsmobile:text-sm font-semibold text-gray-900 leading-none mb-2.5">
               Log in to your account
             </h3>
-          </div>  
+          </div>
 
           <div className="flex flex-col gap-1">
             <label
@@ -195,7 +195,7 @@ const Login: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center justify-between gap-1">
               <label className="form-label text-gray-900" htmlFor="password">
                 Password
               </label>
@@ -214,14 +214,14 @@ const Login: React.FC = () => {
                 className="input border border-gray-300 rounded-md p-2 text-sm vsmobile:text-xs w-full"
               />
               <span
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                  onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                onClick={() => setShowPassword((prev) => !prev)}
               >
                 {showPassword ? (
-                    <i className="ki-filled ki-eye-slash text-gray-500"></i>
-                  ) : (
-                    <i className="ki-filled ki-eye text-gray-500"></i>
-                  )}
+                  <i className="ki-filled ki-eye-slash text-gray-500"></i>
+                ) : (
+                  <i className="ki-filled ki-eye text-gray-500"></i>
+                )}
               </span>
             </div>
             <p className="text-red-500 text-xs vsmobile:text-[10px]">

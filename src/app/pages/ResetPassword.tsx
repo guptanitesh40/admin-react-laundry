@@ -22,7 +22,9 @@ const ResetPassword = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { resetPassword, loading } = useResetPassword();
   const location = useLocation();
-  const mobile_number = location.state.mobileNumber;
+  const mobile_number = location.state.formData.mobile_number;
+  const roleId = location.state.formData.role_id;
+
   const otp = location.state.otpValue;
   const navigate = useNavigate();
 
@@ -35,7 +37,7 @@ const ResetPassword = () => {
         { abortEarly: false }
       );
 
-      const success = await resetPassword(mobile_number, otp, newPassword);
+      const success = await resetPassword(mobile_number, otp, newPassword, roleId);
       if (success) {
         navigate("/login");
       }
