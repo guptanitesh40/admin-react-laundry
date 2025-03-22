@@ -1,14 +1,13 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
-const token = localStorage.getItem("authToken");
 
 
 const useGetProductsOnId = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchProductsOnId = async (category_id: number) => {
-
+    const token = localStorage.getItem("authToken");
 
     setLoading(true);
     try {

@@ -47,6 +47,7 @@ const EnterOtp: React.FC = () => {
     }
   };
 
+
   const handleVerify = async () => {
     const otp = inputRefs.current.map((input) => input?.value).join("");
 
@@ -64,7 +65,7 @@ const EnterOtp: React.FC = () => {
     const success = await validateOtp(mobileNumber, otpValue);
     if (success) {
       navigate("/forgot-password/resetpassword", {
-        state: { mobileNumber, otpValue },
+        state: { formData , otpValue },
       });
     }
   };

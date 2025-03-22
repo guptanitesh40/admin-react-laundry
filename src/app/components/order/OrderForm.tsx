@@ -47,6 +47,7 @@ interface FormData {
   payment_status: number;
   sub_total: number;
   paid_amount: number;
+  kasar_amount: number;
   transaction_id: string;
   address_id: number | null;
   username: string;
@@ -85,7 +86,8 @@ const OrderForm: React.FC = () => {
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
   const { userData, fetchUser } = useGetUser();
-  const { generatePaymentLink, loading: sendingLink } = useGeneratePaymentLink();
+  const { generatePaymentLink, loading: sendingLink } =
+    useGeneratePaymentLink();
   const user = userData?.user;
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -106,6 +108,7 @@ const OrderForm: React.FC = () => {
     payment_status: null,
     sub_total: 0,
     paid_amount: null,
+    kasar_amount: null,
     transaction_id: "",
     address_id: null,
     username: "",
@@ -138,6 +141,7 @@ const OrderForm: React.FC = () => {
     payment_status: null,
     sub_total: 0,
     paid_amount: null,
+    kasar_amount: null,
     transaction_id: "",
     address_id: null,
     username: "",
@@ -240,6 +244,7 @@ const OrderForm: React.FC = () => {
         payment_status: order.payment_status || null,
         sub_total: order.sub_total || 0,
         paid_amount: order.paid_amount || null,
+        kasar_amount: order.kasar_amount || null,
         transaction_id: order.transaction_id || "",
         address_id: order.address_id,
         username: fullName,
@@ -296,6 +301,7 @@ const OrderForm: React.FC = () => {
         address_id: Number(formData.address_id),
         coupon_discount: Number(formData.coupon_discount),
         normal_delivery_charges: Number(formData.normal_delivery_charges),
+        kasar_amount: Number(formData.kasar_amount),
         paid_amount: Number(formData.paid_amount),
         express_delivery_charges: Number(formData.express_delivery_charges),
         payment_type: Number(formData.payment_type),
@@ -304,9 +310,15 @@ const OrderForm: React.FC = () => {
         items: formattedItems,
       };
 
-      const total = formData.sub_total + formData.express_delivery_charges + formData.normal_delivery_charges;
-      
-      await orderSchema.validate(dataToValidate, { abortEarly: false, context: { total } });
+      const total =
+        formData.sub_total +
+        formData.express_delivery_charges +
+        formData.normal_delivery_charges;
+
+      await orderSchema.validate(dataToValidate, {
+        abortEarly: false,
+        context: { total },
+      });
 
       const isDataChanged = () => {
         return (Object.keys(formData) as (keyof typeof formData)[]).some(
@@ -573,16 +585,16 @@ const OrderForm: React.FC = () => {
   const handleSendCustomerData = async () => {
     const missingFields = [];
 
-    if (!formData.paid_amount) missingFields.push("Paid amount");
-    if (!formData.username) missingFields.push("Customer name");
+    if (!formData.total) missingFields.push("item total");
+    if (!formData.username) missingFields.push("customer name");
 
     if (missingFields.length > 0) {
-      toast.error(`Please add Missing Fields: ${missingFields.join(", ")}`);
+      toast.error(`Please add required fields: ${missingFields.join(", ")}`);
       return;
     }
 
     const customerInfo = {
-      amount: formData.paid_amount,
+      amount: formData.total,
       currency: "INR",
       user_id: formData.user_id,
       customer: {
@@ -942,6 +954,7 @@ const OrderForm: React.FC = () => {
                         <input
                           type="text"
                           id="quantity"
+                          autoComplete="off"
                           value={item.quantity ?? 1}
                           onChange={(e) =>
                             handleItemChange(index, "quantity", e.target.value)
@@ -1198,33 +1211,6 @@ const OrderForm: React.FC = () => {
 
             <div className="flex flex-col">
               <label
-                htmlFor="paid_amount"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Paid amount
-              </label>
-              <input
-                type="text"
-                id="paid_amount"
-                autoComplete="off"
-                value={formData.paid_amount || ""}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    paid_amount: Number(e.target.value),
-                  });
-                }}
-                className="input border border-gray-300 rounded-md p-2"
-                min="0"
-                step="0.01"
-              />
-              <p className="w-full text-red-500 text-sm">
-                {errors.paid_amount || "\u00A0"}
-              </p>
-            </div>
-
-            <div className="flex flex-col">
-              <label
                 htmlFor="payment_method"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
@@ -1269,6 +1255,57 @@ const OrderForm: React.FC = () => {
                   </button>
                 </div>
               )}
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="paid_amount"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Paid amount
+              </label>
+              <input
+                type="text"
+                id="paid_amount"
+                autoComplete="off"
+                value={formData.paid_amount || ""}
+                onChange={(e) => {
+                  setFormData({
+                    ...formData,
+                    paid_amount: Number(e.target.value),
+                  });
+                }}
+                className="input border border-gray-300 rounded-md p-2"
+                min="0"
+                step="0.01"
+              />
+              <p className="w-full text-red-500 text-sm">
+                {errors.paid_amount || "\u00A0"}
+              </p>
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="kasar_amount"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Kasar amount
+              </label>
+              <input
+                type="text"
+                id="kasar_amount"
+                autoComplete="off"
+                value={formData.kasar_amount || ""}
+                onChange={(e) => {
+                  setFormData({
+                    ...formData,
+                    kasar_amount: Number(e.target.value),
+                  });
+                }}
+                className="input border border-gray-300 rounded-md p-2"
+                min="0"
+                step="0.01"
+              />
             </div>
 
             <div className="flex flex-col">

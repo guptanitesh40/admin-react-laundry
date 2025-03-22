@@ -841,6 +841,16 @@ const OrderDetails: React.FC = () => {
                           {paymentStatusLabel}
                         </td>
                       </tr>
+                      {order?.paid_amount > 0 && (
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Paid amount:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.paid_amount}
+                          </td>
+                        </tr>
+                      )}
                       {order?.pending_due_amount > 0 && (
                         <tr>
                           <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
