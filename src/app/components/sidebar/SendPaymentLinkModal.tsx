@@ -143,6 +143,7 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
       const formattedData = {
         ...formData,
         amount: Number(formData.amount),
+        currency: "INR",
       };
 
       await generatePaymentLink(formattedData);

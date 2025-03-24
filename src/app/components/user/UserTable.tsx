@@ -322,7 +322,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                     return (
                       <tr key={user.user_id}>
                         <td
-                          className="cursor-pointer"
+                          className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => handleViewUser(user.user_id)}
                         >
                           <div className="flex items-center gap-2.5">
