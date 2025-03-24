@@ -9901,3 +9901,6 @@ input[date-range="start"] {
   border: 1px solid rgb(209, 209, 255) !important;
 }
 
+.br-bottom {
+  border-bottom: blue !important;
+}

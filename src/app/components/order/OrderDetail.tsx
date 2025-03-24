@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums"; 
+import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums";
 import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt } from "react-icons/bi";
 import dayjs from "dayjs";
@@ -25,6 +25,9 @@ import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
 import { RiFilePaper2Fill, RiFilePaperLine } from "react-icons/ri";
+import { FaTrash } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "../../utils/store";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -34,8 +37,7 @@ const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const order_id = Number(id);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user?.user_id;
+  const userId = useSelector((state: RootState) => state.user.user_id);
 
   const { order, fetchOrder } = useGetOrder();
   const { addNote, loading } = useAddNote();
@@ -152,7 +154,7 @@ const OrderDetails: React.FC = () => {
       await schema.validate(formData, { abortEarly: false });
 
       const formDataObj = new FormData();
-      formDataObj.append("user_id", userId);
+      formDataObj.append("user_id", userId.toString());
       formDataObj.append("order_id", formData.order_id);
       formDataObj.append("text_note", formData.text_note);
 
@@ -323,7 +325,7 @@ const OrderDetails: React.FC = () => {
     const url = order?.refund_receipt_url?.fileUrl;
     window.open(url, "_blank");
   };
-
+  
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">
@@ -373,7 +375,7 @@ const OrderDetails: React.FC = () => {
                     Cancel Order
                   </button>
                 )}
-                
+
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
                 order.payment_status !== 1 &&
@@ -417,8 +419,11 @@ const OrderDetails: React.FC = () => {
                   <button
                     className={`${nextStepLabel} badge-outline badge-xl rounded-[30px]`}
                     onClick={handleStatusClick}
-                    disabled={!hasPermission(3, "update") && !hasPermission(16, "update")}
-                    >
+                    disabled={
+                      !hasPermission(3, "update") &&
+                      !hasPermission(16, "update")
+                    }
+                  >
                     {order.order_status_details.next_step}
                   </button>
                 </div>
@@ -952,7 +957,7 @@ const OrderDetails: React.FC = () => {
           </div>
 
           <ul className="mt-4 space-y-4">
-            {order.notes?.map((note, index) => {
+            {order.notes?.map((note: any, index: any) => {
               const formattedDate = dayjs(note.created_at).format(
                 "HH:mm, DD/MM/YYYY"
               );
@@ -985,38 +990,14 @@ const OrderDetails: React.FC = () => {
                       </div>
                     )}
 
-                    {order.order_status !== 13 && (
-                      <div
-                        className="menu absolute top-1 right-2"
-                        data-menu="true"
-                      >
-                        <div
-                          className="menu-item"
-                          data-menu-item-offset="0, 10px"
-                          data-menu-item-placement="bottom-end"
-                          data-menu-item-toggle="dropdown"
-                          data-menu-item-trigger="click|lg:click"
+                    {note.user_id === userId && (
+                      <div className="flex justify-self-end">
+                        <button
+                          className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
+                          onClick={() => hanldeDeleteNote(note.note_id)}
                         >
-                          <button className="menu-toggle btn btn-sm btn-icon btn-light btn-clear">
-                            <i className="ki-filled ki-dots-vertical"></i>
-                          </button>
-                          <div
-                            className="menu-dropdown menu-default w-full max-w-[175px]"
-                            data-menu-dismiss="true"
-                          >
-                            <div className="menu-item">
-                              <button
-                                className="menu-link"
-                                onClick={() => hanldeDeleteNote(note.note_id)}
-                              >
-                                <span className="menu-icon">
-                                  <i className="ki-filled ki-trash"></i>
-                                </span>
-                                <span className="menu-title">Remove</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+                          <FaTrash className="text-red-500" />
+                        </button>
                       </div>
                     )}
                   </li>

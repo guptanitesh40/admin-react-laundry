@@ -499,7 +499,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     return (
                       <tr key={order.order_id}>
                         <td
-                          className="cursor-pointer"
+                          className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order.order_id}`)}
                         >
                           #{order.order_id}
@@ -607,16 +607,17 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                 </button>
                               )}
 
-                              {hasPermission(3, "update") && (
-                                <button
-                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                                  onClick={() =>
-                                    handleUpdateOrder(order.order_id)
-                                  }
-                                >
-                                  <FaPencilAlt className="text-yellow-600" />
-                                </button>
-                              )}
+                              {order.order_status !== 11 &&
+                                hasPermission(3, "update") && (
+                                  <button
+                                    className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                    onClick={() =>
+                                      handleUpdateOrder(order.order_id)
+                                    }
+                                  >
+                                    <FaPencilAlt className="text-yellow-600" />
+                                  </button>
+                                )}
 
                               {hasPermission(3, "delete") && (
                                 <button

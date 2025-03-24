@@ -3,6 +3,8 @@ import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { useGetBranches, useGetWorkshops } from "../../hooks";
 import { PaymentStatus, WorkshopOrderStatus } from "../../../types/enums";
 import MultiSelect from "../MultiSelect/MultiSelect";
+import { useSelector } from "react-redux";
+import { RootState } from "../../utils/store";
 
 interface OptionType {
   label: string;
@@ -28,6 +30,8 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
   updateFilters,
   workshopOrderStatusOptions,
 }) => {
+  const roleId = useSelector((state: RootState) => state.user.role_id);
+
   const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
     []
   );
@@ -124,28 +128,30 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
     <>
       <div className="p-4">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
-          <MultiSelect
-            options={workshops?.map((workshop) => ({
-              label: workshop.workshop_name,
-              value: workshop.workshop_id,
-            }))}
-            displayValue="label"
-            placeholder="Select Workshop"
-            selectedValues={filters.workshopFilter}
-            onSelect={(selectedList) =>
-              updateFilters({
-                ...filters,
-                workshopFilter: selectedList.map((item) => item.value),
-              })
-            }
-            onRemove={(selectedList) =>
-              updateFilters({
-                ...filters,
-                workshopFilter: selectedList.map((item) => item.value),
-              })
-            }
-            className="w-full"
-          />
+          {roleId !== 6 && (
+            <MultiSelect
+              options={workshops?.map((workshop) => ({
+                label: workshop.workshop_name,
+                value: workshop.workshop_id,
+              }))}
+              displayValue="label"
+              placeholder="Select Workshop"
+              selectedValues={filters.workshopFilter}
+              onSelect={(selectedList) =>
+                updateFilters({
+                  ...filters,
+                  workshopFilter: selectedList.map((item) => item.value),
+                })
+              }
+              onRemove={(selectedList) =>
+                updateFilters({
+                  ...filters,
+                  workshopFilter: selectedList.map((item) => item.value),
+                })
+              }
+              className="w-full"
+            />
+          )}
 
           <MultiSelect
             options={getCombinedOptions(

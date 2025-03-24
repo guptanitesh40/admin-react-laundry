@@ -388,7 +388,8 @@ const BranchTable: React.FC = () => {
                   </th>
 
                   {(hasPermission(13, "update") ||
-                    hasPermission(13, "delete") ) && (
+                    hasPermission(13, "delete") ||
+                    hasPermission(13, "read")) && (
                     <th className="w-[50px]">Actions</th>
                   )}
                 </tr>
@@ -400,7 +401,7 @@ const BranchTable: React.FC = () => {
                   {branches.map((branch) => (
                     <tr key={branch.branch_id}>
                       <td
-                        className="cursor-pointer"
+                          className="cursor-pointer text-blue-600 hover:underline"
                         onClick={() =>
                           navigate(`/branch-profile/${branch.branch_id}`)
                         }
@@ -445,10 +446,11 @@ const BranchTable: React.FC = () => {
                       </td>
 
                       {(hasPermission(13, "update") ||
-                        hasPermission(13, "delete")) && (
+                        hasPermission(13, "delete") ||
+                        hasPermission(13, "read")) && (
                         <td>
                           <div className="flex">
-                            {hasPermission(12, "read") && (
+                            {hasPermission(13, "read") && (
                               <button
                                 className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
                                 onClick={() =>
@@ -459,7 +461,7 @@ const BranchTable: React.FC = () => {
                               </button>
                             )}
 
-                            {hasPermission(12, "update") && (
+                            {hasPermission(13, "update") && (
                               <button
                                 onClick={() =>
                                   handleUpdateBranch(branch.branch_id)
@@ -470,7 +472,7 @@ const BranchTable: React.FC = () => {
                               </button>
                             )}
 
-                            {hasPermission(12, "delete") && (
+                            {hasPermission(13, "delete") && (
                               <button
                                 onClick={() =>
                                   handleDeleteBranch(branch.branch_id)

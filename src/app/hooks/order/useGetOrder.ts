@@ -15,7 +15,7 @@ interface Order {
   branch: any;
   pickup_boy: any;
   order_status_name: string;
-  notes: any [];
+  notes: any;
   address_details: string;
   estimated_pickup_time: string | number | Date;
   estimated_delivery_time: string | number | Date;
@@ -25,7 +25,7 @@ interface Order {
   transaction_id: string;
   username: string;
   order_id: number;
-  user_id: number;
+  user_id: any;
   order_status: number;
   shipping_charge: number;
   express_delivery_charges: number;

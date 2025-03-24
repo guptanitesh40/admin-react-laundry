@@ -96,6 +96,7 @@ const OrderForm: React.FC = () => {
   const [serviceCache, setServiceCache] = useState<Record<number, any[]>>({});
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [focusOn, setFocusOn] = useState<boolean>(false);
+  const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
 
   const navigate = useNavigate();
 
@@ -283,6 +284,30 @@ const OrderForm: React.FC = () => {
     }
   }, [order]);
 
+  useEffect(() => {
+    const totalPaid =
+      (formData.paid_amount || 0) + (formData.kasar_amount || 0);
+    const remaining = formData.total - totalPaid;
+
+    let newPaymentStatus = formData.payment_status;
+
+    if (formData.total > 0 && totalPaid === formData.total) {
+      newPaymentStatus = 2;
+      setRemainingAmount(0);
+    } else if (totalPaid > 0 && totalPaid < formData.total) {
+      newPaymentStatus = 3;
+      setRemainingAmount(remaining);
+    } else if (totalPaid > 0) {
+      newPaymentStatus = 1;
+      setRemainingAmount(remaining);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      payment_status: newPaymentStatus,
+    }));
+  }, [formData.paid_amount, formData.kasar_amount, formData.total]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -310,10 +335,7 @@ const OrderForm: React.FC = () => {
         items: formattedItems,
       };
 
-      const total =
-        formData.sub_total +
-        formData.express_delivery_charges +
-        formData.normal_delivery_charges;
+      const total = formData.total;
 
       await orderSchema.validate(dataToValidate, {
         abortEarly: false,
@@ -915,6 +937,14 @@ const OrderForm: React.FC = () => {
                             >
                               {serv.service_name}
                             </option>
+                          )) ||
+                          (item.service_id && (
+                            <option
+                              key={item.service_id}
+                              value={item.service_id}
+                            >
+                              {item.service_name}
+                            </option>
                           ))}
                         </select>
                         <p className="w-full text-red-500 text-sm">
@@ -1334,8 +1364,13 @@ const OrderForm: React.FC = () => {
                 <option value={3}>Partial Received</option>
               </select>
               <p className="w-full text-red-500 text-sm">
-                {errors.payment_status || "\u00A0"}
+                {errors.payment_status}
               </p>
+              {formData.payment_status === 2 && remainingAmount > 0 && (
+                <p className="w-full text-red-500 text-sm">
+                  {`Remaining amount Rs ${remainingAmount}`}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col">

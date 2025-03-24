@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Gender, Role } from "../../../types/enums";
-
-const user = JSON.parse(localStorage.getItem("user"));
+import useGetUser from "../../hooks/user/useGetuser";
+import { RootState } from "../../utils/store";
+import { useSelector } from "react-redux";
 
 const Profile: React.FC = () => {
+  const userId = useSelector((state: RootState) => state.user.user_id);
+  const { userData, fetchUser } = useGetUser();
+
+  const user = userData?.user;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchUser(userId);
+    };
+    fetchData();
+  }, [userId]);
+
+  if (!user) return;
+
   return (
     <>
       <main className="grow content" id="content" role="content">
@@ -61,7 +76,9 @@ const Profile: React.FC = () => {
                         </tr>
                         <tr>
                           <td className="py-2 min-w-36">Mobile Number</td>
-                          <td className="py-2 min-w-60">{user.mobile_number}</td>
+                          <td className="py-2 min-w-60">
+                            {user.mobile_number}
+                          </td>
                         </tr>
                         <tr>
                           <td className="py-3">Gender</td>
@@ -73,6 +90,42 @@ const Profile: React.FC = () => {
                             }
                           </td>
                         </tr>
+                        {user?.companies?.length > 0 && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Company:
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {user.companies
+                                .map((company: any) => company)
+                                .join(", ")}{" "}
+                            </td>
+                          </tr>
+                        )}
+                        {user?.branches?.length > 0 && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Branch:
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {user.branches
+                                .map((branch: any) => branch)
+                                .join(", ")}{" "}
+                            </td>
+                          </tr>
+                        )}
+                        {user?.workshops?.length > 0 && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Workshop:
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {user.workshops
+                                .map((workshop: any) => workshop)
+                                .join(", ")}{" "}
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
