@@ -492,7 +492,7 @@ const BookingOrderTable: React.FC<BookingOrderTableProps> = ({ filters }) => {
                     return (
                       <tr key={order.order_id}>
                         <td
-                          className="cursor-pointer"
+                          className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order.order_id}`)}
                         >
                           #{order.order_id}

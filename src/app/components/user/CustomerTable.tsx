@@ -321,7 +321,7 @@ const CustomerTable: React.FC = () => {
                     return (
                       <tr key={customer.user_id}>
                         <td
-                          className="cursor-pointer"
+                          className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => handleViewCustomer(customer.user_id)}
                         >
                           <div className="flex items-center gap-2.5">

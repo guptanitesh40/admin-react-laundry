@@ -359,7 +359,7 @@ const CompanyTable: React.FC = () => {
                   {companies.map((company) => (
                     <tr key={company.company_id}>
                       <td
-                        className="cursor-pointer"
+                        className="cursor-pointer text-blue-600 hover:underline"
                         onClick={() =>
                           navigate(`/company-profile/${company.company_id}`)
                         }
