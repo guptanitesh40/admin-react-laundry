@@ -34,12 +34,13 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [updatedOrders, setUpdatedOrders] = useState<Order[]>([]);
   const [fullPayment, setFullPayment] = useState<boolean>();
+  const page = 1;
 
   const user = userData?.user;
 
   useEffect(() => {
     if (modalOpen) {
-      fetchUser(userId);
+      fetchUser(userId, page, count);
     }
   }, [modalOpen, userId]);
 
