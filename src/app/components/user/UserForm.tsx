@@ -145,21 +145,34 @@ const UserForm: React.FC = () => {
     }
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
-
-    if (name === "image" && files && files.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        image: files[0].name,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
+  const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const target = e.target;
+  
+      if (target instanceof HTMLInputElement) {
+        const { name, value, files } = target;
+  
+        if (name === "image" && files && files.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            image: files[0],
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+          }));
+        }
+      } else if (target instanceof HTMLTextAreaElement) {
+        const { name, value } = target;
+  
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +216,8 @@ const UserForm: React.FC = () => {
             formDataToSend.append(key, formData[key] as string | Blob);
           }
         });
-        success = await updateUser(user_id, formData);
+        
+        success = await updateUser(user_id, formDataToSend);
       } else {
         success = await addUser(formData);
       }
@@ -235,6 +249,7 @@ const UserForm: React.FC = () => {
       navigate("/users");
     }
   };
+
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">

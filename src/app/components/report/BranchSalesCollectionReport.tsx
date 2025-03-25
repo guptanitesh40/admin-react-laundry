@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGetBranchSalesData } from "../../hooks";
+import { useGetBranches, useGetBranchSalesData } from "../../hooks";
 import AreaChart from "react-apexcharts";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
@@ -7,15 +7,19 @@ const { RangePicker } = DatePicker;
 
 const BranchSalesCollectionReport: React.FC = () => {
   const { branchSalesData, fetchBranchSalesData } = useGetBranchSalesData();
+  const { branches } = useGetBranches(1, 1000);
 
   const [formData, setFormData] = useState({
     start_time: "",
     end_time: "",
+    branchId: undefined,
   });
 
   useEffect(() => {
-    if (formData.start_time && formData.end_time) {
-      fetchBranchSalesData(formData.start_time, formData.end_time);
+    const { start_time, end_time, branchId } = formData;
+
+    if (start_time || end_time || branchId !== undefined) {
+      fetchBranchSalesData(start_time, end_time, branchId);
     } else {
       fetchBranchSalesData();
     }
@@ -24,26 +28,33 @@ const BranchSalesCollectionReport: React.FC = () => {
   const handleDateChange = (dates: any, dateStrings: [string, string]) => {
     if (dates) {
       setFormData({
+        ...formData,
         start_time: dayjs(dates[0]).format("DD-MM-YYYY"),
         end_time: dayjs(dates[1]).format("DD-MM-YYYY"),
       });
     } else {
       setFormData({
+        ...formData,
         start_time: "",
         end_time: "",
       });
     }
   };
 
-  const branches = [
+  const salesBranches = [
     ...new Set(branchSalesData?.map((item: any) => item.branch_name)),
   ];
+
+  const totalSalesAmount = branchSalesData?.reduce(
+    (sum: number, item: any) => sum + (item.total_collection || 0),
+    0
+  );
 
   const months = [
     ...new Set(branchSalesData?.map((item: any) => item.month)),
   ].sort();
 
-  const series = branches.map((branch) => {
+  const series = salesBranches.map((branch) => {
     const branchData = branchSalesData
       ?.filter((item: any) => item.branch_name === branch)
       .reduce((acc: any, curr: any) => {
@@ -59,15 +70,6 @@ const BranchSalesCollectionReport: React.FC = () => {
     };
   });
 
-  const generateUniqueColors = (count: number) => {
-    return Array.from(
-      { length: count },
-      (_, i) => `hsl(${(i * 360) / count}, 80%, 50%)`
-    );
-  };
-
-  const branchColors = generateUniqueColors(branches.length);
-
   const data = {
     series,
     options: {
@@ -77,14 +79,12 @@ const BranchSalesCollectionReport: React.FC = () => {
         toolbar: { show: false },
       },
       dataLabels: { enabled: false },
-      colors: branchColors,
+      colors: ["#4154f1", "#2eca6a", "#ff771d", "#ff4560", "#00e396"],
       fill: {
-        type: "gradient",
         gradient: {
-          shadeIntensity: 0.3, 
-          opacityFrom: 0.08,   
-          opacityTo: 0.05,     
-          stops: [0, 80],    
+          enabled: true,
+          opacityFrom: 0.25,
+          opacityTo: 0,
         },
       },
       grid: {
@@ -140,19 +140,52 @@ const BranchSalesCollectionReport: React.FC = () => {
   return (
     <div className="col-span-2">
       <div className="card w-full">
-        <div className="card-header border-none flex flex-col mt-2 items-start w-full desktop:!flex-row">
-          <div className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:order-last">
-            <RangePicker
-              className="min-w-[80px] sm:w-[250px]"
-              dropdownClassName="custom-rangepicker-dropdown"
-              onChange={handleDateChange}
-              format="DD-MM-YYYY"
-            />
+        <div className="card-header border-none flex flex-col mt-2 items-start w-full mdesktop:!flex-row">
+          <div className="flex justify-end w-full mmobile:justify-end mmobile:flex-col mmobile:gap-y-3 sm:w-auto sm:order-none mb-2 sm:mb-0 mdesktop:order-last gap-x-5">
+            <div className="flex justify-end">
+              <select
+                id="branch"
+                className="select border border-gray-300 rounded-md p-2 w-[200px] text-sm"
+                value={formData.branchId || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    branchId: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+              >
+                <option value="">Select Branch</option>
+                {branches.length > 0 ? (
+                  branches.map((branch) => (
+                    <option key={branch.branch_id} value={branch.branch_id}>
+                      {branch.branch_name}
+                    </option>
+                  ))
+                ) : (
+                  <option>No Data Available</option>
+                )}
+              </select>
+            </div>
+
+            <div className="flex justify-end">
+              <RangePicker
+                className="min-w-[80px] sm:w-[250px]"
+                dropdownClassName="custom-rangepicker-dropdown"
+                onChange={handleDateChange}
+                format="DD-MM-YYYY"
+              />
+            </div>
           </div>
 
           <div className="flex justify-between smmobile:flex-wrap items-center w-full">
-            <div className="fmobile:flex fmobile:gap-2 fmobile:items-center">
-              <h3 className="card-title">Branch Wise Sales Collection</h3>
+            <div>
+              <h3 className="card-title">Branch Sales Collection</h3>
+              <h5 className="block text-gray-500 text-sm font-bold">
+                <div className="flex flex-wrap align-items flex-row gap-x-2">
+                  <span>Total Sales Amount</span>
+                  <span>₹{totalSalesAmount?.toLocaleString()} </span>
+                </div>
+              </h5>
             </div>
           </div>
         </div>

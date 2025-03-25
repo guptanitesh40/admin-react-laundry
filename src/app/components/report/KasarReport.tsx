@@ -199,7 +199,7 @@ const KasarReport = () => {
             </div>
 
             <div className="flex justify-between smmobile:flex-wrap items-center w-full smmobile:order-1">
-              <div className="fmobile:flex fmobile:gap-2">
+              <div>
                 <h3 className="card-title">Kasar Report</h3>
                 <h5 className="block text-gray-500 text-sm font-bold">
                   <div className="flex flex-wrap align-items flex-row gap-x-2">
