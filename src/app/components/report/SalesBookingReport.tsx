@@ -188,7 +188,7 @@ const SalesBookingReport = () => {
           </div>
 
           <div className="flex justify-between smmobile:flex-wrap items-center w-full">
-            <div className="fmobile:flex fmobile:gap-2 fmobile:items-center">
+            <div>
               <h3 className="card-title">Sales Booking</h3>
               <h5 className="block text-gray-500 text-sm font-bold">
                 <div className="flex flex-wrap align-items flex-row gap-x-2">

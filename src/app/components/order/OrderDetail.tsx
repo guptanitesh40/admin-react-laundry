@@ -39,7 +39,7 @@ const OrderDetails: React.FC = () => {
 
   const userId = useSelector((state: RootState) => state.user.user_id);
 
-  const { order, fetchOrder } = useGetOrder();
+  const { order, fetchOrder, loading: fetchingData } = useGetOrder();
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
@@ -325,7 +325,7 @@ const OrderDetails: React.FC = () => {
     const url = order?.refund_receipt_url?.fileUrl;
     window.open(url, "_blank");
   };
-  
+
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl">
@@ -354,6 +354,7 @@ const OrderDetails: React.FC = () => {
 
               {location?.state?.from !== "WorkshopOrderTable" &&
                 order?.order_status !== 11 &&
+                order.refund_status !== 1 &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
@@ -430,14 +431,14 @@ const OrderDetails: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="flex items-center bg-white p-4 rounded-md shadow-sm">
+            <div className="flex border flex-wrap border-gray-200 rounded-xl bg-gray-50 items-center bg-gray-00 p-4 shadow-sm mobile:flex mobile:flex-col gap-5">
               <div>
-                <span className="badge text-sm font-medium text-gray-700">
+                <span className="badge badge-secondary badge-text rounded-xl badge-outline text-sm font-medium text-gray-700">
                   Order Refunded
                 </span>
               </div>
 
-              <div className="flex-1 px-10">
+              <div className="flex-shrink: 1 items-center px-10">
                 <span className="text-sm font-medium text-gray-700">
                   Reason of Refund :
                 </span>
@@ -446,7 +447,7 @@ const OrderDetails: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col mr-4 gap-2">
+              <div className="flex items-center flex-col mr-4 gap-2">
                 <span className="text-sm font-medium text-gray-700">
                   Refund Amount :{" "}
                 </span>
@@ -471,11 +472,10 @@ const OrderDetails: React.FC = () => {
               </div>
 
               <button
-                className="btn btn-secondary btn-lg flex gap-2 ml-3 text-gray-700 text-sm font-semibold"
+                className="btn btn-secondary flex items-center gap-2 ml-auto"
                 onClick={handleViewRefundReceipt}
               >
-                <RiFilePaperLine size={20} color="gray" /> Refund <br />
-                Receipt
+                <RiFilePaperLine size={20} color="gray" /> Refund Receipt
               </button>
             </div>
           )}
@@ -853,6 +853,16 @@ const OrderDetails: React.FC = () => {
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
                             {order.paid_amount}
+                          </td>
+                        </tr>
+                      )}
+                      {order?.kasar_amount > 0 && (
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            kasar amount:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.kasar_amount}
                           </td>
                         </tr>
                       )}

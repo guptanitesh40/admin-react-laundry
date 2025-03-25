@@ -12,13 +12,13 @@ const device_token = "sdlknoin";
 
 const validationSchema = Yup.object({
   username: Yup.string()
+    .transform((value) => value.trim()) 
     .required("Email is required")
-    .email("Enter a valid email")
-    .test("required", "Email is required", (value) => !!value),
+    .email("Enter a valid email"),
 
   password: Yup.string()
     .min(6, "Password must be at least 6 characters long")
-    .required("password is required"),
+    .required("Password is required"),
 
   userId: Yup.number().required("Please select the user role"),
 });

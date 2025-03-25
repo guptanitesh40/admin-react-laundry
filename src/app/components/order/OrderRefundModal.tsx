@@ -13,7 +13,7 @@ interface OrderRefundModalProps {
 }
 
 const schema = Yup.object().shape({
-  refund_descriptions: Yup.string().required(
+  refund_description: Yup.string().required(
     "Please enter text to add description"
   ),
   refund_amount: Yup.number()
@@ -47,7 +47,7 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
     order_id: orderId,
     refund_amount: null,
     refund_status: null,
-    refund_descriptions: "",
+    refund_description: "",
   });
 
   useEffect(() => {
@@ -56,14 +56,14 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
         order_id: orderId,
         refund_amount: null,
         refund_status: null,
-        refund_descriptions: "",
+        refund_description: "",
       });
     } else {
       setFormData({
         order_id: orderId,
         refund_amount: null,
         refund_status: null,
-        refund_descriptions: "",
+        refund_description: "",
       });
       setErrors({});
     }
@@ -157,25 +157,25 @@ const OrderRefundModal: React.FC<OrderRefundModalProps> = ({
           <div className="flex flex-col mb-2">
             <label
               className="block text-gray-700 text-base font-bold mb-2"
-              htmlFor="refund_descriptions"
+              htmlFor="refund_description"
             >
               Reason of Refund (Refund Note)
             </label>
             <textarea
-              id="refund_descriptions"
-              name="refund_descriptions"
-              value={formData.refund_descriptions}
+              id="refund_description"
+              name="refund_description"
+              value={formData.refund_description}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  refund_descriptions: e.target.value,
+                  refund_description: e.target.value,
                 })
               }
               className="h-20 input border border-gray-300 rounded-md p-2"
               rows={5}
             />
             <p className="text-red-500 text-sm">
-              {errors.refund_descriptions || "\u00A0"}
+              {errors.refund_description || "\u00A0"}
             </p>
           </div>
 

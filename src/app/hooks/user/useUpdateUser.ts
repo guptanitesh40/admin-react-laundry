@@ -1,23 +1,25 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
 
 const useUpdateUser = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateUser = async (user_id: number, formData: any): Promise<boolean> => {
+  const updateUser = async (
+    user_id: number,
+    formData: any
+  ): Promise<boolean> => {
     const token = localStorage.getItem("authToken");
-    const UPDATE_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/${user_id}`;
 
     setLoading(true);
-   
+
     try {
-      const response = await fetch(UPDATE_USER_URL, {
+      const response = await fetch(`${BASE_URL}/user/${user_id}`, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -36,7 +38,7 @@ const useUpdateUser = () => {
       setLoading(false);
     }
   };
-  
+
   return { updateUser, loading };
 };
 

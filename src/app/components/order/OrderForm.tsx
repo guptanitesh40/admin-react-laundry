@@ -60,9 +60,9 @@ interface FormData {
 
 const OrderForm: React.FC = () => {
   const { prices } = useGetPrice();
-  const { categories } = useGetCategories();
-  const { fetchProductsOnId } = useGetProductsOnId();
-  const { fetchServicesOnId } = useGetServicesOnId();
+  const { categories, loading: fetchingCategories } = useGetCategories();
+  const { fetchProductsOnId, loading: fetchingProducs } = useGetProductsOnId();
+  const { fetchServicesOnId, loading: fetchingServices } = useGetServicesOnId();
 
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
@@ -848,14 +848,22 @@ const OrderForm: React.FC = () => {
                           <option value="" disabled>
                             Select Category
                           </option>
-                          {categories.map((cat) => (
-                            <option
-                              key={cat.category_id}
-                              value={cat.category_id}
-                            >
-                              {cat.name}
-                            </option>
-                          ))}
+                          {fetchingCategories ? (
+                            <>
+                              <option>Loading...</option>
+                            </>
+                          ) : categories.length > 0 ? (
+                            categories.map((cat) => (
+                              <option
+                                key={cat.category_id}
+                                value={cat.category_id}
+                              >
+                                {cat.name}
+                              </option>
+                            ))
+                          ) : (
+                            <option>No Category Available</option>
+                          )}
                         </select>
                         <p className="w-full text-red-500 text-sm">
                           {errors[`items[${index}].category_id`]}
@@ -884,23 +892,31 @@ const OrderForm: React.FC = () => {
                           <option value="" disabled>
                             Select Product
                           </option>
-                          {productCache[item.category_id]?.map((prod) => (
-                            <option
-                              key={prod.product_product_id}
-                              value={prod.product_product_id}
-                            >
-                              {prod.product_name}
-                            </option>
-                          )) ||
-                            (item.product_id && (
+                          {!item.category_id ? (
+                            <option disabled>Please select a category</option>
+                          ) : fetchingProducs ? (
+                            <option>Loading...</option>
+                          ) : productCache[item.category_id]?.length > 0 ? (
+                            productCache[item.category_id].map((prod) => (
                               <option
-                                key={item.product_id}
-                                value={item.product_id}
+                                key={prod.product_product_id}
+                                value={prod.product_product_id}
                               >
-                                {item.product_name}
+                                {prod.product_name}
                               </option>
-                            ))}
+                            ))
+                          ) : item.product_id ? (
+                            <option
+                              key={item.product_id}
+                              value={item.product_id}
+                            >
+                              {item.product_name}
+                            </option>
+                          ) : (
+                            <option>No Product Available</option>
+                          )}
                         </select>
+
                         <p className="w-full text-red-500 text-sm">
                           {errors[`items[${index}].product_id`]}
                         </p>
@@ -928,24 +944,33 @@ const OrderForm: React.FC = () => {
                           <option value="" disabled>
                             Select Service
                           </option>
-                          {serviceCache[
-                            `${item.category_id}_${item.product_id}`
-                          ]?.map((serv: any) => (
-                            <option
-                              key={serv.service_service_id}
-                              value={serv.service_service_id}
-                            >
-                              {serv.service_name}
-                            </option>
-                          )) ||
-                          (item.service_id && (
+                          {!item.product_id ? (
+                            <option disabled>Please select a product</option>
+                          ) : fetchingServices ? (
+                            <option>Loading...</option>
+                          ) : serviceCache[
+                              `${item.category_id}_${item.product_id}`
+                            ]?.length > 0 ? (
+                            serviceCache[
+                              `${item.category_id}_${item.product_id}`
+                            ].map((serv: any) => (
+                              <option
+                                key={serv.service_service_id}
+                                value={serv.service_service_id}
+                              >
+                                {serv.service_name}
+                              </option>
+                            ))
+                          ) : item.service_id ? (
                             <option
                               key={item.service_id}
                               value={item.service_id}
                             >
                               {item.service_name}
                             </option>
-                          ))}
+                          ) : (
+                            <option>No service available</option>
+                          )}
                         </select>
                         <p className="w-full text-red-500 text-sm">
                           {errors[`items[${index}].service_id`]}

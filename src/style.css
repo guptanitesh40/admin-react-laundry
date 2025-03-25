@@ -9904,3 +9904,22 @@ input[date-range="start"] {
 .br-bottom {
   border-bottom: blue !important;
 }
+
+.menu-accordion {
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.menu-item.transitioning .menu-accordion {
+  will-change: height; 
+}
+
+.menu-accordion.show {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-text {
+  color: #ffffff !important;
+  background-color: #93426c; 
+}

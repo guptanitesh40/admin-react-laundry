@@ -3,10 +3,11 @@ import { Gender, Role } from "../../../types/enums";
 import useGetUser from "../../hooks/user/useGetuser";
 import { RootState } from "../../utils/store";
 import { useSelector } from "react-redux";
+import ProfileShimmer01 from "../shimmer/ProfileShimmer";
 
 const Profile: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.user_id);
-  const { userData, fetchUser } = useGetUser();
+  const { userData, fetchUser, loading } = useGetUser();
 
   const user = userData?.user;
 
@@ -17,6 +18,14 @@ const Profile: React.FC = () => {
     fetchData();
   }, [userId]);
 
+  if (loading) {
+    return (
+      <div className="mt-10">
+        <ProfileShimmer01 />
+      </div>
+    );
+  }
+  
   if (!user) return;
 
   return (
@@ -49,21 +58,21 @@ const Profile: React.FC = () => {
                   <div className="card-table scrollable-x-auto pb-3">
                     <table className="table align-middle text-sm text-gray-500">
                       <tbody>
-                        {/* {!!user.image && (
+                        {!!user.image && (
                           <tr>
                             <td className="py-2 min-w-28">Photo</td>
 
-                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700 ">
                               <span className="">
                                 <img
-                                  className="h-14 w-14 rounded-full object-cover"
+                                  className="h-14 w-14 rounded-full object-cover border-2 border-gray-50"
                                   src={user.image || "/media/images/blank.png"}
                                   alt="User profile"
                                 />
                               </span>
                             </td>
                           </tr>
-                        )} */}
+                        )}
                         <tr>
                           <td className="py-2">Name</td>
                           <td className="py-2 text-gray-700 text-sm">
