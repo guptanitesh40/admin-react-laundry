@@ -7,7 +7,11 @@ import SendPaymentLinkModal from "../sidebar/SendPaymentLinkModal";
 import { RiShareForwardFill } from "react-icons/ri";
 import { usePermissions } from "../../hooks";
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,11 +35,15 @@ export const Header: React.FC = () => {
     navigate("/login");
   };
 
+  const handleMobileNavClick = () => {
+    setIsOpen(true);
+  };
+
   if (!user || !user.user_id) return null;
 
   return (
     <header
-      className="header fixed top-0 z-10 left-0 right-0 flex items-stretch shrink-0 bg-[#fefefe] dark:bg-coal-500"
+      className="header fixed top-0 z-10 left-0 right-0 flex items-stretch shrink-0 bg-[#fefefe] dark:bg-coal-500 border-b border-gray-200"
       data-sticky="true"
       data-sticky-class="shadow-sm dark:border-b dark:border-b-coal-100"
       data-sticky-name="header"
@@ -52,7 +60,8 @@ export const Header: React.FC = () => {
           <div className="flex items-center">
             <button
               className="btn btn-icon btn-light btn-clear btn-sm"
-              data-drawer-toggle="#sidebar"
+              // data-drawer-toggle="#sidebar"
+              onClick={handleMobileNavClick}
             >
               <i className="ki-filled ki-menu"></i>
             </button>

@@ -61,11 +61,10 @@ const useValidateToken = () => {
       } else {
         handleLogout();
       }
-    } catch (error) {
+    } catch {
       toast.error("Oops! Something went wrong. Please log in again.", {
         className: "toast-error",
       });
-      handleLogout();
     } finally {
       setLoading(false);
     }

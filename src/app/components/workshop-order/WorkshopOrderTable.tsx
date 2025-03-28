@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -146,6 +147,17 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={12}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
 
   return (
     <>

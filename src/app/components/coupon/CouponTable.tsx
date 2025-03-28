@@ -9,6 +9,8 @@ import { CouponType, DiscountType } from "../../../types/enums";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
+import ShimmerEd2 from "../shimmer/ShimmerEd2";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const CouponTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -156,6 +158,17 @@ const CouponTable: React.FC = () => {
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={4}
+        records={10}
+        isPagination={false}
+      />
+    );
+  }
 
   return (
     <>
@@ -366,9 +379,7 @@ const CouponTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : coupons.length > 0 ? (
+              {coupons.length > 0 ? (
                 <tbody>
                   {coupons.map((coupon) => (
                     <tr key={coupon.coupon_id}>

@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useDeleteBanner, useGetBanners, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
@@ -12,6 +9,7 @@ import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
 import { getBannerTypeLabel } from "../../utils/bannerTypeLabel";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface BannerTableProps {
   setEditBanner: (banner_id: number) => void;
@@ -169,6 +167,17 @@ const BannerTable: React.FC<BannerTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={6}
+        records={5}
+        isPagination={false}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex flex-wrap items-center justify-between gap-4">
@@ -299,9 +308,7 @@ const BannerTable: React.FC<BannerTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : banners.length > 0 ? (
+              {banners.length > 0 ? (
                 <tbody>
                   {banners.map((banner) => (
                     <tr key={banner.banner_id}>

@@ -28,6 +28,7 @@ import { RiFilePaper2Fill, RiFilePaperLine } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
+import Loading from "../shimmer/Loading";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -300,6 +301,8 @@ const OrderDetails: React.FC = () => {
       setRefetch(true);
     }
   };
+
+  if(fetchingData) return <Loading/>
 
   if (!order) return null;
 
@@ -1064,3 +1067,4 @@ const OrderDetails: React.FC = () => {
 };
 
 export default OrderDetails;
+

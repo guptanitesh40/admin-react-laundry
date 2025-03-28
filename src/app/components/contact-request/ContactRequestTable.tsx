@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import dayjs from "dayjs";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const ContactRequestTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +90,17 @@ const ContactRequestTable: React.FC = () => {
       setSortOrder("ASC");
     }
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={6}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
 
   return (
     <>
@@ -220,9 +232,7 @@ const ContactRequestTable: React.FC = () => {
                   <th className="min-w-[350px]">Message</th>
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : contactRequestData?.length > 0 ? (
+              {contactRequestData?.length > 0 ? (
                 <tbody>
                   {contactRequestData?.map((contactData: any) => (
                     <tr key={contactData.contact_us_id}>

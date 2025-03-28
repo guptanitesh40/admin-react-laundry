@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import Pagination from "../pagination/Pagination";
-import TableShimmer from "../shimmer/TableShimmer";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface OptionType {
   label: string;
@@ -170,6 +170,17 @@ const PaymentsTable: React.FC = () => {
     ),
     ...filteredOptions,
   ];
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={9}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
 
   return (
     <>
@@ -345,9 +356,7 @@ const PaymentsTable: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : payments?.length > 0 ? (
+              {payments?.length > 0 ? (
                 <tbody>
                   {payments.map((payment) => (
                     <tr key={payment.razorpay_transaction_id}>

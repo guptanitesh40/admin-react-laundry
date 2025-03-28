@@ -13,6 +13,7 @@ import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface OptionType {
   label: string;
@@ -193,6 +194,17 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={6}
+        records={3}
+        isPagination={false}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex flex-wrap items-center justify-between gap-4">
@@ -334,9 +346,7 @@ const WorkshopTable: React.FC<WorkshopTableProps> = ({
                 )}
               </tr>
             </thead>
-            {loading ? (
-              <TableShimmer />
-            ) : workshops?.length > 0 ? (
+            {workshops?.length > 0 ? (
               <tbody>
                 {workshops.map((workshop) => (
                   <tr key={workshop.workshop_id}>

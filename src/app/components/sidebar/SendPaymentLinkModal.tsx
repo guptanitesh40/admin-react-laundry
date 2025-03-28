@@ -166,13 +166,13 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 grid overflow-auto items-center justify-center z-50 p-4 ">
+      <div className="fixed inset-0 grid overflow-auto place-items-center z-50 p-4">
         <div
           className="fixed inset-0 bg-black opacity-50"
           onClick={onClose}
         ></div>
 
-        <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg min-w-[400px] mdmobile:min-w-[100%] z-10 relative">
+        <div className="p-5 rounded-lg shadow-lg z-10 relative bg-white w-full max-w-[400px] mdmobile:max-w-full">
           <button
             className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
             onClick={onClose}

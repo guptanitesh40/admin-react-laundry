@@ -3,7 +3,7 @@ import { useGetCustomerRatingData } from "../../hooks";
 import { ratingStarClasses } from "../../utils/ratingStarClasses";
 
 const CustomerRatingReport: React.FC = () => {
-  const { customerRatingData, fetchCustomerRatingData } =
+  const { customerRatingData, fetchCustomerRatingData, loading } =
     useGetCustomerRatingData();
   const [ratings, setRatings] = useState([
     { label: "5", count: 0 },
@@ -51,24 +51,28 @@ const CustomerRatingReport: React.FC = () => {
   const getProgressBarColor = (label: any, count: any) => {
     const ratingNumber = Number(label);
 
-    if(count === 0 ){
-      return "bg-gray-200"
+    if (count === 0) {
+      return "bg-gray-200";
     }
 
     switch (ratingNumber) {
       case 1:
-        return "bg-red-500"; 
+        return "bg-red-500";
       case 2:
-        return "bg-green-500"; 
+        return "bg-green-500";
       case 3:
         return "bg-yellow-500";
       case 4:
-        return "bg-orange-500"; 
+        return "bg-orange-500";
       case 5:
         return "bg-blue-500";
       default:
-        return "bg-gray-200"; 
+        return "bg-gray-200";
     }
+  };
+
+  if (loading) {
+    return null;
   }
 
   return (
@@ -102,18 +106,26 @@ const CustomerRatingReport: React.FC = () => {
                       key={index}
                       className="rating-label custom-rating checked"
                     >
-                      <i className={`${ratingStarClasses(Number(rating.label))} rating-on ki-solid ki-star text-base leading-none`}></i>
+                      <i
+                        className={`${ratingStarClasses(
+                          Number(rating.label)
+                        )} rating-on ki-solid ki-star text-base leading-none`}
+                      ></i>
                     </div>
                   </div>
-                  
                 </div>
                 <div className="w-full h-[8px] bg-gray-200 rounded overflow-hidden">
                   <div
-                    className={`${getProgressBarColor(rating.label, rating.count)} rounded-full h-full transition-all duration-500`}
+                    className={`${getProgressBarColor(
+                      rating.label,
+                      rating.count
+                    )} rounded-full h-full transition-all duration-500`}
                     style={{ width: `${(rating.count / maxCount) * 100}%` }}
                   ></div>
                 </div>
-                <span className="font-medium text-sm text-gray-600">{rating.count}</span>
+                <span className="font-medium text-sm text-gray-600">
+                  {rating.count}
+                </span>
               </div>
             ))}
           </div>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSendOtp, useValidateOtp } from "../hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MdOutlineVerifiedUser } from "react-icons/md";
@@ -6,12 +6,13 @@ import { MdOutlineVerifiedUser } from "react-icons/md";
 const EnterOtp: React.FC = () => {
   const { validateOtp, loading: validating } = useValidateOtp();
   const location = useLocation();
-  const formData = location.state.formData;
-  const mobileNumber = location.state.formData.mobile_number;
+  const navigate = useNavigate();
+
+  const formData = location?.state?.formData;
+  const mobileNumber = location?.state?.formData?.mobile_number;
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate();
-  const { sendOtp, loading: sending } = useSendOtp();
+  const { sendOtp } = useSendOtp();
 
   const [otpError, setOtpError] = useState("");
 
@@ -47,7 +48,6 @@ const EnterOtp: React.FC = () => {
     }
   };
 
-
   const handleVerify = async () => {
     const otp = inputRefs.current.map((input) => input?.value).join("");
 
@@ -65,7 +65,8 @@ const EnterOtp: React.FC = () => {
     const success = await validateOtp(mobileNumber, otpValue);
     if (success) {
       navigate("/forgot-password/resetpassword", {
-        state: { formData , otpValue },
+        state: { formData, otpValue },
+        replace: true,
       });
     }
   };
@@ -76,6 +77,15 @@ const EnterOtp: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!location.state) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [location.state, navigate]);
+
+  if (!location.state) {
+    return null;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen p-5 w-full">
