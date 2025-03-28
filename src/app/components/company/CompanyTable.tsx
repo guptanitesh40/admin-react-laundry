@@ -9,6 +9,7 @@ import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import { CompanyOwed } from "../../../types/enums";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const CompanyTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -155,6 +156,17 @@ const CompanyTable: React.FC = () => {
   const handleViewCompany = (company_id: number) => {
     navigate(`/company-profile/${company_id}`);
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={8}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
 
   return (
     <>
@@ -352,9 +364,7 @@ const CompanyTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : companies.length > 0 ? (
+              {companies.length > 0 ? (
                 <tbody>
                   {companies.map((company) => (
                     <tr key={company.company_id}>

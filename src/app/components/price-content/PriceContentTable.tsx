@@ -4,6 +4,7 @@ import TableShimmer from "../shimmer/TableShimmer";
 import Swal from "sweetalert2";
 import useDeletePriceContent from "../../hooks/price-content/useDeletePriceContent";
 import { useEffect } from "react";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface PriceContentTableProps {
   setUpdateItem: (price_content_id: number) => void;
@@ -61,6 +62,21 @@ const PriceContentTable: React.FC<PriceContentTableProps> = ({
     }
   };
 
+  if (loading) {
+    return (
+      <div className="grid gap-5 lg:gap-7.5">
+        <div className="card card-grid min-w-full">
+          <TableShimmerEd2
+            isFilters={false}
+            columns={4}
+            records={4}
+            isPagination={false}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="grid gap-5 lg:gap-5.5">
@@ -80,9 +96,7 @@ const PriceContentTable: React.FC<PriceContentTableProps> = ({
                     )}
                   </tr>
                 </thead>
-                {loading ? (
-                  <TableShimmer />
-                ) : priceContents ? (
+                {priceContents.length > 0 ? (
                   <tbody>
                     {priceContents.map((item) => (
                       <tr key={item.price_content_id}>

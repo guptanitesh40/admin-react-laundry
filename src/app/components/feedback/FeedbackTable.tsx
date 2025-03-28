@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import TableShimmer from "../shimmer/TableShimmer";
 import { ratingStarClasses } from "../../utils/ratingStarClasses";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const FeedbackTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,7 +68,7 @@ const FeedbackTable: React.FC = () => {
   useEffect(() => {
     if (publishFilter !== undefined || ratingFilter.length > 0) {
       setCurrentPage(1);
-      if(search !== ""){
+      if (search !== "") {
         setSearchParams({ search, page: "1", perPage: perPage.toString() });
       } else {
         setSearchParams({ page: "1", perPage: perPage.toString() });
@@ -159,6 +160,17 @@ const FeedbackTable: React.FC = () => {
     ),
     value: index + 1,
   }));
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={8}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
 
   return (
     <>
@@ -341,9 +353,7 @@ const FeedbackTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : feedbacks?.length > 0 ? (
+              {feedbacks?.length > 0 ? (
                 <tbody>
                   {feedbacks.map((feedback) => (
                     <tr key={feedback.feedback_id}>

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import {
   useDeleteCategory,
@@ -15,9 +12,9 @@ import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import TableShimmer from "../shimmer/TableShimmer";
 import { ImCheckmark, ImCross } from "react-icons/im";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface Category {
   category_id: number;
@@ -51,8 +48,13 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { categories, count, fetchCategories, loading } =
-    useGetCategories(currentPage, perPage, search, sortColumn, sortOrder);
+  const { categories, count, fetchCategories, loading } = useGetCategories(
+    currentPage,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder
+  );
   const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory();
@@ -199,6 +201,17 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        isPagination={false}
+        columns={3}
+        records={5}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -292,9 +305,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : categories.length > 0 ? (
+              {categories.length > 0 ? (
                 <tbody>
                   {categories.map((category) => (
                     <tr key={category.category_id}>

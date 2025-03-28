@@ -1,17 +1,12 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import MasterLayout from "../components/layout/Index";
 import DashBoard from "../components/dashboard/Index";
-import Shimmer from "../components/shimmer/Shimmer";
-import ListShimmer from "../components/shimmer/ListShimmer";
-import ProfileShimmer01 from "../components/shimmer/ProfileShimmer";
-import ProfileShimmer02 from "../components/shimmer/ProfileShimmer01";
-import { useGetUserPermissions, useValidateToken } from "../hooks";
-import { useDispatch } from "react-redux";
-import { login as loginAction } from "../utils/authSlice";
-import toast from "react-hot-toast";
+import { useValidateToken } from "../hooks";
 import ProtectedRoute from "./ProtectedRoutes";
 import ContactRequest from "../components/contact-request/ContactRequest";
+import PageNotFound from "../components/404/PageNotFound";
+import Loading from "../components/shimmer/Loading";
 
 const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
@@ -82,7 +77,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/category"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Category />
               </Suspense>
             }
@@ -93,7 +88,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/product"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Product />
               </Suspense>
             }
@@ -104,7 +99,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/services"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Service />
               </Suspense>
             }
@@ -115,7 +110,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/coupon"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Coupon />
               </Suspense>
             }
@@ -126,7 +121,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/coupon/add"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <CouponModal />
               </Suspense>
             }
@@ -137,7 +132,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/coupon/edit/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <CouponModal />
               </Suspense>
             }
@@ -148,7 +143,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/price"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Price />
               </Suspense>
             }
@@ -159,7 +154,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/price-content"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <PriceContent />
               </Suspense>
             }
@@ -170,7 +165,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/companies"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Company />
               </Suspense>
             }
@@ -181,7 +176,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/company-profile/:id"
             element={
-              <Suspense fallback={<ProfileShimmer01 />}>
+              <Suspense fallback={<Loading />}>
                 <CompanyProfile />
               </Suspense>
             }
@@ -192,7 +187,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/company/add"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <CompanyForm />
               </Suspense>
             }
@@ -203,7 +198,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/company/edit/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <CompanyForm />
               </Suspense>
             }
@@ -214,7 +209,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/branches"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Branch />
               </Suspense>
             }
@@ -225,7 +220,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/branch/add"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <BranchForm />
               </Suspense>
             }
@@ -236,7 +231,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/branch/edit/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <BranchForm />
               </Suspense>
             }
@@ -247,7 +242,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/branch-profile/:id"
             element={
-              <Suspense fallback={<ProfileShimmer02 />}>
+              <Suspense fallback={<Loading />}>
                 <BranchProfile />
               </Suspense>
             }
@@ -258,7 +253,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/banner"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Banner />
               </Suspense>
             }
@@ -269,7 +264,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/settings"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Settings />
               </Suspense>
             }
@@ -280,7 +275,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/orders"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Order />
               </Suspense>
             }
@@ -291,7 +286,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/pickup-orders"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <PickupOrder />
               </Suspense>
             }
@@ -302,7 +297,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/delivered-orders"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <DeliveredOrderTable />
               </Suspense>
             }
@@ -313,7 +308,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/booking-orders"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <BookingOrder />
               </Suspense>
             }
@@ -324,7 +319,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/payments"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Payments />
               </Suspense>
             }
@@ -335,7 +330,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/order/add"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <OrderForm />
               </Suspense>
             }
@@ -346,7 +341,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/order/edit/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <OrderForm />
               </Suspense>
             }
@@ -356,7 +351,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/users"
           element={
-            <Suspense fallback={<ListShimmer />}>
+            <Suspense fallback={<Loading />}>
               <User />
             </Suspense>
           }
@@ -366,7 +361,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/order/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <OrderDetail />
               </Suspense>
             }
@@ -376,7 +371,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/roles"
           element={
-            <Suspense fallback={<ListShimmer />}>
+            <Suspense fallback={<Loading />}>
               <Roles />
             </Suspense>
           }
@@ -385,7 +380,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/user-permissions"
           element={
-            <Suspense fallback={<ListShimmer />}>
+            <Suspense fallback={<Loading />}>
               <Permissions />
             </Suspense>
           }
@@ -395,7 +390,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/customers"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Customer />
               </Suspense>
             }
@@ -405,7 +400,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/user/:id"
           element={
-            <Suspense fallback={<Shimmer />}>
+            <Suspense fallback={<Loading />}>
               <UserProfile />
             </Suspense>
           }
@@ -415,7 +410,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/customer/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <UserProfile />
               </Suspense>
             }
@@ -425,7 +420,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/user/add"
           element={
-            <Suspense fallback={<ListShimmer />}>
+            <Suspense fallback={<Loading />}>
               <UserForm />
             </Suspense>
           }
@@ -435,7 +430,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/customer/add"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <UserForm />
               </Suspense>
             }
@@ -445,7 +440,7 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/user/edit/:id"
           element={
-            <Suspense fallback={<Shimmer />}>
+            <Suspense fallback={<Loading />}>
               <UserForm />
             </Suspense>
           }
@@ -455,7 +450,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/customer/edit/:id"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <UserForm />
               </Suspense>
             }
@@ -466,7 +461,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/workshops"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Workshop />
               </Suspense>
             }
@@ -477,7 +472,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/workshop-order"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <WorkshopOrder />
               </Suspense>
             }
@@ -488,7 +483,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/customer-feedback"
             element={
-              <Suspense fallback={<ListShimmer />}>
+              <Suspense fallback={<Loading />}>
                 <Feedback />
               </Suspense>
             }
@@ -499,7 +494,7 @@ const PrivateRoutes: React.FC = () => {
           <Route
             path="/contact-requests"
             element={
-              <Suspense fallback={<Shimmer />}>
+              <Suspense fallback={<Loading />}>
                 <ContactRequest />
               </Suspense>
             }
@@ -509,11 +504,13 @@ const PrivateRoutes: React.FC = () => {
         <Route
           path="/profile"
           element={
-            <Suspense fallback={<Shimmer />}>
+            <Suspense fallback={<Loading />}>
               <Profile />
             </Suspense>
           }
         />
+
+        <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
   );

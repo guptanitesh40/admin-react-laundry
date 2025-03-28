@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDeleteProduct, useGetProducts, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
-import {
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import * as Yup from "yup";
 import TableShimmer from "../shimmer/TableShimmer";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface ProductTableProps {
   setEditProduct: (product_id: number) => void;
@@ -154,6 +152,17 @@ const ProductTable: React.FC<ProductTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={4}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -254,9 +263,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : products.length > 0 ? (
+              {products.length > 0 ? (
                 <tbody>
                   {products.map((product) => (
                     <tr key={product.product_id}>

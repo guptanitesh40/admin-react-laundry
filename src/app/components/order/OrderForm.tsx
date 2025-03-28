@@ -297,7 +297,7 @@ const OrderForm: React.FC = () => {
     } else if (totalPaid > 0 && totalPaid < formData.total) {
       newPaymentStatus = 3;
       setRemainingAmount(remaining);
-    } else if (totalPaid > 0) {
+    } else if (totalPaid === 0 && formData.total > 0) {
       newPaymentStatus = 1;
       setRemainingAmount(remaining);
     }
@@ -1496,3 +1496,4 @@ const OrderForm: React.FC = () => {
 };
 
 export default OrderForm;
+

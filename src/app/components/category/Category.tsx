@@ -31,7 +31,6 @@ const Category: React.FC = () => {
               </button>
             </div>
           )}
-          
         </div>
       </div>
 

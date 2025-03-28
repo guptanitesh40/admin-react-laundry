@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import TableShimmer from "../shimmer/TableShimmer";
 import { Gender } from "../../../types/enums";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useDeleteUser, useGetUsers, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const CustomerTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -162,6 +162,17 @@ const CustomerTable: React.FC = () => {
 
   if (!users) return;
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={7}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -313,9 +324,7 @@ const CustomerTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : users.length > 0 ? (
+              {users.length > 0 ? (
                 <tbody>
                   {users?.map((customer: any) => {
                     return (

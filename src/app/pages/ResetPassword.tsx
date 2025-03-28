@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useResetPassword } from "../hooks";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
@@ -22,10 +22,10 @@ const ResetPassword = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { resetPassword, loading } = useResetPassword();
   const location = useLocation();
-  const mobile_number = location.state.formData.mobile_number;
-  const roleId = location.state.formData.role_id;
+  const mobile_number = location?.state?.formData?.mobile_number;
+  const roleId = location?.state?.formData?.role_id;
 
-  const otp = location.state.otpValue;
+  const otp = location?.state?.otpValue;
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +36,14 @@ const ResetPassword = () => {
         { newPassword, confirmPassword },
         { abortEarly: false }
       );
+      setErrors({});
 
-      const success = await resetPassword(mobile_number, otp, newPassword, roleId);
+      const success = await resetPassword(
+        mobile_number,
+        otp,
+        newPassword,
+        roleId
+      );
       if (success) {
         navigate("/login");
       }
@@ -52,6 +58,15 @@ const ResetPassword = () => {
     }
   };
 
+  useEffect(() => {
+    if (!location.state?.formData || !location.state?.otpValue) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [location.state, navigate]);
+
+  if (!location.state || !location.state.formData || !location.state.otpValue) {
+    return null;
+  }
 
   return (
     <div className="flex justify-center items-center p-5 order-2 lg:order-1 w-full">
@@ -131,7 +146,13 @@ const ResetPassword = () => {
             disabled={loading}
             onClick={handleSubmit}
           >
-            {loading ? <><LoadingSpinner /></> : <>Reset password</>}
+            {loading ? (
+              <>
+                <LoadingSpinner />
+              </>
+            ) : (
+              <>Reset password</>
+            )}
           </button>
         </form>
       </div>

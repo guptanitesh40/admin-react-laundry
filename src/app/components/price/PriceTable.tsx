@@ -13,6 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
 import { searchSchema } from "../../validation/searchSchema";
 import TableShimmer from "../shimmer/TableShimmer";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface Category {
   category_id: number;
@@ -242,6 +243,23 @@ const PriceTable: React.FC<PriceTableProps> = ({
     });
   };
 
+  if (loading) {
+    return (
+      <div className="container-fixed">
+        <div className="grid gap-5 lg:gap-7.5">
+          <div className="card card-grid min-w-full">
+            <TableShimmerEd2
+              isFilters={true}
+              columns={5}
+              records={20}
+              isPagination={false}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex-wrap container-fixed">
@@ -350,9 +368,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {loading ? (
-                        <TableShimmer />
-                      ) : filteredCombinations.length > 0 ? (
+                      {filteredCombinations.length > 0 ? (
                         filteredCombinations.map((combination, index) => {
                           const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
                           const isEditing = editing.has(key);
@@ -396,9 +412,15 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                   />
                                 ) : (
                                   <span
-                                    className={`${hasPermission(10, "update") || hasPermission(10, "create") ? "cursor-pointer h-full flex" : "h-full flex"}`}                                 
+                                    className={`${
+                                      hasPermission(10, "update") ||
+                                      hasPermission(10, "create")
+                                        ? "cursor-pointer h-full flex"
+                                        : "h-full flex"
+                                    }`}
                                     onClick={
-                                      hasPermission(10, "update") || hasPermission(10, "create")
+                                      hasPermission(10, "update") ||
+                                      hasPermission(10, "create")
                                         ? () => handleEditClick(key)
                                         : undefined
                                     }
