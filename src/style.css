@@ -9881,7 +9881,7 @@ label.rating-label {
   transition: height 0.3s ease;
 }
 
-.menu-item.transitioning .menu-accordion {
+.menu-item. .menu-accordion {
   will-change: height;
 }
 
