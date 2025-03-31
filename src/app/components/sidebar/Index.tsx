@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,6 +17,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
+
+    if (path === "order/add") {
+      setSelectedItem("orders");
+    } else {
+      setSelectedItem(path);
+    }
     setSelectedItem(path);
   }, [location]);
 
@@ -24,8 +31,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       ? "bg-blue-100 text-white shadow-md rounded-lg transition-all duration-200"
       : "hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white rounded-lg transition-all duration-200";
 
+  const getHeight = () => {
+    return "150px";
+  };
+
+  const openAccordian = (menuName: string) => {
+    if (selectedItem === "orders") {
+      if (menuName === "orders") {
+        return "show";
+      }
+    }
+    // // const path = location.pathname.split("/")[1];
+    // if (selectedItem === "orders") {
+    //   if (
+    //     selectedItem === "orders" ||
+    //     selectedItem === "pickup-orders" ||
+    //     selectedItem === "delivered-orders" ||
+    //     selectedItem === "booking-orders"
+    //   ) {
+    //     return "show";
+    //   } else {
+    //     return "";
+    //   }
+    // } else if (menuName === "users") {
+    //   if (selectedItem === "users" || selectedItem === "roles") {
+    //     return "show";
+    //   }
+    // } else {
+    //   return "";
+    // }
+  };
+
   const getSubmenuItemClass = (item: string) =>
-    selectedItem === item ? "active" : "";
+    location.pathname.split("/")[1] === item ? "active" : "";
 
   useEffect(() => {
     if (isOpen) {
@@ -49,7 +87,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   useEffect(() => {
     if (window.innerWidth < 1024) {
       setIsOpen(false);
-      console.log("ok");
     }
   }, [location, setIsOpen]);
 
@@ -175,7 +212,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
             {hasPermission(3, "read") && (
               <div
-                className="menu-item"
+                className={`menu-item menu-item-accordion transition ${openAccordian(
+                  "orders"
+                )}`}
                 data-menu-item-toggle="accordion"
                 data-menu-item-trigger="click"
               >
@@ -199,13 +238,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
                     Orders
                   </span>
+
                   <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
                     <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
                     <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
                   </span>
                 </div>
 
-                <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                <div
+                  className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200"
+                  style={{ height: getHeight() }}
+                >
                   <Link to="/orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass("orders")}`}
@@ -738,7 +781,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
             {roleId === 1 && (
               <div
-                className="menu-item"
+                className={`menu-item ${openAccordian("users")}`}
                 data-menu-item-toggle="accordion"
                 data-menu-item-trigger="click"
               >

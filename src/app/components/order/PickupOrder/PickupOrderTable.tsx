@@ -515,7 +515,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
 
                         <td>
                           {order.order_status_details.next_step !== "NULL" && (
-                            <div className="tooltip-custom">
+                            <span className="block tooltip-custom">
                               <span
                                 className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
                               >
@@ -524,33 +524,33 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                               <div className="tooltip-text">
                                 {order.order_status_details.description}
                               </div>
-                            </div>
+                            </span>
                           )}
                         </td>
                         <td>{order.user.mobile_number}</td>
 
                         <td>{order.address_details}</td>
                         <td>
-                          <div className="flex items-center gap-2.5">
+                          <span className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}
                             <br />
                             {dayjs(order.created_at).format("hh:mm:ss A")}
-                          </div>
+                          </span>
                         </td>
                         <td>
-                          <div className="flex items-center gap-2.5">
+                          <span className="flex items-center gap-2.5">
                             {dayjs(order.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
-                          </div>
+                          </span>
                         </td>
                         <td>
-                          <div className="flex items-center gap-2.5">
+                          <span className="flex items-center gap-2.5">
                             {dayjs(order.estimated_delivery_time).format(
                               "DD-MM-YYYY"
                             )}
                             <br />
-                          </div>
+                          </span>
                         </td>
                         <td>{order.coupon_code}</td>
                         <td>{order.coupon_discount}</td>
@@ -568,7 +568,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (
                           <td>
-                            <div className="flex">
+                            <span className="flex">
                               {hasPermission(3, "read") && (
                                 <button
                                   className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
@@ -601,7 +601,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                                   <FaTrash className="text-red-500" />
                                 </button>
                               )}
-                            </div>
+                            </span>
                           </td>
                         )}
                       </tr>
