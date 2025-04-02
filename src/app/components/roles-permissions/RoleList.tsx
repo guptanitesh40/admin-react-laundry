@@ -1,7 +1,7 @@
 import { FaPencilAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useGetRolesData } from "../../hooks";
-import TableShimmer from "../shimmer/TableShimmer";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const RoleList: React.FC = () => {
   const { rolesData, loading } = useGetRolesData();
@@ -11,6 +11,17 @@ const RoleList: React.FC = () => {
   const handleEditPermissions = (role: string, role_id: number) => {
     navigate("/user-permissions", { state: { role, role_id } });
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={false}
+        columns={2}
+        records={5}
+        isPagination={false}
+      />
+    );
+  }
 
   return (
     <div className="card-body">
@@ -26,9 +37,7 @@ const RoleList: React.FC = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-            {loading ? (
-              <TableShimmer />
-            ) : rolesData ? (
+            {rolesData ? (
               <tbody>
                 {rolesData.map((role) => (
                   <tr key={role.role_id}>
@@ -38,7 +47,9 @@ const RoleList: React.FC = () => {
                         <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           aria-label="Edit"
-                          onClick={() => handleEditPermissions(role.name, role.role_id)}
+                          onClick={() =>
+                            handleEditPermissions(role.name, role.role_id)
+                          }
                         >
                           <FaPencilAlt className="text-yellow-600" />
                         </button>

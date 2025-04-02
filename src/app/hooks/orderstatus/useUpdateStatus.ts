@@ -10,16 +10,18 @@ const useUpdateOrderStatus = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/admin/orders/${order_id}/update-status`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ order_status: status }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/admin/orders/update-status`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        // body: JSON.stringify({ order_status: status }),
+        body: JSON.stringify({
+          order_ids: [order_id],
+          order_status: status,
+        }),
+      });
 
       const data = await response.json();
 

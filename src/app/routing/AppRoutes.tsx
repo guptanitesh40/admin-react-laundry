@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -7,7 +8,6 @@ import App from "../../App";
 import { ForgotPassword } from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import EnterOtp from "../pages/EnterOtp";
-import NotFound from "../pages/NotFount";
 
 const AppRoutes: React.FC = () => {
   const isAuthenticated = useSelector(
@@ -16,26 +16,28 @@ const AppRoutes: React.FC = () => {
 
   return (
     <BrowserRouter>
-    <Routes>
-      <Route element={<App />}>
-        {isAuthenticated ? (
-          <>
-            <Route path="/*" element={<PrivateRoutes />} />
-            <Route index element={<Navigate to="/dashboard" />} />
-          </>
-        ) : (
-          <>  
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/forgot-password/enterotp" element={<EnterOtp />} />
-            <Route path="/forgot-password/resetpassword" element={<ResetPassword />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        )}
-      </Route>
-    </Routes>
+      <Routes>
+        <Route element={<App />}>
+          {isAuthenticated ? (
+            <>
+              <Route path="/*" element={<PrivateRoutes />} />
+              <Route index element={<Navigate to="/dashboard" />} />
+            </>
+          ) : (
+            <>
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/forgot-password/enterotp" element={<EnterOtp />} />
+              <Route
+                path="/forgot-password/resetpassword"
+                element={<ResetPassword />}
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </>
+          )}
+        </Route>
+      </Routes>
     </BrowserRouter>
-
   );
 };
 

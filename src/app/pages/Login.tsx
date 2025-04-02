@@ -12,9 +12,18 @@ const device_token = "sdlknoin";
 
 const validationSchema = Yup.object({
   username: Yup.string()
-    .transform((value) => value.trim()) 
-    .required("Email is required")
-    .email("Enter a valid email"),
+    .transform((value) => value.trim())
+    .test(
+      "is-email-or-phone",
+      "Enter a valid email or mobile number",
+      (value) => {
+        if (!value) return false;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[0-9]{10,15}$/;
+        return emailRegex.test(value) || phoneRegex.test(value);
+      }
+    )
+    .required("Email or mobile number is required"),
 
   password: Yup.string()
     .min(6, "Password must be at least 6 characters long")
@@ -125,11 +134,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-6 smmobile:p-5 w-full">
+    <div className="grid place-items-center min-h-screen p-6 smmobile:!p-5 w-full">
       <div className="card w-full max-w-[400px] smobile:max-w-[350px] vsmobile:max-w-[320px]">
         <form
           onSubmit={handleSubmit}
-          className="card-body flex flex-col gap-3 p-10 smobile:p-6 vsmobile:p-4"
+          className="card-body flex flex-col gap-3 p-10 smobile:!p-6"
           id="log_in_form"
         >
           <div className="flex justify-center">
@@ -177,13 +186,13 @@ const Login: React.FC = () => {
               className="form-label text-gray-900 text-sm vsmobile:text-xs"
               htmlFor="username"
             >
-              Email
+              Email or mobile number
             </label>
             <input
               id="username"
               autoComplete="off"
               className="input border border-gray-300 rounded-md p-2 text-sm vsmobile:text-xs"
-              placeholder="email@example.com"
+              placeholder="Email or mobile number"
               type="text"
               name="username"
               value={formData.username}

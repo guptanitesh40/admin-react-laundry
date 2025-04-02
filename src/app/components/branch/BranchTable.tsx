@@ -14,6 +14,7 @@ import { searchSchema } from "../../validation/searchSchema";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const BranchTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -175,6 +176,17 @@ const BranchTable: React.FC = () => {
   const handleViewBranch = (branch_id: number) => {
     navigate(`/branch-profile/${branch_id}`);
   };
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={6}
+        records={7}
+        isPagination={false}
+      />
+    );
+  }
 
   return (
     <>
@@ -394,14 +406,12 @@ const BranchTable: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : branches.length > 0 ? (
+              {branches.length > 0 ? (
                 <tbody>
                   {branches.map((branch) => (
                     <tr key={branch.branch_id}>
                       <td
-                          className="cursor-pointer text-blue-600 hover:underline"
+                        className="cursor-pointer text-blue-600 hover:underline"
                         onClick={() =>
                           navigate(`/branch-profile/${branch.branch_id}`)
                         }

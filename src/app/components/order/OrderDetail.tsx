@@ -28,6 +28,7 @@ import { RiFilePaper2Fill, RiFilePaperLine } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
+import Loading from "../shimmer/Loading";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -45,6 +46,8 @@ const OrderDetails: React.FC = () => {
   const { updateOrderStatus } = useUpdateOrderStatus();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
   const { hasPermission } = usePermissions();
+
+  console.log(order);
 
   const [formData, setFormData] = useState({
     user_id: null,
@@ -188,7 +191,7 @@ const OrderDetails: React.FC = () => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        text: "Want to change order status!",
+        html: `Want to change order status to <span style="font-weight: 500;">${order.order_status_details.next_step}</span> ?`,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
@@ -301,6 +304,12 @@ const OrderDetails: React.FC = () => {
     }
   };
 
+  const hadleUserNameClick = (userId: number) => {
+    navigate(`/customer/${userId}`);
+  };
+
+  if (fetchingData) return <Loading />;
+
   if (!order) return null;
 
   const adminStatusLabel = getOrderStatusLabel(
@@ -355,6 +364,8 @@ const OrderDetails: React.FC = () => {
               {location?.state?.from !== "WorkshopOrderTable" &&
                 order?.order_status !== 11 &&
                 order.refund_status !== 1 &&
+                order?.order_status !== 12 &&
+                order?.order_status !== 13 &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
@@ -612,6 +623,17 @@ const OrderDetails: React.FC = () => {
                       </tr>
                     )}
 
+                    {order.express_delivery_hour && (
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          Express Delivery Hours:
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.express_delivery_hour} Hours
+                        </td>
+                      </tr>
+                    )}
+
                     {order.kasar_amount !== 0 && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
@@ -706,7 +728,10 @@ const OrderDetails: React.FC = () => {
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Name:
                         </td>
-                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        <td
+                          className="flex items-center gap-2.5 text-sm font-medium text-primary cursor-pointer underline"
+                          onClick={() => hadleUserNameClick(order?.user_id)}
+                        >
                           {order.user.first_name} {order.user.last_name}
                         </td>
                       </tr>
@@ -1027,7 +1052,7 @@ const OrderDetails: React.FC = () => {
         }
         modelOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        orderId={order_id}
+        orderId={[order_id]}
         setAssigned={setAssigned}
       />
 
@@ -1038,7 +1063,7 @@ const OrderDetails: React.FC = () => {
             ? order?.order_status_details.next_step
             : undefined
         }
-        orderId={order_id}
+        orderIds={[order_id]}
         workshopModalOpen={workshopModalOpen}
         onClose={() => setWorkshopModalOpen(false)}
         setAssigned={setAssigned}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
   useAddSettings,
@@ -152,6 +153,40 @@ const PromotionBanner: React.FC = () => {
       }
     }
   };
+
+  if (loadingData) {
+    return (
+      <div className="col-span-1">
+        <div className="card pb-2.5 min-w-full !border-gray-200">
+          <div className="card-header">
+            <span className="inline-block h-[31px] min-w-32 bg-gray-200 rounded-md animate-pulse"></span>
+          </div>
+          <div>
+            <div className="card-body grid gap-4">
+              <div className="flex items-center flex-wrap gap-2.5">
+                <div className="flex justify-end bnmobile:justify-center flex-wrap grow gap-2.5">
+                  <div className="w-full max-w-[300px] h-[200px] rounded-md bg-gray-200 animate-pulse mdmobile:h-[150px]"></div>
+                </div>
+              </div>
+              {Array.from({ length: 4 }).map((_, index) => {
+                return (
+                  <div key={index} className="w-full py-2">
+                    <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                      <span className="grow inline-block w-56 h-9 bg-gray-200 animate-pulse rounded-md"></span>
+                      <span className="grow inline-block w-56 h-9 bg-gray-200 animate-pulse rounded-md"></span>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex relative justify-end pt-2.5">
+                <span className="inline-block w-32 h-12 bg-gray-200 animate-pulse rounded-md"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

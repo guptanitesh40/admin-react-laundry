@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import { getRoleClass } from "../../utils/roleClasses";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface UserTableProps {
   filters: {
@@ -176,6 +177,17 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     navigate(`/user/${user_id}`);
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={10}
+        records={10}
+        isPagination={true}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -314,9 +326,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                   <th className="min-w-[150px]">Actions</th>
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : users.length > 0 ? (
+              {users.length > 0 ? (
                 <tbody>
                   {users.map((user) => {
                     return (

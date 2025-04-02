@@ -29,20 +29,18 @@ const PickupOrder: React.FC = () => {
     setFilters(newFilters);
   };
 
-
   const getOrderStatusOptions = (allowedKeys: (keyof typeof OrderStatus)[]) => {
     return Object.entries(OrderStatus)
       .filter(([key]) => allowedKeys.includes(key as keyof typeof OrderStatus))
       .map(([label, value]) => ({ label, value: value as number }));
   };
-  
+
   const pickupOrderStatusOptions = getOrderStatusOptions([
     "Order Placed",
     "Branch Assigned",
     "Pickup Boy Assigned",
     "Pickup Complete",
   ]);
-  
 
   return (
     <>
@@ -61,7 +59,6 @@ const PickupOrder: React.FC = () => {
               </button>
             </div>
           )}
-
         </div>
 
         <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">

@@ -5,7 +5,7 @@ import { BASE_URL } from "../../utils/constant";
 const useAssignWorkshop = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const assignWorkshop = async (order_id: number, workshop_id: number) => {
+  const assignWorkshop = async (order_ids: number[], workshop_id: number) => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
@@ -16,7 +16,7 @@ const useAssignWorkshop = () => {
           Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ order_id, workshop_id }),
+        body: JSON.stringify({ order_ids, workshop_id }),
       });
 
       const data = await response.json();

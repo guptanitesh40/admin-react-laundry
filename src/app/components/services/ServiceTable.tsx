@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDeleteService, useGetServices, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
-import {
-  FaPencilAlt,
-  FaTrash
-} from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import TableShimmer from "../shimmer/TableShimmer";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface ServiceTableProps {
   setEditService: (service_id: number) => void;
@@ -157,6 +155,17 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        columns={4}
+        records={8}
+        isPagination={false}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -251,9 +260,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : services.length > 0 ? (
+              {services.length > 0 ? (
                 <tbody>
                   {services.map((service) => (
                     <tr key={service.service_id}>

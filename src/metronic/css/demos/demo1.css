@@ -89,8 +89,8 @@
 		display: flex;
 	}
 	
-	.demo1.sidebar-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-link .menu-title,
-	.demo1.sidebar-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-link .menu-arrow,
+	.demo1.-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-link .menu-title,
+	.demo1.-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-link .menu-arrow,
 	.demo1.sidebar-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-link .menu-badge,
 	.demo1.sidebar-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-label .menu-title,
 	.demo1.sidebar-collapse .sidebar:not(:hover) .menu > .menu-item > .menu-label .menu-arrow,

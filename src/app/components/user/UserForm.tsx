@@ -50,6 +50,7 @@ const UserForm: React.FC = () => {
   const location = useLocation();
 
   const [isCustomer, setIsCustomer] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const formDataState: FormData = {
     first_name: "",
@@ -68,6 +69,10 @@ const UserForm: React.FC = () => {
   const [formData, setFormData] = useState(formDataState);
   const [initialFormData, setInitialFormData] = useState(formDataState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    console.log(formData, formData);
+  }, [formData]);
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -146,33 +151,33 @@ const UserForm: React.FC = () => {
   }, [user]);
 
   const handleChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-      const target = e.target;
-  
-      if (target instanceof HTMLInputElement) {
-        const { name, value, files } = target;
-  
-        if (name === "image" && files && files.length > 0) {
-          setFormData((prev) => ({
-            ...prev,
-            image: files[0],
-          }));
-        } else {
-          setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-          }));
-        }
-      } else if (target instanceof HTMLTextAreaElement) {
-        const { name, value } = target;
-  
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const target = e.target;
+
+    if (target instanceof HTMLInputElement) {
+      const { name, value, files } = target;
+
+      if (name === "image" && files && files.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          image: files[0],
+        }));
+      } else {
         setFormData((prev) => ({
           ...prev,
           [name]: value,
         }));
       }
-    };
+    } else if (target instanceof HTMLTextAreaElement) {
+      const { name, value } = target;
+
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,15 +213,37 @@ const UserForm: React.FC = () => {
 
       let success;
       if (user_id) {
+        console.log(formData);
         const formDataToSend = new FormData();
         (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
           if (key === "image" && formData.image instanceof File) {
             formDataToSend.append(key, formData.image);
+          } else if (
+            key === "company_ids" &&
+            Array.isArray(formData.company_ids)
+          ) {
+            formData.company_ids.forEach((id) => {
+              formDataToSend.append("company_ids", id.toString());
+            });
+          } else if (
+            key === "branch_ids" &&
+            Array.isArray(formData.branch_ids)
+          ) {
+            formData.branch_ids.forEach((id) => {
+              formDataToSend.append("branch_ids", id.toString());
+            });
+          } else if (
+            key === "workshop_ids" &&
+            Array.isArray(formData.workshop_ids)
+          ) {
+            formData.workshop_ids.forEach((id) => {
+              formDataToSend.append("workshop_ids", id.toString());
+            });
           } else {
             formDataToSend.append(key, formData[key] as string | Blob);
           }
         });
-        
+
         success = await updateUser(user_id, formDataToSend);
       } else {
         success = await addUser(formData);
@@ -249,7 +276,6 @@ const UserForm: React.FC = () => {
       navigate("/users");
     }
   };
-
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
@@ -355,7 +381,7 @@ const UserForm: React.FC = () => {
             </p>
           </div>
 
-          {!isCustomer && user_id && (
+          {!isCustomer && (
             <div className="flex flex-col">
               <label
                 htmlFor="password"
@@ -363,17 +389,30 @@ const UserForm: React.FC = () => {
               >
                 Password
               </label>
-              <input
-                type="text"
-                id="password"
-                name="password"
-                autoComplete="off"
-                value={formData.password || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="input border border-gray-300 rounded-md p-2"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  autoComplete="off"
+                  value={formData.password || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="input border border-gray-300 rounded-md p-2"
+                ></input>
+                <span
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <i className="ki-filled ki-eye-slash text-gray-500"></i>
+                  ) : (
+                    <i className="ki-filled ki-eye text-gray-500"></i>
+                  )}
+                </span>
+              </div>
+
               <p className="text-red-500 text-sm">
                 {errors.password || "\u00A0"}
               </p>
@@ -418,9 +457,7 @@ const UserForm: React.FC = () => {
 
           {(formData.role_id === 2 || formData.role_id === 1) && (
             <div className="flex flex-col">
-              <label
-                className="block text-gray-700 font-semibold"
-              >
+              <label className="block text-gray-700 font-semibold">
                 Company
               </label>
               <MultiSelect
@@ -455,9 +492,7 @@ const UserForm: React.FC = () => {
 
           {formData.role_id === 3 && (
             <div className="flex flex-col">
-              <label
-                className="block text-gray-700 font-semibold"
-              >
+              <label className="block text-gray-700 font-semibold">
                 Branch
               </label>
               <MultiSelect
@@ -489,9 +524,7 @@ const UserForm: React.FC = () => {
 
           {formData.role_id === 6 && (
             <div className="flex flex-col">
-              <label
-                className="block text-gray-700 font-semibold"
-              >
+              <label className="block text-gray-700 font-semibold">
                 Workshop
               </label>
               <MultiSelect
