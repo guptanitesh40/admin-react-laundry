@@ -8,7 +8,7 @@ import {
 import * as Yup from "yup";
 
 interface WorkshopModalProps {
-  orderId: number;
+  orderIds: number[];
   workshopModalOpen: boolean;
   onClose: () => void;
   setAssigned: (value: boolean) => void;
@@ -20,7 +20,7 @@ const schema = Yup.object().shape({
 });
 
 const WorkshopModal: React.FC<WorkshopModalProps> = ({
-  orderId,
+  orderIds,
   workshopModalOpen,
   onClose,
   setAssigned,
@@ -42,7 +42,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
       setSelectedOption(null);
       setErrorMessage("");
     }
-  }, [workshopModalOpen, orderId]);
+  }, [workshopModalOpen, orderIds]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +51,9 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
       await schema.validate({ option: selectedOption }, { abortEarly: false });
 
       if (orderStatus === "Assign Workshop") {
-        await assignWorkshop(orderId, selectedOption);
+        await assignWorkshop(orderIds, selectedOption);
       } else {
-        await assignBranch(orderId, selectedOption);
+        await assignBranch(orderIds, selectedOption);
       }
       onClose();
       setAssigned(true);
@@ -98,7 +98,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 value={selectedOption ?? ""}
                 onChange={(e) => setSelectedOption(Number(e.target.value))}
               >
-                <option value="" disabled selected>
+                <option value="" disabled>
                   Select Workshop
                 </option>
                 {workshops?.length > 0 ? (
@@ -129,7 +129,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
                 value={selectedOption ?? ""}
                 onChange={(e) => setSelectedOption(Number(e.target.value))}
               >
-                <option value="" disabled selected>
+                <option value="" disabled>
                   Select Branch
                 </option>
                 {branches?.length > 0 ? (

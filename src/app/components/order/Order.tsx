@@ -5,12 +5,18 @@ import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
 import { OrderStatus } from "../../../types/enums";
+import toast from "react-hot-toast";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isFilter, setIsFilter] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
+
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [nextStatus, setNextStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+  const [trackingState, setTrackingState] = useState<number | null>(null);
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -62,6 +68,32 @@ const Order: React.FC = () => {
     "Cancelled By Customer",
   ]);
 
+  const hanldeSetNextStatus = () => {
+    console.log("selectedStatus : ", selectedStatus);
+    if (selectedStatus) {
+      setTrackingState(selectedStatus);
+    }
+    // if (selectedStatus === 1) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 2) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 3) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 4) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 5) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 6) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 7) {
+    //   setTrackingState(selectedStatus);
+    // } else if (selectedStatus === 8) {
+    //   setTrackingState(selectedStatus);
+    // } else {
+    //   toast("Invalid order status provided");
+    // }
+  };
+
   return (
     <>
       <div className="container-fixed">
@@ -81,7 +113,7 @@ const Order: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
+        <div className="flex flex-auto items-center justify-between gap-2.5 mb-4 shadow-none">
           <button
             className="btn btn-sm btn-primary shadow-none"
             onClick={() => setIsFilter(!isFilter)}
@@ -93,6 +125,15 @@ const Order: React.FC = () => {
               <RiFilterOffFill color="skyblue" size={23} />
             )}
           </button>
+
+          {nextStatus && (
+            <button
+              className="btn btn-sm btn-outline btn-success"
+              onClick={hanldeSetNextStatus}
+            >
+              {nextStatus}
+            </button>
+          )}
         </div>
       </div>
 
@@ -106,7 +147,17 @@ const Order: React.FC = () => {
                 orderStatusOptions={orderListStatusOptions}
               />
             )}{" "}
-            <OrderTable filters={filters} />
+            <OrderTable
+              filters={filters}
+              setSelectedOrderIds={setSelectedOrderIds}
+              selectedOrderIds={selectedOrderIds}
+              setNextStatus={setNextStatus}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              nextStatus={nextStatus}
+              trackingState={trackingState}
+              setTrackingState={setTrackingState}
+            />
           </div>
         </div>
       </div>

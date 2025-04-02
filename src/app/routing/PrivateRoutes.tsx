@@ -53,6 +53,12 @@ const PrivateRoutes: React.FC = () => {
   const DeliveredOrderTable = lazy(
     () => import("../components/order/DeliveredOrder/DeliveredOrder")
   );
+  const ConfirmedOrder = lazy(
+    () => import("../components/order/ConfirmedOrder/ConfirmedOrder")
+  );
+  const RedyToDeliver = lazy(
+    () => import("../components/order/RedyToDeliver/RedyToDeliverOrder")
+  );
   const Roles = lazy(() => import("../components/roles-permissions/Roles"));
   const Permissions = lazy(
     () => import("../components/roles-permissions/Permissions")
@@ -299,6 +305,28 @@ const PrivateRoutes: React.FC = () => {
             element={
               <Suspense fallback={<Loading />}>
                 <DeliveredOrderTable />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={3} action="read" />}>
+          <Route
+            path="/confirmed-orders"
+            element={
+              <Suspense fallback={<Loading />}>
+                <ConfirmedOrder />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={3} action="read" />}>
+          <Route
+            path="/redy-to-deliver"
+            element={
+              <Suspense fallback={<Loading />}>
+                <RedyToDeliver />
               </Suspense>
             }
           />

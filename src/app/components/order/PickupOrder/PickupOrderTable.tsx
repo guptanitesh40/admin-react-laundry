@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { PaymentType } from "../../../../types/enums";
 import Swal from "sweetalert2";
 import Pagination from "../../pagination/Pagination";
+import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
 
 interface PickupOrderTableProps {
   filters: {
@@ -42,8 +43,8 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
-  let list = "order_list";
-  let orderList = "pickup_order";
+  const list = "order_list";
+  const orderList = "pickup_order";
 
   const { orders, loading, count, fetchOrders } = useGetOrders(
     currentPage,
@@ -202,6 +203,17 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
     await generateInvoice(order_id);
   };
 
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        isPagination={true}
+        columns={5}
+        records={10}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -275,22 +287,6 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[240px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "first_name"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("first_name")}
-                    >
-                      <span className="sort-label">Customer</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
@@ -302,12 +298,28 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("branch_name")}
                     >
-                      <span className="sort-label">Assigned Branch</span>
+                      <span className="sort-label">Branch</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Order Status</th>
+                  <th className="min-w-[240px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">Customer Name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[280px]">Current Status</th>
 
                   <th className="min-w-[280px]">Next Status</th>
 
@@ -323,22 +335,6 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                       onClick={() => handleSort("mobile_number")}
                     >
                       <span className="sort-label">Mobile no</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[230px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "address_details"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("address_details")}
-                    >
-                      <span className="sort-label">Shipping Address</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -370,7 +366,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("estimated_pickup_time")}
                     >
-                      <span className="sort-label">Estimated Pickup Date</span>
+                      <span className="sort-label">Pickup Date</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -499,11 +495,12 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                         >
                           #{order.order_id}
                         </td>
+
+                        <td>{order?.branch?.branch_name}</td>
+
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
-
-                        <td>{order?.branch?.branch_name}</td>
 
                         <td>
                           <span
@@ -521,15 +518,14 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                               >
                                 {order.order_status_details.next_step}
                               </span>
-                              <div className="tooltip-text">
+                              <span className="tooltip-text">
                                 {order.order_status_details.description}
-                              </div>
+                              </span>
                             </span>
                           )}
                         </td>
                         <td>{order.user.mobile_number}</td>
 
-                        <td>{order.address_details}</td>
                         <td>
                           <span className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}

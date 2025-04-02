@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import {
   useDeleteOrder,
   useGenerateInvoice,
@@ -7,7 +8,6 @@ import {
 } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
-import TableShimmer from "../shimmer/TableShimmer";
 import { PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
@@ -15,6 +15,11 @@ import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import Pagination from "../pagination/Pagination";
+import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import PickupBoyModal from "./PickupBoyModal";
+import toast from "react-hot-toast";
+import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
+import WorkshopModal from "./AssignWorkshopModal";
 
 interface OrderTableProps {
   filters: {
@@ -26,9 +31,27 @@ interface OrderTableProps {
     deliveryBoyFilter: number[];
     branchFilter: number[];
   };
+  selectedOrderIds: number[];
+  setSelectedOrderIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setNextStatus: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedStatus: number;
+  setSelectedStatus: React.Dispatch<React.SetStateAction<number | null>>;
+  nextStatus: string;
+  trackingState: number | null;
+  setTrackingState: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
+const OrderTable: React.FC<OrderTableProps> = ({
+  filters,
+  selectedOrderIds,
+  setSelectedOrderIds,
+  setNextStatus,
+  selectedStatus,
+  setSelectedStatus,
+  nextStatus,
+  trackingState,
+  setTrackingState,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,6 +65,46 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
+
+  const { changeOrderStatus, loading: changingStatus } = useChangeOrderStatus();
+  const [PbBoyModelIsOpen, setPbBoyModelIsOpen] = useState<boolean>(false);
+  const [WorkshopModelIsOpen, setWorkshopModelIsOpen] =
+    useState<boolean>(false);
+
+  const handleCheckboxChange = (order: object) => {
+    const { order_id } = order;
+
+    setSelectedOrderIds((prevSelectedOrderIds) => {
+      const isSelected = prevSelectedOrderIds.includes(order_id);
+      const updatedSelection = isSelected
+        ? prevSelectedOrderIds.filter((id) => id !== order_id)
+        : [...prevSelectedOrderIds, order_id];
+      return updatedSelection;
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedOrderIds([]);
+    setSelectedStatus(null);
+    setNextStatus(null);
+    setTrackingState(null);
+  };
+
+  useEffect(() => {
+    if (selectedOrderIds.length === 0) {
+      setSelectedStatus(null);
+      setNextStatus(null);
+    } else if (selectedOrderIds.length === 1) {
+      const order = orders.find((order) =>
+        selectedOrderIds.includes(order.order_id)
+      );
+      if (order) {
+        setSelectedStatus(order.order_status);
+        setNextStatus(order.order_status_details.next_step);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOrderIds]);
 
   const { orders, loading, count, fetchOrders } = useGetOrders(
     currentPage,
@@ -198,6 +261,86 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
     await generateInvoice(order_id);
   };
 
+  const changeStatus = async () => {
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        html: `Want to change order status to: <span style="color: #1B84FF; font-weight: 500;">${nextStatus}</span>`,
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        icon: undefined,
+        didClose: () => {
+          setTrackingState(null);
+        },
+      });
+
+      if (isConfirmed) {
+        const next = selectedStatus + 1;
+        const success = await changeOrderStatus(selectedOrderIds, next);
+
+        if (success) {
+          clearSelection();
+          await fetchOrders();
+        }
+      }
+    } catch {
+      toast.error("Error while changing status");
+    }
+  };
+
+  useEffect(() => {
+    if (trackingState !== null) {
+      switch (trackingState) {
+        case 1:
+          setPbBoyModelIsOpen(true);
+          break;
+        case 2:
+          changeStatus();
+          break;
+        case 3:
+          changeStatus();
+          break;
+        case 4:
+          setWorkshopModelIsOpen(true);
+          break;
+        case 5:
+          changeStatus();
+          break;
+        case 6:
+          changeStatus();
+          break;
+        case 7:
+          changeStatus();
+          break;
+        case 8:
+          changeStatus();
+          break;
+        case 9:
+          setPbBoyModelIsOpen(true);
+          break;
+        case 10:
+          changeStatus();
+          break;
+        default:
+          toast("Invalid order status...");
+      }
+    }
+  }, [trackingState]);
+
+  if (loading) {
+    return (
+      <TableShimmerEd2
+        isFilters={true}
+        isPagination={true}
+        columns={5}
+        records={10}
+      />
+    );
+  }
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -253,6 +396,11 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
             >
               <thead>
                 <tr>
+                  <th className="!px-3">
+                    <label className="flex items-center justify-center">
+                      <input className="checkbox" type="checkbox" disabled />
+                    </label>
+                  </th>
                   <th className="min-w-[90px]">
                     <span
                       className={`sort ${
@@ -269,22 +417,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[240px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "first_name"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("first_name")}
-                    >
-                      <span className="sort-label">Customer</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
@@ -296,12 +428,28 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("branch_name")}
                     >
-                      <span className="sort-label">Assigned Branch</span>
+                      <span className="sort-label">Branch</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Order Status</th>
+                  <th className="min-w-[240px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">Customer Name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[280px]">Current Status</th>
 
                   <th className="min-w-[280px]">Next Status</th>
 
@@ -320,8 +468,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-
-                  <th className="min-w-[230px]">Shipping Address</th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -350,7 +496,7 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("estimated_pickup_time")}
                     >
-                      <span className="sort-label">Estimated Pickup Date</span>
+                      <span className="sort-label">Pickup Date</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -444,11 +590,14 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : orders.length > 0 ? (
+              {orders.length > 0 ? (
                 <tbody>
                   {orders.map((order) => {
+                    const isDisabled =
+                      (selectedStatus !== null &&
+                        order.order_status !== selectedStatus) ||
+                      [11, 12, 13].includes(order.order_status);
+
                     const adminStatusClass = getOrderStatusLabel(
                       order.order_status_details.admin_label
                     );
@@ -459,6 +608,19 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order.order_id}>
+                        <th className="">
+                          <label className="flex items-center justify-center">
+                            <input
+                              className="checkbox"
+                              type="checkbox"
+                              disabled={isDisabled}
+                              checked={selectedOrderIds.includes(
+                                order.order_id
+                              )}
+                              onChange={() => handleCheckboxChange(order)}
+                            />
+                          </label>
+                        </th>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order.order_id}`)}
@@ -466,11 +628,11 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                           #{order.order_id}
                         </td>
 
+                        <td>{order?.branch?.branch_name}</td>
+
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
-
-                        <td>{order?.branch?.branch_name}</td>
 
                         <td>
                           <span
@@ -496,7 +658,6 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
                         </td>
                         <td>{order.user.mobile_number}</td>
 
-                        <td>{order.address_details}</td>
                         <td>
                           <div className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}
@@ -597,6 +758,37 @@ const OrderTable: React.FC<OrderTableProps> = ({ filters }) => {
           />
         </div>
       </div>
+
+      <PickupBoyModal
+        orderId={selectedOrderIds}
+        modelOpen={PbBoyModelIsOpen}
+        onClose={() => {
+          setPbBoyModelIsOpen(false);
+          setTrackingState(null);
+        }}
+        orderStatus={nextStatus}
+        setAssigned={(value) => {
+          if (value) {
+            clearSelection();
+            fetchOrders();
+          }
+        }}
+      />
+      <WorkshopModal
+        orderIds={selectedOrderIds}
+        workshopModalOpen={WorkshopModelIsOpen}
+        onClose={() => {
+          setTrackingState(null);
+          setWorkshopModelIsOpen(false);
+        }}
+        setAssigned={(status) => {
+          if (status) {
+            clearSelection();
+            fetchOrders();
+          }
+        }}
+        orderStatus={nextStatus}
+      />
     </>
   );
 };

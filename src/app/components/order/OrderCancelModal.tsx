@@ -90,7 +90,7 @@ const OrderCalcelModal: React.FC<OrderCalcelModalProps> = ({
           Cancel Order #{orderId}
         </h1>
 
-        <div className="mt-2 p-3">
+        <div className="mt-2 py-3">
           <h2 className="text-lg font-medium text-gray-700 mb-4">
             Reason for Cancellation
           </h2>
