@@ -7,9 +7,9 @@ import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import OrderListModal from "./DuoOrderListModal.tsx";
 import { getRoleClass } from "../../utils/roleClasses";
-import { BASE_URL } from "../../utils/constant";
 import DuoOrderListModal from "./DuoOrderListModal.tsx";
 import CustomerOrders from "./CustomerOrders.tsx";
+import Loading from "../../components/shimmer/Loading.tsx";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +18,7 @@ const UserProfile: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>();
   const [refetch, setRefetch] = useState<boolean>(false);
 
-  const { userData, fetchUser, count } = useGetUser();
+  const { userData, fetchUser, count, loading } = useGetUser();
 
   const user = userData?.user;
 
@@ -26,6 +26,10 @@ const UserProfile: React.FC = () => {
     fetchUser(user_id);
     setRefetch(false);
   }, [user_id, refetch]);
+
+  if (!user && loading) {
+    return <Loading />;
+  }
 
   if (!user) return;
 

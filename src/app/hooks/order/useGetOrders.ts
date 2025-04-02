@@ -35,7 +35,7 @@ const useGetOrders = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string,  
+  sortOrder?: string,
   order_statuses?: number[],
   customer_ids?: number[],
   branches_ids?: number[],
@@ -44,7 +44,7 @@ const useGetOrders = (
   payment_types?: number,
   payment_statuses?: number[],
   list: string = "",
-  orderList: string = "",
+  orderList: string = ""
 ) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [count, setCount] = useState(0);
@@ -87,8 +87,7 @@ const useGetOrders = (
     if (list) {
       queryParams.append("list", list);
     }
-    if(orderList)
-    {
+    if (orderList) {
       queryParams.append("orderList", orderList);
     }
     if (payment_statuses) {
@@ -98,6 +97,10 @@ const useGetOrders = (
     }
     if (payment_types)
       queryParams.append("payment_types", payment_types.toString());
+
+    // queryParams.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
 
     setLoading(true);
     try {

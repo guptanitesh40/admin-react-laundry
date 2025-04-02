@@ -4431,7 +4431,7 @@ label.rating-label {
 .scrollable-auto::-webkit-scrollbar-corner,
 .scrollable-y-auto::-webkit-scrollbar-corner,
 .scrollable-x-auto::-webkit-scrollbar-corner {
-  background-color: transparent;
+  background-color: red !important;
 }
 
 .scrollable,

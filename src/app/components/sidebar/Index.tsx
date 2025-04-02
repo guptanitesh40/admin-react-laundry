@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -62,8 +61,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     // }
   };
 
-  const getSubmenuItemClass = (item: string) =>
-    location.pathname.split("/")[1] === item ? "active" : "";
+  const getSubmenuItemClass = (item: string) => {
+    return location.pathname.split("/")[1] === item ? "active" : "";
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -249,6 +249,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200"
                   style={{ height: getHeight() }}
                 >
+                  <Link to="/order/add">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass("order")}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Add New Booking
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
                   <Link to="/orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass("orders")}`}
@@ -259,7 +274,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       >
                         <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
                         <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
-                          Orders List
+                          All Orders
                         </span>
                       </div>
                     </div>
@@ -301,7 +316,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                   </Link>
 
-                  <Link to="/booking-orders">
+                  <Link to="/booking-orders" style={{ display: "none" }}>
                     <div
                       className={`menu-item ${getSubmenuItemClass(
                         "booking-orders"
@@ -314,6 +329,78 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
                         <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
                           Booking Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link to="/pickup-orders" style={{ display: "none" }}>
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "pickup-orders"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          New Pick-Up Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link to="/confirmed-orders">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "confirmed-orders"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Confirmed Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link to="/workshop-order">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "workshop-order"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Workshop Orders
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  <Link to="/redy-to-deliver">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "redy-to-deliver"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Ready to Deliver
                         </span>
                       </div>
                     </div>
@@ -891,7 +978,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             )}
 
             {hasPermission(16, "read") && (
-              <Link to="/workshop-order">
+              <Link to="/workshop-order" style={{ display: "none" }}>
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
                     "workshop-order"

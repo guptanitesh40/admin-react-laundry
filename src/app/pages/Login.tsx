@@ -23,7 +23,7 @@ const validationSchema = Yup.object({
         return emailRegex.test(value) || phoneRegex.test(value);
       }
     )
-    .required("Username is required"),
+    .required("Email or mobile number is required"),
 
   password: Yup.string()
     .min(6, "Password must be at least 6 characters long")
@@ -192,7 +192,7 @@ const Login: React.FC = () => {
               id="username"
               autoComplete="off"
               className="input border border-gray-300 rounded-md p-2 text-sm vsmobile:text-xs"
-              placeholder="email or mobile number"
+              placeholder="Email or mobile number"
               type="text"
               name="username"
               value={formData.username}

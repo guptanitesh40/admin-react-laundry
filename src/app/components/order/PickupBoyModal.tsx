@@ -5,7 +5,7 @@ import { useAssignPickupBoy } from "../../hooks";
 import useAssignDeliveryBoy from "../../hooks/orderstatus/useAssignDeliveryBoy";
 
 interface PickupBoyModalProps {
-  orderId: number;
+  orderId: number[];
   modelOpen: boolean;
   onClose: () => void;
   setAssigned: (value: boolean) => void;
@@ -29,7 +29,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const [formData, setFormData] = useState({
-    order_id: orderId,
+    order_ids: orderId,
     pickup_boy_id: null,
     comment: "",
   });
@@ -94,7 +94,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
     if (!modelOpen) {
       setUserSearch("");
       setFormData({
-        order_id: orderId,
+        order_ids: orderId,
         pickup_boy_id: null,
         comment: "",
       });
@@ -111,7 +111,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
 
       if (orderStatus === "Assign Delivery boy") {
         const formattedData = {
-          order_id: formData.order_id,
+          order_ids: formData.order_ids,
           delivery_boy_id: formData.pickup_boy_id,
         };
 
@@ -128,9 +128,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
       }
     }
   };
-
-    if (!modelOpen) return null;
-
+  if (!modelOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div

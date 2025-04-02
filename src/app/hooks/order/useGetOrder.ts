@@ -29,6 +29,7 @@ interface Order {
   order_status: number;
   shipping_charge: number;
   express_delivery_charges: number;
+  express_delivery_hour: number | null;
   coupon_code: string;
   coupon_discount: number;
   description: string;
@@ -46,47 +47,47 @@ interface Order {
 
 const useGetOrder = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [order, setOrder] = useState<Order | null>(null); 
-  
-    const fetchOrder = async (order_id: number) => {
-      
-      if (!order_id) {
-        setOrder(null); 
+  const [order, setOrder] = useState<Order | null>(null);
+
+  const fetchOrder = async (order_id: number) => {
+    if (!order_id) {
+      setOrder(null);
+      return;
+    }
+
+    const token = localStorage.getItem("authToken");
+    const GET_ORDER_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/admin/order/${order_id}`;
+
+    setLoading(true);
+    try {
+      const response = await fetch(GET_ORDER_URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message, { position: "top-center" });
+        setLoading(false);
         return;
       }
-      
-      const token = localStorage.getItem("authToken");
-      const GET_ORDER_URL = `${import.meta.env.VITE_BASE_URL}/admin/order/${order_id}`;
-  
-      setLoading(true);
-      try {
-        const response = await fetch(GET_ORDER_URL, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const data = await response.json();
 
-        if (!response.ok) {
-          toast.error(data.message, { position: "top-center" });
-          setLoading(false);
-          return;
-        }
-  
-        setOrder(data?.data?.orders);
-      } catch (error: any) {
-        toast.error(error?.message || "Network error: Failed to fetch.", {
-          position: "top-center",
-        });
-      } finally {
-        setLoading(false); 
-      }
-    };
-  
-  
+      setOrder(data?.data?.orders);
+    } catch (error: any) {
+      toast.error(error?.message || "Network error: Failed to fetch.", {
+        position: "top-center",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return { order, loading, fetchOrder };
 };
 

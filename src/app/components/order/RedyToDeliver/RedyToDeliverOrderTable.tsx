@@ -9,7 +9,7 @@ import {
   usePermissions,
 } from "../../../hooks";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
-import TableShimmer from "../../shimmer/TableShimmer";
+import LoadingSpinner from "../../shimmer/LoadingSpinner";
 import { getOrderStatusLabel } from "../../../utils/orderStatusClasses";
 import dayjs from "dayjs";
 import { PaymentType } from "../../../../types/enums";
@@ -17,7 +17,7 @@ import Swal from "sweetalert2";
 import Pagination from "../../pagination/Pagination";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
 
-interface PickupOrderTableProps {
+interface RedyToDeliverTableProps {
   filters: {
     paymentStatusFilter: number[];
     orderStatusFilter: number[];
@@ -29,7 +29,7 @@ interface PickupOrderTableProps {
   };
 }
 
-const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
+const RedyToDeliverTable: React.FC<RedyToDeliverTableProps> = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,7 +44,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
   const list = "order_list";
-  const orderList = "pickup_order";
+  const orderList = "ready_for_delivery";
 
   const { orders, loading, count, fetchOrders } = useGetOrders(
     currentPage,
@@ -62,9 +62,9 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
     list,
     orderList
   );
-  const { hasPermission } = usePermissions();
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
+  const { hasPermission } = usePermissions();
 
   const navigate = useNavigate();
 
@@ -451,21 +451,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "payment_type"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("payment_type")}
-                    >
-                      <span className="sort-label">Payment type</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  <th className="min-w-[165px]">Payment type</th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -474,9 +460,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                   )}
                 </tr>
               </thead>
-              {loading ? (
-                <TableShimmer />
-              ) : orders.length > 0 ? (
+              {orders.length > 0 ? (
                 <tbody>
                   {orders.map((order) => {
                     const adminStatusClass = getOrderStatusLabel(
@@ -512,41 +496,41 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
 
                         <td>
                           {order.order_status_details.next_step !== "NULL" && (
-                            <span className="block tooltip-custom">
+                            <div className="tooltip-custom">
                               <span
                                 className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
                               >
                                 {order.order_status_details.next_step}
                               </span>
-                              <span className="tooltip-text">
+                              <div className="tooltip-text">
                                 {order.order_status_details.description}
-                              </span>
-                            </span>
+                              </div>
+                            </div>
                           )}
                         </td>
                         <td>{order.user.mobile_number}</td>
 
                         <td>
-                          <span className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}
                             <br />
                             {dayjs(order.created_at).format("hh:mm:ss A")}
-                          </span>
+                          </div>
                         </td>
                         <td>
-                          <span className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2.5">
                             {dayjs(order.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
-                          </span>
+                          </div>
                         </td>
                         <td>
-                          <span className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2.5">
                             {dayjs(order.estimated_delivery_time).format(
                               "DD-MM-YYYY"
                             )}
                             <br />
-                          </span>
+                          </div>
                         </td>
                         <td>{order.coupon_code}</td>
                         <td>{order.coupon_discount}</td>
@@ -560,11 +544,11 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                           }
                         </td>
 
-                        {(hasPermission(3, "read") ||
-                          hasPermission(3, "update") ||
-                          hasPermission(3, "delete")) && (
+                        {(hasPermission(3, "update") ||
+                          hasPermission(3, "delete") ||
+                          hasPermission(3, "read")) && (
                           <td>
-                            <span className="flex">
+                            <div className="flex">
                               {hasPermission(3, "read") && (
                                 <button
                                   className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
@@ -597,7 +581,7 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
                                   <FaTrash className="text-red-500" />
                                 </button>
                               )}
-                            </span>
+                            </div>
                           </td>
                         )}
                       </tr>
@@ -630,4 +614,4 @@ const PickupOrderTable: React.FC<PickupOrderTableProps> = ({ filters }) => {
   );
 };
 
-export default PickupOrderTable;
+export default RedyToDeliverTable;
