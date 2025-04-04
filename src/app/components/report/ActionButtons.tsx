@@ -10,22 +10,22 @@ const data = [
   {
     title: "Pending Orders",
     icon: "ki-filled ki-loading",
-    path: "/order/add",
+    path: "/pickup-orders",
   },
   {
     title: "Confirmed Orders",
     icon: "ki-filled ki-check-circle",
-    path: "/order/add",
+    path: "/confirmed-orders",
   },
   {
     title: "Ready To Deliver",
     icon: "ki-filled ki-courier",
-    path: "/order/add",
+    path: "/redy-to-deliver",
   },
   {
     title: "Delivered Orders",
     icon: "ki-filled ki-delivery",
-    path: "/order/add",
+    path: "/delivered-orders",
   },
 ];
 

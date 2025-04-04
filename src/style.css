@@ -9942,3 +9942,25 @@ label.rating-label {
     transform: translateX(0);
   }
 }
+
+/* For always visible scrollbar */
+
+.new-scollbar {
+  overflow-y: scroll;
+}
+
+.new-scollbar::-webkit-scrollbar {
+  background-color: transparent;
+  width: 7.5px;
+}
+
+.new-scollbar::-webkit-scrollbar-thumb {
+  background: rgba(120, 130, 157, 0.1);
+  background: rgba(120, 130, 157, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+}
+
+.order-submenu-animation {
+  transition: all 0.2s linear;
+}

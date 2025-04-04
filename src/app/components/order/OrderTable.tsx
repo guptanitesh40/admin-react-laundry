@@ -6,7 +6,7 @@ import {
   useGetOrders,
   usePermissions,
 } from "../../hooks";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
@@ -66,6 +66,23 @@ const OrderTable: React.FC<OrderTableProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
 
+  const pathMappings = [
+    { path: "/orders", list: "", orderList: "" },
+    { path: "/pickup-orders", list: "order_list", orderList: "pickup_order" },
+    {
+      path: "/redy-to-deliver",
+      list: "order_list",
+      orderList: "ready_for_delivery",
+    },
+  ];
+
+  const pathToParam = pathMappings.find(
+    (item) => item.path === location.pathname
+  );
+
+  const list = pathToParam.list;
+  const orderList = pathToParam.orderList;
+
   const { changeOrderStatus, loading: changingStatus } = useChangeOrderStatus();
   const [PbBoyModelIsOpen, setPbBoyModelIsOpen] = useState<boolean>(false);
   const [WorkshopModelIsOpen, setWorkshopModelIsOpen] =
@@ -118,7 +135,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
-    filters.paymentStatusFilter
+    filters.paymentStatusFilter,
+    list,
+    orderList
   );
   const { deleteOrder } = useDeleteOrder();
   const { generateInvoice, loading: generating } = useGenerateInvoice();

@@ -71,7 +71,7 @@ const UserForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    console.log(formData, formData);
+    // console.log(formData, formData);
   }, [formData]);
 
   useEffect(() => {
@@ -213,7 +213,7 @@ const UserForm: React.FC = () => {
 
       let success;
       if (user_id) {
-        console.log(formData);
+        // console.log(formData);
         const formDataToSend = new FormData();
         (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
           if (key === "image" && formData.image instanceof File) {

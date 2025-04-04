@@ -80,4 +80,9 @@ export enum IsPublish {
   "Website" = 2,
   "Mobile App" = 3,
   "Both" = 4,
-}  
+}
+
+export enum DeliveryBy {
+  "home" = 1,
+  "shop" = 2,
+}
