@@ -80,4 +80,4 @@ export enum IsPublish {
   "Website" = 2,
   "Mobile App" = 3,
   "Both" = 4,
-}  
+}

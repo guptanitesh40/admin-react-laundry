@@ -14,6 +14,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const roleId = useSelector((state: any) => state.auth.role_id);
   const location = useLocation();
 
+  const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
   useEffect(() => {
     const path = location.pathname.split("/")[1];
 
@@ -29,37 +32,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     selectedItem === item
       ? "bg-blue-100 text-white shadow-md rounded-lg transition-all duration-200"
       : "hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white rounded-lg transition-all duration-200";
-
-  const getHeight = () => {
-    return "150px";
-  };
-
-  const openAccordian = (menuName: string) => {
-    if (selectedItem === "orders") {
-      if (menuName === "orders") {
-        return "show";
-      }
-    }
-    // // const path = location.pathname.split("/")[1];
-    // if (selectedItem === "orders") {
-    //   if (
-    //     selectedItem === "orders" ||
-    //     selectedItem === "pickup-orders" ||
-    //     selectedItem === "delivered-orders" ||
-    //     selectedItem === "booking-orders"
-    //   ) {
-    //     return "show";
-    //   } else {
-    //     return "";
-    //   }
-    // } else if (menuName === "users") {
-    //   if (selectedItem === "users" || selectedItem === "roles") {
-    //     return "show";
-    //   }
-    // } else {
-    //   return "";
-    // }
-  };
 
   const getSubmenuItemClass = (item: string) => {
     return location.pathname.split("/")[1] === item ? "active" : "";
@@ -90,14 +62,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     }
   }, [location, setIsOpen]);
 
+  useEffect(() => {
+    const userRoutes = ["/users", "/roles"];
+    const subOrderRoutes = [
+      "/order/add",
+      "/orders",
+      "/pickup-orders",
+      "/delivered-orders",
+      "/confirmed-orders",
+      "/workshop-order",
+    ];
+
+    setIsOrderMenuOpen(subOrderRoutes.includes(location.pathname));
+    setIsUserMenuOpen(userRoutes.includes(location.pathname));
+  }, [location.pathname]);
+
   return (
     <div
-      className={`sidebar scrollbar-hide dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 lg:flex flex-col items-stretch shrink-0 mobile-nav ${
+      className={`sidebar dark:bg-coal-600 bg-light border-r border-r-gray-200 dark:border-r-coal-100 fixed top-0 bottom-0 lg:flex flex-col items-stretch shrink-0 mobile-nav border min-h-screen overflow-hidden ${
         isOpen ? "active-mobile-nav" : ""
       }`}
     >
       <div
-        className="cursor-pointer sidebar-header hidden lg:flex items-center relative justify-between px-3 lg:px-6 shrink-0"
+        className="cursor-pointer sidebar-header hidden lg:flex items-center justify-between px-3 lg:px-6 shrink-0 sticky top-0 z-50 bg-white"
         id="sidebar_header"
       >
         <Link to="/dashboard">
@@ -109,11 +96,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       </div>
 
       <div
-        className="sidebar-content flex grow shrink-0 py-5 pr-2"
+        className={`sidebar-content flex grow shrink-0 pt-2 pb-5 pr-0 h-full max-h-[calc(100vh-70px)]`}
         id="sidebar_content"
       >
         <div
-          className="scrollable-y-hover grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3"
+          className="grow shrink-0 flex pl-2 lg:pl-5 pr-1 lg:pr-3 new-scollbar"
           data-scrollable="true"
           data-scrollable-dependencies="#sidebar_header"
           data-scrollable-height="auto"
@@ -211,16 +198,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             )}
 
             {hasPermission(3, "read") && (
-              <div
-                className={`menu-item menu-item-accordion transition ${openAccordian(
-                  "orders"
-                )}`}
-                data-menu-item-toggle="accordion"
-                data-menu-item-trigger="click"
-              >
+              <div className={`menu-item`}>
                 <div
                   className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px] ml-1"
                   tabIndex={0}
+                  onClick={() => setIsOrderMenuOpen((prev) => !prev)}
                 >
                   <svg
                     width="23"
@@ -240,16 +222,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   </span>
 
                   <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
-                    <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
-                    <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                    <i
+                      className={`ki-filled text-2xs ${
+                        isOrderMenuOpen ? "ki-minus" : "ki-plus"
+                      }`}
+                    ></i>
                   </span>
                 </div>
 
                 <div
-                  className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200"
-                  style={{ height: getHeight() }}
+                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
+                  style={{
+                    maxHeight: isOrderMenuOpen ? "255px" : "0px",
+                  }}
                 >
-                  <Link to="/order/add">
+                  <Link to="/order/add" className="bg-red-200">
                     <div
                       className={`menu-item ${getSubmenuItemClass("order")}`}
                     >
@@ -867,14 +854,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             )}
 
             {roleId === 1 && (
-              <div
-                className={`menu-item ${openAccordian("users")}`}
-                data-menu-item-toggle="accordion"
-                data-menu-item-trigger="click"
-              >
+              <div className={`menu-item`}>
                 <div
                   className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px] ml-1"
                   tabIndex={0}
+                  onClick={() => setIsUserMenuOpen((prev) => !prev)}
                 >
                   <svg
                     width="22"
@@ -903,12 +887,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     Users and Roles
                   </span>
                   <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
-                    <i className="ki-filled ki-plus text-2xs menu-item-show:hidden"></i>
-                    <i className="ki-filled ki-minus text-2xs hidden menu-item-show:inline-flex"></i>
+                    <i
+                      className={`ki-filled text-2xs ${
+                        isUserMenuOpen ? "ki-minus" : "ki-plus"
+                      }`}
+                    ></i>
                   </span>
                 </div>
 
-                <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200">
+                {/* <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200"> */}
+                <div
+                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
+                  style={{
+                    maxHeight: isUserMenuOpen ? "255px" : "0px",
+                  }}
+                >
                   <Link to="/users">
                     <div
                       className={`menu-item ${getSubmenuItemClass("users")}`}

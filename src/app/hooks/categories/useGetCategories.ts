@@ -16,7 +16,7 @@ const useGetCategories = (
   sortOrder?: string
 ) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [count,setCount] = useState(0);
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCategories = async () => {
@@ -31,13 +31,16 @@ const useGetCategories = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/admin/categories?${queryParams}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/admin/categories?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -47,6 +50,7 @@ const useGetCategories = (
         return;
       }
 
+      // console.log("Categories : ", data.data.result);
       setCategories(data?.data?.result || []);
       setCount(data?.data?.count);
     } catch {

@@ -22,6 +22,9 @@ const GeneralSettings: React.FC = ({}) => {
     gst_percentage: "",
     normal_delivery_charges: "",
     express_delivery_charge: "",
+    express_delivery_24hrs: "",
+    express_delivery_48hrs: "",
+    express_delivery_72hrs: "",
   });
 
   useEffect(() => {
@@ -43,6 +46,9 @@ const GeneralSettings: React.FC = ({}) => {
         gst_percentage: generalSettings.gst_percentage || "",
         normal_delivery_charges: generalSettings.normal_delivery_charges || "",
         express_delivery_charge: generalSettings.express_delivery_charge || "",
+        express_delivery_24hrs: generalSettings.express_delivery_24hrs || "",
+        express_delivery_48hrs: generalSettings.express_delivery_48hrs || "",
+        express_delivery_72hrs: generalSettings.express_delivery_72hrs || "",
       });
     }
   }, [generalSettings]);
@@ -264,7 +270,7 @@ const GeneralSettings: React.FC = ({}) => {
                 </div>
               </div>
 
-              <div className="w-full">
+              <div className="w-full" style={{ display: "none" }}>
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                   <label
                     className="form-label flex items-center gap-1 max-w-56"
@@ -336,9 +342,9 @@ const GeneralSettings: React.FC = ({}) => {
                 <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
                   <label
                     className="form-label flex items-center gap-1 max-w-56"
-                    htmlFor="express_delivery_charge"
+                    htmlFor="express_delivery_24hrs"
                   >
-                    Express Delivery Charge (Rs)
+                    Express Delivery 24 Hours (%)
                   </label>
                   <div className="flex flex-col w-full">
                     <input
@@ -348,19 +354,87 @@ const GeneralSettings: React.FC = ({}) => {
                           : ""
                       }`}
                       type="text"
-                      id="express_delivery_charge"
+                      id="express_delivery_24hrs"
                       autoComplete="off"
-                      value={formData.express_delivery_charge}
+                      value={formData.express_delivery_24hrs}
                       onChange={(e) =>
                         handleItemChange(
-                          "express_delivery_charge",
+                          "express_delivery_24hrs",
                           e.target.value
                         )
                       }
                       readOnly={!hasPermission(2, "update")}
                     />
                     <p className="text-red-500 text-sm">
-                      {errors.express_delivery_charge || "\u00A0"}
+                      {errors.express_delivery_24hrs || "\u00A0"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label
+                    className="form-label flex items-center gap-1 max-w-56"
+                    htmlFor="express_delivery_48hrs"
+                  >
+                    Express Delivery 48 Hours (%)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
+                      type="text"
+                      id="express_delivery_48hrs"
+                      autoComplete="off"
+                      value={formData.express_delivery_48hrs}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "express_delivery_48hrs",
+                          e.target.value
+                        )
+                      }
+                      readOnly={!hasPermission(2, "update")}
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.express_delivery_48hrs || "\u00A0"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full">
+                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
+                  <label
+                    className="form-label flex items-center gap-1 max-w-56"
+                    htmlFor="express_delivery_72hrs"
+                  >
+                    Express Delivery 72 Hours (%)
+                  </label>
+                  <div className="flex flex-col w-full">
+                    <input
+                      className={`input ${
+                        !hasPermission(2, "update")
+                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+                          : ""
+                      }`}
+                      type="text"
+                      id="express_delivery_72hrs"
+                      autoComplete="off"
+                      value={formData.express_delivery_72hrs}
+                      onChange={(e) =>
+                        handleItemChange(
+                          "express_delivery_72hrs",
+                          e.target.value
+                        )
+                      }
+                      readOnly={!hasPermission(2, "update")}
+                    />
+                    <p className="text-red-500 text-sm">
+                      {errors.express_delivery_72hrs || "\u00A0"}
                     </p>
                   </div>
                 </div>

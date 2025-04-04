@@ -2,7 +2,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
-
 const useGetProductsOnId = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -11,13 +10,16 @@ const useGetProductsOnId = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/category/${category_id}/product`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/category/${category_id}/product`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -27,6 +29,7 @@ const useGetProductsOnId = () => {
         return;
       }
 
+      // console.log("productsData : ", data);
       const productsData = data?.data || [];
       return productsData;
     } catch (error: any) {
