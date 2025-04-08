@@ -29,7 +29,6 @@ const useGetProductsOnId = () => {
         return;
       }
 
-      // console.log("productsData : ", data);
       const productsData = data?.data || [];
       return productsData;
     } catch (error: any) {

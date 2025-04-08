@@ -49,7 +49,6 @@ const PickupOrder: React.FC = () => {
   ]);
 
   const hanldeSetNextStatus = () => {
-    console.log("selectedStatus : ", selectedStatus);
     if (selectedStatus) {
       setTrackingState(selectedStatus);
     }

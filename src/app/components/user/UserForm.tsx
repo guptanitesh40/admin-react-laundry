@@ -209,7 +209,6 @@ const UserForm: React.FC = () => {
 
       let success;
       if (user_id) {
-        // console.log(formData);
         const formDataToSend = new FormData();
         (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
           if (key === "image" && formData.image instanceof File) {

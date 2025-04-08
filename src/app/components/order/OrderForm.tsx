@@ -221,10 +221,6 @@ const OrderForm: React.FC = () => {
   }, [address]);
 
   useEffect(() => {
-    console.log("FormData : ", formData);
-  }, [formData]);
-
-  useEffect(() => {
     const fetchData = async () => {
       if (formData.user_id) {
         await fetchAddress(formData.user_id);

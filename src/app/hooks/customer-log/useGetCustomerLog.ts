@@ -16,7 +16,6 @@ const useGetCustomerLog = (
   sortColumn?: string,
   sortOrder?: string
 ) => {
-  console.log(pageNumber, perPage, search, sortColumn, sortOrder);
   const [customerLogData, setcustomerLogData] = useState<CustomerLogData[]>();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,7 +33,6 @@ const useGetCustomerLog = (
 
     setLoading(true);
     try {
-      console.log([...queryParams]);
       const response = await fetch(
         `${BASE_URL}/user/login-logs?${queryParams}`,
         {
@@ -51,7 +49,6 @@ const useGetCustomerLog = (
         toast.error(data.message, { position: "top-center" });
         setLoading(false);
       }
-      console.log(data);
 
       setcustomerLogData(data?.data?.userLogs || []);
       setCount(data?.data?.count);

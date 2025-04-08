@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useGetContactRequestData } from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
 import dayjs from "dayjs";
@@ -32,18 +31,17 @@ const CustomerLogsTable: React.FC = () => {
 
   const totalPages = Math.ceil(count / perPage);
 
-  //   useEffect(() => {
-  //     if (pageParams) {
-  //       setCurrentPage(Number(pageParams));
-  //     }
-  //     if (perPageParams) {
-  //       setPerPage(Number(perPageParams));
-  //     }
-  //   }, [pageParams, perPageParams]);
+  useEffect(() => {
+    if (pageParams) {
+      setCurrentPage(Number(pageParams));
+    }
+    if (perPageParams) {
+      setPerPage(Number(perPageParams));
+    }
+  }, [pageParams, perPageParams]);
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast(searchInput);
     try {
       await searchSchema.validate(
         { search: searchInput },
@@ -58,14 +56,14 @@ const CustomerLogsTable: React.FC = () => {
     }
   };
 
-  //   useEffect(() => {
-  //     setCurrentPage(1);
-  //     if (search !== "") {
-  //       setSearchParams({ search, page: "1", perPage: perPage.toString() });
-  //     } else {
-  //       setSearchParams({});
-  //     }
-  //   }, [search]);
+  useEffect(() => {
+    setCurrentPage(1);
+    if (search !== "") {
+      setSearchParams({ search, page: "1", perPage: perPage.toString() });
+    } else {
+      setSearchParams({});
+    }
+  }, [search]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -79,7 +77,6 @@ const CustomerLogsTable: React.FC = () => {
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPerPage = Number(e.target.value);
-    console.log(newPerPage);
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
@@ -93,17 +90,6 @@ const CustomerLogsTable: React.FC = () => {
       setSortOrder("ASC");
     }
   };
-
-  //   if (loading) {
-  //     return (
-  //       <TableShimmerEd2
-  //         isFilters={true}
-  //         columns={6}
-  //         records={10}
-  //         isPagination={true}
-  //       />
-  //     );
-  //   }
 
   if (loading) {
     return (

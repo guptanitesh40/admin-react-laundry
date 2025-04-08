@@ -98,10 +98,6 @@ const useGetOrders = (
     if (payment_types)
       queryParams.append("payment_types", payment_types.toString());
 
-    // queryParams.forEach((value, key) => {
-    //   console.log(`${key}: ${value}`);
-    // });
-
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/admin/orders?${queryParams}`, {
