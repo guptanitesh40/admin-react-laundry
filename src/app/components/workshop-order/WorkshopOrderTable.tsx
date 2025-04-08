@@ -214,6 +214,11 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
             >
               <thead>
                 <tr>
+                  <th className="!px-3" style={{ display: "none" }}>
+                    <label className="flex items-center justify-center">
+                      <input className="checkbox" type="checkbox" disabled />
+                    </label>
+                  </th>
                   <th className="min-w-[115px]">
                     <span
                       className={`sort ${
@@ -226,22 +231,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       onClick={() => handleSort("order_id")}
                     >
                       <span className="sort-label">Order Id</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[240px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "first_name"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("first_name")}
-                    >
-                      <span className="sort-label">Customer</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -262,6 +251,28 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
+                  <th className="min-w-[240px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "first_name"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("first_name")}
+                    >
+                      <span className="sort-label">Customer Name</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
+                  <th className="min-w-[200px]">Workshop Manager</th>
+
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
@@ -277,30 +288,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-
-                  <th className="min-w-[280px]">Order Status</th>
-
-                  <th className="min-w-[280px]">Next Status</th>
-
-                  <th className="min-w-[200px]">Workshop Manager</th>
-
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "mobile_number"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("mobile_number")}
-                    >
-                      <span className="sort-label">Mobile No</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[280px]">Shipping address</th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -350,54 +337,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_code"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_code")}
-                    >
-                      <span className="sort-label">Coupon code</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_discount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_discount")}
-                    >
-                      <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "sub_total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("sub_total")}
-                    >
-                      <span className="sort-label">Bill Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[105px]">
                     <span
                       className={`sort ${
@@ -409,7 +348,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Duo Amount</span>
+                      <span className="sort-label">Total Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -434,17 +373,29 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order.order_id}>
+                        <th style={{ display: "none" }}>
+                          <label className="flex items-center justify-center">
+                            <input
+                              className="checkbox"
+                              type="checkbox"
+                              // disabled={isDisabled}
+                              // checked={selectedOrderIds.includes(
+                              //   order.order_id
+                              // )}
+                              // onChange={() => handleCheckboxChange(order)}
+                            />
+                          </label>
+                        </th>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order.order_id}`)}
                         >
                           #{order.order_id}
                         </td>
+                        <td>{order.branch.branch_name}</td>
                         <td>
                           {order.user.first_name} {order.user.last_name}
                         </td>
-                        <td>{order.branch.branch_name}</td>
-                        <td>{order.workshop.workshop_name}</td>
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -475,9 +426,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                             )
                             .join(", ")}
                         </td>
-                        <td>{order.user.mobile_number}</td>
-                        <td>{order.address_details}</td>
-
+                        <td>{order.workshop.workshop_name}</td>
                         <td>
                           <div className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}
@@ -500,10 +449,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                             <br />
                           </div>
                         </td>
-
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
-                        <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>
                           {

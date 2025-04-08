@@ -50,7 +50,6 @@ const useGetCategories = (
         return;
       }
 
-      // console.log("Categories : ", data.data.result);
       setCategories(data?.data?.result || []);
       setCount(data?.data?.count);
     } catch {

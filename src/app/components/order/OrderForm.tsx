@@ -221,10 +221,6 @@ const OrderForm: React.FC = () => {
   }, [address]);
 
   useEffect(() => {
-    console.log("FormData : ", formData);
-  }, [formData]);
-
-  useEffect(() => {
     const fetchData = async () => {
       if (formData.user_id) {
         await fetchAddress(formData.user_id);
@@ -607,6 +603,28 @@ const OrderForm: React.FC = () => {
         total: newTotal,
       }));
     }
+
+    if (formData.express_delivery_hour) {
+      toast("yes...");
+      setFormData((prev) => {
+        let percentage = 0;
+        if (formData.express_delivery_hour === 24) {
+          percentage = 0.5;
+        } else if (formData.express_delivery_hour === 48) {
+          percentage = 0.25;
+        } else if (formData.express_delivery_hour === 72) {
+          percentage = 0.1;
+        }
+
+        const expressDeliveryCharges = Math.floor(prev.sub_total * percentage);
+
+        return {
+          ...prev,
+          express_delivery_charges: expressDeliveryCharges,
+          total: prev.sub_total + expressDeliveryCharges,
+        };
+      });
+    }
   };
 
   const calculateItemTotal = (data: typeof formData) => {
@@ -719,9 +737,49 @@ const OrderForm: React.FC = () => {
       : 0;
   };
 
+  const handleDeliveryTimeChange = (value: number) => {
+    if (formData.normal_delivery_charges) {
+      setFormData((prev) => ({
+        ...prev,
+        normal_delivery_charges: null,
+      }));
+    }
+
+    if (!value) {
+      setFormData((prev) => ({
+        ...prev,
+        express_delivery_hour: null,
+        express_delivery_charges: null,
+        normal_delivery_charges: null,
+      }));
+      return;
+    }
+
+    let percentage = 0;
+    if (value === 24) {
+      percentage = 0.5;
+    } else if (value === 48) {
+      percentage = 0.25;
+    } else if (value === 72) {
+      percentage = 0.1;
+    }
+
+    const expressDeliveryCharges = Math.floor(formData.sub_total * percentage);
+
+    setFormData((prev) => ({
+      ...prev,
+      express_delivery_hour: value,
+      express_delivery_charges: expressDeliveryCharges,
+      total: prev.sub_total + expressDeliveryCharges,
+    }));
+  };
+
   // useEffect(() => {
-  //   setFormData({ ...formData, express_delivery_charges: 100 });
-  // }, [formData.express_delivery_hour]);
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     total: prev.sub_total + ,
+  //   }));
+  // }, [formData.coupon_discount]);
 
   return (
     <div className="container-fixed">
@@ -1336,10 +1394,7 @@ const OrderForm: React.FC = () => {
                   id="exp_delivery_time"
                   value={formData.express_delivery_hour || ""}
                   onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      express_delivery_hour: Number(e.target.value),
-                    });
+                    handleDeliveryTimeChange(Number(e.target.value));
                   }}
                 >
                   <option value="">Select Express Delivery Time</option>

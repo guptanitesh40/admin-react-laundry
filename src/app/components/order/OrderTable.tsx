@@ -6,7 +6,7 @@ import {
   useGetOrders,
   usePermissions,
 } from "../../hooks";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { PaymentType } from "../../../types/enums";
 import Swal from "sweetalert2";
@@ -73,6 +73,11 @@ const OrderTable: React.FC<OrderTableProps> = ({
       path: "/redy-to-deliver",
       list: "order_list",
       orderList: "ready_for_delivery",
+    },
+    {
+      path: "/confirmed-orders",
+      list: "order_list",
+      orderList: "confirm_order",
     },
   ];
 
@@ -284,7 +289,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        html: `Want to change order status to: <span style="color: #1B84FF; font-weight: 500;">${nextStatus}</span>`,
+        html: `Want to change order status to <span style="color: #1B84FF; font-weight: 500;">"${nextStatus}"</span> ?`,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
@@ -472,22 +477,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                   <th className="min-w-[280px]">Next Status</th>
 
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "mobile_number"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("mobile_number")}
-                    >
-                      <span className="sort-label">Mobile no</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
@@ -536,54 +525,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_code"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_code")}
-                    >
-                      <span className="sort-label">Coupon code</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_discount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_discount")}
-                    >
-                      <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "sub_total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("sub_total")}
-                    >
-                      <span className="sort-label">Bill Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[135px]">
                     <span
                       className={`sort ${
@@ -595,7 +536,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Duo Amount</span>
+                      <span className="sort-label">Total Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -627,7 +568,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                     return (
                       <tr key={order.order_id}>
-                        <th className="">
+                        <th>
                           <label className="flex items-center justify-center">
                             <input
                               className="checkbox"
@@ -675,7 +616,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             </div>
                           )}
                         </td>
-                        <td>{order.user.mobile_number}</td>
 
                         <td>
                           <div className="flex items-center gap-2.5">
@@ -699,9 +639,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             <br />
                           </div>
                         </td>
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
-                        <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>
                           {

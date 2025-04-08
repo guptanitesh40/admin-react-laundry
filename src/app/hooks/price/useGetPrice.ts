@@ -30,7 +30,6 @@ const useGetPrice = () => {
       }
 
       const data = await response.json();
-      // console.log("PriceData : ", data.data);
       setPrices(data?.data || []);
     } catch (error) {
       toast.error("Network error: Failed to fetch.");

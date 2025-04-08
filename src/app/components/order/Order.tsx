@@ -125,7 +125,7 @@ const Order: React.FC = () => {
                 updateFilters={updateFilters}
                 orderStatusOptions={orderListStatusOptions}
               />
-            )}{" "}
+            )}
             <OrderTable
               filters={filters}
               setSelectedOrderIds={setSelectedOrderIds}

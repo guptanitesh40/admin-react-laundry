@@ -63,7 +63,6 @@ const useGetBranches = (
       });
 
       const data = await response.json();
-      // console.log("Branches Data : ", data.data.result);
 
       if (!response.ok) {
         toast.error(data.message, { position: "top-center" });
