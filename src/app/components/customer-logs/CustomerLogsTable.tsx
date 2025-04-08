@@ -3,13 +3,14 @@ import { useSearchParams } from "react-router-dom";
 import { useGetContactRequestData } from "../../hooks";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
-import TableShimmer from "../shimmer/TableShimmer";
 import dayjs from "dayjs";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import toast from "react-hot-toast";
+import useGetCustomerLog from "../../hooks/customer-log/useGetCustomerLog";
 
-const ContactRequestTable: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+const CustomerLogsTable: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -21,7 +22,7 @@ const ContactRequestTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { contactRequestData, loading, count } = useGetContactRequestData(
+  const { customerLogData, count, loading } = useGetCustomerLog(
     currentPage,
     perPage,
     search,
@@ -31,17 +32,18 @@ const ContactRequestTable: React.FC = () => {
 
   const totalPages = Math.ceil(count / perPage);
 
-  useEffect(() => {
-    if (pageParams) {
-      setCurrentPage(Number(pageParams));
-    }
-    if (perPageParams) {
-      setPerPage(Number(perPageParams));
-    }
-  }, [pageParams, perPageParams]);
+  //   useEffect(() => {
+  //     if (pageParams) {
+  //       setCurrentPage(Number(pageParams));
+  //     }
+  //     if (perPageParams) {
+  //       setPerPage(Number(perPageParams));
+  //     }
+  //   }, [pageParams, perPageParams]);
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    toast(searchInput);
     try {
       await searchSchema.validate(
         { search: searchInput },
@@ -56,14 +58,14 @@ const ContactRequestTable: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    setCurrentPage(1);
-    if (search !== "") {
-      setSearchParams({ search, page: "1", perPage: perPage.toString() });
-    } else {
-      setSearchParams({});
-    }
-  }, [search]);
+  //   useEffect(() => {
+  //     setCurrentPage(1);
+  //     if (search !== "") {
+  //       setSearchParams({ search, page: "1", perPage: perPage.toString() });
+  //     } else {
+  //       setSearchParams({});
+  //     }
+  //   }, [search]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -77,6 +79,7 @@ const ContactRequestTable: React.FC = () => {
 
   const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPerPage = Number(e.target.value);
+    console.log(newPerPage);
     setPerPage(newPerPage);
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
@@ -91,13 +94,24 @@ const ContactRequestTable: React.FC = () => {
     }
   };
 
+  //   if (loading) {
+  //     return (
+  //       <TableShimmerEd2
+  //         isFilters={true}
+  //         columns={6}
+  //         records={10}
+  //         isPagination={true}
+  //       />
+  //     );
+  //   }
+
   if (loading) {
     return (
       <TableShimmerEd2
         isFilters={true}
-        columns={6}
-        records={10}
         isPagination={true}
+        columns={4}
+        records={10}
       />
     );
   }
@@ -116,13 +130,18 @@ const ContactRequestTable: React.FC = () => {
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
           <span>per page</span>
         </div>
 
         <div className="flex flex-wrap gap-2 lg:gap-5 mb-3">
-          <div className="flex">
-            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+          <div className="flex flex-col">
+            <form
+              onSubmit={onSearchSubmit}
+              className="flex items-center gap-2 self-end"
+            >
               <label className="input input-sm h-10 flex items-center gap-2">
                 <input
                   type="search"
@@ -141,9 +160,11 @@ const ContactRequestTable: React.FC = () => {
                 </button>
               </label>
             </form>
-            <p className="text-red-500 text-sm mt-1">
-              {errorMessage || "\u00A0"}
-            </p>
+            {errorMessage && (
+              <p className="text-red-500 text-sm mt-1">
+                {errorMessage || "\u00A0"}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -154,37 +175,38 @@ const ContactRequestTable: React.FC = () => {
             <table className="table table-auto table-border">
               <thead>
                 <tr>
-                  <th className="min-w-[70px]">
+                  <th className="w-[100px] min-w-[75px]">
                     <span
                       className={`sort ${
-                        sortColumn === "contact_us_id"
+                        sortColumn === "login_id"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("contact_us_id")}
+                      onClick={() => handleSort("login_id")}
                     >
                       <span className="sort-label">Id</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-                  <th className="min-w-[250px]">
+                  <th className="min-w-[200px] max-w-[300px] flex-grow">
                     <span
                       className={`sort ${
-                        sortColumn === "full_name"
+                        sortColumn === "first_name"
                           ? sortOrder === "ASC"
                             ? "asc"
                             : "desc"
                           : ""
                       }`}
-                      onClick={() => handleSort("full_name")}
+                      onClick={() => handleSort("first_name")}
                     >
-                      <span className="sort-label">Full name</span>
+                      <span className="sort-label">User name</span>
                       <span className="sort-icon"></span>
                     </span>
+                    <span className="inline-block h-[22.5px] w-[22.5px] bg-transparent rounded-sm text-right"></span>
                   </th>
-                  <th className="min-w-[150px]">
+                  <th className="min-w-[200px] max-w-[300px] flex-grow">
                     <span
                       className={`sort ${
                         sortColumn === "created_at"
@@ -195,66 +217,42 @@ const ContactRequestTable: React.FC = () => {
                       }`}
                       onClick={() => handleSort("created_at")}
                     >
-                      <span className="sort-label">Request time</span>
+                      <span className="sort-label">Last login time</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "email"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("email")}
-                    >
-                      <span className="sort-label">Email</span>
-                      <span className="sort-icon"></span>
-                    </span>
+                  <th className="min-w-[200px] max-w-[300px] flex-grow">
+                    <span className="sort-label">Device</span>
                   </th>
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "mobile_number"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("mobile_number")}
-                    >
-                      <span className="sort-label">Mobile no</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-                  <th className="min-w-[350px]">Message</th>
                 </tr>
               </thead>
-              {contactRequestData?.length > 0 ? (
+              {customerLogData?.length > 0 ? (
                 <tbody>
-                  {contactRequestData?.map((contactData: any) => (
-                    <tr key={contactData.contact_us_id}>
-                      <td>{contactData.contact_us_id}</td>
-                      <td>{contactData.full_name}</td>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          {dayjs(contactData.created_at).format("DD-MM-YYYY")}
-                          <br />
-                          {dayjs(contactData.created_at).format("hh:mm:ss A")}
-                        </div>
-                      </td>
-                      <td>{contactData.email}</td>
-                      <td>{contactData.mobile_number}</td>
-                      <td>{contactData.message}</td>
-                    </tr>
-                  ))}
+                  {customerLogData?.map((customerLog: any) => {
+                    const { login_id, user, created_at, type } = customerLog;
+                    const { first_name, last_name } = user;
+                    return (
+                      <tr key={login_id}>
+                        <td>{login_id}</td>
+                        <td>
+                          {first_name + " " + last_name}
+                          <span className="inline-block h-[22.5px] w-[22.5px] bg-transparent rounded-sm text-right"></span>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {dayjs(created_at).format("DD-MM-YYYY, hh:mm A")}
+                          </div>
+                        </td>
+                        {/* <td>{login_id % 2 === 0 ? "Mobile" : "WebSite"}</td> */}
+                        <td>{!type ? "WebSite" : "Mobile"}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={6} className="text-center">
+                    <td colSpan={4} className="text-center">
                       No data available
                     </td>
                   </tr>
@@ -266,7 +264,7 @@ const ContactRequestTable: React.FC = () => {
           <Pagination
             count={count}
             currentPage={currentPage}
-            totalRecords={contactRequestData?.length}
+            totalRecords={customerLogData?.length}
             perPage={perPage}
             onPageChange={handlePageChange}
             label="records"
@@ -277,4 +275,4 @@ const ContactRequestTable: React.FC = () => {
   );
 };
 
-export default ContactRequestTable;
+export default CustomerLogsTable;

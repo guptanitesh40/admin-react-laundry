@@ -4,11 +4,17 @@ import { useState } from "react";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "../OrderTableFilter";
 import { usePermissions } from "../../../hooks";
+import OrderTable from "../OrderTable";
 
 const ConfirmedOrder: React.FC = () => {
   const navigate = useNavigate();
   const [isFilter, setIsFilter] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
+
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [nextStatus, setNextStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+  const [trackingState, setTrackingState] = useState<number | null>(null);
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -26,6 +32,12 @@ const ConfirmedOrder: React.FC = () => {
 
   const updateFilters = (newFilters: any) => {
     setFilters(newFilters);
+  };
+
+  const hanldeSetNextStatus = () => {
+    if (selectedStatus) {
+      setTrackingState(selectedStatus);
+    }
   };
 
   return (
@@ -47,7 +59,7 @@ const ConfirmedOrder: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
+        <div className="flex flex-auto items-center justify-between gap-2.5 mb-4 shadow-none">
           <button
             className="btn btn-sm btn-primary shadow-none"
             onClick={() => setIsFilter(!isFilter)}
@@ -59,6 +71,15 @@ const ConfirmedOrder: React.FC = () => {
               <RiFilterOffFill color="skyblue" size={23} />
             )}
           </button>
+
+          {nextStatus && (
+            <button
+              className="btn btn-sm btn-outline btn-success"
+              onClick={hanldeSetNextStatus}
+            >
+              {nextStatus}
+            </button>
+          )}
         </div>
       </div>
 
@@ -72,7 +93,18 @@ const ConfirmedOrder: React.FC = () => {
                 showOrderStatusFilter={false}
               />
             )}
-            <ConfirmedOrderTable filters={filters} />
+            {/* <ConfirmedOrderTable filters={filters} /> */}
+            <OrderTable
+              filters={filters}
+              setSelectedOrderIds={setSelectedOrderIds}
+              selectedOrderIds={selectedOrderIds}
+              setNextStatus={setNextStatus}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              nextStatus={nextStatus}
+              trackingState={trackingState}
+              setTrackingState={setTrackingState}
+            />
           </div>
         </div>
       </div>

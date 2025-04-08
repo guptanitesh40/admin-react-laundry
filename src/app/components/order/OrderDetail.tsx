@@ -189,7 +189,7 @@ const OrderDetails: React.FC = () => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        html: `Want to change order status to <span style="color: #4e00ff; font-weight: 500;">${order.order_status_details.next_step}</span> ?`,
+        html: `Want to change order status to <span style="color: #4e00ff; font-weight: 500;">"${order.order_status_details.next_step}"</span> ?`,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",

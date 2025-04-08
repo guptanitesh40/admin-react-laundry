@@ -63,6 +63,7 @@ const PrivateRoutes: React.FC = () => {
   const Permissions = lazy(
     () => import("../components/roles-permissions/Permissions")
   );
+  const Logs = lazy(() => import("../components/customer-logs/Index"));
 
   const { loading } = useValidateToken();
 
@@ -524,6 +525,18 @@ const PrivateRoutes: React.FC = () => {
             element={
               <Suspense fallback={<Loading />}>
                 <ContactRequest />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={18} action="read" />}>
+          <Route
+            path="/customer-logs"
+            element={
+              <Suspense fallback={<Loading />}>
+                <Logs />
+                {/* <Loading /> */}
               </Suspense>
             }
           />
