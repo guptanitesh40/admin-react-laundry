@@ -5,7 +5,6 @@ import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
 import { OrderStatus } from "../../../types/enums";
-import toast from "react-hot-toast";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
@@ -69,29 +68,9 @@ const Order: React.FC = () => {
   ]);
 
   const hanldeSetNextStatus = () => {
-    console.log("selectedStatus : ", selectedStatus);
     if (selectedStatus) {
       setTrackingState(selectedStatus);
     }
-    // if (selectedStatus === 1) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 2) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 3) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 4) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 5) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 6) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 7) {
-    //   setTrackingState(selectedStatus);
-    // } else if (selectedStatus === 8) {
-    //   setTrackingState(selectedStatus);
-    // } else {
-    //   toast("Invalid order status provided");
-    // }
   };
 
   return (
@@ -146,7 +125,7 @@ const Order: React.FC = () => {
                 updateFilters={updateFilters}
                 orderStatusOptions={orderListStatusOptions}
               />
-            )}{" "}
+            )}
             <OrderTable
               filters={filters}
               setSelectedOrderIds={setSelectedOrderIds}

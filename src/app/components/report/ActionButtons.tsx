@@ -10,22 +10,22 @@ const data = [
   {
     title: "Pending Orders",
     icon: "ki-filled ki-loading",
-    path: "/order/add",
+    path: "/pickup-orders",
   },
   {
     title: "Confirmed Orders",
     icon: "ki-filled ki-check-circle",
-    path: "/order/add",
+    path: "/confirmed-orders",
   },
   {
     title: "Ready To Deliver",
     icon: "ki-filled ki-courier",
-    path: "/order/add",
+    path: "/redy-to-deliver",
   },
   {
     title: "Delivered Orders",
     icon: "ki-filled ki-delivery",
-    path: "/order/add",
+    path: "/delivered-orders",
   },
 ];
 
@@ -36,7 +36,7 @@ const ActionButtons: React.FC = () => {
         <Link
           to={item.path}
           key={index}
-          className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-3 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out"
+          className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-3 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
         >
           <span className="inline-block h-8 sm:h-10 w-8 sm:w-10 text-[#4b5675]">
             <i className={`${item.icon} text-2xl sm:text-3xl`}></i>

@@ -2,15 +2,16 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Address {
+  is_default: boolean;
   address_id: number;
-  building_number:string;
+  building_number: string;
   area: string;
-  landmark:string;
-  pincode:string;
-  city:string;
-  state:string;
-  country:string;
-  user_id:number;
+  landmark: string;
+  pincode: string;
+  city: string;
+  state: string;
+  country: string;
+  user_id: number;
 }
 
 const useGetAddress = () => {
@@ -20,7 +21,9 @@ const useGetAddress = () => {
   const fetchAddress = async (user_id: number) => {
     const token = localStorage.getItem("authToken");
 
-    const GET_ADDRESS_URL = `${import.meta.env.VITE_BASE_URL}/address/${user_id}/user`;
+    const GET_ADDRESS_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/address/${user_id}/user`;
 
     try {
       const response = await fetch(GET_ADDRESS_URL, {
@@ -49,8 +52,7 @@ const useGetAddress = () => {
     }
   };
 
-  return { address, loading, fetchAddress};
+  return { address, loading, fetchAddress };
 };
-
 
 export default useGetAddress;

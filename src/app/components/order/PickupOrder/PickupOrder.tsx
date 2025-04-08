@@ -5,11 +5,17 @@ import OrderTableFilter from "../OrderTableFilter";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import { usePermissions } from "../../../hooks";
 import { OrderStatus } from "../../../../types/enums";
+import OrderTable from "../OrderTable";
 
 const PickupOrder: React.FC = () => {
   const navigate = useNavigate();
   const [isFilter, setIsFilter] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
+
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [nextStatus, setNextStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+  const [trackingState, setTrackingState] = useState<number | null>(null);
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -42,6 +48,12 @@ const PickupOrder: React.FC = () => {
     "Pickup Complete",
   ]);
 
+  const hanldeSetNextStatus = () => {
+    if (selectedStatus) {
+      setTrackingState(selectedStatus);
+    }
+  };
+
   return (
     <>
       <div className="container-fixed">
@@ -61,7 +73,8 @@ const PickupOrder: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
+        {/* <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none"> */}
+        <div className="flex flex-auto items-center justify-between gap-2.5 mb-4 shadow-none">
           <button
             className="btn btn-sm btn-primary shadow-none"
             onClick={() => setIsFilter(!isFilter)}
@@ -73,6 +86,15 @@ const PickupOrder: React.FC = () => {
               <RiFilterOffFill color="skyblue" size={23} />
             )}
           </button>
+
+          {nextStatus && (
+            <button
+              className="btn btn-sm btn-outline btn-success"
+              onClick={hanldeSetNextStatus}
+            >
+              {nextStatus}
+            </button>
+          )}
         </div>
       </div>
 
@@ -87,7 +109,18 @@ const PickupOrder: React.FC = () => {
                 showSearchInput={false}
               />
             )}{" "}
-            <PickupOrderTable filters={filters} />
+            {/* <PickupOrderTable filters={filters} /> */}
+            <OrderTable
+              filters={filters}
+              setSelectedOrderIds={setSelectedOrderIds}
+              selectedOrderIds={selectedOrderIds}
+              setNextStatus={setNextStatus}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              nextStatus={nextStatus}
+              trackingState={trackingState}
+              setTrackingState={setTrackingState}
+            />
           </div>
         </div>
       </div>

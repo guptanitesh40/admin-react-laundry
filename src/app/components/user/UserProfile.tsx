@@ -10,12 +10,17 @@ import { getRoleClass } from "../../utils/roleClasses";
 import DuoOrderListModal from "./DuoOrderListModal.tsx";
 import CustomerOrders from "./CustomerOrders.tsx";
 import Loading from "../../components/shimmer/Loading.tsx";
+import { FaUserEdit } from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const user_id = Number(id);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [modalOpen, setModalOpen] = useState<boolean>();
+  const [isCustomer, setIsCustomer] = useState<boolean>(false);
   const [refetch, setRefetch] = useState<boolean>(false);
 
   const { userData, fetchUser, count, loading } = useGetUser();
@@ -26,6 +31,10 @@ const UserProfile: React.FC = () => {
     fetchUser(user_id);
     setRefetch(false);
   }, [user_id, refetch]);
+
+  useEffect(() => {
+    setIsCustomer(location.pathname.split("/")[1] === "customer");
+  }, [location.pathname]);
 
   if (!user && loading) {
     return <Loading />;
@@ -44,6 +53,12 @@ const UserProfile: React.FC = () => {
 
   const handleModalOpen = () => {
     setModalOpen(true);
+  };
+
+  const handleEditUser = (user_id: number) => {
+    navigate(
+      isCustomer ? `/customer/edit/${user_id}` : `/user/edit/${user_id}`
+    );
   };
 
   return (
@@ -83,6 +98,23 @@ const UserProfile: React.FC = () => {
           <div className="card pb-2.5">
             <div className="card-header">
               <h3 className="card-title">Personal Information</h3>
+
+              <div className="relative group">
+                <div
+                  className="tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex items-center justify-center whitespace-nowrap"
+                  id="tooltip_hover"
+                >
+                  Edit {isCustomer ? "Customer" : "User"}
+                </div>
+                <button
+                  className="btn btn-light flex justify-center items-center rounded-full p-0 !h-8 !w-8"
+                  data-tooltip="#tooltip_hover"
+                  data-tooltip-trigger="hover"
+                  onClick={() => handleEditUser(user.user_id)}
+                >
+                  <FaUserEdit className="h-5 w-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
+                </button>
+              </div>
             </div>
 
             <div className="card-body pt-4 pb-3">
@@ -101,7 +133,7 @@ const UserProfile: React.FC = () => {
                       Email:
                     </td>
                     <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                      email
+                      {user.email}
                     </td>
                   </tr>
                   <tr>

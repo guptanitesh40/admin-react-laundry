@@ -44,9 +44,7 @@ const useGetBranches = (
     if (sortColumn) queryParams.append("sort_by", sortColumn);
     if (sortOrder) queryParams.append("order", sortOrder);
     if (company_id) {
-      company_id.forEach((c) =>
-        queryParams.append("company_id", c.toString())
-      );
+      company_id.forEach((c) => queryParams.append("company_id", c.toString()));
     }
     if (branch_manager_ids) {
       branch_manager_ids.forEach((b) =>
@@ -82,7 +80,15 @@ const useGetBranches = (
 
   useEffect(() => {
     fetchBranches();
-  }, [pageNumber, perPage, search, sortColumn, sortOrder, company_id, branch_manager_ids]);
+  }, [
+    pageNumber,
+    perPage,
+    search,
+    sortColumn,
+    sortOrder,
+    company_id,
+    branch_manager_ids,
+  ]);
 
   return { branches, count, loading, fetchBranches };
 };

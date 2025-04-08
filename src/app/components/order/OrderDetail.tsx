@@ -47,8 +47,6 @@ const OrderDetails: React.FC = () => {
   const { generateInvoice, loading: generating } = useGenerateInvoice();
   const { hasPermission } = usePermissions();
 
-  console.log(order);
-
   const [formData, setFormData] = useState({
     user_id: null,
     order_id: null,
@@ -191,7 +189,7 @@ const OrderDetails: React.FC = () => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        html: `Want to change order status to <span style="font-weight: 500;">${order.order_status_details.next_step}</span> ?`,
+        html: `Want to change order status to <span style="color: #4e00ff; font-weight: 500;">"${order.order_status_details.next_step}"</span> ?`,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
@@ -498,11 +496,16 @@ const OrderDetails: React.FC = () => {
           <div className="card p-2">
             <div className="card-header border-none p-2 mb-2 ml-2">
               <div className="card-title align-items-start flex-column">
-                <div>
+                <div className="flex items-baseline justify-start flex-wrap sm:!gap-2 gap-1">
                   <h3 className="card-title text-lg">Order Items</h3>
-
-                  <span className="text-gray-500 text-sm font-bold rounded-lg flex">
-                    Total Items: {order.items.length}
+                  <span className="text-gray-700 text-sm font-bold rounded-lg flex">
+                    Total Items : {order.items.length}
+                  </span>
+                  <span className="text-gray-700 text-sm font-bold rounded-lg flex">
+                    Total Quantity :
+                    {order.items.reduce((accumulator, currentValue) => {
+                      return accumulator + currentValue.quantity;
+                    }, 0)}
                   </span>
                 </div>
               </div>

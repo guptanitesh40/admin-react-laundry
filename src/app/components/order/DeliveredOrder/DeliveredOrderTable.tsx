@@ -324,22 +324,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
                   <th className="min-w-[280px]">Current Status</th>
 
-                  <th className="min-w-[140px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "mobile_number"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("mobile_number")}
-                    >
-                      <span className="sort-label">Mobile no</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[150px]">
                     <span
                       className={`sort ${
@@ -388,54 +372,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_code"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_code")}
-                    >
-                      <span className="sort-label">Coupon code</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "coupon_discount"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("coupon_discount")}
-                    >
-                      <span className="sort-label">Coupon discount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[130px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "sub_total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("sub_total")}
-                    >
-                      <span className="sort-label">Bill Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[135px]">
                     <span
                       className={`sort ${
@@ -447,7 +383,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Duo Amount</span>
+                      <span className="sort-label">Total Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -507,8 +443,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                           </span>
                         </td>
 
-                        <td>{order.user.mobile_number}</td>
-
                         <td>
                           <div className="flex items-center gap-2.5">
                             {dayjs(order.created_at).format("DD-MM-YYYY")}
@@ -531,9 +465,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             <br />
                           </div>
                         </td>
-                        <td>{order.coupon_code}</td>
-                        <td>{order.coupon_discount}</td>
-                        <td>{order.sub_total}</td>
                         <td>{order.total}</td>
                         <td>
                           {

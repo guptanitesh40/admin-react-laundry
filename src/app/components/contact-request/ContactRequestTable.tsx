@@ -165,7 +165,7 @@ const ContactRequestTable: React.FC = () => {
                       }`}
                       onClick={() => handleSort("contact_us_id")}
                     >
-                      <span className="sort-label">Order Id</span>
+                      <span className="sort-label">Id</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
