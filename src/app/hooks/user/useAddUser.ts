@@ -7,6 +7,9 @@ const useAddUser = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const addUser = async (formData: any, showToast = true) => {
+    const { password, ...rest } = formData;
+    const filteredFormData = password ? { ...rest, password } : rest;
+
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
@@ -17,7 +20,7 @@ const useAddUser = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(filteredFormData),
       });
 
       const data = await response.json();
@@ -31,12 +34,14 @@ const useAddUser = () => {
 
       if (showToast) {
         if (formData.role_id === 5) {
-          toast.success("Customer created successfully", { position: "top-center" });
+          toast.success("Customer created successfully", {
+            position: "top-center",
+          });
         } else {
           toast.success(data.message, { position: "top-center" });
         }
       }
-      
+
       return data?.data?.result;
     } catch (error: any) {
       if (showToast) {
