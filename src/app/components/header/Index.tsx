@@ -54,9 +54,9 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
         id="header_container"
       >
         <div className="flex gap-1 lg:hidden items-center -ml-1">
-          <a className="shrink-0">
+          <Link className="shrink-0" to="/dashboard">
             <img className="max-h-[25px] w-full" src="/media/app/Favicon.png" />
-          </a>
+          </Link>
           <div className="flex items-center">
             <button
               className="btn btn-icon btn-light btn-clear btn-sm"
@@ -118,12 +118,18 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
 
                 <div className="flex flex-col">
                   <div className="menu-item">
-                    <Link className="menu-link" to="/profile">
+                    <button
+                      className="menu-link"
+                      onClick={() => navigate("/profile")}
+                      role="navigation"
+                      data-menu-item-toggle="dropdown"
+                      data-menu-item-trigger="click|lg:click"
+                    >
                       <span className="menu-icon">
                         <i className="ki-filled ki-profile-circle"></i>
                       </span>
                       <span className="menu-title">My Profile</span>
-                    </Link>
+                    </button>
                   </div>
                 </div>
 

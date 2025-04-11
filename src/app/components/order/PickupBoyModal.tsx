@@ -23,8 +23,9 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
   setAssigned,
   orderStatus,
 }) => {
-  const { assignPickupBoy } = useAssignPickupBoy();
-  const { assignDeliveryBoy } = useAssignDeliveryBoy();
+  const { assignPickupBoy, loading: assigningPickupBoy } = useAssignPickupBoy();
+  const { assignDeliveryBoy, loading: assigningDeliveryBoy } =
+    useAssignDeliveryBoy();
   const { users, fetchUsersByRole } = useGetUsersByRole();
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
@@ -128,6 +129,7 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
       }
     }
   };
+
   if (!modelOpen) return null;
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -215,7 +217,11 @@ const PickupBoyModal: React.FC<PickupBoyModalProps> = ({
             </div>
           )}
           <div className="flex mt-4">
-            <button type="submit" className="btn btn-primary mr-2">
+            <button
+              type="submit"
+              className="btn btn-primary mr-2"
+              disabled={assigningPickupBoy || assigningDeliveryBoy}
+            >
               Assign
             </button>
             <button type="button" onClick={onClose} className="btn btn-light">

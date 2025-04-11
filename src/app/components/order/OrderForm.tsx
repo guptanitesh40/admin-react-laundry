@@ -950,7 +950,7 @@ const OrderForm: React.FC = () => {
               <>
                 <div className="border border-gray-200 rounded-xl mt-4 p-4 space-y-2">
                   <div key={index}>
-                    <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(35px,1fr)] gap-x-5 gap-y-3">
+                    <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(35px,0.75fr)_minmax(35px,0.5fr)] gap-x-5 gap-y-3">
                       <div>
                         <label
                           htmlFor="category"
@@ -1188,6 +1188,26 @@ const OrderForm: React.FC = () => {
                           />
                         </div>
                       </div>
+                      <div className="flex justify-center items-center">
+                        <button
+                          type="button"
+                          className={`p-2 rounded-full ${
+                            formData.items.length > 1
+                              ? "bg-red-100 hover:bg-red-200"
+                              : "bg-gray-200 cursor-not-allowed"
+                          }`}
+                          onClick={() => handleRemoveItem(index)}
+                          disabled={formData.items.length === 1}
+                        >
+                          <FaTrash
+                            className={`${
+                              formData.items.length > 1
+                                ? "text-red-500"
+                                : "text-gray-400"
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -1219,7 +1239,7 @@ const OrderForm: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex block-element flex-end smmobile:justify-self-end justify-end relative">
+                    {/* <div className="flex block-element flex-end smmobile:justify-self-end justify-end relative">
                       <div>
                         <button
                           type="button"
@@ -1240,7 +1260,7 @@ const OrderForm: React.FC = () => {
                           />
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </>
