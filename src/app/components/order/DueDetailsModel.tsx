@@ -138,10 +138,6 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
     }
   }, [orders]);
 
-  useEffect(() => {
-    console.log("FormData : ", formData);
-  }, [formData]);
-
   if (!orders.length) {
     toast.error("Order not found.");
     onClose();
@@ -149,7 +145,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 p-4 grid place-items-center overflow-y-auto">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
@@ -178,7 +174,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
             const { first_name, last_name, mobile_number } = user;
             return (
               <div className="card" key={order_id}>
-                <div className="py-2 px-4 border-b border-gray-200 flex justify-between gap-4">
+                <div className="py-2 px-4 border-b border-gray-200 flex justify-between gap-4 items-center">
                   <div className="flex flex-col gap-1">
                     <a
                       href={`/order/${order_id}`}
@@ -189,13 +185,22 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                     </a>
                     <h4 className="text-gray-700 text-sm font-bold">{`${first_name} ${last_name} (${mobile_number})`}</h4>
                   </div>
+
                   <div className="flex flex-col gap-1">
-                    <p className="form-label !text-red-500 !font-bold">
-                      Total Due Amount
-                    </p>
-                    <p className="form-label justify-center !text-red-500 !font-bold">
-                      {total - paid_amount - kasar_amount}
-                    </p>
+                    {total === paid_amount + kasar_amount ? (
+                      <p className="badge-outline badge badge-info justify-self-start">
+                        Payement Received
+                      </p>
+                    ) : (
+                      <>
+                        <p className="form-label !text-red-500 !font-bold">
+                          Total Due Amount
+                        </p>
+                        <p className="form-label justify-center !text-red-500 !font-bold">
+                          {total - paid_amount - kasar_amount}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -232,6 +237,9 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                           type="text"
                           value={kasar_amount}
                           autoComplete="off"
+                          disabled={
+                            total === kasar_amount + paid_amount ? true : false
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               order_id,
@@ -254,6 +262,11 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                             type="text"
                             value={current_paid}
                             autoComplete="off"
+                            disabled={
+                              total === kasar_amount + paid_amount
+                                ? true
+                                : false
+                            }
                             onChange={(e) =>
                               handleInputChange(
                                 order_id,
@@ -271,6 +284,9 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                           id="payement_status"
                           className="form-select border border-gray-400 rounded px-3 py-2 select"
                           value={payment_status}
+                          disabled={
+                            total === kasar_amount + paid_amount ? true : false
+                          }
                           onChange={(e) =>
                             handleInputChange(
                               order_id,

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ASSIGN_DELIVERYBOY_URL =`${import.meta.env.VITE_BASE_URL}/admin/orders/assign-delivery`;
+const ASSIGN_DELIVERYBOY_URL = `${
+  import.meta.env.VITE_BASE_URL
+}/admin/orders/assign-delivery`;
 
 const useAssignDeliveryBoy = () => {
   const [loading, setLoading] = useState<boolean>(false);

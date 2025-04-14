@@ -336,8 +336,9 @@ const OrderDetails: React.FC = () => {
     ];
 
   const handlePrintLabel = () => {
-    const url = order?.order_label?.fileUrl;
-    window.open(url, "_blank");
+    toast("Under Construction...");
+    // const url = order?.order_label?.fileUrl;
+    // window.open(url, "_blank");
   };
 
   const handleViewRefundReceipt = () => {
@@ -388,15 +389,25 @@ const OrderDetails: React.FC = () => {
               Order Details - #{order_id}
             </h1>
             <div className="flex gap-2 mobile:flex-wrap">
-              {order?.order_status === 10 && (
+              {(order?.order_status === 2 || order?.order_status == 10) && (
                 <button
                   className="flex items-center btn-info sm:btn smmobile:btn-sm bg-gray-700 text-white hover:!bg-gray-800 focus:!bg-gray-800"
                   onClick={handleChangeDbclick}
-                  aria-label="Change Delivery Boy"
-                  title="Change Delivery Boy"
+                  aria-label={
+                    order?.order_status === 2
+                      ? "Change Pickup Boy"
+                      : "Change Delivery Boy"
+                  }
+                  title={
+                    order?.order_status === 2
+                      ? "Change Pickup Boy"
+                      : "Change Delivery Boy"
+                  }
                 >
-                  <i className="ki-filled ki-arrows-loop"></i>
-                  Change Delivery Boy
+                  <i className="ki-filled ki-arrows-loop"></i>{" "}
+                  {order?.order_status === 2
+                    ? "Change Pickup Boy"
+                    : "Change Delivery Boy"}
                 </button>
               )}
 
@@ -606,7 +617,7 @@ const OrderDetails: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex flex-end">
+              <div className="flex flex-end" style={{ display: "none" }}>
                 <button
                   className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
                   onClick={handlePrintLabel}
@@ -642,10 +653,19 @@ const OrderDetails: React.FC = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-5">
+                          <div className="flex items-center flex-row gap-2">
                             <div className="badge badge-sm flex gap-1 badge-success badge-outline text-xs">
                               <span className="mobile:hidden">Service : </span>
                               <span>{item.service.name}</span>
+                            </div>
+                            <div>
+                              <button
+                                className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
+                                onClick={handlePrintLabel}
+                              >
+                                {/* <RiFilePaperLine size={16} color="gray" />{" "} */}
+                                <p className="text-gray-700">Print Label</p>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1145,10 +1165,7 @@ const OrderDetails: React.FC = () => {
 
       {pbModel2IsOpen && (
         <PickUpBoyModelEd2
-          orderId={order_id}
-          isDelivery={true}
-          pickupBoyId={order?.pickup_boy_id ?? null}
-          deliveryBoyId={order?.delivery_boy_id ?? null}
+          order={order}
           setModelOpen={setPbModel2IsOpen}
           setAssigned={setAssigned}
         />
