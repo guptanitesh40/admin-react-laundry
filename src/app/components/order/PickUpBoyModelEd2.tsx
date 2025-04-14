@@ -5,36 +5,62 @@ import { useAssignPickupBoy } from "../../hooks";
 import useAssignDeliveryBoy from "../../hooks/orderstatus/useAssignDeliveryBoy";
 import useGetDeliveryPickupBoys from "../../hooks/user/useGetDeliveryPickupBoys";
 
+interface DeliveryBoyData {
+  delivery_boy_id: number;
+  delivery_boy_name: string;
+}
+
+interface pickBoyData {
+  pickup_boy__id: number;
+  pickup_boy_name: string;
+}
+
+interface Order {
+  order_id: number;
+  order_status: number;
+  pickup_boy: pickBoyData;
+  pickup_boy_id: number;
+  delivery_boy?: "" | DeliveryBoyData;
+  delivery_boy_id: number;
+}
+
 interface PickUpBoyModelEd2Props {
-  orderId: number;
-  isDelivery: boolean;
-  pickupBoyId: number;
-  deliveryBoyId: number;
+  order: Order;
   setModelOpen: (value: boolean) => void;
   setAssigned: (value: boolean) => void;
 }
 
 const schema = Yup.object().shape({
-  pickup_boy_id: Yup.number().required("Please select a name to assign"),
+  boy_id: Yup.number().required("Please select a name to assign"),
 });
 
 const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
-  orderId,
-  isDelivery,
-  pickupBoyId,
-  deliveryBoyId,
+  order,
   setModelOpen,
   setAssigned,
 }) => {
+  const {
+    order_id,
+    order_status,
+    pickup_boy,
+    pickup_boy_id,
+    delivery_boy_id,
+    delivery_boy,
+  } = order;
+
+  const isPickup = order_status === 2 ? true : false;
   const { users, loading, fetchDeliveryPickupBoys } =
     useGetDeliveryPickupBoys();
-  const { assignPickupBoy } = useAssignPickupBoy();
-  const { assignDeliveryBoy, loading: assigning } = useAssignDeliveryBoy();
-  const [userSearch, setUserSearch] = useState("");
+  const { assignPickupBoy, loading: assigningPickupBoy } = useAssignPickupBoy();
+  const { assignDeliveryBoy, loading: assigningDeliveryBoy } =
+    useAssignDeliveryBoy();
+  const [userSearch, setUserSearch] = useState(
+    isPickup ? pickup_boy.pickup_boy_name : delivery_boy.delivery_boy_name
+  );
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [formData, setFormData] = useState({
-    order_ids: orderId,
-    pickup_boy_id: deliveryBoyId,
+    order_id: order_id,
+    boy_id: isPickup ? pickup_boy_id : delivery_boy_id,
     comment: "",
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -55,7 +81,7 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
     setIsSearchMode(false);
     setFormData({
       ...formData,
-      pickup_boy_id: user.user_id,
+      boy_id: user.user_id,
     });
   };
 
@@ -82,30 +108,35 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
     let success;
     try {
       await schema.validate(formData, { abortEarly: false });
-      if (isDelivery) {
+      if (isPickup) {
         const formattedData = {
-          order_ids: [formData.order_ids],
-          delivery_boy_id: formData.pickup_boy_id,
+          order_ids: [formData.order_id],
+          pickup_boy_id: formData.boy_id,
         };
-        await assignDeliveryBoy(formattedData);
-
+        if (pickup_boy_id === formattedData.pickup_boy_id) {
+          handleClose();
+        } else {
+          const result = await assignPickupBoy(formattedData);
+          if (result) {
+            setAssigned(true);
+            handleClose();
+          }
+        }
+      } else {
+        const formattedData = {
+          order_ids: [formData.order_id],
+          delivery_boy_id: formData.boy_id,
+        };
+        if (delivery_boy_id === formattedData.delivery_boy_id) {
+          handleClose();
+        } else {
+          const result = await assignDeliveryBoy(formattedData);
+          if (result) {
+            setAssigned(true);
+            handleClose();
+          }
+        }
       }
-      setAssigned(true);
-      handleClose();
-
-      // if (orderStatus === "Assign Delivery boy") {
-      //   const formattedData = {
-      //     order_ids: formData.order_ids,
-      //     delivery_boy_id: formData.pickup_boy_id,
-      //   };
-
-      //   await assignDeliveryBoy(formattedData);
-      // } else {
-      //   await assignPickupBoy(formData);
-      // }
-
-      // setAssigned(true);
-      // onClose();
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         setErrorMessage(error.errors[0]);
@@ -116,19 +147,6 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
   const handleClose = () => {
     setModelOpen(false);
   };
-
-  useEffect(() => {
-    if (users && !isSet) {
-      const existingUser = users.find(
-        (user: any) => user.user_id === deliveryBoyId
-      );
-      if (existingUser) {
-        const fullName = `${existingUser.first_name} ${existingUser.last_name}`;
-        setUserSearch(fullName);
-        setIsSet(true);
-      }
-    }
-  }, [users]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -156,7 +174,7 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
           <i className="ki-filled ki-cross"></i>
         </button>
         <h2 className="text-2xl font-bold mb-6">
-          {isDelivery ? "Update Delivery Boy" : "Update Pickup Boy"}
+          {isPickup ? "Update Pickup Boy" : "Update Delivery Boy"}
         </h2>
 
         {/* form onSubmit={onSearchSubmit} className="flex items-center gap-2">
@@ -214,9 +232,7 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
                     <li
                       key={user.user_id}
                       className={`p-2 hover:bg-gray-200 cursor-pointer rounded ${
-                        formData.pickup_boy_id === user.user_id
-                          ? "bg-gray-200"
-                          : ""
+                        formData.boy_id === user.user_id ? "bg-gray-200" : ""
                       }`}
                       onClick={() => handleUserClick(user)}
                     >
@@ -237,7 +253,7 @@ const PickUpBoyModelEd2: React.FC<PickUpBoyModelEd2Props> = ({
               type="button"
               className="btn btn-primary mr-2"
               onClick={handleSubmit}
-              disabled={assigning}
+              disabled={assigningPickupBoy || assigningDeliveryBoy}
             >
               Assign
             </button>

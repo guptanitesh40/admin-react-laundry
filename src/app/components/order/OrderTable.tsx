@@ -40,6 +40,8 @@ interface OrderTableProps {
   nextStatus: string;
   trackingState: number | null;
   setTrackingState: React.Dispatch<React.SetStateAction<number | null>>;
+  isEarlyDelivery: boolean;
+  setIsEarlyDelivery: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const OrderTable: React.FC<OrderTableProps> = ({
@@ -52,6 +54,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
   nextStatus,
   trackingState,
   setTrackingState,
+  isEarlyDelivery,
+  setIsEarlyDelivery,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -70,6 +74,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   const [dueDTModelIsOpen, setDueDTModelIsOpen] = useState<boolean>(false);
   const [selectedOrders, setSelectedOrders] = useState<any>([]);
   const [remainingPaidOrders, setRemainingPaidOrders] = useState<any>([]);
+  const [previewOrders, setPreviewOrders] = useState<any>([]);
 
   const pathMappings = [
     { path: "/orders", list: "", orderList: "" },
@@ -290,37 +295,25 @@ const OrderTable: React.FC<OrderTableProps> = ({
     await generateInvoice(order_id);
   };
 
-  const afterSuccess = async () => {
-    const next = selectedStatus + 1;
-    const success = await changeOrderStatus(remainingPaidOrders, next);
-    if (success) {
-      clearSelection();
-      await fetchOrders();
-      setTrackingState(null);
-      setDueDTModelIsOpen(false);
-    }
-  };
-
   const handleDeliveryStatus = () => {
     const ordersList = orders.filter((order) =>
       selectedOrderIds.includes(order.order_id)
     );
+    setPreviewOrders(ordersList);
 
-    const pendingOrPartialOrders = ordersList.filter(
-      (order) => order.payment_status !== 2
-    );
-
-    const fullyPaidOrders = ordersList.filter(
-      (order) => order.payment_status === 2
-    );
-
-    const fullyPaidOrdersIds = fullyPaidOrders.map((order) => {
-      return order.order_id;
-    });
-
-    setRemainingPaidOrders(fullyPaidOrdersIds);
-    setSelectedOrders(pendingOrPartialOrders);
     setDueDTModelIsOpen(true);
+
+    // const pendingOrPartialOrders = ordersList.filter(
+    //   (order) => order.payment_status !== 2
+    // );
+    // const fullyPaidOrders = ordersList.filter(
+    //   (order) => order.payment_status === 2
+    // );
+    // const fullyPaidOrdersIds = fullyPaidOrders.map((order) => {
+    //   return order.order_id;
+    // });
+    // setRemainingPaidOrders(fullyPaidOrdersIds);
+    // setSelectedOrders(pendingOrPartialOrders);
   };
 
   const changeStatus = async () => {
@@ -354,6 +347,12 @@ const OrderTable: React.FC<OrderTableProps> = ({
   };
 
   useEffect(() => {
+    if (isEarlyDelivery) {
+      handleDeliveryStatus();
+    }
+  }, [isEarlyDelivery]);
+
+  useEffect(() => {
     if (trackingState !== null) {
       switch (trackingState) {
         case 1:
@@ -384,7 +383,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
           setPbBoyModelIsOpen(true);
           break;
         case 10:
-          // changeStatus();
           handleDeliveryStatus();
           break;
         default:
@@ -811,18 +809,36 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
       {dueDTModelIsOpen && (
         <DueDetailsModel
-          orders={selectedOrders}
+          orders={previewOrders}
           onClose={() => {
             setDueDTModelIsOpen(false);
             setTrackingState(null);
+            setIsEarlyDelivery(false);
           }}
-          onSuccess={(value) => {
+          onSuccess={async (value) => {
             if (value) {
-              afterSuccess();
+              clearSelection();
+              await fetchOrders();
+              setTrackingState(null);
+              setDueDTModelIsOpen(false);
+              setIsEarlyDelivery(false);
             }
           }}
         />
       )}
+
+      {/* {dueDTModelIsOpen && (
+        <DueDetailsModel
+          orders={[order]}
+          onClose={() => setDueDTModelIsOpen(false)}
+          onSuccess={(value) => {
+            if (value) {
+              setDueDTModelIsOpen(false);
+              fetchOrder(order_id);
+            }
+          }}
+        />
+      )} */}
     </>
   );
 };

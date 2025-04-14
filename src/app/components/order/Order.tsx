@@ -5,6 +5,7 @@ import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
 import { OrderStatus } from "../../../types/enums";
+import toast from "react-hot-toast";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Order: React.FC = () => {
   const [nextStatus, setNextStatus] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
   const [trackingState, setTrackingState] = useState<number | null>(null);
+  const [isEarlyDelivery, setIsEarlyDelivery] = useState<boolean>(false);
 
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
@@ -105,14 +107,25 @@ const Order: React.FC = () => {
             )}
           </button>
 
-          {nextStatus && (
-            <button
-              className="btn btn-sm btn-outline btn-success"
-              onClick={hanldeSetNextStatus}
-            >
-              {nextStatus}
-            </button>
-          )}
+          <div className="flex justify-center items-center gap-4">
+            {nextStatus && (
+              <button
+                className="btn btn-sm btn-outline btn-success"
+                onClick={hanldeSetNextStatus}
+              >
+                {nextStatus}
+              </button>
+            )}
+
+            {nextStatus === "Assign Delivery boy" && (
+              <button
+                className="btn btn-sm btn-light"
+                onClick={() => setIsEarlyDelivery(true)}
+              >
+                <strong>Delivered</strong>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -136,6 +149,8 @@ const Order: React.FC = () => {
               nextStatus={nextStatus}
               trackingState={trackingState}
               setTrackingState={setTrackingState}
+              isEarlyDelivery={isEarlyDelivery}
+              setIsEarlyDelivery={setIsEarlyDelivery}
             />
           </div>
         </div>

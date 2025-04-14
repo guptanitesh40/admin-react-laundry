@@ -1,7 +1,9 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ASSIGN_PICKUPBOY_URL = `${import.meta.env.VITE_BASE_URL}/admin/orders/assign-pickup`;
+const ASSIGN_PICKUPBOY_URL = `${
+  import.meta.env.VITE_BASE_URL
+}/admin/orders/assign-pickup`;
 
 const useAssignPickupBoy = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,7 +32,9 @@ const useAssignPickupBoy = () => {
       toast.success(data.message, { position: "top-center" });
       return true;
     } catch (error: any) {
-      toast.error(error?.message || "Error assignning pickupboy", { position: "top-center" });
+      toast.error(error?.message || "Error assignning pickupboy", {
+        position: "top-center",
+      });
       return false;
     } finally {
       setLoading(false);
