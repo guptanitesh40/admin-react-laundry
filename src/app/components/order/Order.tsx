@@ -5,7 +5,6 @@ import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "./OrderTableFilter";
 import { usePermissions } from "../../hooks";
 import { OrderStatus } from "../../../types/enums";
-import toast from "react-hot-toast";
 
 const Order: React.FC = () => {
   const navigate = useNavigate();
@@ -119,7 +118,7 @@ const Order: React.FC = () => {
 
             {nextStatus === "Assign Delivery boy" && (
               <button
-                className="btn btn-sm btn-light"
+                className="btn btn-sm btn-light badge badge-delivered relative badge-outline badge-xl !bg-transparent !hover:[var(--tw-delivered)]"
                 onClick={() => setIsEarlyDelivery(true)}
               >
                 <strong>Delivered</strong>
