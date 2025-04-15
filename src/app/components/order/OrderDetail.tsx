@@ -29,6 +29,8 @@ import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../utils/store";
 import Loading from "../shimmer/Loading";
+import PickUpBoyModelEd2 from "./PickUpBoyModelEd2";
+import DueDetailsModel from "./DueDetailsModel";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -54,6 +56,7 @@ const OrderDetails: React.FC = () => {
     images: [] as (string | File)[],
   });
 
+  const [pbModel2IsOpen, setPbModel2IsOpen] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [workshopModalOpen, setWorkshopModalOpen] = useState<boolean>(false);
   const [orderCancelModalOpen, setOrderCancelModalOpen] =
@@ -67,6 +70,8 @@ const OrderDetails: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [dueDTModelIsOpen, setDueDTModelIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     fetchOrder(order_id);
@@ -224,6 +229,8 @@ const OrderDetails: React.FC = () => {
   const handleOrderTableStatus = async () => {
     switch (order?.order_status_details.next_step) {
       case "Assign Pickup Boy":
+        setModalOpen(true);
+        break;
       case "Assign Delivery boy":
         setModalOpen(true);
         break;
@@ -253,7 +260,11 @@ const OrderDetails: React.FC = () => {
         await handleStatusChange(10);
         break;
       case "Delivered":
-        await handleStatusChange(11);
+        if (order.payment_status === 1 || order.payment_status === 3) {
+          setDueDTModelIsOpen(true);
+        } else {
+          await handleStatusChange(11);
+        }
         break;
       case "Assign Workshop":
       case "Assign Branch":
@@ -323,8 +334,8 @@ const OrderDetails: React.FC = () => {
       order.payment_status as unknown as keyof typeof PaymentStatus
     ];
 
-  const handlePrintLabel = () => {
-    const url = order?.order_label?.fileUrl;
+  const handlePrintLabel = (index: number) => {
+    const url = order?.order_label[index];
     window.open(url, "_blank");
   };
 
@@ -333,15 +344,74 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
+  const handleChangeDbclick = () => {
+    setPbModel2IsOpen(true);
+  };
+
+  const handleSpecialCase = async () => {
+    if (order.payment_status === 2) {
+      try {
+        const { isConfirmed } = await Swal.fire({
+          title: "Are you sure?",
+          html: `Want to change order status to <span style="color: #4e00ff; font-weight: 500;">Delivered</span> ?`,
+          showCancelButton: true,
+          confirmButtonColor: "#dc3545",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        });
+        if (isConfirmed) {
+          await updateAndFetchOrder(11);
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: error.message,
+          icon: "error",
+        });
+      }
+    } else {
+      setDueDTModelIsOpen(true);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6">
-      <div className="card rounded-xl">
+      <div className="card rounded-xl relative">
+        <span
+          className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full"
+          style={{ display: "none" }}
+        >
+          {order.order_status}
+        </span>
         <div className="flex flex-col gap-4 p-5 rounded-md shadow-md">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h1 className="text-xl font-semibold text-gray-900">
               Order Details - #{order_id}
             </h1>
             <div className="flex gap-2 mobile:flex-wrap">
+              {(order?.order_status === 2 || order?.order_status == 10) && (
+                <button
+                  className="flex items-center btn-info sm:btn smmobile:btn-sm bg-gray-700 text-white hover:!bg-gray-800 focus:!bg-gray-800"
+                  onClick={handleChangeDbclick}
+                  aria-label={
+                    order?.order_status === 2
+                      ? "Change Pickup Boy"
+                      : "Change Delivery Boy"
+                  }
+                  title={
+                    order?.order_status === 2
+                      ? "Change Pickup Boy"
+                      : "Change Delivery Boy"
+                  }
+                >
+                  <i className="ki-filled ki-arrows-loop"></i>{" "}
+                  {order?.order_status === 2
+                    ? "Change Pickup Boy"
+                    : "Change Delivery Boy"}
+                </button>
+              )}
+
               {order?.order_status === 11 && (
                 <button
                   className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
@@ -359,11 +429,9 @@ const OrderDetails: React.FC = () => {
                 </button>
               )}
 
-              {location?.state?.from !== "WorkshopOrderTable" &&
-                order?.order_status !== 11 &&
-                order.refund_status !== 1 &&
-                order?.order_status !== 12 &&
-                order?.order_status !== 13 &&
+              {((order?.order_status > 0 && order?.order_status < 7) ||
+                order?.order_status === 9 ||
+                order?.order_status === 10) &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
@@ -373,7 +441,35 @@ const OrderDetails: React.FC = () => {
                   </button>
                 )}
 
-              {location?.state?.from !== "WorkshopOrderTable" &&
+              {order?.order_status > 0 &&
+                order?.order_status < 7 &&
+                order?.refund_status !== 1 &&
+                hasPermission(3, "update") && (
+                  <button
+                    className="flex items-center font-semibold btn-danger sm:btn smmobile:btn-sm smmobile:btn"
+                    onClick={handleOrderCancel}
+                  >
+                    <MdCancel size={20} />
+                    Cancel Order
+                  </button>
+                )}
+
+              {/* {location?.state?.from !== "WorkshopOrderTable" &&
+                order?.order_status !== 11 &&
+                order.refund_status !== 1 &&
+                order?.order_status !== 12 &&
+                order?.order_status !== 13 &&
+                order?.order_id < 7 &&
+                hasPermission(3, "update") && (
+                  <button
+                    className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
+                    onClick={handleEditOrder}
+                  >
+                    <i className="ki-filled ki-pencil mr-2"></i>Edit Order
+                  </button>
+                )} */}
+
+              {/* {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
                 order?.order_status < 8 &&
                 order?.refund_status !== 1 && (
@@ -384,7 +480,7 @@ const OrderDetails: React.FC = () => {
                     <MdCancel size={20} />
                     Cancel Order
                   </button>
-                )}
+                )} */}
 
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
@@ -436,6 +532,18 @@ const OrderDetails: React.FC = () => {
                   >
                     {order.order_status_details.next_step}
                   </button>
+                  {order?.order_status === 9 && (
+                    <button
+                      className={`badge badge-delivered badge-outline badge-xl rounded-[30px]`}
+                      onClick={handleSpecialCase}
+                      disabled={
+                        !hasPermission(3, "update") &&
+                        !hasPermission(16, "update")
+                      }
+                    >
+                      Delivered
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -509,22 +617,13 @@ const OrderDetails: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex flex-end">
-                <button
-                  className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
-                  onClick={handlePrintLabel}
-                >
-                  <RiFilePaperLine size={20} color="gray" />{" "}
-                  <p className="text-gray-700">Print Label</p>
-                </button>
-              </div>
             </div>
 
             <div className="flex flex-wrap">
               <div className="card-body p-0 ml-4">
                 <div className="scrollable-y-hover pe-4 pb-4 max-h-[400px] mb-4">
                   <div className="space-y-4">
-                    {order.items.map((item: any) => (
+                    {order.items.map((item: any, index) => (
                       <div
                         key={item.item_id}
                         className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
@@ -545,10 +644,18 @@ const OrderDetails: React.FC = () => {
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-5">
+                          <div className="flex items-center flex-row gap-2">
                             <div className="badge badge-sm flex gap-1 badge-success badge-outline text-xs">
                               <span className="mobile:hidden">Service : </span>
                               <span>{item.service.name}</span>
+                            </div>
+                            <div>
+                              <button
+                                className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
+                                onClick={() => handlePrintLabel(index)}
+                              >
+                                <p className="text-gray-700">Print Label</p>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -827,6 +934,23 @@ const OrderDetails: React.FC = () => {
             </div>
           )}
 
+          {order.delivery_boy && (
+            <div className="card rounded-xl">
+              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="card-title">Delivery Boy Information</h3>
+                    </div>
+                    <div className="text-2sm font-medium text-gray-700">
+                      {order.delivery_boy?.delivery_boy_name}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="card rounded-xl">
             <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
               <div className="flex items-center gap-4">
@@ -1046,6 +1170,14 @@ const OrderDetails: React.FC = () => {
         </div>
       )}
 
+      {pbModel2IsOpen && (
+        <PickUpBoyModelEd2
+          order={order}
+          setModelOpen={setPbModel2IsOpen}
+          setAssigned={setAssigned}
+        />
+      )}
+
       <PickupBoyModal
         orderStatus={
           order?.order_status_details.next_step === "Assign Pickup Boy" ||
@@ -1069,7 +1201,11 @@ const OrderDetails: React.FC = () => {
         orderIds={[order_id]}
         workshopModalOpen={workshopModalOpen}
         onClose={() => setWorkshopModalOpen(false)}
-        setAssigned={setAssigned}
+        setAssigned={(value) => {
+          if (value) {
+            fetchOrder(order_id);
+          }
+        }}
       />
 
       <OrderCalcelModal
@@ -1087,6 +1223,19 @@ const OrderDetails: React.FC = () => {
         onClose={() => setOrderRefundModalOpen(false)}
         setRefetch={setRefetch}
       />
+
+      {dueDTModelIsOpen && (
+        <DueDetailsModel
+          orders={[order]}
+          onClose={() => setDueDTModelIsOpen(false)}
+          onSuccess={(value) => {
+            if (value) {
+              setDueDTModelIsOpen(false);
+              fetchOrder(order_id);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

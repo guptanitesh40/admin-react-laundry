@@ -31,7 +31,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
 
   const { workshops } = useGetWorkshops(pageNumber, perPage);
   const { branches } = useGetBranches(pageNumber, perPage);
-  const { assignWorkshop } = useAssignWorkshop();
+  const { assignWorkshop, loading } = useAssignWorkshop();
   const { assignBranch } = useAssignBranch();
   const [selectedOption, setSelectedOption] = useState<number | null>();
 
@@ -149,7 +149,11 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
           )}
 
           <div className="flex mt-4">
-            <button type="submit" className="btn btn-primary mr-2">
+            <button
+              type="submit"
+              className="btn btn-primary mr-2"
+              disabled={loading}
+            >
               Assign
             </button>
             <button type="button" onClick={onClose} className="btn btn-light">

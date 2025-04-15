@@ -159,7 +159,7 @@ const UserProfile: React.FC = () => {
                         Profile Photo :
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        <span className="">
+                        <span>
                           <img
                             className="h-14 w-14 rounded-full"
                             src={user.image}

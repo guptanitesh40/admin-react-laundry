@@ -7,7 +7,9 @@ const useGetUsersByRole = () => {
 
   const fetchUsersByRole = async (role_id: number, search: string = "") => {
     const token = localStorage.getItem("authToken");
-    const GET_USER_URL = `${import.meta.env.VITE_BASE_URL}/user/by-role?role_id=${role_id}`;
+    const GET_USER_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/user/by-role?role_id=${role_id}`;
 
     const queryParams = new URLSearchParams();
     if (search) queryParams.append("search", search);

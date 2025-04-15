@@ -20,6 +20,7 @@ import PickupBoyModal from "./PickupBoyModal";
 import toast from "react-hot-toast";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
 import WorkshopModal from "./AssignWorkshopModal";
+import DueDetailsModel from "./DueDetailsModel";
 
 interface OrderTableProps {
   filters: {
@@ -39,6 +40,8 @@ interface OrderTableProps {
   nextStatus: string;
   trackingState: number | null;
   setTrackingState: React.Dispatch<React.SetStateAction<number | null>>;
+  isEarlyDelivery: boolean;
+  setIsEarlyDelivery: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const OrderTable: React.FC<OrderTableProps> = ({
@@ -51,6 +54,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
   nextStatus,
   trackingState,
   setTrackingState,
+  isEarlyDelivery,
+  setIsEarlyDelivery,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
@@ -65,6 +70,11 @@ const OrderTable: React.FC<OrderTableProps> = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
+
+  const [dueDTModelIsOpen, setDueDTModelIsOpen] = useState<boolean>(false);
+  const [selectedOrders, setSelectedOrders] = useState<any>([]);
+  const [remainingPaidOrders, setRemainingPaidOrders] = useState<any>([]);
+  const [previewOrders, setPreviewOrders] = useState<any>([]);
 
   const pathMappings = [
     { path: "/orders", list: "", orderList: "" },
@@ -285,6 +295,27 @@ const OrderTable: React.FC<OrderTableProps> = ({
     await generateInvoice(order_id);
   };
 
+  const handleDeliveryStatus = () => {
+    const ordersList = orders.filter((order) =>
+      selectedOrderIds.includes(order.order_id)
+    );
+    setPreviewOrders(ordersList);
+
+    setDueDTModelIsOpen(true);
+
+    // const pendingOrPartialOrders = ordersList.filter(
+    //   (order) => order.payment_status !== 2
+    // );
+    // const fullyPaidOrders = ordersList.filter(
+    //   (order) => order.payment_status === 2
+    // );
+    // const fullyPaidOrdersIds = fullyPaidOrders.map((order) => {
+    //   return order.order_id;
+    // });
+    // setRemainingPaidOrders(fullyPaidOrdersIds);
+    // setSelectedOrders(pendingOrPartialOrders);
+  };
+
   const changeStatus = async () => {
     try {
       const { isConfirmed } = await Swal.fire({
@@ -314,6 +345,12 @@ const OrderTable: React.FC<OrderTableProps> = ({
       toast.error("Error while changing status");
     }
   };
+
+  useEffect(() => {
+    if (isEarlyDelivery) {
+      handleDeliveryStatus();
+    }
+  }, [isEarlyDelivery]);
 
   useEffect(() => {
     if (trackingState !== null) {
@@ -346,7 +383,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
           setPbBoyModelIsOpen(true);
           break;
         case 10:
-          changeStatus();
+          handleDeliveryStatus();
           break;
         default:
           toast("Invalid order status...");
@@ -666,7 +703,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                               {hasPermission(3, "update") && (
                                 <button
-                                  className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                  className={`mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200`}
                                   onClick={() =>
                                     handleUpdateOrder(order.order_id)
                                   }
@@ -674,6 +711,30 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                   <FaPencilAlt className="text-yellow-600" />
                                 </button>
                               )}
+
+                              {/* {hasPermission(3, "update") && (
+                                <button
+                                  className={`mr-3 p-3 rounded-full ${
+                                    (order?.order_status > 0 &&
+                                      order?.order_status < 7) ||
+                                    order?.order_status === 9
+                                      ? "bg-yellow-100 hover:bg-yellow-200"
+                                      : "bg-gray-100 hover:bg-gray-200 !cursor-not-allowed"
+                                  }`}
+                                  disabled={
+                                    !(
+                                      (order?.order_status > 0 &&
+                                        order?.order_status < 7) ||
+                                      order?.order_status === 9
+                                    )
+                                  }
+                                  onClick={() =>
+                                    handleUpdateOrder(order.order_id)
+                                  }
+                                >
+                                  <FaPencilAlt className="text-yellow-600" />
+                                </button>
+                              )} */}
 
                               {hasPermission(3, "delete") && (
                                 <button
@@ -745,6 +806,39 @@ const OrderTable: React.FC<OrderTableProps> = ({
         }}
         orderStatus={nextStatus}
       />
+
+      {dueDTModelIsOpen && (
+        <DueDetailsModel
+          orders={previewOrders}
+          onClose={() => {
+            setDueDTModelIsOpen(false);
+            setTrackingState(null);
+            setIsEarlyDelivery(false);
+          }}
+          onSuccess={async (value) => {
+            if (value) {
+              clearSelection();
+              await fetchOrders();
+              setTrackingState(null);
+              setDueDTModelIsOpen(false);
+              setIsEarlyDelivery(false);
+            }
+          }}
+        />
+      )}
+
+      {/* {dueDTModelIsOpen && (
+        <DueDetailsModel
+          orders={[order]}
+          onClose={() => setDueDTModelIsOpen(false)}
+          onSuccess={(value) => {
+            if (value) {
+              setDueDTModelIsOpen(false);
+              fetchOrder(order_id);
+            }
+          }}
+        />
+      )} */}
     </>
   );
 };

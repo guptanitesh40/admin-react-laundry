@@ -20,12 +20,48 @@ const Profile: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="mt-10">
-        <ProfileShimmer01 />
-      </div>
+      <main className="grow content" id="content" role="content">
+        <div className="container-fixed">
+          <div className="flex flex-wrap items-center lg:items-end justify-between gap-5 pb-7.5">
+            <span className="inline-block h-[21px] w-[61.87px] bg-gray-200 animate-pulse rounded"></span>
+          </div>
+        </div>
+        <div className="container-fixed">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-7.5">
+            <div className="col-span-1">
+              <div className="grid gap-5 lg:gap-7.5">
+                <div className="card min-w-full">
+                  <div className="card-header">
+                    <span className="inline-block w-[103.84px] h-6 bg-gray-200 animate-pulse rounded"></span>
+                    <span className="inline-block w-[86.5px] h-7 bg-gray-200 animate-pulse rounded"></span>
+                  </div>
+                  <div className="card-table scrollable-x-auto pb-3">
+                    <table className="table align-middle text-sm text-gray-500">
+                      <tbody>
+                        {Array.from({ length: 4 }).map((_, index) => {
+                          return (
+                            <tr key={index}>
+                              <td className="!py-2">
+                                <span className="inline-block h-7 w-[150px] bg-gray-200 animate-pulse rounded"></span>
+                              </td>
+                              <td className="!py-2">
+                                <span className="inline-block h-7 w-[150px] bg-gray-200 animate-pulse rounded"></span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     );
   }
-  
+
   if (!user) return;
 
   return (

@@ -6,21 +6,18 @@ const useClearDueAmount = () => {
   const [loading, setLoading] = useState(false);
 
   const clearDueAmount = async (userId: number, orders: any) => {
-
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/orders/payments/clear-due`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ user_id: userId, orders }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/orders/payments/clear-due`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId, orders }),
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -32,6 +29,7 @@ const useClearDueAmount = () => {
       return true;
     } catch (error) {
       toast.error("Error clearing due amount", { position: "top-center" });
+      return false;
     } finally {
       setLoading(false);
     }
