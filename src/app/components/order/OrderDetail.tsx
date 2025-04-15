@@ -72,7 +72,6 @@ const OrderDetails: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dueDTModelIsOpen, setDueDTModelIsOpen] = useState<boolean>(false);
-  const [allowNext, setAllowNext] = useState<boolean>(false);
 
   useEffect(() => {
     fetchOrder(order_id);
@@ -335,10 +334,9 @@ const OrderDetails: React.FC = () => {
       order.payment_status as unknown as keyof typeof PaymentStatus
     ];
 
-  const handlePrintLabel = () => {
-    toast("Under Construction...");
-    // const url = order?.order_label?.fileUrl;
-    // window.open(url, "_blank");
+  const handlePrintLabel = (index: number) => {
+    const url = order?.order_label[index];
+    window.open(url, "_blank");
   };
 
   const handleViewRefundReceipt = () => {
@@ -380,7 +378,10 @@ const OrderDetails: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl relative">
-        <span className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full">
+        <span
+          className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full"
+          style={{ display: "none" }}
+        >
           {order.order_status}
         </span>
         <div className="flex flex-col gap-4 p-5 rounded-md shadow-md">
@@ -430,8 +431,7 @@ const OrderDetails: React.FC = () => {
 
               {((order?.order_status > 0 && order?.order_status < 7) ||
                 order?.order_status === 9 ||
-                order?.order_status === 10 ||
-                order?.order_status === 11) &&
+                order?.order_status === 10) &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
@@ -617,22 +617,13 @@ const OrderDetails: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex flex-end" style={{ display: "none" }}>
-                <button
-                  className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
-                  onClick={handlePrintLabel}
-                >
-                  <RiFilePaperLine size={20} color="gray" />{" "}
-                  <p className="text-gray-700">Print Label</p>
-                </button>
-              </div>
             </div>
 
             <div className="flex flex-wrap">
               <div className="card-body p-0 ml-4">
                 <div className="scrollable-y-hover pe-4 pb-4 max-h-[400px] mb-4">
                   <div className="space-y-4">
-                    {order.items.map((item: any) => (
+                    {order.items.map((item: any, index) => (
                       <div
                         key={item.item_id}
                         className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
@@ -661,9 +652,8 @@ const OrderDetails: React.FC = () => {
                             <div>
                               <button
                                 className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
-                                onClick={handlePrintLabel}
+                                onClick={() => handlePrintLabel(index)}
                               >
-                                {/* <RiFilePaperLine size={16} color="gray" />{" "} */}
                                 <p className="text-gray-700">Print Label</p>
                               </button>
                             </div>
@@ -938,6 +928,23 @@ const OrderDetails: React.FC = () => {
                         </p>
                       </div>
                     )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {order.delivery_boy && (
+            <div className="card rounded-xl">
+              <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="card-title">Delivery Boy Information</h3>
+                    </div>
+                    <div className="text-2sm font-medium text-gray-700">
+                      {order.delivery_boy?.delivery_boy_name}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -229,8 +229,7 @@ const CustomerLogsTable: React.FC = () => {
                             {dayjs(created_at).format("DD-MM-YYYY, hh:mm A")}
                           </div>
                         </td>
-                        {/* <td>{login_id % 2 === 0 ? "Mobile" : "WebSite"}</td> */}
-                        <td>{!type ? "WebSite" : "Mobile"}</td>
+                        <td>{type === "null" ? "WebSite" : "Mobile"}</td>
                       </tr>
                     );
                   })}

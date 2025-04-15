@@ -16,6 +16,7 @@ interface Order {
   workshop_status_name: string;
   branch: any;
   pickup_boy: any;
+  delivery_boy: any;
   order_status_name: string;
   notes: any;
   address_details: string;
