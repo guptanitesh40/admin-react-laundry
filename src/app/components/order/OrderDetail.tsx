@@ -378,7 +378,10 @@ const OrderDetails: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl relative">
-        <span className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full">
+        <span
+          className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full"
+          style={{ display: "none" }}
+        >
           {order.order_status}
         </span>
         <div className="flex flex-col gap-4 p-5 rounded-md shadow-md">

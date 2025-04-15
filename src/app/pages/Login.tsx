@@ -7,8 +7,8 @@ import toast from "react-hot-toast";
 import useLogin from "../hooks/login/useLogin";
 import * as Yup from "yup";
 
-const device_type = "sasas";
-const device_token = "sdlknoin";
+const device_type = "";
+const device_token = "";
 
 const validationSchema = Yup.object({
   username: Yup.string()
