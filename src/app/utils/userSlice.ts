@@ -10,6 +10,7 @@ export interface UserState {
   gender: boolean | null;
   role_id: number | null;
   image: string | any;
+  user_branch: number[];
 }
 
 const initialState: UserState = {
@@ -21,7 +22,8 @@ const initialState: UserState = {
   role: "",
   gender: null,
   role_id: null,
-  image : "",
+  image: "",
+  user_branch: [],
 };
 
 const userSlice = createSlice({

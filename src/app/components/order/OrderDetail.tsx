@@ -39,10 +39,12 @@ const schema = Yup.object().shape({
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const order_id = Number(id);
+  console.log("Order id : ", order_id);
 
   const userId = useSelector((state: RootState) => state.user.user_id);
 
   const { order, fetchOrder, loading: fetchingData } = useGetOrder();
+  console.log("order : ", order);
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
@@ -623,54 +625,62 @@ const OrderDetails: React.FC = () => {
               <div className="card-body p-0 ml-4">
                 <div className="scrollable-y-hover pe-4 pb-4 max-h-[400px] mb-4">
                   <div className="space-y-4">
-                    {order.items.map((item: any, index) => (
-                      <div
-                        key={item.item_id}
-                        className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
-                      >
-                        <div className="flex items-center flex-wrap gap-x-10 gap-y-2 justify-between xmobile:flex-col">
-                          <div className="flex items-center gap-3.5 xmobile:flex-col">
-                            <img
-                              alt={item.product.name}
-                              className="w-16 h-16 shrink-0 object-cover rounded"
-                              src={item.product.image}
-                            />
-                            <div className="flex flex-col ">
-                              <span className="text-sm font-semibold text-gray-900 mb-px xmobile:ml-8">
-                                {item.product.name} ({item.quantity})
-                              </span>
-                              <span className="text-2sm font-medium text-gray-600">
-                                Category: {item.category.name}
-                              </span>
+                    {order.items.length > 0 ? (
+                      order.items.map((item: any, index) => (
+                        <div
+                          key={item.item_id}
+                          className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
+                        >
+                          <div className="flex items-center flex-wrap gap-x-4 gap-y-2 justify-between xmobile:flex-col">
+                            <div className="flex items-center gap-3.5 xmobile:flex-col">
+                              <img
+                                alt={item.product.name}
+                                className="w-16 h-16 shrink-0 object-cover rounded"
+                                src={item.product.image}
+                              />
+                              <div className="flex flex-col ">
+                                <span className="text-sm font-semibold text-gray-900 mb-px xmobile:ml-8">
+                                  {item.product.name} ({item.quantity})
+                                </span>
+                                <span className="text-2sm font-medium text-gray-600">
+                                  Category: {item.category.name}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center flex-row gap-2">
+                              <div className="badge badge-sm flex gap-1 badge-success badge-outline text-xs">
+                                <span className="mobile:hidden">
+                                  Service :{" "}
+                                </span>
+                                <span>{item.service.name}</span>
+                              </div>
+                              <div>
+                                <button
+                                  className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
+                                  onClick={() => handlePrintLabel(index)}
+                                >
+                                  <p className="text-gray-700">Print Label</p>
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex items-center flex-row gap-2">
-                            <div className="badge badge-sm flex gap-1 badge-success badge-outline text-xs">
-                              <span className="mobile:hidden">Service : </span>
-                              <span>{item.service.name}</span>
+                          {item.description && (
+                            <div className="mt-2 p-3 bg-gray-100 rounded-md">
+                              <p className="text-sm text-gray-600">
+                                <span className="text-sm font-medium text-gray-600">
+                                  Description :
+                                </span>{" "}
+                                {item.description}
+                              </p>
                             </div>
-                            <div>
-                              <button
-                                className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
-                                onClick={() => handlePrintLabel(index)}
-                              >
-                                <p className="text-gray-700">Print Label</p>
-                              </button>
-                            </div>
-                          </div>
+                          )}
                         </div>
-                        {item.description && (
-                          <div className="mt-2 p-3 bg-gray-100 rounded-md">
-                            <p className="text-sm text-gray-600">
-                              <span className="text-sm font-medium text-gray-600">
-                                Description :
-                              </span>{" "}
-                              {item.description}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-sm font-semibold text-gray-900 mb-px xmobile:ml-8">
+                        No item found for this order
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -733,7 +743,7 @@ const OrderDetails: React.FC = () => {
                       </tr>
                     )}
 
-                    {order.express_delivery_hour && (
+                    {order.express_delivery_hour ? (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Express Delivery Hours:
@@ -742,6 +752,8 @@ const OrderDetails: React.FC = () => {
                           {order.express_delivery_hour} Hours
                         </td>
                       </tr>
+                    ) : (
+                      ""
                     )}
 
                     {order.kasar_amount !== 0 && (

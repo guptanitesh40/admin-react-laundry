@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
   useAddOrder,
@@ -24,6 +25,8 @@ import useGetValidCoupon from "../../hooks/coupon/useGetValidCoupons";
 import { RiShareForwardFill } from "react-icons/ri";
 import useGetUser from "../../hooks/user/useGetuser";
 import LoadingSpinner from "../shimmer/LoadingSpinner";
+import { useSelector } from "react-redux";
+import useFetchSettings from "../../hooks/settings/useGetSetting";
 
 interface item {
   category_id: number;
@@ -90,6 +93,7 @@ const OrderForm: React.FC = () => {
   const { userData, fetchUser } = useGetUser();
   const { generatePaymentLink, loading: sendingLink } =
     useGeneratePaymentLink();
+  const { settings, loading: loadingSetting } = useFetchSettings();
   const user = userData?.user;
   const location = useLocation();
   const prevUrl = location?.state?.prevUrl || "/orders";
@@ -100,6 +104,8 @@ const OrderForm: React.FC = () => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [focusOn, setFocusOn] = useState<boolean>(false);
   const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
+
+  const currentUserData = useSelector((store) => store?.user);
 
   const navigate = useNavigate();
 
@@ -203,16 +209,33 @@ const OrderForm: React.FC = () => {
 
   useEffect(() => {
     if (branches && branches.length) {
-      setFormData((prev) => ({
-        ...prev,
-        branch_id: branches[0].branch_id,
-      }));
+      if (currentUserData?.user_branch?.length) {
+        const branchDetail = branches.find(
+          (branch) => branch.branch_id === currentUserData.user_branch[0]
+        );
+        if (!branchDetail) {
+          toast("This branch manager has no brancher");
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            branch_id: branchDetail.branch_id,
+          }));
+        }
+        console.log(branchDetail, branchDetail);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          branch_id: branches[0].branch_id,
+        }));
+      }
     }
   }, [branches]);
 
   useEffect(() => {
-    if (address && address.length > 0) {
-      const defaultAddress = address.find((add) => add.is_default);
+    if (address?.length) {
+      const defaultAddress =
+        address.find((add) => add.is_default) || address[0];
+
       setFormData((prev) => ({
         ...prev,
         address_id: defaultAddress ? defaultAddress.address_id : null,
@@ -266,6 +289,7 @@ const OrderForm: React.FC = () => {
         coupon_code: order.coupon_code || "",
         coupon_discount: order.coupon_discount || null,
         express_delivery_charges: order.express_delivery_charges || null,
+        express_delivery_hour: order.express_delivery_hour || null,
         normal_delivery_charges: order.normal_delivery_charges || null,
         payment_type: order.payment_type || null,
         payment_status: order.payment_status || null,
@@ -405,6 +429,9 @@ const OrderForm: React.FC = () => {
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") {
+      setFormData((prev) => ({ ...prev, address_id: null }));
+    }
     setUserSearch(e.target.value);
     setIsSearchMode(true);
   };
@@ -426,26 +453,6 @@ const OrderForm: React.FC = () => {
   };
 
   const handleAddItem = () => {
-    // setFormData((prev) => {
-    //   const lastItem = prev.items[prev.items.length - 1] || {
-    //     category_id: null,
-    //     product_id: null,
-    //     product_name: "",
-    //     service_id: null,
-    //     service_name: "",
-    //     description: null,
-    //     price: null,
-    //     quantity: 1,
-    //     item_Total: null,
-    //     showDescription: false,
-    //   };
-
-    //   return {
-    //     ...prev,
-    //     items: [...prev.items, { ...lastItem }],
-    //   };
-    // });
-
     setFormData((prev) => ({
       ...prev,
       items: [
@@ -605,17 +612,18 @@ const OrderForm: React.FC = () => {
     }
 
     if (formData.express_delivery_hour) {
-      toast("yes...");
-      setFormData((prev) => {
-        let percentage = 0;
-        if (formData.express_delivery_hour === 24) {
-          percentage = 0.5;
-        } else if (formData.express_delivery_hour === 48) {
-          percentage = 0.25;
-        } else if (formData.express_delivery_hour === 72) {
-          percentage = 0.1;
-        }
+      toast("case happen..");
 
+      const deliveryKey = `express_delivery_${formData.express_delivery_hour}hrs`;
+      const percentageString = settings[deliveryKey];
+      const percentage = Number(percentageString) / 100;
+
+      if (isNaN(percentage)) {
+        toast.error("Invalid delivery charge percentage!");
+        return;
+      }
+
+      setFormData((prev) => {
         const expressDeliveryCharges = Math.floor(prev.sub_total * percentage);
 
         return {
@@ -728,58 +736,101 @@ const OrderForm: React.FC = () => {
   };
 
   const countItems = () => {
-    return formData?.items[0].item_Total > 0 ? formData.items.length : 0;
+    const firstItemTotal = formData?.items?.[0]?.item_Total;
+    return typeof firstItemTotal === "number" && firstItemTotal > 0
+      ? formData.items.length
+      : 0;
   };
 
   const countQty = () => {
-    return formData?.items[0].item_Total > 0
-      ? formData?.items.reduce((acc, item) => (acc += Number(item.quantity)), 0)
+    const firstItemTotal = Number(formData?.items?.[0]?.item_Total);
+
+    return firstItemTotal > 0
+      ? formData?.items?.reduce(
+          (acc, item) => acc + Number(item.quantity || 0),
+          0
+        )
       : 0;
   };
 
   const handleDeliveryTimeChange = (value: number) => {
-    if (formData.normal_delivery_charges) {
-      setFormData((prev) => ({
-        ...prev,
-        normal_delivery_charges: null,
-      }));
-    }
-
-    if (!value) {
-      setFormData((prev) => ({
-        ...prev,
-        express_delivery_hour: null,
-        express_delivery_charges: null,
-        normal_delivery_charges: null,
-      }));
+    if (!formData.sub_total) {
+      toast.error("Please add items first");
       return;
     }
 
-    let percentage = 0;
-    if (value === 24) {
-      percentage = 0.5;
-    } else if (value === 48) {
-      percentage = 0.25;
-    } else if (value === 72) {
-      percentage = 0.1;
+    if (settings && !loadingSetting) {
+      if (formData.normal_delivery_charges) {
+        setFormData((prev) => ({
+          ...prev,
+          normal_delivery_charges: null,
+        }));
+      }
+
+      if (!value) {
+        setFormData((prev) => ({
+          ...prev,
+          express_delivery_hour: null,
+          express_delivery_charges: null,
+          normal_delivery_charges: null,
+        }));
+        return;
+      }
+
+      const deliveryKey = `express_delivery_${value}hrs`;
+      const percentageString = settings[deliveryKey];
+      const percentage = Number(percentageString) / 100;
+
+      if (isNaN(percentage)) {
+        toast.error("Invalid delivery charge percentage!");
+        return;
+      }
+
+      const expressDeliveryCharges = Math.floor(
+        formData.sub_total * percentage
+      );
+
+      console.log("expressDeliveryCharges", expressDeliveryCharges);
+
+      setFormData((prev) => ({
+        ...prev,
+        express_delivery_hour: value,
+        express_delivery_charges: expressDeliveryCharges,
+        total: prev.sub_total + expressDeliveryCharges,
+      }));
+    } else {
+      toast("Settings data not found!");
     }
-
-    const expressDeliveryCharges = Math.floor(formData.sub_total * percentage);
-
-    setFormData((prev) => ({
-      ...prev,
-      express_delivery_hour: value,
-      express_delivery_charges: expressDeliveryCharges,
-      total: prev.sub_total + expressDeliveryCharges,
-    }));
   };
 
-  // useEffect(() => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     total: prev.sub_total + ,
-  //   }));
-  // }, [formData.coupon_discount]);
+  useEffect(() => {
+    if (
+      formData.express_delivery_hour &&
+      settings &&
+      !loadingSetting &&
+      formData.sub_total > 0
+    ) {
+      const deliveryKey = `express_delivery_${formData.express_delivery_hour}hrs`;
+      const percentageString = settings[deliveryKey];
+      const percentage = Number(percentageString) / 100;
+
+      if (!isNaN(percentage)) {
+        const expressDeliveryCharges = Math.floor(
+          formData.sub_total * percentage
+        );
+
+        setFormData((prev) => ({
+          ...prev,
+          express_delivery_charges: expressDeliveryCharges,
+          total: prev.sub_total + expressDeliveryCharges,
+        }));
+      }
+    }
+  }, [formData.sub_total]);
+
+  useEffect(() => {
+    console.log("FormData : ", formData);
+  }, [formData]);
 
   return (
     <div className="container-fixed">
@@ -877,7 +928,7 @@ const OrderForm: React.FC = () => {
                     users.map((user: any) => (
                       <li
                         key={user.user_id}
-                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        className="p-2 hover:bg-gray-200 cursor-pointer rounded"
                         onClick={() => handleUserClick(user)}
                       >
                         {user.first_name} {user.last_name} ({user.mobile_number}
@@ -947,9 +998,9 @@ const OrderForm: React.FC = () => {
 
           {formData.items.map((item, index) => {
             return (
-              <>
+              <React.Fragment key={index}>
                 <div className="border border-gray-200 rounded-xl mt-4 p-4 space-y-2">
-                  <div key={index}>
+                  <div>
                     <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(35px,0.75fr)_minmax(35px,0.5fr)] gap-x-5 gap-y-3">
                       <div>
                         <label
@@ -1263,7 +1314,7 @@ const OrderForm: React.FC = () => {
                     </div> */}
                   </div>
                 </div>
-              </>
+              </React.Fragment>
             );
           })}
 
