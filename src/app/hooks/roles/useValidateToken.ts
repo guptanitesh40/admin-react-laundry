@@ -6,6 +6,7 @@ import { BASE_URL } from "../../utils/constant";
 import { login, logout } from "../../utils/authSlice";
 import { addUser } from "../../utils/userSlice";
 import useGetUserPermissions from "./useGetUserPermissions";
+import { ClockFading } from "lucide-react";
 
 const useValidateToken = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,10 @@ const useValidateToken = () => {
         const permissions = await fetchUserPermissions(storedToken);
         const user = data?.data?.user || {};
 
+        const userBranches = user?.userBranchMappings?.length
+          ? user?.userBranchMappings.map((item: any) => item.branch_id)
+          : [];
+
         dispatch(
           addUser({
             user_id: user.user_id ?? null,
@@ -48,6 +53,7 @@ const useValidateToken = () => {
             gender: user.gender ?? null,
             role_id: user.role_id ?? null,
             image: user.image ?? "",
+            user_branch: userBranches,
           })
         );
 
