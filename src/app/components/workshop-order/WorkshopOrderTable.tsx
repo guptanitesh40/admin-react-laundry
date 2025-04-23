@@ -267,6 +267,22 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
+                  <th className="min-w-[105px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("total")}
+                    >
+                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
                   <th className="min-w-[280px]">Current Status</th>
 
                   <th className="min-w-[280px]">Next Status</th>
@@ -337,22 +353,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[105px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("total")}
-                    >
-                      <span className="sort-label">Total Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[165px]">Payment type</th>
 
                   <th className="min-w-[50px]">Action</th>
@@ -396,6 +396,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         <td>
                           {order.user.first_name} {order.user.last_name}
                         </td>
+                        <td>{order.total}</td>
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -449,7 +450,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                             <br />
                           </div>
                         </td>
-                        <td>{order.total}</td>
                         <td>
                           {
                             PaymentType[

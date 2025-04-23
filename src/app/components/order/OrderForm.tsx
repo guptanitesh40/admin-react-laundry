@@ -61,6 +61,7 @@ interface FormData {
   total: number;
   branch_id: number;
   order_status: number | null;
+  gstin: string;
 }
 
 const OrderForm: React.FC = () => {
@@ -115,7 +116,7 @@ const OrderForm: React.FC = () => {
     express_delivery_charges: null,
     express_delivery_hour: null,
     normal_delivery_charges: null,
-    delivery_by: 1,
+    delivery_by: 2,
     payment_type: 1,
     payment_status: null,
     sub_total: 0,
@@ -142,6 +143,7 @@ const OrderForm: React.FC = () => {
     total: 0,
     branch_id: null,
     order_status: null,
+    gstin: "",
   });
 
   const [retrivedData, setRetrivedData] = useState<FormData>({
@@ -177,6 +179,7 @@ const OrderForm: React.FC = () => {
     total: 0,
     branch_id: null,
     order_status: null,
+    gstin: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -221,7 +224,6 @@ const OrderForm: React.FC = () => {
             branch_id: branchDetail.branch_id,
           }));
         }
-        console.log(branchDetail, branchDetail);
       } else {
         setFormData((prev) => ({
           ...prev,
@@ -327,6 +329,8 @@ const OrderForm: React.FC = () => {
           (order.normal_delivery_charges || 0),
         branch_id: order.branch_id,
         order_status: order.order_status,
+        gstin: order.gstin,
+        delivery_by: order.delivery_by,
       };
 
       setFormData(initialFormData);
@@ -612,8 +616,6 @@ const OrderForm: React.FC = () => {
     }
 
     if (formData.express_delivery_hour) {
-      toast("case happen..");
-
       const deliveryKey = `express_delivery_${formData.express_delivery_hour}hrs`;
       const percentageString = settings[deliveryKey];
       const percentage = Number(percentageString) / 100;
@@ -789,9 +791,6 @@ const OrderForm: React.FC = () => {
       const expressDeliveryCharges = Math.floor(
         formData.sub_total * percentage
       );
-
-      console.log("expressDeliveryCharges", expressDeliveryCharges);
-
       setFormData((prev) => ({
         ...prev,
         express_delivery_hour: value,
@@ -828,10 +827,6 @@ const OrderForm: React.FC = () => {
     }
   }, [formData.sub_total]);
 
-  useEffect(() => {
-    console.log("FormData : ", formData);
-  }, [formData]);
-
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -850,7 +845,7 @@ const OrderForm: React.FC = () => {
           )}
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 mt-4">
             <div className="col-span-1">
               <label
                 htmlFor="branch"
@@ -886,7 +881,33 @@ const OrderForm: React.FC = () => {
                 {errors.branch_id || "\u00A0"}
               </p>
             </div>
-            <div></div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="delivery_by"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                Delivery By
+              </label>
+              <select
+                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                id="delivery_by"
+                value={formData.delivery_by || ""}
+                onChange={(e) => {
+                  setFormData({
+                    ...formData,
+                    delivery_by: Number(e.target.value),
+                  });
+                }}
+              >
+                <option value="" disabled>
+                  Select Delivery By
+                </option>
+                <option value={1}>Home</option>
+                <option value={2}>Shop</option>
+              </select>
+              {/* <p className="w-full text-red-500 text-sm">{error.message || "\u00A0"}</p> */}
+            </div>
+
             <div className="relative col-span-1">
               <span className="flex justify-between items-center">
                 <label
@@ -1029,14 +1050,35 @@ const OrderForm: React.FC = () => {
                               <option>Loading...</option>
                             </>
                           ) : categories.length > 0 ? (
-                            categories.map((cat) => (
-                              <option
-                                key={cat.category_id}
-                                value={cat.category_id}
-                              >
-                                {cat.name}
-                              </option>
-                            ))
+                            categories
+                              .sort((a, b) => {
+                                const priorityOrder = [
+                                  "men",
+                                  "women",
+                                  "kids",
+                                  "household",
+                                ];
+                                const aIndex = priorityOrder.indexOf(
+                                  a.name.toLowerCase()
+                                );
+                                const bIndex = priorityOrder.indexOf(
+                                  b.name.toLowerCase()
+                                );
+                                return (
+                                  (aIndex === -1 ? Infinity : aIndex) -
+                                  (bIndex === -1 ? Infinity : bIndex)
+                                );
+                              })
+                              .map((cat) => {
+                                return (
+                                  <option
+                                    key={cat.category_id}
+                                    value={cat.category_id}
+                                  >
+                                    {cat.name}
+                                  </option>
+                                );
+                              })
                           ) : (
                             <option>No Category Available</option>
                           )}
@@ -1182,8 +1224,9 @@ const OrderForm: React.FC = () => {
                         >
                           Quantity
                         </label>
-                        <input
-                          type="text"
+                        {/* <input
+                          // type="text"
+                          type="number"
                           id="quantity"
                           autoComplete="off"
                           value={item.quantity ?? 1}
@@ -1191,7 +1234,50 @@ const OrderForm: React.FC = () => {
                             handleItemChange(index, "quantity", e.target.value)
                           }
                           className="input border border-gray-300 rounded-md p-2 w-full"
-                        />
+                        /> */}
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="quantity"
+                            autoComplete="off"
+                            value={item.quantity ?? 1}
+                            onChange={(e) =>
+                              handleItemChange(
+                                index,
+                                "quantity",
+                                Number(e.target.value)
+                              )
+                            }
+                            className="w-full p-2 text-sm focus:outline-none input text-center"
+                          />
+                          <button
+                            type="button"
+                            className="absolute top-1/2 left-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition"
+                            onClick={() =>
+                              handleItemChange(
+                                index,
+                                "quantity",
+                                Math.max(1, (item.quantity ?? 1) - 1)
+                              )
+                            }
+                          >
+                            <i className="ki-filled ki-minus text-gray-600 text-base" />
+                          </button>
+
+                          <button
+                            type="button"
+                            className="absolute top-1/2 right-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition"
+                            onClick={() =>
+                              handleItemChange(
+                                index,
+                                "quantity",
+                                (item.quantity ?? 1) + 1
+                              )
+                            }
+                          >
+                            <i className="ki-filled ki-plus text-gray-500 text-base" />
+                          </button>
+                        </div>
                       </div>
 
                       <div>
@@ -1239,25 +1325,30 @@ const OrderForm: React.FC = () => {
                           />
                         </div>
                       </div>
-                      <div className="flex justify-center items-center">
-                        <button
-                          type="button"
-                          className={`p-2 rounded-full ${
-                            formData.items.length > 1
-                              ? "bg-red-100 hover:bg-red-200"
-                              : "bg-gray-200 cursor-not-allowed"
-                          }`}
-                          onClick={() => handleRemoveItem(index)}
-                          disabled={formData.items.length === 1}
-                        >
-                          <FaTrash
-                            className={`${
+                      <div className="flex flex-col items-center">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          &nbsp;
+                        </label>
+                        <div className="grow flex justify-center items-center">
+                          <button
+                            type="button"
+                            className={`p-2 rounded-full ${
                               formData.items.length > 1
-                                ? "text-red-500"
-                                : "text-gray-400"
+                                ? "bg-red-100 hover:bg-red-200"
+                                : "bg-gray-200 cursor-not-allowed"
                             }`}
-                          />
-                        </button>
+                            onClick={() => handleRemoveItem(index)}
+                            disabled={formData.items.length === 1}
+                          >
+                            <FaTrash
+                              className={`${
+                                formData.items.length > 1
+                                  ? "text-red-500"
+                                  : "text-gray-400"
+                              }`}
+                            />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1289,29 +1380,6 @@ const OrderForm: React.FC = () => {
                         </div>
                       )}
                     </div>
-
-                    {/* <div className="flex block-element flex-end smmobile:justify-self-end justify-end relative">
-                      <div>
-                        <button
-                          type="button"
-                          className={`p-2 rounded-full ${
-                            formData.items.length > 1
-                              ? "bg-red-100 hover:bg-red-200"
-                              : "bg-gray-200 cursor-not-allowed"
-                          }`}
-                          onClick={() => handleRemoveItem(index)}
-                          disabled={formData.items.length === 1}
-                        >
-                          <FaTrash
-                            className={`${
-                              formData.items.length > 1
-                                ? "text-red-500"
-                                : "text-gray-400"
-                            }`}
-                          />
-                        </button>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </React.Fragment>
@@ -1322,7 +1390,7 @@ const OrderForm: React.FC = () => {
             <button
               type="button"
               onClick={handleAddItem}
-              className="btn btn-secondary mb-6 mt-4"
+              className="btn btn-primary mb-6 mt-4"
             >
               Add Item
             </button>
@@ -1425,34 +1493,7 @@ const OrderForm: React.FC = () => {
               />
             </div>
 
-            <div className="col-span-2 grid grid-cols-4 gap-6">
-              <div className="flex flex-col">
-                <label
-                  htmlFor="delivery_by"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Delivery By
-                </label>
-                <select
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  id="delivery_by"
-                  value={formData.delivery_by || ""}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      delivery_by: Number(e.target.value),
-                    });
-                  }}
-                >
-                  <option value="" disabled>
-                    Select Delivery By
-                  </option>
-                  <option value={1}>Home</option>
-                  <option value={2}>Shop</option>
-                </select>
-                {/* <p className="w-full text-red-500 text-sm">{error.message || "\u00A0"}</p> */}
-              </div>
-
+            <div className="col-span-2 grid grid-cols-3 gap-6">
               <div className="flex flex-col">
                 <label
                   htmlFor="exp_delivery_time"
@@ -1680,6 +1721,28 @@ const OrderForm: React.FC = () => {
                   })
                 }
                 className="input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="gstin"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                GST Number
+              </label>
+              <input
+                type="text"
+                id="gstin"
+                autoComplete="off"
+                value={formData.gstin}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    gstin: e.target.value,
+                  })
+                }
+                className="uppercase input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
               />
             </div>
 

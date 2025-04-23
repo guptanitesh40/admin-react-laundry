@@ -88,7 +88,7 @@ const CustomerRatingReport: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <h2 className="text-2xl text-gray-700 font-bold">
-                {averageRating.toFixed(2)}
+                {isNaN(averageRating) ? "0.00" : averageRating.toFixed(2)}
               </h2>
               <p className="text-base font-semibold text-gray-700">
                 ─ of {totolRating} reviews
