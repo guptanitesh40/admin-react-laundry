@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import usePayDue from "../../hooks/due/useReviewDue";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   first_name: string;
@@ -44,6 +45,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const navigate = useNavigate();
   const { payDue, loading } = usePayDue();
   const [formData, setFormData] = useState<OrderFormData[]>([]);
   const [errors, setErrors] = useState<{ [key: number]: string }>({});
@@ -81,7 +83,23 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
       prev.map((order) => {
         if (order.order_id !== orderId) return order;
 
-        const updatedOrder = { ...order, [field]: value };
+        const updatedOrder = { ...order };
+
+        if (field === "kasar_amount") {
+          const maxKasar = order.total - order.paid_amount;
+          const clampedKasar = Math.min(value, maxKasar - 1);
+
+          if (order.current_paid === 0) {
+            updatedOrder.kasar_amount = clampedKasar;
+          } else {
+            updatedOrder.kasar_amount = clampedKasar;
+            const newCurrentPaid =
+              order.total - (order.paid_amount + clampedKasar);
+            updatedOrder.current_paid = Math.max(newCurrentPaid, 0);
+          }
+        } else {
+          updatedOrder[field] = value;
+        }
 
         const totalPaid =
           updatedOrder.current_paid +
@@ -117,23 +135,28 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
   useEffect(() => {
     if (orders.length > 0) {
       setFormData(
-        orders.map((order) => ({
-          user: order.user,
-          user_id: order.user_id,
-          order_id: order.order_id,
-          total: order.total,
-          paid_amount: order.paid_amount,
-          kasar_amount: order.kasar_amount,
-          current_paid: 0,
-          payment_status: order.payment_status,
-          total_items: order.items?.length || 0,
-          total_quantity:
-            order.items?.reduce(
-              (accumulator: number, currentValue: any) =>
-                accumulator + currentValue.quantity,
-              0
-            ) || "NULL",
-        }))
+        orders.map((order) => {
+          const remainingDue =
+            order.total - (order.paid_amount + order.kasar_amount);
+
+          return {
+            user: order.user,
+            user_id: order.user_id,
+            order_id: order.order_id,
+            total: order.total,
+            paid_amount: order.paid_amount,
+            kasar_amount: order.kasar_amount,
+            current_paid: remainingDue,
+            payment_status: 2,
+            total_items: order.items?.length || 0,
+            total_quantity:
+              order.items?.reduce(
+                (accumulator: number, currentValue: any) =>
+                  accumulator + currentValue.quantity,
+                0
+              ) || 0,
+          };
+        })
       );
     }
   }, [orders]);
@@ -162,6 +185,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
           {formData.map((order) => {
             const {
               order_id,
+              user_id,
               user,
               total,
               paid_amount,
@@ -183,7 +207,11 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                     >
                       #{order_id}
                     </a>
-                    <h4 className="text-gray-700 text-sm font-bold">{`${first_name} ${last_name} (${mobile_number})`}</h4>
+                    <a
+                      href={`/customer/${user_id}`}
+                      target="_blank"
+                      className="text-primary text-sm font-semibold cursor-pointer"
+                    >{`${first_name} ${last_name} (${mobile_number})`}</a>
                   </div>
 
                   <div className="flex flex-col gap-1">
@@ -237,9 +265,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                           type="text"
                           value={kasar_amount}
                           autoComplete="off"
-                          disabled={
-                            total === kasar_amount + paid_amount ? true : false
-                          }
+                          disabled={total === paid_amount + kasar_amount}
                           onChange={(e) =>
                             handleInputChange(
                               order_id,
@@ -262,11 +288,7 @@ const DueDetailsModel: React.FC<DueDetailsModelProps> = ({
                             type="text"
                             value={current_paid}
                             autoComplete="off"
-                            disabled={
-                              total === kasar_amount + paid_amount
-                                ? true
-                                : false
-                            }
+                            disabled={total === kasar_amount + paid_amount}
                             onChange={(e) =>
                               handleInputChange(
                                 order_id,

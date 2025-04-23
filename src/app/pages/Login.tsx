@@ -34,8 +34,8 @@ const validationSchema = Yup.object({
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
-    username: "admin@gmail.com",
-    password: "123456",
+    username: "",
+    password: "",
     userId: undefined as number | undefined,
   });
 

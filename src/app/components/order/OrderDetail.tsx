@@ -39,12 +39,10 @@ const schema = Yup.object().shape({
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const order_id = Number(id);
-  console.log("Order id : ", order_id);
 
   const userId = useSelector((state: RootState) => state.user.user_id);
 
   const { order, fetchOrder, loading: fetchingData } = useGetOrder();
-  console.log("order : ", order);
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
@@ -262,11 +260,7 @@ const OrderDetails: React.FC = () => {
         await handleStatusChange(10);
         break;
       case "Delivered":
-        if (order.payment_status === 1 || order.payment_status === 3) {
-          setDueDTModelIsOpen(true);
-        } else {
-          await handleStatusChange(11);
-        }
+        setDueDTModelIsOpen(true);
         break;
       case "Assign Workshop":
       case "Assign Branch":
@@ -283,12 +277,6 @@ const OrderDetails: React.FC = () => {
 
   const handleStatusClick = async () => {
     await handleOrderTableStatus();
-  };
-
-  const getOrderStatus = () => {
-    return location.state?.from === "OrderTable"
-      ? order?.order_status_details.next_step
-      : order?.workshop_status_name;
   };
 
   const handleEditOrder = () => {
@@ -341,6 +329,11 @@ const OrderDetails: React.FC = () => {
     window.open(url, "_blank");
   };
 
+  const handlePrintGeneralLabel = () => {
+    const url = order?.general_order_label;
+    window.open(url, "_blank");
+  };
+
   const handleViewRefundReceipt = () => {
     const url = order?.refund_receipt_url?.fileUrl;
     window.open(url, "_blank");
@@ -351,30 +344,7 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleSpecialCase = async () => {
-    if (order.payment_status === 2) {
-      try {
-        const { isConfirmed } = await Swal.fire({
-          title: "Are you sure?",
-          html: `Want to change order status to <span style="color: #4e00ff; font-weight: 500;">Delivered</span> ?`,
-          showCancelButton: true,
-          confirmButtonColor: "#dc3545",
-          cancelButtonColor: "#6c757d",
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        });
-        if (isConfirmed) {
-          await updateAndFetchOrder(11);
-        }
-      } catch (error) {
-        Swal.fire({
-          title: "Error",
-          text: error.message,
-          icon: "error",
-        });
-      }
-    } else {
-      setDueDTModelIsOpen(true);
-    }
+    setDueDTModelIsOpen(true);
   };
 
   return (
@@ -455,34 +425,6 @@ const OrderDetails: React.FC = () => {
                     Cancel Order
                   </button>
                 )}
-
-              {/* {location?.state?.from !== "WorkshopOrderTable" &&
-                order?.order_status !== 11 &&
-                order.refund_status !== 1 &&
-                order?.order_status !== 12 &&
-                order?.order_status !== 13 &&
-                order?.order_id < 7 &&
-                hasPermission(3, "update") && (
-                  <button
-                    className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
-                    onClick={handleEditOrder}
-                  >
-                    <i className="ki-filled ki-pencil mr-2"></i>Edit Order
-                  </button>
-                )} */}
-
-              {/* {location?.state?.from !== "WorkshopOrderTable" &&
-                hasPermission(3, "update") &&
-                order?.order_status < 8 &&
-                order?.refund_status !== 1 && (
-                  <button
-                    className="flex items-center font-semibold btn-danger sm:btn smmobile:btn-sm smmobile:btn"
-                    onClick={handleOrderCancel}
-                  >
-                    <MdCancel size={20} />
-                    Cancel Order
-                  </button>
-                )} */}
 
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
@@ -618,6 +560,15 @@ const OrderDetails: React.FC = () => {
                     }, 0)}
                   </span>
                 </div>
+              </div>
+
+              <div className="flex flex-end">
+                <button
+                  className="flex items-center btn-light btn-sm sm:btn smmobile:btn-sm smmobile:btn"
+                  onClick={handlePrintGeneralLabel}
+                >
+                  <p className="text-gray-700">Print General Label</p>
+                </button>
               </div>
             </div>
 
@@ -1046,6 +997,14 @@ const OrderDetails: React.FC = () => {
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
                           {order.transaction_id || "N/A"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                          GSTIN :
+                        </td>
+                        <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                          {order.gstin || "N/A"}
                         </td>
                       </tr>
                     </tbody>
