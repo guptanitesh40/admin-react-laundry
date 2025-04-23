@@ -510,6 +510,22 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
+                  <th className="min-w-[135px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("total")}
+                    >
+                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
                   <th className="min-w-[280px]">Current Status</th>
 
                   <th className="min-w-[280px]">Next Status</th>
@@ -562,22 +578,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[135px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("total")}
-                    >
-                      <span className="sort-label">Total Amount</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
                   <th className="min-w-[165px]">Payment type</th>
 
                   {(hasPermission(3, "read") ||
@@ -605,7 +605,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                     return (
                       <tr key={order.order_id}>
-                        <th>
+                        <td>
                           <label className="flex items-center justify-center">
                             <input
                               className="checkbox"
@@ -617,7 +617,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                               onChange={() => handleCheckboxChange(order)}
                             />
                           </label>
-                        </th>
+                        </td>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order.order_id}`)}
@@ -630,6 +630,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                         <td>
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
+
+                        <td>{order.total}</td>
 
                         <td>
                           <span
@@ -676,7 +678,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             <br />
                           </div>
                         </td>
-                        <td>{order.total}</td>
                         <td>
                           {
                             PaymentType[
@@ -826,19 +827,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
           }}
         />
       )}
-
-      {/* {dueDTModelIsOpen && (
-        <DueDetailsModel
-          orders={[order]}
-          onClose={() => setDueDTModelIsOpen(false)}
-          onSuccess={(value) => {
-            if (value) {
-              setDueDTModelIsOpen(false);
-              fetchOrder(order_id);
-            }
-          }}
-        />
-      )} */}
     </>
   );
 };

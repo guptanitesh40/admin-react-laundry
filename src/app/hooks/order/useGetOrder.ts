@@ -46,6 +46,9 @@ interface Order {
   total: number;
   normal_delivery_charges: number;
   branch_id: number;
+  general_order_label: string;
+  gstin: string;
+  delivery_by: number;
 }
 
 const useGetOrder = () => {

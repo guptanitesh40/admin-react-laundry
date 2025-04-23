@@ -322,6 +322,22 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
+                  <th className="min-w-[135px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("total")}
+                    >
+                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
                   <th className="min-w-[280px]">Current Status</th>
 
                   <th className="min-w-[150px]">
@@ -368,22 +384,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       onClick={() => handleSort("estimated_delivery_time")}
                     >
                       <span className="sort-label">Delivery Date</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
-
-                  <th className="min-w-[135px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "total"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("total")}
-                    >
-                      <span className="sort-label">Total Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -435,6 +435,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
 
+                        <td>{order.total}</td>
+
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -465,7 +467,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             <br />
                           </div>
                         </td>
-                        <td>{order.total}</td>
                         <td>
                           {
                             PaymentType[

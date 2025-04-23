@@ -4,7 +4,6 @@ import { Link, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
 import { MdOutlineHistory } from "react-icons/md";
-import toast from "react-hot-toast";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -64,29 +63,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       setIsOpen(false);
     }
   }, [location, setIsOpen]);
-
-  // useEffect(() => {
-  //   const userRoutes = ["/users", "/roles"];
-  //   const subOrderRoutes = [
-  //     "/order/add",
-  //     "/orders",
-  //     "/pickup-orders",
-  //     "/delivered-orders",
-  //     "/confirmed-orders",
-  //     "/workshop-order",
-  //     "/redy-to-deliver",
-  //   ];
-
-  //   console.log(location.pathname);
-
-  //   if (location.pathname.split("/")[1] === "order") {
-  //     setIsOrderMenuOpen(true);
-  //   } else {
-  //     setIsOrderMenuOpen(subOrderRoutes.includes(location.pathname));
-  //   }
-
-  //   setIsUserMenuOpen(userRoutes.includes(location.pathname));
-  // }, [location.pathname]);
 
   useEffect(() => {
     const userRoutes = ["/users", "/roles"];
