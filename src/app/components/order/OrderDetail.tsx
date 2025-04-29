@@ -999,7 +999,7 @@ const OrderDetails: React.FC = () => {
                           {order.transaction_id || "N/A"}
                         </td>
                       </tr>
-                      <tr>
+                      <tr style={{ display: "none" }}>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           GSTIN :
                         </td>
@@ -1013,6 +1013,40 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {order.gst_company_name && order.gstin && (
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">GST Information</h3>
+                </div>
+                <div className="card-body pt-4 pb-3">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            GSTIN :
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.gstin || "N/A"}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Customer Company Name :
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.gst_company_name || "N/A"}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

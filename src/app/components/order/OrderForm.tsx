@@ -8,6 +8,7 @@ import {
   useGetAddress,
   useGetBranches,
   useGetCategories,
+  useGetCompanies,
   useGetOrder,
   useGetPrice,
   useGetProductsOnId,
@@ -27,6 +28,7 @@ import useGetUser from "../../hooks/user/useGetuser";
 import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { useSelector } from "react-redux";
 import useFetchSettings from "../../hooks/settings/useGetSetting";
+import Loading from "../shimmer/Loading";
 
 interface item {
   category_id: number;
@@ -61,7 +63,9 @@ interface FormData {
   total: number;
   branch_id: number;
   order_status: number | null;
+  company_id: number | null;
   gstin: string;
+  gst_company_name: string;
 }
 
 const OrderForm: React.FC = () => {
@@ -80,6 +84,12 @@ const OrderForm: React.FC = () => {
   const perPage = 1000;
   const pageNumber = 1;
 
+  const { companies, loading: loadingCompanies } = useGetCompanies(
+    pageNumber,
+    perPage
+  );
+  const [haveGstIn, setHaveGstIn] = useState<boolean>(false);
+
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [userModalIsOpen, setUserModalIsOpen] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
@@ -87,8 +97,11 @@ const OrderForm: React.FC = () => {
   const { users, fetchUsersByRole } = useGetUsersByRole();
   const { validCoupons, fetchValidCoupons } = useGetValidCoupon();
 
-  const { branches } = useGetBranches(pageNumber, perPage);
-  const { order, fetchOrder } = useGetOrder();
+  const { branches, loading: loadingBranches } = useGetBranches(
+    pageNumber,
+    perPage
+  );
+  const { order, loading: loadingOrder, fetchOrder } = useGetOrder();
   const { address, fetchAddress } = useGetAddress();
   const { applyCoupon } = useApplyCoupon();
   const { userData, fetchUser } = useGetUser();
@@ -143,7 +156,9 @@ const OrderForm: React.FC = () => {
     total: 0,
     branch_id: null,
     order_status: null,
+    company_id: null,
     gstin: "",
+    gst_company_name: "",
   });
 
   const [retrivedData, setRetrivedData] = useState<FormData>({
@@ -179,7 +194,9 @@ const OrderForm: React.FC = () => {
     total: 0,
     branch_id: null,
     order_status: null,
+    company_id: null,
     gstin: "",
+    gst_company_name: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -209,29 +226,6 @@ const OrderForm: React.FC = () => {
     };
     fetchData();
   }, [order_id]);
-
-  useEffect(() => {
-    if (branches && branches.length) {
-      if (currentUserData?.user_branch?.length) {
-        const branchDetail = branches.find(
-          (branch) => branch.branch_id === currentUserData.user_branch[0]
-        );
-        if (!branchDetail) {
-          toast("This branch manager has no brancher");
-        } else {
-          setFormData((prev) => ({
-            ...prev,
-            branch_id: branchDetail.branch_id,
-          }));
-        }
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          branch_id: branches[0].branch_id,
-        }));
-      }
-    }
-  }, [branches]);
 
   useEffect(() => {
     if (address?.length) {
@@ -329,12 +323,17 @@ const OrderForm: React.FC = () => {
           (order.normal_delivery_charges || 0),
         branch_id: order.branch_id,
         order_status: order.order_status,
-        gstin: order.gstin,
         delivery_by: order.delivery_by,
+        company_id: order.company_id,
+        gstin: order.gstin,
+        gst_company_name: order.gst_company_name,
       };
 
       setFormData(initialFormData);
       setRetrivedData(initialFormData);
+      if (order.gst_company_name && order.gstin) {
+        setHaveGstIn(true);
+      }
     }
   }, [order]);
 
@@ -387,6 +386,9 @@ const OrderForm: React.FC = () => {
         payment_status: Number(formData.payment_status),
         order_status: !!order_id ? formData.order_status : 4,
         items: formattedItems,
+        company_id: formData.company_id,
+        gstin: formData.gstin,
+        gst_company_name: formData.gst_company_name,
       };
 
       const total = formData.total;
@@ -827,6 +829,52 @@ const OrderForm: React.FC = () => {
     }
   }, [formData.sub_total]);
 
+  useEffect(() => {
+    if (!id && branches?.length && currentUserData && !loadingBranches) {
+      const userBranchIds = currentUserData.user_branch || [];
+
+      if (userBranchIds.length) {
+        const branchDetail = branches.find(
+          (branch) => branch.branch_id === userBranchIds[0]
+        );
+
+        if (branchDetail) {
+          setFormData((prev) => ({
+            ...prev,
+            branch_id: branchDetail.branch_id,
+          }));
+        } else {
+          toast("This branch manager has no valid branch");
+        }
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          branch_id: branches[0].branch_id,
+        }));
+      }
+    }
+  }, [id, branches, currentUserData]);
+
+  useEffect(() => {
+    if (!loadingCompanies && companies.length > 0 && !id) {
+    
+      const defaultOption = companies.find(
+        (company) => company.gst_percentage === 6
+      );
+
+      if (defaultOption) {
+        setFormData({
+          ...formData,
+          company_id: defaultOption.company_id,
+        });
+      }
+    }
+  }, [companies]);
+
+  if (loadingOrder && id) {
+    return <Loading />;
+  }
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
@@ -845,67 +893,113 @@ const OrderForm: React.FC = () => {
           )}
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 mt-4">
-            <div className="col-span-1">
-              <label
-                htmlFor="branch"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Branch
-              </label>
-              <select
-                id="branch"
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                value={formData.branch_id || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    branch_id: e.target.value ? Number(e.target.value) : null,
-                  })
-                }
-              >
-                <option value="" disabled>
-                  Select Branch
-                </option>
-                {branches.length > 0 ? (
-                  branches.map((branch) => (
-                    <option key={branch.branch_id} value={branch.branch_id}>
-                      {branch.branch_name}
-                    </option>
-                  ))
-                ) : (
-                  <option>No Data Available</option>
-                )}
-              </select>
-              <p className="w-full text-red-500 text-sm">
-                {errors.branch_id || "\u00A0"}
-              </p>
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="delivery_by"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
-                Delivery By
-              </label>
-              <select
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                id="delivery_by"
-                value={formData.delivery_by || ""}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    delivery_by: Number(e.target.value),
-                  });
-                }}
-              >
-                <option value="" disabled>
-                  Select Delivery By
-                </option>
-                <option value={1}>Home</option>
-                <option value={2}>Shop</option>
-              </select>
-              {/* <p className="w-full text-red-500 text-sm">{error.message || "\u00A0"}</p> */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-6 mt-4">
+            <div className="col-span-2 grid grid-cols-3 gap-x-6 items-start">
+              <div>
+                <label
+                  htmlFor="branch"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Branch
+                </label>
+                <select
+                  id="branch"
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  value={formData.branch_id || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      branch_id: e.target.value ? Number(e.target.value) : null,
+                    })
+                  }
+                >
+                  <option value="" disabled>
+                    Select Branch
+                  </option>
+                  {branches.length > 0 ? (
+                    branches.map((branch) => (
+                      <option key={branch.branch_id} value={branch.branch_id}>
+                        {branch.branch_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No Data Available</option>
+                  )}
+                </select>
+                <p className="w-full text-red-500 text-sm">
+                  {errors.branch_id || "\u00A0"}
+                </p>
+              </div>
+
+              <div className="flex flex-col">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="company_id"
+                >
+                  Company
+                </label>
+                <select
+                  id="company_id"
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  value={formData.company_id || ""}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      company_id: e.target.value
+                        ? Number(e.target.value)
+                        : null,
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Company
+                  </option>
+                  {loadingCompanies ? (
+                    <option>loading...</option>
+                  ) : companies.length > 0 ? (
+                    companies.map((company) => (
+                      <option
+                        key={company.company_id}
+                        value={company.company_id}
+                      >
+                        {`${company.company_name} (${company.gst_percentage}%)`}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No Data available</option>
+                  )}
+                </select>
+                <p className="text-red-500 text-sm">
+                  {errors.company_id || "\u00A0"}
+                </p>
+              </div>
+
+              <div className="flex flex-col">
+                <label
+                  htmlFor="delivery_by"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Delivery By
+                </label>
+                <select
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  id="delivery_by"
+                  value={formData.delivery_by || ""}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      delivery_by: Number(e.target.value),
+                    });
+                  }}
+                >
+                  <option value="" disabled>
+                    Select Delivery By
+                  </option>
+                  <option value={1}>Home</option>
+                  <option value={2}>Shop</option>
+                </select>
+                {/* <p className="w-full text-red-500 text-sm">{error.message || "\u00A0"}</p> */}
+              </div>
             </div>
 
             <div className="relative col-span-1">
@@ -1724,27 +1818,77 @@ const OrderForm: React.FC = () => {
               />
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-center items-start">
               <label
-                htmlFor="gstin"
+                htmlFor="have_gst_cb"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
-                GST Number
+                Do you have GSTIN ?
               </label>
               <input
-                type="text"
-                id="gstin"
-                autoComplete="off"
-                value={formData.gstin}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    gstin: e.target.value,
-                  })
-                }
-                className="uppercase input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+                className="checkbox"
+                id="have_gst_cb"
+                name="check"
+                type="checkbox"
+                checked={haveGstIn}
+                onChange={(e) => {
+                  setHaveGstIn(e.target.checked);
+                }}
               />
             </div>
+
+            {haveGstIn && (
+              <>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="gstin"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    GSTIN
+                  </label>
+                  <input
+                    type="text"
+                    id="gstin"
+                    autoComplete="off"
+                    value={formData.gstin}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        gstin: e.target.value,
+                      })
+                    }
+                    className="uppercase input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+                  />
+                  <p className="w-full text-red-500 text-sm">
+                    {errors.gstin || "\u00A0"}
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="gst_company_name"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    id="gst_company_name"
+                    autoComplete="off"
+                    value={formData.gst_company_name}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        gst_company_name: e.target.value,
+                      })
+                    }
+                    className="input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+                  />
+                  <p className="w-full text-red-500 text-sm">
+                    {errors.gst_company_name || "\u00A0"}
+                  </p>
+                </div>
+              </>
+            )}
 
             {/* {!order_id && (
               <div className="flex flex-col">

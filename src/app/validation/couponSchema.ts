@@ -44,4 +44,8 @@ export const couponSchema = Yup.object().shape({
   coupon_type: Yup.number()
     .required("Please choose coupon type")
     .test("required", "Please choose coupon type", (value) => !!value),
+  min_cart_value: Yup.number()
+    .typeError("Please enter valid minimum cart value")
+    .required("Please enter minimum valid cart value requrie")
+    .min(1, "Please enter valid minimum cart value"),
 });

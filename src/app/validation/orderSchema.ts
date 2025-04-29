@@ -79,4 +79,23 @@ export const orderSchema = Yup.object().shape({
     .test("required", "Please select branch", (value) => !!value),
 
   items: Yup.array().of(itemSchema),
+
+  company_id: Yup.number()
+    .typeError("Company must be selected")
+    .required("Company is required"),
+
+  gstin: Yup.string()
+    .transform((value) => (value === "" ? null : value))
+    .nullable()
+    .matches(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      "Please enter a valid GSTIN"
+    ),
+
+  gst_company_name: Yup.string().when("gstin", {
+    is: (gstin: string | null) => !!gstin,
+    then: (schema) =>
+      schema.required("Company name is required when GSTIN is provided"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });

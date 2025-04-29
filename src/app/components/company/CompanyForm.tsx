@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAddCompany, useGetCompany, useUpdateCompany } from "../../hooks";
 import toast from "react-hot-toast";
@@ -8,6 +8,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import * as Yup from "yup";
 import { companySchema } from "../../validation/companySchema";
+import Loading from "../shimmer/Loading";
 
 const CompanyForm: React.FC = () => {
   const { addCompany, loading: adding } = useAddCompany();
@@ -16,7 +17,7 @@ const CompanyForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const company_id = Number(id);
 
-  const { company, fetchCompany } = useGetCompany();
+  const { company, fetchCompany, loading: loadingCompany } = useGetCompany();
 
   const navigate = useNavigate();
 
@@ -37,6 +38,9 @@ const CompanyForm: React.FC = () => {
     gstin: "",
     company_ownedby: null,
     contract_document: null,
+    gst_percentage: "",
+    hsn_sac_code: "",
+    signature_image: null,
   });
 
   const [initialFormData, setInitialFormData] = useState({
@@ -56,6 +60,9 @@ const CompanyForm: React.FC = () => {
     gstin: "",
     company_ownedby: null,
     contract_document: null,
+    gst_percentage: "",
+    hsn_sac_code: "",
+    signature_image: null,
   });
 
   const [errors, setErrors] = useState<any>({});
@@ -86,6 +93,9 @@ const CompanyForm: React.FC = () => {
         gstin: company.gstin,
         company_ownedby: company.company_ownedby,
         contract_document: company.contract_document,
+        gst_percentage: company.gst_percentage,
+        hsn_sac_code: company.hsn_sac_code,
+        signature_image: company.signature_image,
       };
 
       setFormData(fetchedData);
@@ -176,9 +186,23 @@ const CompanyForm: React.FC = () => {
     }
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
+    }
+  };
+
   const handleCancel = () => {
     navigate("/companies");
   };
+
+  if (loadingCompany && id) {
+    return <Loading />;
+  }
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
@@ -403,7 +427,7 @@ const CompanyForm: React.FC = () => {
               name="image"
               accept="image/*"
               onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2 mt-1"
+              className="input border border-gray-300 rounded-md p-2 mt-1 file:h-full"
             />
             <p className="text-red-500 text-sm">{errors.logo || "\u00A0"}</p>
           </div>
@@ -521,14 +545,76 @@ const CompanyForm: React.FC = () => {
                 id="contract_document"
                 name="contract_document"
                 accept=".pdf,.doc,.docx"
-                onChange={handleChange}
-                className="border border-gray-300 rounded-md p-2"
+                onChange={handleFileChange}
+                className="input border border-gray-300 rounded-md p-2 mt-1 file:h-full"
               />
               <p className="text-red-500 text-sm">
                 {errors.contract_document || "\u00A0"}
               </p>
             </div>
           )}
+
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="gst_percentage"
+            >
+              GST Percentage (%)
+            </label>
+            <input
+              type="text"
+              id="gst_percentage"
+              name="gst_percentage"
+              autoComplete="off"
+              value={formData.gst_percentage}
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.gst_percentage || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="hsn_sac_code"
+            >
+              HSN / SAC Code
+            </label>
+            <input
+              type="text"
+              id="hsn_sac_code"
+              name="hsn_sac_code"
+              autoComplete="off"
+              value={formData.hsn_sac_code}
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.hsn_sac_code || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="signature_image"
+            >
+              Authorized Signature Image
+            </label>
+            <input
+              type="file"
+              id="signature_image"
+              name="signature_image"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="input border border-gray-300 rounded-md p-2 mt-1 file:h-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.signature_image || "\u00A0"}
+            </p>
+          </div>
         </div>
 
         <div className="flex justify-start mt-6">
