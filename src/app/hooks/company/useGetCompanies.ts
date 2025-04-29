@@ -21,6 +21,7 @@ interface Company {
   gstin: string;
   company_ownedby: string;
   contract_document: FileList | null;
+  gst_percentage: number | null;
 }
 
 const useGetCompany = (

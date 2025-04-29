@@ -6,7 +6,9 @@ interface RegistrationDetailProps {
 }
 
 const RegistrationDetail: React.FC<RegistrationDetailProps> = ({ company }) => {
-  const formattedRegistrationDate = dayjs(company.registration_date).format("MM-DD-YYYY");
+  const formattedRegistrationDate = dayjs(company.registration_date).format(
+    "MM-DD-YYYY"
+  );
 
   return (
     <div className="col-span-1">
@@ -20,7 +22,9 @@ const RegistrationDetail: React.FC<RegistrationDetailProps> = ({ company }) => {
             <tbody>
               <tr>
                 <td className="py-2">Registration Number</td>
-                <td className="py-2 text-gray-700">{company.registration_number}</td>
+                <td className="py-2 text-gray-700">
+                  {company.registration_number}
+                </td>
               </tr>
               <tr>
                 <td className="py-2">Registration Date</td>
@@ -32,6 +36,20 @@ const RegistrationDetail: React.FC<RegistrationDetailProps> = ({ company }) => {
                 <td className="py-2">GSTIN</td>
                 <td className="py-2 text-gray-700">{company.gstin}</td>
               </tr>
+              <tr>
+                <td className="py-2">GST Percentage</td>
+                <td className="py-2 text-gray-700">{`${company.gst_percentage} %`}</td>
+              </tr>
+              {/* <tr>
+                <td className="py-2">Auth Sign Image</td>
+                <td className="py-2 text-gray-700">
+                  <img
+                    src={company.signature_image}
+                    alt={company.signature_image}
+                    className="inline-block h-8 w-auto border-[0.5px] border-black rounded"
+                  />
+                </td>
+              </tr> */}
             </tbody>
           </table>
         </div>

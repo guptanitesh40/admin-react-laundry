@@ -8,11 +8,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import * as Yup from "yup";
 import { couponSchema } from "../../validation/couponSchema";
+import Loading from "../shimmer/Loading";
 
 const CouponModal: React.FC = () => {
   const { addCoupon, loading: addingCoupon } = useAddCoupon();
   const { updateCoupon, loading: updatingCoupon } = useUpdateCoupon();
-  const { coupon, fetchCoupon } = useGetCoupon();
+  const { coupon, fetchCoupon, loading: loadingCoupon } = useGetCoupon();
 
   const { id } = useParams<{ id: string }>();
   const coupon_id = Number(id);
@@ -30,6 +31,7 @@ const CouponModal: React.FC = () => {
     maximum_usage_count_per_user: null,
     total_usage_count: null,
     coupon_type: null,
+    min_cart_value: null,
   });
 
   const [initialFormData, setInitialFormData] = useState({
@@ -43,6 +45,7 @@ const CouponModal: React.FC = () => {
     maximum_usage_count_per_user: null,
     total_usage_count: null,
     coupon_type: null,
+    min_cart_value: null,
   });
 
   const [errors, setErrors] = useState<any>({});
@@ -106,6 +109,7 @@ const CouponModal: React.FC = () => {
       total_usage_count: Number(formData.total_usage_count),
       start_time: formData.start_time.toISOString(),
       end_time: formData.end_time.toISOString(),
+      min_cart_value: Number(formData.min_cart_value),
     };
 
     try {
@@ -147,6 +151,10 @@ const CouponModal: React.FC = () => {
   };
 
   const isLoading = addingCoupon || updatingCoupon;
+
+  if (loadingCoupon && id) {
+    return <Loading />;
+  }
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
@@ -381,6 +389,31 @@ const CouponModal: React.FC = () => {
             </select>
             <p className="text-red-500 text-sm">
               {errors.coupon_type || "\u00A0"}
+            </p>
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="min_cart_value"
+            >
+              Minimum Cart Value
+            </label>
+            <input
+              type="text"
+              id="min_cart_value"
+              autoComplete="off"
+              value={formData.min_cart_value ?? ""}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  min_cart_value: e.target.value,
+                })
+              }
+              className="input border border-gray-300 rounded-md p-2 w-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.min_cart_value || "\u00A0"}
             </p>
           </div>
         </div>
