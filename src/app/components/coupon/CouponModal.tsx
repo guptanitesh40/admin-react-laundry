@@ -51,10 +51,10 @@ const CouponModal: React.FC = () => {
   const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
-    const fetchCompanyData = async () => {
+    const fetchCouponData = async () => {
       await fetchCoupon(coupon_id);
     };
-    fetchCompanyData();
+    fetchCouponData();
   }, [coupon_id]);
 
   useEffect(() => {
@@ -71,6 +71,7 @@ const CouponModal: React.FC = () => {
           coupon.maximum_usage_count_per_user.toString(),
         total_usage_count: coupon.total_usage_count.toString(),
         coupon_type: coupon.coupon_type.toString(),
+        min_cart_value: coupon.min_cart_value.toString(),
       };
 
       setFormData(fetchedData);

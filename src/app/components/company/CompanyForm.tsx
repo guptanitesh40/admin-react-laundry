@@ -40,6 +40,7 @@ const CompanyForm: React.FC = () => {
     contract_document: null,
     gst_percentage: "",
     hsn_sac_code: "",
+    msme_number: "",
     signature_image: null,
   });
 
@@ -62,6 +63,7 @@ const CompanyForm: React.FC = () => {
     contract_document: null,
     gst_percentage: "",
     hsn_sac_code: "",
+    msme_number: "",
     signature_image: null,
   });
 
@@ -95,6 +97,7 @@ const CompanyForm: React.FC = () => {
         contract_document: company.contract_document,
         gst_percentage: company.gst_percentage,
         hsn_sac_code: company.hsn_sac_code,
+        msme_number: company.msme_number,
         signature_image: company.signature_image,
       };
 
@@ -232,7 +235,6 @@ const CompanyForm: React.FC = () => {
               {errors.company_name || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -251,7 +253,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.address || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label className="block text-gray-700 font-semibold" htmlFor="city">
               City
@@ -267,7 +268,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.city || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -286,7 +286,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.state || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -307,7 +306,6 @@ const CompanyForm: React.FC = () => {
               {errors.zip_code || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -328,7 +326,6 @@ const CompanyForm: React.FC = () => {
               {errors.company_owner_name || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -349,7 +346,6 @@ const CompanyForm: React.FC = () => {
               {errors.phone_number || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -370,7 +366,6 @@ const CompanyForm: React.FC = () => {
               {errors.mobile_number || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -389,7 +384,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.email || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -408,7 +402,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.website || "\u00A0"}</p>
           </div>
-
           <div className="col-span-1">
             <div className="flex items-center gap-2">
               <label
@@ -431,7 +424,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.logo || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -452,7 +444,6 @@ const CompanyForm: React.FC = () => {
               {errors.registration_number || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -483,7 +474,6 @@ const CompanyForm: React.FC = () => {
               {errors.registration_date || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -502,7 +492,6 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">{errors.gstin || "\u00A0"}</p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -531,7 +520,6 @@ const CompanyForm: React.FC = () => {
               {errors.company_ownedby || "\u00A0"}
             </p>
           </div>
-
           {formData.company_ownedby === 2 && (
             <div className="flex flex-col">
               <label
@@ -553,7 +541,6 @@ const CompanyForm: React.FC = () => {
               </p>
             </div>
           )}
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -574,7 +561,6 @@ const CompanyForm: React.FC = () => {
               {errors.gst_percentage || "\u00A0"}
             </p>
           </div>
-
           <div className="flex flex-col">
             <label
               className="block text-gray-700 font-semibold"
@@ -593,6 +579,25 @@ const CompanyForm: React.FC = () => {
             />
             <p className="text-red-500 text-sm">
               {errors.hsn_sac_code || "\u00A0"}
+            </p>
+          </div>
+          <div className="flex flex-col">
+            <label
+              className="block text-gray-700 font-semibold"
+              htmlFor="msme_number"
+            >
+              MSME Number
+            </label>
+            <input
+              type="text"
+              id="msme_number"
+              name="msme_number"
+              value={formData.msme_number || ""}
+              onChange={handleChange}
+              className="input border border-gray-300 rounded-md p-2 mt-1 file:h-full"
+            />
+            <p className="text-red-500 text-sm">
+              {errors.msme_number || "\u00A0"}
             </p>
           </div>
 

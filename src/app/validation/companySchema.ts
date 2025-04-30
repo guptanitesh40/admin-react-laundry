@@ -157,6 +157,13 @@ export const companySchema = (isEdit: boolean = false) => {
         return true;
       }),
 
+    msme_number: Yup.string()
+      .trim()
+      .min(8, "MSME number must be at least 8 characters")
+      .max(20, "MSME number must be at most 20 characters")
+      .matches(/^[a-zA-Z0-9-]+$/, "MSME number must be alphanumeric")
+      .required("MSME number is required"),
+
     signature_image: Yup.mixed<FileValue>()
       .nullable()
       .test("required", "Auth signature image is required", (value) => {
@@ -171,24 +178,5 @@ export const companySchema = (isEdit: boolean = false) => {
         }
         return true;
       }),
-
-    // .test("dimensions", "Logo must be 92×92 pixels", (value) => {
-    //   if (!value || !(value instanceof File)) {
-    //     return true;
-    //   }
-    //   return new Promise((resolve) => {
-    //     const img = new Image();
-    //     img.src = URL.createObjectURL(value);
-
-    //     img.onload = () => {
-    //       URL.revokeObjectURL(img.src);
-    //       resolve(img.width === 92 && img.height === 92);
-    //     };
-
-    //     img.onerror = () => {
-    //       resolve(false);
-    //     };
-    //   });
-    // }),
   });
 };

@@ -23,6 +23,7 @@ interface Company {
   contract_document: FileList | null;
   gst_percentage: number | null;
   hsn_sac_code: string | null;
+  msme_number: string;
   signature_image: null;
 }
 

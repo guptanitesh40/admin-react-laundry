@@ -14,6 +14,7 @@ interface Coupon {
   coupon_type: number;
   maximum_usage_count_per_user: number;
   total_usage_count: number;
+  min_cart_value: number | null;
 }
 
 const useGetValidCoupons = () => {
@@ -25,7 +26,9 @@ const useGetValidCoupons = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/admin/valid-coupons?${user_id}`,{
+      const response = await fetch(
+        `${BASE_URL}/admin/valid-coupons?${user_id}`,
+        {
           method: "GET",
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
@@ -51,10 +54,9 @@ const useGetValidCoupons = () => {
 
   useEffect(() => {
     fetchValidCoupons();
-  },[])
+  }, []);
 
-  return { validCoupons, fetchValidCoupons, loading}
-
+  return { validCoupons, fetchValidCoupons, loading };
 };
 
 export default useGetValidCoupons;
