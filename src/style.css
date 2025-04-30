@@ -9964,3 +9964,15 @@ label.rating-label {
 .order-submenu-animation {
   transition: all 0.2s linear;
 }
+
+/* spining icon in reverse direction */
+
+@keyframes spin-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 1s linear infinite;
+}

@@ -7,9 +7,9 @@ const useAddCoupon = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const addCoupon = async (formData: any): Promise<boolean> => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (!token) {
-      toast.error('No authentication token found.', { position: 'top-center' });
+      toast.error("No authentication token found.", { position: "top-center" });
       return false;
     }
 
@@ -17,30 +17,28 @@ const useAddCoupon = () => {
 
     try {
       const response = await fetch(ADD_COUPON_URL, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }, 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
-        
+
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message, { position: "top-center" });
         return false;
       }
-     
+
       const data = await response.json();
-      toast.success(data.message, { position: 'top-center' });
+      toast.success(data.message, { position: "top-center" });
       return true;
-    
     } catch (error: any) {
-      toast.error(error?.message || 'Network error: Failed to fetch.', {
+      toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
       });
       return false;
-
     } finally {
       setLoading(false);
     }

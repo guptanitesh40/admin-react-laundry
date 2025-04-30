@@ -23,13 +23,6 @@ export const settingSchema = Yup.object().shape({
       }
     ),
 
-  gst_percentage: Yup.string()
-    .notRequired()
-    .test("is-numeric", "GST percentage must be a positive number", (value) => {
-      if (!value) return true;
-      return /^\d+$/.test(value);
-    }),
-
   estimate_delivery_normal_day: Yup.string()
     .notRequired()
     .test(

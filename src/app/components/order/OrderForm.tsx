@@ -600,12 +600,22 @@ const OrderForm: React.FC = () => {
 
   const handleDropdownChange = async (code: string) => {
     const newSubTotal = calculateItemTotal(formData);
+
+    if (!newSubTotal) {
+      toast.error("Please add items first to apply the coupon code.");
+      return;
+    }
+
     const couponData = await applyCoupon(formData.user_id, newSubTotal, code);
 
     const newTotal =
       Number(couponData.finalTotal || 0) +
       Number(formData.express_delivery_charges || 0) +
       Number(formData.normal_delivery_charges || 0);
+
+    if (!couponData) {
+      return;
+    }
 
     if (couponData) {
       setFormData((prev) => ({
@@ -774,6 +784,7 @@ const OrderForm: React.FC = () => {
       if (!value) {
         setFormData((prev) => ({
           ...prev,
+          total: prev.total - prev.express_delivery_charges,
           express_delivery_hour: null,
           express_delivery_charges: null,
           normal_delivery_charges: null,
@@ -857,7 +868,6 @@ const OrderForm: React.FC = () => {
 
   useEffect(() => {
     if (!loadingCompanies && companies.length > 0 && !id) {
-    
       const defaultOption = companies.find(
         (company) => company.gst_percentage === 6
       );
@@ -1519,11 +1529,16 @@ const OrderForm: React.FC = () => {
                   Select Coupon Code
                 </option>
                 {validCoupons && validCoupons.length > 0 ? (
-                  validCoupons.map((coupon) => (
-                    <option key={coupon.coupon_id} value={coupon.code}>
-                      {coupon.code}
-                    </option>
-                  ))
+                  validCoupons.map((coupon) => {
+                    return (
+                      <option key={coupon.coupon_id} value={coupon.code}>
+                        {coupon.code}{" "}
+                        {formData.coupon_code === coupon.code
+                          ? ""
+                          : `(min: ${coupon.min_cart_value || 0})`}
+                      </option>
+                    );
+                  })
                 ) : (
                   <option>No Coupons available</option>
                 )}

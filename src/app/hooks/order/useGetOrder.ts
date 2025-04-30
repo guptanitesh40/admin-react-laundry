@@ -51,6 +51,7 @@ interface Order {
   company_id: number | null;
   gstin: string;
   gst_company_name: string;
+  company: any;
 }
 
 const useGetOrder = () => {
