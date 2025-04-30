@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const ADD_COMPANY_URL = `${BASE_URL}/companies`;
@@ -8,7 +8,7 @@ const useAddCompany = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const addCompany = async (formData: any) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
@@ -25,26 +25,25 @@ const useAddCompany = () => {
       });
 
       const response = await fetch(ADD_COMPANY_URL, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formToSubmit,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message, { position: "top-center" });
 
         return false;
       }
 
       const data = await response.json();
-      toast.success(data.message, { position: 'top-center' });
+      toast.success(data.message, { position: "top-center" });
       return true;
-
     } catch (error: any) {
-      toast.error(error?.message || 'Network error: Failed to fetch.', {
+      toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
       });
       return false;

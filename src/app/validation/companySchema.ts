@@ -7,7 +7,6 @@ export const companySchema = (isEdit: boolean = false) => {
     company_name: Yup.string()
       .required("Company name is required")
       .test("required", "Company name is required", (value) => !!value),
-
     address: Yup.string()
       .required("Address is required")
       .test("required", "Address is required", (value) => !!value),
@@ -64,7 +63,7 @@ export const companySchema = (isEdit: boolean = false) => {
       .required("Email is required")
       .email("Enter a valid email")
       .test("required", "Email is required", (value) => !!value),
-      
+
     website: Yup.string()
       .nullable()
       .url("Please enter a valid website URL")
@@ -117,6 +116,19 @@ export const companySchema = (isEdit: boolean = false) => {
       .nullable()
       .test("required", "GSTIN is required", (value) => !!value),
 
+    gst_percentage: Yup.number()
+      .transform((value, originalValue) =>
+        originalValue === "" ? undefined : value
+      )
+      .min(0, "GST Percentage cannot be less than 0")
+      .max(100, "GST Percentage cannot be more than 100")
+      .typeError("GST Percentage must be a number")
+      .required("GST Percentage is required"),
+
+    hsn_sac_code: Yup.string()
+      .matches(/^\d+$/, "HSN/SAC Code must contain only digits")
+      .required("HSN/SAC Code is required"),
+
     company_ownedby: Yup.string()
       .nullable()
       .test("required", "Company Owned By is required", (value) => {
@@ -141,6 +153,28 @@ export const companySchema = (isEdit: boolean = false) => {
         if (!value) return true;
         if (value instanceof File) {
           return ["application/pdf"].includes(value.type);
+        }
+        return true;
+      }),
+
+    msme_number: Yup.string()
+      .trim()
+      .min(8, "MSME number must be at least 8 characters")
+      .max(20, "MSME number must be at most 20 characters")
+      .matches(/^[a-zA-Z0-9-]+$/, "MSME number must be alphanumeric")
+      .required("MSME number is required"),
+
+    signature_image: Yup.mixed<FileValue>()
+      .nullable()
+      .test("required", "Auth signature image is required", (value) => {
+        if (!isEdit) {
+          return !!value;
+        }
+        return true;
+      })
+      .test("fileType", "Allowed Format : jpg, jpeg, png, ", (value) => {
+        if (value && value instanceof File) {
+          return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
         }
         return true;
       }),

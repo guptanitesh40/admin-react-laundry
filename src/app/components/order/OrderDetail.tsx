@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums";
 import useGetOrder from "../../hooks/order/useGetOrder";
-import { BiImageAlt } from "react-icons/bi";
+import { BiImageAlt, BiRefresh } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
 import {
@@ -18,7 +18,6 @@ import Swal from "sweetalert2";
 import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
-import LoadingSpinner from "../shimmer/LoadingSpinner";
 import OrderCalcelModal from "./OrderCancelModal";
 import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
@@ -31,6 +30,8 @@ import { RootState } from "../../utils/store";
 import Loading from "../shimmer/Loading";
 import PickUpBoyModelEd2 from "./PickUpBoyModelEd2";
 import DueDetailsModel from "./DueDetailsModel";
+import { GiRegeneration } from "react-icons/gi";
+import useReGenerateInvoice from "../../hooks/invoice/useRegenerateInvoice";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -47,6 +48,7 @@ const OrderDetails: React.FC = () => {
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
   const { generateInvoice, loading: generating } = useGenerateInvoice();
+  const { reGenerateInvoice, loading: reGenerating } = useReGenerateInvoice();
   const { hasPermission } = usePermissions();
 
   const [formData, setFormData] = useState({
@@ -347,6 +349,10 @@ const OrderDetails: React.FC = () => {
     setDueDTModelIsOpen(true);
   };
 
+  const handleRegenerateClick = () => {
+    reGenerateInvoice(order.order_id);
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl relative">
@@ -384,22 +390,33 @@ const OrderDetails: React.FC = () => {
                 </button>
               )}
 
-              {order?.order_status === 11 && (
-                <button
-                  className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn"
-                  onClick={handleGenerateInvoice}
-                  disabled={generating}
-                >
-                  <RiFilePaper2Fill size={20} color="gray" />
-                  {generating ? (
-                    <>
-                      View Invoice <LoadingSpinner />
-                    </>
-                  ) : (
-                    "View Invoice"
-                  )}
-                </button>
-              )}
+              <button
+                className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn text-gray-700"
+                onClick={handleGenerateInvoice}
+                disabled={generating}
+              >
+                {generating ? (
+                  <span className="inline-block h-5 w-5 border-3 border-black/10 border-t-primary animate-spin rounded-full"></span>
+                ) : (
+                  <RiFilePaper2Fill className="h-5 w-5" />
+                )}
+                View Invoice
+              </button>
+
+              <button
+                className="flex items-center btn-light sm:btn smmobile:btn-sm smmobile:btn text-gray-700"
+                onClick={handleRegenerateClick}
+                disabled={reGenerating}
+              >
+                {reGenerating ? (
+                  <span className="inline-block h-6 w-6 p-0.5">
+                    <span className="inline-block h-full w-full border-3 border-black/10 border-t-primary animate-spin rounded-full"></span>
+                  </span>
+                ) : (
+                  <BiRefresh className="h-6 w-6" />
+                )}
+                Refresh Invoice
+              </button>
 
               {((order?.order_status > 0 && order?.order_status < 7) ||
                 order?.order_status === 9 ||
@@ -754,6 +771,40 @@ const OrderDetails: React.FC = () => {
             </div>
           </div>
 
+          {order.gst_company_name && order.gstin && (
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">GST Information</h3>
+                </div>
+                <div className="card-body pt-4 pb-3">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            GSTIN :
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.gstin || "N/A"}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Customer Company Name :
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.gst_company_name || "N/A"}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="card grow">
             <div className="card-header">
               <h3 className="card-title">Estimated Delivery & Pickup</h3>
@@ -830,6 +881,54 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {order.company && Object.keys(order.company).length > 0 && (
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">Company Information</h3>
+                </div>
+                <div className="card-body pt-4 pb-2">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Company Name:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.company.company_name}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Email:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            {order.company.email}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                            Phone Number:
+                          </td>
+                          <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                            <span>{order.company.mobile_number}</span>
+                            {order?.company?.phone_number && (
+                              <>
+                                <span>|</span>
+                                <span>{order.company.phone_number}</span>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {order.branch && (
             <div className="col-span-2 lg:col-span-1 flex">
@@ -999,7 +1098,7 @@ const OrderDetails: React.FC = () => {
                           {order.transaction_id || "N/A"}
                         </td>
                       </tr>
-                      <tr>
+                      <tr style={{ display: "none" }}>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           GSTIN :
                         </td>

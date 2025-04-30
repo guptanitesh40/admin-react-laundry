@@ -2,18 +2,19 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 interface Coupon {
-    coupon_id: number;
-    code: string;
-    discount_value: number;
-    discount_type: number;
-    start_time: string;
-    end_time: string;
-    title: string;
-    description: string;
-    coupon_type: number;
-    maximum_usage_count_per_user: number;
-    total_usage_count: number;
-  }
+  coupon_id: number;
+  code: string;
+  discount_value: number;
+  discount_type: number;
+  start_time: string;
+  end_time: string;
+  title: string;
+  description: string;
+  coupon_type: number;
+  maximum_usage_count_per_user: number;
+  total_usage_count: number;
+  min_cart_value: number | null;
+}
 
 const useGetCoupon = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,7 +27,9 @@ const useGetCoupon = () => {
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_COUPON_URL = `${ import.meta.env.VITE_BASE_URL}/admin/coupon/${coupon_id}`;
+    const GET_COUPON_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/admin/coupon/${coupon_id}`;
 
     setLoading(true);
 

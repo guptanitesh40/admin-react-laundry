@@ -19,7 +19,6 @@ const GeneralSettings: React.FC = ({}) => {
     estimate_delivery_normal_day: "",
     estimate_pickup_express_hour: "",
     estimate_pickup_normal_hour: "",
-    gst_percentage: "",
     normal_delivery_charges: "",
     express_delivery_charge: "",
     express_delivery_24hrs: "",
@@ -43,7 +42,6 @@ const GeneralSettings: React.FC = ({}) => {
           generalSettings.estimate_pickup_express_hour || "",
         estimate_pickup_normal_hour:
           generalSettings.estimate_pickup_normal_hour || "",
-        gst_percentage: generalSettings.gst_percentage || "",
         normal_delivery_charges: generalSettings.normal_delivery_charges || "",
         express_delivery_charge: generalSettings.express_delivery_charge || "",
         express_delivery_24hrs: generalSettings.express_delivery_24hrs || "",
@@ -200,37 +198,6 @@ const GeneralSettings: React.FC = ({}) => {
                     />
                     <p className="text-red-500 text-sm">
                       {errors.estimate_pickup_express_hour || "\u00A0"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full">
-                <div className="flex items-baseline flex-wrap lg:flex-nowrap gap-2.5">
-                  <label
-                    className="form-label flex items-center gap-1 max-w-56"
-                    htmlFor="gst_percentage"
-                  >
-                    GST Percentage (%)
-                  </label>
-                  <div className="flex flex-col w-full">
-                    <input
-                      className={`input ${
-                        !hasPermission(2, "update")
-                          ? "border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
-                          : ""
-                      }`}
-                      type="text"
-                      id="gst_percentage"
-                      autoComplete="off"
-                      value={formData.gst_percentage}
-                      onChange={(e) =>
-                        handleItemChange("gst_percentage", e.target.value)
-                      }
-                      readOnly={!hasPermission(2, "update")}
-                    />
-                    <p className="text-red-500 text-sm">
-                      {errors.gst_percentage || "\u00A0"}
                     </p>
                   </div>
                 </div>

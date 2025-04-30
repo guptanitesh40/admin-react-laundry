@@ -21,6 +21,10 @@ interface Company {
   gstin: string;
   company_ownedby: number;
   contract_document: FileList | null;
+  gst_percentage: number | null;
+  hsn_sac_code: string | null;
+  msme_number: string;
+  signature_image: null;
 }
 
 const useGetCompany = () => {
@@ -34,7 +38,9 @@ const useGetCompany = () => {
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_COMPANY_URL = `${import.meta.env.VITE_BASE_URL}/companies/${company_id}`;
+    const GET_COMPANY_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/companies/${company_id}`;
 
     setLoading(true);
 
