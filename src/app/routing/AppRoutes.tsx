@@ -15,7 +15,7 @@ const AppRoutes: React.FC = () => {
   );
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/admin">
       <Routes>
         <Route element={<App />}>
           {isAuthenticated ? (
