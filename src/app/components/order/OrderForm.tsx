@@ -29,6 +29,7 @@ import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { useSelector } from "react-redux";
 import useFetchSettings from "../../hooks/settings/useGetSetting";
 import Loading from "../shimmer/Loading";
+import useGetPrices02 from "../../hooks/price/useGetPrices02";
 
 interface item {
   category_id: number;
@@ -69,7 +70,7 @@ interface FormData {
 }
 
 const OrderForm: React.FC = () => {
-  const { prices } = useGetPrice();
+  const { prices, loading: loadingPrices } = useGetPrice();
   const { categories, loading: fetchingCategories } = useGetCategories();
   const { fetchProductsOnId, loading: fetchingProducs } = useGetProductsOnId();
   const { fetchServicesOnId, loading: fetchingServices } = useGetServicesOnId();
@@ -118,6 +119,8 @@ const OrderForm: React.FC = () => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [focusOn, setFocusOn] = useState<boolean>(false);
   const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
+
+  const { fetchPrices02 } = useGetPrices02();
 
   const currentUserData = useSelector((store) => store?.user);
 
@@ -881,7 +884,134 @@ const OrderForm: React.FC = () => {
     }
   }, [companies]);
 
+  const initializeDefaultCombination = async () => {
+    const priorityOrder = ["men", "women", "kids", "household"];
+
+    const defaultCategory = [...categories].sort((a, b) => {
+      const aIndex = priorityOrder.indexOf(a.name.toLowerCase());
+      const bIndex = priorityOrder.indexOf(b.name.toLowerCase());
+      return (
+        (aIndex === -1 ? Infinity : aIndex) -
+        (bIndex === -1 ? Infinity : bIndex)
+      );
+    })[0];
+
+    if (!defaultCategory) return;
+
+    const categoryId = defaultCategory.category_id;
+
+    setFormData((prev) => {
+      const updatedItems = [...prev.items];
+      updatedItems[0] = {
+        ...updatedItems[0],
+        category_id: categoryId,
+      };
+
+      return {
+        ...prev,
+        items: updatedItems,
+      };
+    });
+
+    let products = productCache[categoryId];
+    if (!products) {
+      products = await fetchProductsOnId(categoryId);
+      setProductCache((prev) => ({ ...prev, [categoryId]: products }));
+    }
+
+    const defaultProduct =
+      products.find((prod) => prod.product_name.toLowerCase() === "shirt") ||
+      products?.[0];
+
+    if (!defaultProduct) return;
+
+    const productId = defaultProduct.product_product_id;
+
+    setFormData((prev) => {
+      const updatedItems = [...prev.items];
+      updatedItems[0] = {
+        ...updatedItems[0],
+        product_id: productId,
+      };
+
+      return {
+        ...prev,
+        items: updatedItems,
+      };
+    });
+
+    const cacheKey = `${categoryId}_${productId}`;
+    let services = serviceCache[cacheKey];
+
+    if (!services) {
+      services = await fetchServicesOnId(categoryId, productId);
+      setServiceCache((prev) => ({ ...prev, [cacheKey]: services }));
+    }
+
+    const defaultService =
+      services.find(
+        (service: any) => service.service_name.toLowerCase() === "washing"
+      ) || services?.[0];
+
+
+    if (!defaultService) return;
+
+    const serviceId = defaultService.service_service_id;
+
+    setFormData((prev) => {
+      const updatedItems = [...prev.items];
+      updatedItems[0] = {
+        ...updatedItems[0],
+        service_id: serviceId,
+      };
+
+      return {
+        ...prev,
+        items: updatedItems,
+      };
+    });
+
+    const pricesData = await fetchPrices02();
+
+    const price = pricesData[`${categoryId}_${productId}_${serviceId}`];
+    const quantity = Number(formData.items[0]?.quantity || 1);
+
+    setFormData((prev) => {
+      const updatedItems = [...prev.items];
+      updatedItems[0] = {
+        ...updatedItems[0],
+        price,
+        item_Total: price * quantity,
+      };
+
+      const newFormData = { ...prev, items: updatedItems };
+      const newSubTotal = calculateItemTotal(newFormData);
+      const updatedSubTotal = newSubTotal - prev.coupon_discount;
+
+      const newTotal =
+        updatedSubTotal +
+        Number(prev.express_delivery_charges || 0) +
+        Number(prev.normal_delivery_charges || 0);
+
+      return { ...newFormData, sub_total: updatedSubTotal, total: newTotal };
+    });
+  };
+
+  useEffect(() => {
+    if (
+      location.pathname === "/order/add" &&
+      categories?.length &&
+      !fetchingCategories
+    ) {
+      initializeDefaultCombination();
+    }
+  }, [categories]);
+
   if (loadingOrder && id) {
+    return <Loading />;
+  }
+
+  if (loadingPrices) {
     return <Loading />;
   }
 
@@ -1091,7 +1221,6 @@ const OrderForm: React.FC = () => {
               <select
                 id="address"
                 value={formData.address_id ?? ""}
-                defaultValue={""}
                 onChange={handleAddressChange}
                 className="select border border-gray-300 rounded-md w-full text-sm"
               >
@@ -1328,17 +1457,6 @@ const OrderForm: React.FC = () => {
                         >
                           Quantity
                         </label>
-                        {/* <input
-                          // type="text"
-                          type="number"
-                          id="quantity"
-                          autoComplete="off"
-                          value={item.quantity ?? 1}
-                          onChange={(e) =>
-                            handleItemChange(index, "quantity", e.target.value)
-                          }
-                          className="input border border-gray-300 rounded-md p-2 w-full"
-                        /> */}
                         <div className="relative">
                           <input
                             type="text"
