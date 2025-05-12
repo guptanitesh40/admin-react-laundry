@@ -22,7 +22,9 @@ const useGetWorkShop = () => {
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_WORKSHOP_URL = `${import.meta.env.VITE_BASE_URL}/workshops/${workshop_id}`;
+    const GET_WORKSHOP_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/workshops/${workshop_id}`;
 
     setLoading(true);
 
@@ -50,7 +52,7 @@ const useGetWorkShop = () => {
       setLoading(false);
     }
   };
-  return { workshop, loading, fetchWorkshop }
+  return { workshop, loading, fetchWorkshop };
 };
 
 export default useGetWorkShop;

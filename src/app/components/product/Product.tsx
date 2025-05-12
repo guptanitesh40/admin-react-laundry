@@ -39,7 +39,6 @@ const Product: React.FC = () => {
               </button>
             </div>
           )}
-
         </div>
       </div>
 
@@ -55,12 +54,14 @@ const Product: React.FC = () => {
         </div>
       </div>
 
-      <ProductModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        product_id={currentProduct}
-      />
+      {modalIsOpen && (
+        <ProductModal
+          setIsSubmit={setIsSubmit}
+          isOpen={modalIsOpen}
+          onClose={() => setModalIsOpen(false)}
+          product_id={currentProduct}
+        />
+      )}
     </>
   );
 };

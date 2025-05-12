@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import useAddPriceContent from "../../hooks/price-content/useAddPriceContent";
 import toast from "react-hot-toast";
 import { priceSchema } from "../../validation/priceSchema";
+import ModelLoadingTag from "../shimmer/ModelLoadingTag";
 
 interface PriceContentModalProps {
   isOpen: boolean;
@@ -30,7 +31,11 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
   setIsSubmit,
 }) => {
   const { services } = useGetServices(1, 1000);
-  const { priceContent, fetchPriceContent } = useGetPriceContent();
+  const {
+    priceContent,
+    fetchPriceContent,
+    loading: loadingPriceContent,
+  } = useGetPriceContent();
   const { addPriceContent, loading: adding } = useAddPriceContent();
   const { updatePriceContent, loading: updating } = useUpdatePriceContent();
 
@@ -131,6 +136,9 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-[480px] ban:w-[85%] z-10 relative">
+        {price_content_id && loadingPriceContent && isOpen && (
+          <ModelLoadingTag />
+        )}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"

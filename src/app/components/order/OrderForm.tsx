@@ -953,7 +953,6 @@ const OrderForm: React.FC = () => {
         (service: any) => service.service_name.toLowerCase() === "washing"
       ) || services?.[0];
 
-
     if (!defaultService) return;
 
     const serviceId = defaultService.service_service_id;
@@ -1035,42 +1034,6 @@ const OrderForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-6 mt-4">
             <div className="col-span-2 grid grid-cols-3 gap-x-6 items-start">
-              <div>
-                <label
-                  htmlFor="branch"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Branch
-                </label>
-                <select
-                  id="branch"
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  value={formData.branch_id || ""}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      branch_id: e.target.value ? Number(e.target.value) : null,
-                    })
-                  }
-                >
-                  <option value="" disabled>
-                    Select Branch
-                  </option>
-                  {branches.length > 0 ? (
-                    branches.map((branch) => (
-                      <option key={branch.branch_id} value={branch.branch_id}>
-                        {branch.branch_name}
-                      </option>
-                    ))
-                  ) : (
-                    <option>No Data Available</option>
-                  )}
-                </select>
-                <p className="w-full text-red-500 text-sm">
-                  {errors.branch_id || "\u00A0"}
-                </p>
-              </div>
-
               <div className="flex flex-col">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -1111,6 +1074,42 @@ const OrderForm: React.FC = () => {
                 </select>
                 <p className="text-red-500 text-sm">
                   {errors.company_id || "\u00A0"}
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="branch"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Branch
+                </label>
+                <select
+                  id="branch"
+                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  value={formData.branch_id || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      branch_id: e.target.value ? Number(e.target.value) : null,
+                    })
+                  }
+                >
+                  <option value="" disabled>
+                    Select Branch
+                  </option>
+                  {branches.length > 0 ? (
+                    branches.map((branch) => (
+                      <option key={branch.branch_id} value={branch.branch_id}>
+                        {branch.branch_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No Data Available</option>
+                  )}
+                </select>
+                <p className="w-full text-red-500 text-sm">
+                  {errors.branch_id || "\u00A0"}
                 </p>
               </div>
 

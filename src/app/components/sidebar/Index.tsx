@@ -21,7 +21,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
-
     if (path === "order/add") {
       setSelectedItem("orders");
     } else {
@@ -30,8 +29,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     setSelectedItem(path);
   }, [location]);
 
-  const getItemClass = (item: string) =>
-    selectedItem === item
+  const getItemClass = (item: any[]) =>
+    item.includes(selectedItem)
       ? "bg-blue-100 text-white shadow-md rounded-lg transition-all duration-200"
       : "hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white rounded-lg transition-all duration-200";
 
@@ -126,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <Link to="/dashboard">
               <div
                 className={`menu-item transition-colors duration-200 ${getItemClass(
-                  "dashboard"
+                  ["dashboard"]
                 )}`}
               >
                 <div
@@ -160,7 +159,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/settings">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "settings"
+                    ["settings"]
                   )}`}
                 >
                   <div
@@ -410,7 +409,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/payments">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "payments"
+                    ["payments"]
                   )}`}
                 >
                   <div
@@ -445,7 +444,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/category">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "category"
+                    ["category"]
                   )}`}
                 >
                   <div
@@ -502,7 +501,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/product">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "product"
+                    ["product"]
                   )}`}
                 >
                   <div
@@ -537,7 +536,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/services">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "services"
+                    ["services"]
                   )}`}
                 >
                   <div
@@ -570,7 +569,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/customers">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "customers"
+                    ["customers", "customer"]
                   )}`}
                 >
                   <div
@@ -627,7 +626,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/coupon">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "coupon"
+                    ["coupon"]
                   )}`}
                 >
                   <div
@@ -660,7 +659,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/price">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "price"
+                    ["price"]
                   )}`}
                 >
                   <div
@@ -701,7 +700,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/price-content">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "price-content"
+                    ["price-content"]
                   )}`}
                 >
                   <div
@@ -749,7 +748,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/companies">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "companies"
+                    ["companies", "company"]
                   )}`}
                 >
                   <div
@@ -798,7 +797,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/branches">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "branches"
+                    ["branches", "branch"]
                   )}`}
                 >
                   <div
@@ -833,7 +832,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/banner">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "banner"
+                    ["banner"]
                   )}`}
                 >
                   <div
@@ -866,7 +865,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {roleId === 1 && (
               <div className={`menu-item`}>
                 <div
-                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px] ml-1"
+                  className={`menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px] ml-1`}
                   tabIndex={0}
                   onClick={() => setIsUserMenuOpen((prev) => !prev)}
                 >
@@ -951,7 +950,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/workshops">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "workshops"
+                    ["workshops"]
                   )}`}
                 >
                   <div
@@ -1027,7 +1026,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/customer-feedback">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "customer-feedback"
+                    ["customer-feedback"]
                   )}`}
                 >
                   <div
@@ -1105,7 +1104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/contact-requests">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "contact-requests"
+                    ["contact-requests"]
                   )}`}
                 >
                   <div
@@ -1154,7 +1153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/customer-logs">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    "customer-logs"
+                    ["customer-logs"]
                   )}`}
                 >
                   <div

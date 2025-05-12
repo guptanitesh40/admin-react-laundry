@@ -39,13 +39,14 @@ const PriceContent: React.FC = () => {
           setIsSubmit={setIsSubmit}
           setUpdateItem={handleUpdatePriceContent}
         />
-
-        <PriceContentModal
-          isOpen={modalIsOpen}
-          onClose={() => setModalIsOpen(false)}
-          price_content_id={currentItem}
-          setIsSubmit={setIsSubmit}
-        />
+        {modalIsOpen && (
+          <PriceContentModal
+            isOpen={modalIsOpen}
+            onClose={() => setModalIsOpen(false)}
+            price_content_id={currentItem}
+            setIsSubmit={setIsSubmit}
+          />
+        )}
       </div>
     </>
   );

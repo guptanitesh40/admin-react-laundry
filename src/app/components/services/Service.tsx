@@ -39,7 +39,6 @@ const Service: React.FC = () => {
               </button>
             </div>
           )}
-
         </div>
       </div>
 
@@ -54,13 +53,14 @@ const Service: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <ServiceModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        service_id={currentService}
-      />
+      {modalIsOpen && (
+        <ServiceModal
+          setIsSubmit={setIsSubmit}
+          isOpen={modalIsOpen}
+          onClose={() => setModalIsOpen(false)}
+          service_id={currentService}
+        />
+      )}
     </>
   );
 };

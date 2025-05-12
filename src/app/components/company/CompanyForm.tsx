@@ -15,7 +15,8 @@ const CompanyForm: React.FC = () => {
   const { updateCompany, loading: updating } = useUpdateCompany();
 
   const { id } = useParams<{ id: string }>();
-  const company_id = Number(id);
+  const company_id = id ? Number(id) : null;
+  const [fetchStarted, setFetchStarted] = useState(false);
 
   const { company, fetchCompany, loading: loadingCompany } = useGetCompany();
 
@@ -70,10 +71,13 @@ const CompanyForm: React.FC = () => {
   const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
-    const fetchCompanyData = async () => {
-      await fetchCompany(company_id);
-    };
-    fetchCompanyData();
+    if (company_id) {
+      setFetchStarted(true);
+      const fetchCompanyData = async () => {
+        await fetchCompany(company_id);
+      };
+      fetchCompanyData();
+    }
   }, [company_id]);
 
   useEffect(() => {
@@ -203,7 +207,7 @@ const CompanyForm: React.FC = () => {
     navigate("/companies");
   };
 
-  if (loadingCompany && id) {
+  if (company_id && (!fetchStarted || loadingCompany)) {
     return <Loading />;
   }
 

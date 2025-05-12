@@ -4,7 +4,6 @@ import {
   useGetCompanies,
   useGetUsers,
 } from "../../hooks";
-import TableShimmer from "../shimmer/TableShimmer";
 import { useEffect, useState } from "react";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";

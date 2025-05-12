@@ -10,6 +10,7 @@ import {
   useGetCompanies,
 } from "../../hooks";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
+import Loading from "../shimmer/Loading";
 
 interface FormData {
   branch_name: string;
@@ -27,11 +28,13 @@ const BranchForm: React.FC = () => {
   const { updateBranch, loading: updating } = useUpdateBranch();
 
   const { id } = useParams<{ id: string }>();
-  const branch_id = Number(id);
+  const branch_id = id ? Number(id) : null;
   const perPage = 1000;
   const pageNumber = 1;
 
-  const { branch, fetchBranch } = useGetBranch();
+  const [fetchStarted, setFetchStarted] = useState(false);
+
+  const { branch, fetchBranch, loading: loadingBranchData } = useGetBranch();
   const { companies } = useGetCompanies(pageNumber, perPage);
   const { users, fetchUsersByRole } = useGetUsersByRole();
 
@@ -62,11 +65,15 @@ const BranchForm: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchBranch(branch_id);
-      await fetchUsersByRole(3);
-    };
-    fetchData();
+    if (branch_id) {
+      setFetchStarted(true);
+      const fetchData = async () => {
+        await fetchBranch(branch_id);
+        await fetchUsersByRole(3);
+      };
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [branch_id]);
 
   useEffect(() => {
@@ -140,6 +147,10 @@ const BranchForm: React.FC = () => {
   const handleCancel = () => {
     navigate("/branches");
   };
+
+  if (branch_id && (!fetchStarted || loadingBranchData)) {
+    return <Loading />;
+  }
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">
