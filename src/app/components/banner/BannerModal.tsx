@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useAddBanner, useGetBanner, useUpdateBanner } from "../../hooks";
 import { bannerSchema } from "../../validation/bannerSchema";
 import * as Yup from "yup";
+import ModelLoadingTag from "../shimmer/ModelLoadingTag";
 
 interface BannerModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
 }) => {
   const { addBanner, loading: adding } = useAddBanner();
   const { updateBanner, loading: updating } = useUpdateBanner();
-  const { banner, fetchBanner } = useGetBanner();
+  const { banner, fetchBanner, loading: loadingBanner } = useGetBanner();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -41,6 +42,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
     if (isOpen && banner_id) {
       fetchBanner(banner_id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, banner_id]);
 
   useEffect(() => {
@@ -169,6 +171,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
       ></div>
 
       <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[85%] z-10 relative">
+        {banner_id && loadingBanner && isOpen && <ModelLoadingTag />}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"

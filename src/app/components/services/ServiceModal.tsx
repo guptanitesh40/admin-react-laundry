@@ -4,6 +4,7 @@ import { useAddService, useUpdateService } from "../../hooks";
 import { productSchema } from "../../validation/productSchema";
 import * as Yup from "yup";
 import useGetService from "../../hooks/services/useGetService";
+import ModelLoadingTag from "../shimmer/ModelLoadingTag";
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   const { addService, loading: adding } = useAddService();
   const { updateService, loading: updating } = useUpdateService();
 
-  const { service, fetchService } = useGetService();
+  const { service, fetchService, loading: loadingService } = useGetService();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -140,6 +141,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 z-10 zx:min-w-[85%] relative">
+        {service_id && loadingService && isOpen && <ModelLoadingTag />}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
@@ -176,14 +178,17 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
                 (JPG, JPEG, PNG | 85×85 px)
               </span>
             </div>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="input border border-gray-300 rounded-md p-2"
-            />
+            <div className="relative">
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+            </div>
+
             <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
           </div>
 

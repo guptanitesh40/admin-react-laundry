@@ -16,7 +16,8 @@ const CouponModal: React.FC = () => {
   const { coupon, fetchCoupon, loading: loadingCoupon } = useGetCoupon();
 
   const { id } = useParams<{ id: string }>();
-  const coupon_id = Number(id);
+  const coupon_id = id ? Number(id) : null;
+  const [fetchStarted, setFetchStarted] = useState(false);
 
   const navigate = useNavigate();
 
@@ -51,10 +52,11 @@ const CouponModal: React.FC = () => {
   const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
-    const fetchCouponData = async () => {
-      await fetchCoupon(coupon_id);
-    };
-    fetchCouponData();
+    if (coupon_id) {
+      setFetchStarted(true);
+      fetchCoupon(coupon_id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coupon_id]);
 
   useEffect(() => {
@@ -153,7 +155,7 @@ const CouponModal: React.FC = () => {
 
   const isLoading = addingCoupon || updatingCoupon;
 
-  if (loadingCoupon && id) {
+  if (coupon_id && (!fetchStarted || loadingCoupon)) {
     return <Loading />;
   }
 

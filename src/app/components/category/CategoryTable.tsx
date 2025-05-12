@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 import {
   useDeleteCategory,
   useGetCategories,
-  useGetCategory,
   usePermissions,
   useUpdateCategory,
 } from "../../hooks"; // Ensure correct imports
@@ -55,7 +54,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     sortColumn,
     sortOrder
   );
-  const { category } = useGetCategory(editingCategoryId);
+  // const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory();
   const { hasPermission } = usePermissions();
@@ -69,24 +68,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     }
   }, [isSubmit, fetchCategories]);
 
-  useEffect(() => {
-    if (category) {
-      setEditingCategoryName(category.name || "");
-    }
-  }, [category]);
-
-  const handleEditClick = (category_id: number) => {
+  const handleEditClick = (category_id: number, category_name: string) => {
     setEditingCategoryId(category_id);
+    setEditingCategoryName(category_name);
   };
 
   const handleSaveEditClick = async () => {
     if (editingCategoryName.trim() === "") {
       toast.error("Category name cannot be empty.", { position: "top-center" });
-      return;
-    }
-
-    if (category && editingCategoryName === category.name) {
-      handleCancelEditClick();
       return;
     }
 
@@ -362,7 +351,10 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                                 <button
                                   className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                                   onClick={() =>
-                                    handleEditClick(category.category_id)
+                                    handleEditClick(
+                                      category.category_id,
+                                      category.name
+                                    )
                                   }
                                   aria-label="Edit"
                                 >

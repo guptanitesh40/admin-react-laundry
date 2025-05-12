@@ -36,7 +36,6 @@ const Workshop: React.FC = () => {
               </button>
             </div>
           )}
-
         </div>
       </div>
 
@@ -51,13 +50,14 @@ const Workshop: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <WorkshopModal
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        setIsSubmit={setIsSubmit}
-        workshop_id={currentWorkshop}
-      />
+      {modalIsOpen && (
+        <WorkshopModal
+          isOpen={modalIsOpen}
+          onClose={() => setModalIsOpen(false)}
+          setIsSubmit={setIsSubmit}
+          workshop_id={currentWorkshop}
+        />
+      )}
     </>
   );
 };

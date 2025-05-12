@@ -4,6 +4,7 @@ import { useAddProduct, useUpdateProduct } from "../../hooks";
 import { productSchema } from "../../validation/productSchema";
 import * as Yup from "yup";
 import useGetProduct from "../../hooks/products/useGetProduct";
+import ModelLoadingTag from "../shimmer/ModelLoadingTag";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const { addProduct, loading: adding } = useAddProduct();
   const { updateProduct, loading: updating } = useUpdateProduct();
 
-  const { product, fetchProduct } = useGetProduct();
+  const { product, fetchProduct, loading: loadingProduct } = useGetProduct();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +40,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     if (isOpen && product_id) {
       fetchProduct(product_id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product_id]);
 
   useEffect(() => {
@@ -140,6 +142,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 zx:min-w-[85%] z-10 relative">
+        {product_id && loadingProduct && isOpen && <ModelLoadingTag />}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"

@@ -9,11 +9,11 @@ const User: React.FC = () => {
   const [filter, setFilter] = useState<boolean>(false);
 
   const [filters, setFilters] = useState({
-      genderFilter: [] as number[],
-      roleFilter: [] as number[],
-      companyFilter: [] as number[],
-      branchFilter: [] as number[],
-    });
+    genderFilter: [] as number[],
+    roleFilter: [] as number[],
+    companyFilter: [] as number[],
+    branchFilter: [] as number[],
+  });
 
   const handleAddUser = () => {
     navigate("/user/add");
@@ -38,7 +38,7 @@ const User: React.FC = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
           <button
             className="btn btn-sm btn-primary shadow-none"
@@ -58,10 +58,7 @@ const User: React.FC = () => {
         <div className="grid gap-5 lg:gap-7.5">
           <div className="card card-grid min-w-full">
             {filter && (
-              <UserFilter
-                filters={filters}
-                updateFilters={updateFilters}
-              />
+              <UserFilter filters={filters} updateFilters={updateFilters} />
             )}{" "}
             <UserTable filters={filters} />
           </div>

@@ -89,9 +89,9 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
             >
               <div className="menu-toggle btn btn-icon rounded-full">
                 <img
-                  alt=""
+                  alt="profile-picture"
                   className="size-9 rounded-full border-2 border-success shrink-0"
-                  src="/media/images/blank.png"
+                  src={user.image ? user.image : "/media/images/blank.png"}
                 />
               </div>
 
@@ -99,9 +99,9 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
                 <div className="flex items-center justify-between px-5 py-1.5 gap-1.5">
                   <div className="flex items-center gap-2">
                     <img
-                      alt=""
+                      alt="profile-picture"
                       className="size-9 rounded-full border-2 border-success"
-                      src="/media/images/blank.png"
+                      src={user.image ? user.image : "/media/images/blank.png"}
                     />
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm text-gray-800 font-semibold leading-none">

@@ -12,6 +12,7 @@ import { userSchema } from "../../validation/userSchema";
 import useGetUser from "../../hooks/user/useGetuser";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import MultiSelect from "multiselect-react-dropdown";
+import Loading from "../shimmer/Loading";
 
 interface FormData {
   first_name: string;
@@ -36,10 +37,12 @@ const UserForm: React.FC = () => {
   const perPage = 1000;
   const pageNumber = 1;
 
+  const [fetchStarted, setFetchStarted] = useState(false);
+
   const navigate = useNavigate();
 
   const { companies } = useGetCompanies(pageNumber, perPage);
-  const { userData, fetchUser } = useGetUser();
+  const { userData, fetchUser, loading: loadingUserData } = useGetUser();
   const [companyOptions, setCompanyOptions] = useState([]);
   const { branches } = useGetBranches(pageNumber, perPage);
   const { workshops } = useGetWorkshops(pageNumber, perPage);
@@ -86,11 +89,12 @@ const UserForm: React.FC = () => {
     }
   }, [isCustomer]);
 
+
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchUser(user_id);
-    };
-    fetchData();
+    if (user_id) {
+      setFetchStarted(true);
+      fetchUser(user_id);
+    }
   }, [user_id]);
 
   useEffect(() => {
@@ -271,6 +275,10 @@ const UserForm: React.FC = () => {
       navigate("/users");
     }
   };
+
+  if (user_id && (!fetchStarted || loadingUserData)) {
+    return <Loading />;
+  }
 
   return (
     <div className="card max-w-4xl mx-auto p-6 bg-white shadow-md">

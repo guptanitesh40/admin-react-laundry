@@ -53,13 +53,14 @@ const Banner: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <BannerModal
-        setIsSubmit={setIsSubmit}
-        isOpen={modalIsOpen}
-        onClose={() => setModalIsOpen(false)}
-        banner_id={currentBanner}
-      />
+      {modalIsOpen && (
+        <BannerModal
+          setIsSubmit={setIsSubmit}
+          isOpen={modalIsOpen}
+          onClose={() => setModalIsOpen(false)}
+          banner_id={currentBanner}
+        />
+      )}
     </>
   );
 };

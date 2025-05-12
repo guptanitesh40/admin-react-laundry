@@ -9976,3 +9976,7 @@ label.rating-label {
 .animate-spin-reverse {
   animation: spin-reverse 1s linear infinite;
 }
+
+.background-filter-blue {
+  backdrop-filter: blur(0.5px);
+}

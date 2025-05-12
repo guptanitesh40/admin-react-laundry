@@ -5,6 +5,7 @@ import { useAddWorkshop, useGetWorkshop, useUpdateWorkshop } from "../../hooks";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
 import { workshopSchema } from "../../validation/workshopSchema";
+import ModelLoadingTag from "../shimmer/ModelLoadingTag";
 
 interface WorkshopModalProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
   } = useGetUsersByRole();
   const { addWorkshop, loading: adding } = useAddWorkshop();
   const { updateWorkshop, loading: updating } = useUpdateWorkshop();
-  const { workshop, fetchWorkshop } = useGetWorkshop();
+  const { workshop, fetchWorkshop, loading: fetchingWsData } = useGetWorkshop();
 
   const [formData, setFormData] = useState(formDataState);
   const [initialFormData, setInitialFormData] = useState(formDataState);
@@ -146,6 +147,8 @@ const WorkshopModal: React.FC<WorkshopModalProps> = ({
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[85%] z-10 relative">
+        {workshop_id && fetchingWsData && isOpen && <ModelLoadingTag />}
+
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"
