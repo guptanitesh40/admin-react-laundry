@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
 import { MdOutlineHistory } from "react-icons/md";
+import { FaChrome, FaRegPlayCircle } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -1165,6 +1166,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Customer Logs
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+            {hasPermission(18, "read") && (
+              <Link to="/reports">
+                <div
+                  className={`menu-item transition-colors duration-200 ${getItemClass(
+                    ["reports"]
+                  )}`}
+                >
+                  <div
+                    className="menu-link flex items-center grow cursor-pointer gap-[10px] pl-[10px] pr-[10px] py-[6px]"
+                    tabIndex={0}
+                  >
+                    <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                      <FaRegPlayCircle className="h-full w-full p-1" />
+                    </span>
+                    <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      Reports
                     </span>
                   </div>
                 </div>

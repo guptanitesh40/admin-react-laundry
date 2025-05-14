@@ -11,6 +11,7 @@ import Loading from "../components/shimmer/Loading";
 const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
   const Profile = lazy(() => import("../components/profile/Index"));
+  const Reports = lazy(() => import("../components/reports/index"));
   const Product = lazy(() => import("../components/product/Product"));
   const Service = lazy(() => import("../components/services/Service"));
   const Coupon = lazy(() => import("../components/coupon/Coupon"));
@@ -79,7 +80,6 @@ const PrivateRoutes: React.FC = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         <Route path="/dashboard" element={<DashBoard />} />
-
         <Route element={<ProtectedRoute moduleId={5} action="read" />}>
           <Route
             path="/category"
@@ -90,7 +90,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={6} action="read" />}>
           <Route
             path="/product"
@@ -101,7 +100,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={7} action="read" />}>
           <Route
             path="/services"
@@ -112,7 +110,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={9} action="read" />}>
           <Route
             path="/coupon"
@@ -123,7 +120,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={9} action="create" />}>
           <Route
             path="/coupon/add"
@@ -134,7 +130,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={9} action="update" />}>
           <Route
             path="/coupon/edit/:id"
@@ -145,7 +140,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={10} action="read" />}>
           <Route
             path="/price"
@@ -156,7 +150,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={11} action="read" />}>
           <Route
             path="/price-content"
@@ -167,7 +160,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={12} action="read" />}>
           <Route
             path="/companies"
@@ -178,7 +170,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={12} action="read" />}>
           <Route
             path="/company-profile/:id"
@@ -189,7 +180,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={12} action="create" />}>
           <Route
             path="/company/add"
@@ -200,7 +190,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={12} action="update" />}>
           <Route
             path="/company/edit/:id"
@@ -211,7 +200,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={13} action="read" />}>
           <Route
             path="/branches"
@@ -222,7 +210,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={13} action="create" />}>
           <Route
             path="/branch/add"
@@ -233,7 +220,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={13} action="update" />}>
           <Route
             path="/branch/edit/:id"
@@ -244,7 +230,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={13} action="read" />}>
           <Route
             path="/branch-profile/:id"
@@ -255,7 +240,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={14} action="read" />}>
           <Route
             path="/banner"
@@ -266,7 +250,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={2} action="read" />}>
           <Route
             path="/settings"
@@ -277,7 +260,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/orders"
@@ -288,7 +270,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/pickup-orders"
@@ -299,7 +280,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/delivered-orders"
@@ -310,7 +290,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/confirmed-orders"
@@ -321,7 +300,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/redy-to-deliver"
@@ -332,7 +310,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="read" />}>
           <Route
             path="/booking-orders"
@@ -343,7 +320,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={4} action="read" />}>
           <Route
             path="/payments"
@@ -354,7 +330,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="create" />}>
           <Route
             path="/order/add"
@@ -365,7 +340,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={3} action="update" />}>
           <Route
             path="/order/edit/:id"
@@ -376,7 +350,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route
           path="/users"
           element={
@@ -385,7 +358,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route element={<ProtectedRoute moduleIds={[3, 16]} action="read" />}>
           <Route
             path="/order/:id"
@@ -396,7 +368,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route
           path="/roles"
           element={
@@ -405,7 +376,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route
           path="/user-permissions"
           element={
@@ -414,7 +384,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route element={<ProtectedRoute moduleId={8} action="read" />}>
           <Route
             path="/customers"
@@ -425,7 +394,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route
           path="/user/:id"
           element={
@@ -434,7 +402,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route element={<ProtectedRoute moduleId={8} action="read" />}>
           <Route
             path="/customer/:id"
@@ -445,7 +412,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route
           path="/user/add"
           element={
@@ -454,7 +420,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route element={<ProtectedRoute moduleId={8} action="read" />}>
           <Route
             path="/customer/add"
@@ -465,7 +430,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route
           path="/user/edit/:id"
           element={
@@ -474,7 +438,6 @@ const PrivateRoutes: React.FC = () => {
             </Suspense>
           }
         />
-
         <Route element={<ProtectedRoute moduleId={8} action="update" />}>
           <Route
             path="/customer/edit/:id"
@@ -485,7 +448,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={15} action="read" />}>
           <Route
             path="/workshops"
@@ -496,7 +458,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={16} action="read" />}>
           <Route
             path="/workshop-order"
@@ -507,7 +468,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={17} action="read" />}>
           <Route
             path="/customer-feedback"
@@ -518,7 +478,6 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={18} action="read" />}>
           <Route
             path="/contact-requests"
@@ -529,24 +488,29 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-
         <Route element={<ProtectedRoute moduleId={18} action="read" />}>
           <Route
             path="/customer-logs"
             element={
               <Suspense fallback={<Loading />}>
                 <Logs />
-                {/* <Loading /> */}
               </Suspense>
             }
           />
         </Route>
-
         <Route
           path="/profile"
           element={
             <Suspense fallback={<Loading />}>
               <Profile />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Reports />
             </Suspense>
           }
         />

@@ -186,7 +186,7 @@ const PaymentTransactionReport: React.FC = () => {
           <div className="flex justify-end w-full sm:w-auto order-1 sm:order-none mb-2 sm:mb-0 smmobile:order-2">
             <RangePicker
               className="min-w-[70px] sm:w-[250px]"
-              dropdownClassName="custom-rangepicker-dropdown"
+              popupClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
               format="DD-MM-YYYY"
             />

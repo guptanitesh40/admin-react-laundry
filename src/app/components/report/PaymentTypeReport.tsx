@@ -123,7 +123,7 @@ const PaymentTypeReport = () => {
             {"   "}
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
-              dropdownClassName="custom-rangepicker-dropdown"
+              popupClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
               format="DD-MM-YYYY"
             />

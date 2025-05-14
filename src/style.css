@@ -9980,3 +9980,43 @@ label.rating-label {
 .background-filter-blue {
   backdrop-filter: blur(0.5px);
 }
+
+.mui-multiselect-parent .multi-select {
+  border-radius: 0px;
+  border-radius: 6px;
+}
+
+.mui-multiselect-parent .dropdown-menu {
+  border-color: #dbdfe9;
+}
+
+.mui-multiselect-parent .search-input {
+  border-color: #dbdfe9;
+  border: none;
+  border-bottom: 1px solid #dbdfe9;
+  font-size: 14px;
+  padding: 8px 15px;
+}
+
+/* download report button */
+
+@keyframes loadingBar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.loading-bar {
+  animation: loadingBar 2s linear infinite;
+  background-color: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  pointer-events: none;
+}
