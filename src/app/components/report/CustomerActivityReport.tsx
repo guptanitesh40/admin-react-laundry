@@ -171,7 +171,7 @@ const CustomerActivityReport: React.FC = () => {
       <div className="self-end p-3 sm:mt-0">
         <RangePicker
           className="min-w-[80px] sm:w-[250px]"
-          dropdownClassName="custom-rangepicker-dropdown"
+          popupClassName="custom-rangepicker-dropdown"
           onChange={handleDateChange}
           format="DD-MM-YYYY"
         />

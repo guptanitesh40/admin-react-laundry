@@ -37,11 +37,11 @@ const RefundAmountReport: React.FC = () => {
   };
 
   const categories =
-    refundAmountData?.map((item: any) => item.month.split("-")[0]) || [];
+    refundAmountData?.map((item: any) => item?.month?.split("-")[0]) || [];
   const refundAmounts =
-    refundAmountData?.map((item: any) => item.total_refund_amount) || [];
+    refundAmountData?.map((item: any) => item?.total_refund_amount) || [];
   const totalAmounts =
-    refundAmountData?.map((item: any) => item.total_amount) || [];
+    refundAmountData?.map((item: any) => item?.total_amount) || [];
 
   const chartOptions = {
     chart: {
@@ -133,7 +133,7 @@ const RefundAmountReport: React.FC = () => {
           <div className="flex justify-end w-full sm:w-auto sm:order-none mb-2 sm:mb-0 desktop:!order-last">
             <RangePicker
               className="min-w-[80px] sm:w-[250px]"
-              dropdownClassName="custom-rangepicker-dropdown"
+              popupClassName="custom-rangepicker-dropdown"
               onChange={handleDateChange}
               format="DD-MM-YYYY"
             />
