@@ -125,9 +125,7 @@ export const companySchema = (isEdit: boolean = false) => {
       .typeError("GST Percentage must be a number")
       .required("GST Percentage is required"),
 
-    hsn_sac_code: Yup.string()
-      .matches(/^\d+$/, "HSN/SAC Code must contain only digits")
-      .required("HSN/SAC Code is required"),
+    hsn_sac_code: Yup.string().required("HSN/SAC Code is required"),
 
     company_ownedby: Yup.string()
       .nullable()
