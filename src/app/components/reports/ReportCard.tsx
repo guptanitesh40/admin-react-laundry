@@ -179,7 +179,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
           onClick={() => handleBtnClick(index)}
         >
           {loading && <span className="absolute inset-0 loading-bar"></span>}
-          <span className="relative z-10">
+          <span>
             {loading ? "Downloading..." : "Download"}
           </span>
         </button>
