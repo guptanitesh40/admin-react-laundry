@@ -12,7 +12,7 @@ const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
   const Profile = lazy(() => import("../components/profile/Index"));
   const Reports = lazy(() => import("../components/reports/index"));
-  const NewSection = lazy(() => import("../components/new-section/index"));
+  const Labels = lazy(() => import("../components/label-management/index"));
   const Product = lazy(() => import("../components/product/Product"));
   const Service = lazy(() => import("../components/services/Service"));
   const Coupon = lazy(() => import("../components/coupon/Coupon"));
@@ -517,10 +517,10 @@ const PrivateRoutes: React.FC = () => {
         />
 
         <Route
-          path="/new-section"
+          path="/labels"
           element={
             <Suspense fallback={<Loading />}>
-              <NewSection />
+              <Labels />
             </Suspense>
           }
         />

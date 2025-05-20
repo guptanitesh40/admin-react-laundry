@@ -245,16 +245,14 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   if (loading) {
     return (
-      <div className="container-fixed">
-        <div className="grid gap-5 lg:gap-7.5">
-          <div className="card card-grid min-w-full">
-            <TableShimmerEd2
-              isFilters={true}
-              columns={5}
-              records={20}
-              isPagination={false}
-            />
-          </div>
+      <div className="grid gap-5 lg:gap-7.5">
+        <div className="card card-grid min-w-full">
+          <TableShimmerEd2
+            isFilters={true}
+            columns={5}
+            records={20}
+            isPagination={false}
+          />
         </div>
       </div>
     );
@@ -262,188 +260,183 @@ const PriceTable: React.FC<PriceTableProps> = ({
 
   return (
     <>
-      <div className="flex-wrap container-fixed">
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex flex-col items-start">
-            <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
-              <label className="input input-sm h-10 flex items-center gap-2">
-                <input
-                  type="search"
-                  value={searchInput}
-                  onChange={(e) => {
-                    setSearchInput(e.target.value);
-                    if (e.target.value === "") {
-                      setSearch("");
-                    }
-                  }}
-                  placeholder="Search..."
-                  className="min-w-[185px]"
-                />
-                <button type="submit" className="btn btn-sm btn-icon">
-                  <i className="ki-filled ki-magnifier"></i>
-                </button>
-              </label>
-            </form>
-            <p className="text-red-500 text-sm mt-1">
-              {errorMessage || "\u00A0"}
-            </p>
-          </div>
+      <div className="flex items-center gap-4 flex-1 justify-end">
+        <div className="flex flex-col items-start">
+          <form onSubmit={onSearchSubmit} className="flex items-center gap-2">
+            <label className="input input-sm h-10 flex items-center gap-2">
+              <input
+                type="search"
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value);
+                  if (e.target.value === "") {
+                    setSearch("");
+                  }
+                }}
+                placeholder="Search..."
+                className="min-w-[185px]"
+              />
+              <button type="submit" className="btn btn-sm btn-icon">
+                <i className="ki-filled ki-magnifier"></i>
+              </button>
+            </label>
+          </form>
+          <p className="text-red-500 text-sm mt-1">
+            {errorMessage || "\u00A0"}
+          </p>
         </div>
       </div>
+      <div className="grid gap-5 lg:gap-7.5">
+        <div className="card card-grid min-w-full">
+          <div className="card-body">
+            <div data-datatable="true" data-datatable-page-size="10">
+              <div className="scrollable-x-auto">
+                <table
+                  className="table table-auto table-border"
+                  data-datatable-table="true"
+                >
+                  <thead>
+                    <tr>
+                      <th className="min-w-[40px]">Id</th>
+                      <th className="min-w-[250px]">
+                        <span
+                          className={`sort ${
+                            sortColumn === "category"
+                              ? sortOrder === "ASC"
+                                ? "asc"
+                                : "desc"
+                              : ""
+                          }`}
+                          onClick={() => handleSort("category")}
+                        >
+                          <span className="sort-label">Category</span>
+                          <span className="sort-icon"></span>
+                        </span>
+                      </th>
+                      <th className="min-w-[250px]">
+                        <span
+                          className={`sort ${
+                            sortColumn === "product"
+                              ? sortOrder === "ASC"
+                                ? "asc"
+                                : "desc"
+                              : ""
+                          }`}
+                          onClick={() => handleSort("product")}
+                        >
+                          <span className="sort-label">Product</span>
+                          <span className="sort-icon"></span>
+                        </span>
+                      </th>
+                      <th className="min-w-[250px]">
+                        <span
+                          className={`sort ${
+                            sortColumn === "service"
+                              ? sortOrder === "ASC"
+                                ? "asc"
+                                : "desc"
+                              : ""
+                          }`}
+                          onClick={() => handleSort("service")}
+                        >
+                          <span className="sort-label">Service</span>
+                          <span className="sort-icon"></span>
+                        </span>
+                      </th>
 
-      <div className="container-fixed">
-        <div className="grid gap-5 lg:gap-7.5">
-          <div className="card card-grid min-w-full">
-            <div className="card-body">
-              <div data-datatable="true" data-datatable-page-size="10">
-                <div className="scrollable-x-auto">
-                  <table
-                    className="table table-auto table-border"
-                    data-datatable-table="true"
-                  >
-                    <thead>
-                      <tr>
-                        <th className="min-w-[40px]">Id</th>
-                        <th className="min-w-[250px]">
-                          <span
-                            className={`sort ${
-                              sortColumn === "category"
-                                ? sortOrder === "ASC"
-                                  ? "asc"
-                                  : "desc"
-                                : ""
-                            }`}
-                            onClick={() => handleSort("category")}
-                          >
-                            <span className="sort-label">Category</span>
-                            <span className="sort-icon"></span>
-                          </span>
-                        </th>
-                        <th className="min-w-[250px]">
-                          <span
-                            className={`sort ${
-                              sortColumn === "product"
-                                ? sortOrder === "ASC"
-                                  ? "asc"
-                                  : "desc"
-                                : ""
-                            }`}
-                            onClick={() => handleSort("product")}
-                          >
-                            <span className="sort-label">Product</span>
-                            <span className="sort-icon"></span>
-                          </span>
-                        </th>
-                        <th className="min-w-[250px]">
-                          <span
-                            className={`sort ${
-                              sortColumn === "service"
-                                ? sortOrder === "ASC"
-                                  ? "asc"
-                                  : "desc"
-                                : ""
-                            }`}
-                            onClick={() => handleSort("service")}
-                          >
-                            <span className="sort-label">Service</span>
-                            <span className="sort-icon"></span>
-                          </span>
-                        </th>
+                      <th className="min-w-[200px]">
+                        <span
+                          className={`sort ${
+                            sortColumn === "price"
+                              ? sortOrder === "ASC"
+                                ? "asc"
+                                : "desc"
+                              : ""
+                          }`}
+                          onClick={() => handleSort("price")}
+                        >
+                          <span className="sort-label">Price</span>
+                          <span className="sort-icon"></span>
+                        </span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredCombinations.length > 0 ? (
+                      filteredCombinations.map((combination, index) => {
+                        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+                        const isEditing = editing.has(key);
 
-                        <th className="min-w-[200px]">
-                          <span
-                            className={`sort ${
-                              sortColumn === "price"
-                                ? sortOrder === "ASC"
-                                  ? "asc"
-                                  : "desc"
-                                : ""
+                        return (
+                          <tr
+                            key={index}
+                            className={`font-semibold ${
+                              combination.price ? "" : "text-red-500"
                             }`}
-                            onClick={() => handleSort("price")}
                           >
-                            <span className="sort-label">Price</span>
-                            <span className="sort-icon"></span>
-                          </span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredCombinations.length > 0 ? (
-                        filteredCombinations.map((combination, index) => {
-                          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-                          const isEditing = editing.has(key);
-
-                          return (
-                            <tr
-                              key={index}
-                              className={`font-semibold ${
-                                combination.price ? "" : "text-red-500"
-                              }`}
-                            >
-                              <td>{index + 1}</td>
-                              <td>{combination.category.name}</td>
-                              <td>{combination.product.name}</td>
-                              <td>{combination.service.name}</td>
-                              <td className="relative">
-                                {isEditing ? (
-                                  <input
-                                    ref={(el) => (inputRefs.current[key] = el)}
-                                    type="text"
-                                    className="w-full h-full absolute inset-0 input input-bordered"
-                                    value={
-                                      updatedPrices[key] !== undefined
-                                        ? updatedPrices[key]
-                                        : combination.price || ""
-                                    }
-                                    onChange={(e) =>
-                                      handlePriceChange(
-                                        key,
-                                        e.target.value === ""
-                                          ? 0
-                                          : Number(e.target.value)
-                                      )
-                                    }
-                                    onBlur={() => handleInputBlur(key)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        setIsSave(true);
-                                      }
-                                    }}
-                                  />
-                                ) : (
-                                  <span
-                                    className={`${
-                                      hasPermission(10, "update") ||
-                                      hasPermission(10, "create")
-                                        ? "cursor-pointer h-full flex"
-                                        : "h-full flex"
-                                    }`}
-                                    onClick={
-                                      hasPermission(10, "update") ||
-                                      hasPermission(10, "create")
-                                        ? () => handleEditClick(key)
-                                        : undefined
-                                    }
-                                  >
-                                    {updatedPrices[key] !== undefined
+                            <td>{index + 1}</td>
+                            <td>{combination.category.name}</td>
+                            <td>{combination.product.name}</td>
+                            <td>{combination.service.name}</td>
+                            <td className="relative">
+                              {isEditing ? (
+                                <input
+                                  ref={(el) => (inputRefs.current[key] = el)}
+                                  type="text"
+                                  className="w-full h-full absolute inset-0 input input-bordered"
+                                  value={
+                                    updatedPrices[key] !== undefined
                                       ? updatedPrices[key]
-                                      : combination.price || "Add Price"}
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="text-center">
-                            No data available
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                                      : combination.price || ""
+                                  }
+                                  onChange={(e) =>
+                                    handlePriceChange(
+                                      key,
+                                      e.target.value === ""
+                                        ? 0
+                                        : Number(e.target.value)
+                                    )
+                                  }
+                                  onBlur={() => handleInputBlur(key)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      setIsSave(true);
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <span
+                                  className={`${
+                                    hasPermission(10, "update") ||
+                                    hasPermission(10, "create")
+                                      ? "cursor-pointer h-full flex"
+                                      : "h-full flex"
+                                  }`}
+                                  onClick={
+                                    hasPermission(10, "update") ||
+                                    hasPermission(10, "create")
+                                      ? () => handleEditClick(key)
+                                      : undefined
+                                  }
+                                >
+                                  {updatedPrices[key] !== undefined
+                                    ? updatedPrices[key]
+                                    : combination.price || "Add Price"}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="text-center">
+                          No data available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
