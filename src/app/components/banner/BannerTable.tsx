@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import { useSearchParams } from "react-router-dom";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
-import TableShimmer from "../shimmer/TableShimmer";
 import { BannerType } from "../../../types/enums";
 import { getBannerTypeLabel } from "../../utils/bannerTypeLabel";
 import Pagination from "../pagination/Pagination";

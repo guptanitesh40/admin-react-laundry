@@ -5,7 +5,7 @@ import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
 import { MdOutlineHistory } from "react-icons/md";
 import { FaRegPlayCircle } from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoPricetagOutline } from "react-icons/io5";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -1196,10 +1196,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             )}
 
             {hasPermission(18, "read") && (
-              <Link to="/new-section">
+              <Link to="/labels">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    ["new-section"]
+                    ["labels"]
                   )}`}
                 >
                   <div
@@ -1207,10 +1207,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <IoSettingsOutline className="h-full w-full p-1" />
+                      <IoPricetagOutline className="h-full w-full p-1" />
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      New Section
+                      Label Management
                     </span>
                   </div>
                 </div>

@@ -11,7 +11,7 @@ const Price: React.FC = () => {
   return (
     <>
       <div className="container-fixed">
-        <div className="flex flex-wrap items-center justify-between gap-5 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-5 py-3 sticky-save-header">
           <div className="flex flex-col justify-center gap-2">
             <h1 className="text-xl font-semibold leading-none text-gray-900">
               Price
@@ -40,13 +40,19 @@ const Price: React.FC = () => {
             </div>
           )}
         </div>
+
+        <PriceTable
+          isSave={isSave}
+          setIsSave={setIsSave}
+          setIsLoading={setIsLoading}
+        />
       </div>
 
-      <PriceTable
+      {/* <PriceTable
         isSave={isSave}
         setIsSave={setIsSave}
         setIsLoading={setIsLoading}
-      />
+      /> */}
     </>
   );
 };

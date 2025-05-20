@@ -4,7 +4,6 @@ import { useDeleteProduct, useGetProducts, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import * as Yup from "yup";
-import TableShimmer from "../shimmer/TableShimmer";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
