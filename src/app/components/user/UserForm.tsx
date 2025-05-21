@@ -89,7 +89,6 @@ const UserForm: React.FC = () => {
     }
   }, [isCustomer]);
 
-
   useEffect(() => {
     if (user_id) {
       setFetchStarted(true);
@@ -212,6 +211,7 @@ const UserForm: React.FC = () => {
       }
 
       let success;
+
       if (user_id) {
         const formDataToSend = new FormData();
         (Object.keys(formData) as (keyof typeof formData)[]).forEach((key) => {
@@ -242,6 +242,12 @@ const UserForm: React.FC = () => {
             formDataToSend.append(key, formData[key] as string | Blob);
           }
         });
+
+        const imageValue = formDataToSend.get("image");
+
+        if (!imageValue) {
+          formDataToSend.delete("image");
+        }
 
         success = await updateUser(user_id, formDataToSend);
       } else {
