@@ -21,12 +21,20 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   setIsSubmit,
 }) => {
   const { addCategory, loading: adding } = useAddCategory();
-  const [formData, setFormData] = useState({ name: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    name_hindi: "",
+    name_gujarati: "",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({ name: "" });
+      setFormData({
+        name: "",
+        name_hindi: "",
+        name_gujarati: "",
+      });
       setErrors({});
     }
   }, [isOpen]);
@@ -35,7 +43,8 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     e.preventDefault();
     try {
       await schema.validate(formData, { abortEarly: false });
-      await addCategory(formData.name);
+      setErrors({});
+      await addCategory(formData);
       setIsSubmit(true);
       onClose();
     } catch (error) {
@@ -67,10 +76,10 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
             <i className="ki-filled ki-cross"></i>
           </button>
           <h1 className="text-2xl font-bold mb-6">Add Category</h1>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col mb-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col">
               <label className="mb-2 font-semibold" htmlFor="name">
-                Name
+                English Name
               </label>
               <input
                 type="text"
@@ -84,9 +93,47 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
                 className="input border border-gray-300 rounded-md p-2"
                 disabled={adding}
               />
-              <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
+              {errors.name && (
+                <p className="text-red-500 text-sm">
+                  {errors.name || "\u00A0"}
+                </p>
+              )}
             </div>
-            <div className="flex gap-4 mt-4">
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold" htmlFor="name_gujarati">
+                Gujarati Name
+              </label>
+              <input
+                type="text"
+                id="name_gujarati"
+                name="name_gujarati"
+                autoComplete="off"
+                value={formData.name_gujarati}
+                onChange={(e) =>
+                  setFormData({ ...formData, name_gujarati: e.target.value })
+                }
+                className="input border border-gray-300 rounded-md p-2"
+                disabled={adding}
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold" htmlFor="name_hindi">
+                Hindi Name
+              </label>
+              <input
+                type="text"
+                id="name_hindi"
+                name="name_hindi"
+                autoComplete="off"
+                value={formData.name_hindi}
+                onChange={(e) =>
+                  setFormData({ ...formData, name_hindi: e.target.value })
+                }
+                className="input border border-gray-300 rounded-md p-2"
+                disabled={adding}
+              />
+            </div>
+            <div className="flex gap-4">
               <button
                 type="submit"
                 className={`btn btn-primary ${

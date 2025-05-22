@@ -233,7 +233,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[690px]">
+                  <th className="min-w-[230px]">
                     <span
                       className={`sort ${
                         sortColumn === "name"
@@ -244,9 +244,17 @@ const ProductTable: React.FC<ProductTableProps> = ({
                       }`}
                       onClick={() => handleSort("name")}
                     >
-                      <span className="sort-label">Product name</span>
+                      <span className="sort-label">English name</span>
                       <span className="sort-icon"></span>
                     </span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span className="sort-label">Gujarati name</span>
+                  </th>
+
+                  <th className="min-w-[230px]">
+                    <span className="sort-label">Hindi name</span>
                   </th>
 
                   <th className="min-w-[125px]">
@@ -274,6 +282,16 @@ const ProductTable: React.FC<ProductTableProps> = ({
                       <td>
                         <div className="flex items-center gap-1.5">
                           {product.name}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          {product.name_gujarati}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-1.5">
+                          {product.name_hindi}
                         </div>
                       </td>
                       <td>

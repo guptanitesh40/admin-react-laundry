@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 interface Service {
   service_id: number;
   name: string;
+  name_gujarati: string;
+  name_hindi: string;
   image: string;
 }
 

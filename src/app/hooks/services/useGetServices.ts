@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
@@ -5,6 +6,8 @@ import { BASE_URL } from "../../utils/constant";
 interface Service {
   service_id: number;
   name: string;
+  name_gujarati: string;
+  name_hindi: string;
   image: string;
 }
 

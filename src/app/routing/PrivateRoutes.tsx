@@ -12,7 +12,7 @@ const PrivateRoutes: React.FC = () => {
   const Category = lazy(() => import("../components/category/Category"));
   const Profile = lazy(() => import("../components/profile/Index"));
   const Reports = lazy(() => import("../components/reports/index"));
-  const Labels = lazy(() => import("../components/label-management/index"));
+  const Labels = lazy(() => import("../components/label-management/Index"));
   const Product = lazy(() => import("../components/product/Product"));
   const Service = lazy(() => import("../components/services/Service"));
   const Coupon = lazy(() => import("../components/coupon/Coupon"));

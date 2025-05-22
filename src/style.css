@@ -9961,6 +9961,21 @@ label.rating-label {
   border-radius: 10px;
 }
 
+.new-scollbar-v2 {
+  overflow-y: scroll;
+}
+
+.new-scollbar-v2::-webkit-scrollbar {
+  background-color: transparent;
+  background-color: rgba(128, 128, 128, 0.10);
+  width: 10px;
+}
+
+.new-scollbar-v2::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 10px;
+}
+
 .order-submenu-animation {
   transition: all 0.2s linear;
 }
@@ -10026,10 +10041,13 @@ label.rating-label {
 .sticky-save-header {
   position: sticky;
   top: 70px;
+  background-color: white;
+  z-index: 1;
+  /* top: 70px;
   z-index: 1;
   background-color: white;
   border-radius: 8px;
   padding-inline: 5px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
-  margin-bottom: 8px;
+  margin-bottom: 8px; */
 }

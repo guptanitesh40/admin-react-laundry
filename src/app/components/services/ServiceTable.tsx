@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import { useDeleteService, useGetServices, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-import TableShimmer from "../shimmer/TableShimmer";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
@@ -237,7 +236,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[650px]">
+                  <th className="min-w-[210px]">
                     <span
                       className={`sort ${
                         sortColumn === "name"
@@ -253,6 +252,18 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                     </span>
                   </th>
 
+                  <th className="min-w-[210px]">
+                    <span className="sort-label">Gujarati name</span>
+                  </th>
+
+                  <th className="min-w-[210px]">
+                    <span className="sort-label">Hindi name</span>
+                  </th>
+
+                  {/* <th className="min-w-[100px]">
+                    <span className="sort-label">Flag</span>
+                  </th> */}
+
                   <th className="min-w-[125px]">Image</th>
                   {(hasPermission(7, "update") ||
                     hasPermission(7, "delete")) && (
@@ -265,15 +276,37 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                   {services.map((service) => (
                     <tr key={service.service_id}>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {service.service_id}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-1.5">
+                        <span className="flex items-center gap-1.5">
                           {service.name}
-                        </div>
+                        </span>
                       </td>
+                      <td>
+                        <span className="flex items-center gap-1.5">
+                          {service.name_gujarati}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="flex items-center gap-1.5">
+                          {service.name_hindi}
+                        </span>
+                      </td>
+                      {/* <td>
+                        <span className="flex items-center justify-center">
+                          <input
+                            className="checkbox checkbox-lg"
+                            name="check"
+                            type="checkbox"
+                            value="3"
+                            checked
+                            disabled
+                          />
+                        </span>
+                      </td> */}
                       <td>
                         <img
                           alt={service.name}
