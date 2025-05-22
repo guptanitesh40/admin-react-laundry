@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 interface Product {
   product_id: number;
   name: string;
+  name_gujarati: string;
+  name_hindi: string;
   image: string;
 }
 
@@ -18,7 +20,9 @@ const useGetProduct = () => {
     }
 
     const token = localStorage.getItem("authToken");
-    const GET_PRODUCT_URL = `${ import.meta.env.VITE_BASE_URL}/admin/products/${product_id}`;
+    const GET_PRODUCT_URL = `${
+      import.meta.env.VITE_BASE_URL
+    }/admin/products/${product_id}`;
 
     setLoading(true);
 

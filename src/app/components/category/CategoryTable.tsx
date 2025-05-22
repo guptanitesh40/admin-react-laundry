@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -15,14 +16,15 @@ import { ImCheckmark, ImCross } from "react-icons/im";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
-interface Category {
-  category_id: number;
-  name: string;
-}
-
 interface CategoryTableProps {
   setIsSubmit: (value: boolean) => void;
   isSubmit: boolean;
+}
+
+interface EditCategoryData {
+  name: string;
+  name_gujarati: string;
+  name_hindi: string;
 }
 
 const CategoryTable: React.FC<CategoryTableProps> = ({
@@ -41,7 +43,12 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
     null
   );
-  const [editingCategoryName, setEditingCategoryName] = useState<string>("");
+  const [editingCategoryData, setEditingCategoryData] =
+    useState<EditCategoryData>({
+      name: "",
+      name_gujarati: "",
+      name_hindi: "",
+    });
 
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
@@ -54,7 +61,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     sortColumn,
     sortOrder
   );
-  // const { category } = useGetCategory(editingCategoryId);
   const { deleteCategory } = useDeleteCategory();
   const { updateCategory } = useUpdateCategory();
   const { hasPermission } = usePermissions();
@@ -68,13 +74,22 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     }
   }, [isSubmit, fetchCategories]);
 
-  const handleEditClick = (category_id: number, category_name: string) => {
+  const handleEditClick = (
+    category_id: number,
+    name: string,
+    name_gujarati: string,
+    name_hindi: string
+  ) => {
     setEditingCategoryId(category_id);
-    setEditingCategoryName(category_name);
+    setEditingCategoryData({
+      name: name,
+      name_gujarati: name_gujarati,
+      name_hindi: name_hindi,
+    });
   };
 
   const handleSaveEditClick = async () => {
-    if (editingCategoryName.trim() === "") {
+    if (editingCategoryData.name.trim() === "") {
       toast.error("Category name cannot be empty.", { position: "top-center" });
       return;
     }
@@ -82,13 +97,13 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
     try {
       const success = await updateCategory(
         editingCategoryId,
-        editingCategoryName
+        editingCategoryData
       );
       if (success) {
         handleCancelEditClick();
         fetchCategories();
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while updating the category.", {
         position: "top-center",
       });
@@ -97,7 +112,11 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
 
   const handleCancelEditClick = () => {
     setEditingCategoryId(null);
-    setEditingCategoryName("");
+    setEditingCategoryData({
+      name: "",
+      name_gujarati: "",
+      name_hindi: "",
+    });
   };
 
   const handleDeleteCategory = async (category_id: number) => {
@@ -272,7 +291,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[780px]">
+                  <th className="min-w-[260px]">
                     <span
                       className={`sort ${
                         sortColumn === "name"
@@ -283,9 +302,17 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                       }`}
                       onClick={() => handleSort("name")}
                     >
-                      <span className="sort-label">Category name</span>
+                      <span className="sort-label">English name</span>
                       <span className="sort-icon"></span>
                     </span>
+                  </th>
+
+                  <th className="min-w-[260px]">
+                    <span className="sort-label">Gujarati name</span>
+                  </th>
+
+                  <th className="min-w-[260px]">
+                    <span className="sort-label">Hindi name</span>
                   </th>
 
                   {(hasPermission(5, "update") ||
@@ -308,9 +335,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                           <input
                             type="text"
                             className="border border-gray-300 p-2 rounded-md focus:outline-none"
-                            value={editingCategoryName}
+                            value={editingCategoryData.name}
                             onChange={(e) =>
-                              setEditingCategoryName(e.target.value)
+                              setEditingCategoryData((prev) => {
+                                return {
+                                  ...prev,
+                                  name: e.target.value,
+                                };
+                              })
                             }
                             onKeyPress={(e) => {
                               if (e.key === "Enter") {
@@ -320,6 +352,54 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                           />
                         ) : (
                           category.name
+                        )}
+                      </td>
+                      <td>
+                        {editingCategoryId === category.category_id ? (
+                          <input
+                            type="text"
+                            className="border border-gray-300 p-2 rounded-md focus:outline-none"
+                            value={editingCategoryData.name_gujarati}
+                            onChange={(e) =>
+                              setEditingCategoryData((prev) => {
+                                return {
+                                  ...prev,
+                                  name_gujarati: e.target.value,
+                                };
+                              })
+                            }
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                handleSaveEditClick();
+                              }
+                            }}
+                          />
+                        ) : (
+                          category.name_gujarati
+                        )}
+                      </td>
+                      <td>
+                        {editingCategoryId === category.category_id ? (
+                          <input
+                            type="text"
+                            className="border border-gray-300 p-2 rounded-md focus:outline-none"
+                            value={editingCategoryData.name_hindi}
+                            onChange={(e) =>
+                              setEditingCategoryData((prev) => {
+                                return {
+                                  ...prev,
+                                  name_hindi: e.target.value,
+                                };
+                              })
+                            }
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                handleSaveEditClick();
+                              }
+                            }}
+                          />
+                        ) : (
+                          category.name_hindi
                         )}
                       </td>
 
@@ -353,7 +433,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                                   onClick={() =>
                                     handleEditClick(
                                       category.category_id,
-                                      category.name
+                                      category.name,
+                                      category.name_gujarati,
+                                      category.name_hindi
                                     )
                                   }
                                   aria-label="Edit"

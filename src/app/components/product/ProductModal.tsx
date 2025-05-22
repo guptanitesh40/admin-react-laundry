@@ -26,11 +26,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const [formData, setFormData] = useState({
     name: "",
+    name_gujarati: "",
+    name_hindi: "",
     image: "" as string | File,
   });
 
   const [initialFormData, setInitialFormData] = useState({
     name: "",
+    name_gujarati: "",
+    name_hindi: "",
     image: "" as string | File,
   });
 
@@ -40,13 +44,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
     if (isOpen && product_id) {
       fetchProduct(product_id);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, product_id]);
 
   useEffect(() => {
     if (isOpen && product && product_id) {
       const fetchedData = {
         name: product.name,
+        name_gujarati: product.name_gujarati,
+        name_hindi: product.name_hindi,
         image: product.image,
       };
 
@@ -55,10 +61,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
     } else {
       setFormData({
         name: "",
+        name_gujarati: "",
+        name_hindi: "",
         image: "",
       });
       setInitialFormData({
         name: "",
+        name_gujarati: "",
+        name_hindi: "",
         image: "",
       });
       setErrors({});
@@ -109,6 +119,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
       const formDataObj = new FormData();
       formDataObj.append("name", formData.name);
+      formDataObj.append("name_gujarati", formData.name_gujarati);
+      formDataObj.append("name_hindi", formData.name_hindi);
       if (formData.image instanceof File) {
         formDataObj.append("image", formData.image);
       }
@@ -136,12 +148,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 grid place-items-center overflow-auto z-50 p-4">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-96 zx:min-w-[85%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-[25rem] z-10 relative">
         {product_id && loadingProduct && isOpen && <ModelLoadingTag />}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
@@ -154,10 +166,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
           {product_id ? "Edit Product" : "Add Product"}
         </h1>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-4">
             <div className="col-span-1">
               <label className="mb-2 font-semibold" htmlFor="name">
-                Name
+                English Name
               </label>
               <input
                 type="text"
@@ -168,7 +180,41 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 onChange={handleChange}
                 className="input border border-gray-300 rounded-md p-2"
               />
-              <p className="text-red-500 text-sm">{errors.name || "\u00A0"}</p>
+              {errors.name && (
+                <p className="text-red-500 text-sm">
+                  {errors.name || "\u00A0"}
+                </p>
+              )}
+            </div>
+
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="name_gujarati">
+                Gujarati Name
+              </label>
+              <input
+                type="text"
+                id="name_gujarati"
+                name="name_gujarati"
+                autoComplete="off"
+                value={formData.name_gujarati}
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
+            </div>
+
+            <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="name_hindi">
+                Hindi Name
+              </label>
+              <input
+                type="text"
+                id="name_hindi"
+                name="name_hindi"
+                autoComplete="off"
+                value={formData.name_hindi}
+                onChange={handleChange}
+                className="input border border-gray-300 rounded-md p-2"
+              />
             </div>
 
             <div className="col-span-1">
@@ -188,7 +234,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 onChange={handleChange}
                 className="input border border-gray-300 rounded-md p-2"
               />
-              <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
+              {errors.image && (
+                <p className="text-red-500 text-sm">
+                  {errors.image || "\u00A0"}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-4 mt-4">

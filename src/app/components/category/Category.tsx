@@ -5,12 +5,10 @@ import { usePermissions } from "../../hooks";
 
 const Category: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
 
   const handleAddCategory = () => {
-    setEditMode(false);
     setModalIsOpen(true);
   };
 
