@@ -134,8 +134,14 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
       });
 
       await addressSchema.validate(addressData, { abortEarly: false });
+      setErrors({});
 
-      const userResponse = await addUser(formData);
+      const cleanData = { ...formData };
+      if (!cleanData.email) {
+        delete cleanData.email;
+      }
+
+      const userResponse = await addUser(cleanData);
 
       if (userResponse?.user_id) {
         const formattedData = {
@@ -372,7 +378,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                       disabled
                       className="badge-danger badge-outline"
                     >
-                      Select Address Type
+                      Select Type
                     </option>
                     <option value="1">Home</option>
                     <option value="2">Office</option>

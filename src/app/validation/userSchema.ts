@@ -26,9 +26,10 @@ export const customerSchema = () => {
     first_name: Yup.string().required("First name is required"),
     last_name: Yup.string().required("Last name is required"),
     email: Yup.string()
-      .required("Email is required")
-      .email("Enter a valid email")
-      .test("required", "Email is required", (value) => !!value),
+      .trim()
+      .nullable()
+      .notRequired()
+      .email("Enter a valid email"),
     mobile_number: Yup.string()
       .matches(/^\d{10}$/, "Mobile number must be 10 digits number")
       .required("Mobile number is required"),

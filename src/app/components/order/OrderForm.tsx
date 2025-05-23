@@ -75,6 +75,8 @@ const OrderForm: React.FC = () => {
   const { fetchProductsOnId, loading: fetchingProducs } = useGetProductsOnId();
   const { fetchServicesOnId, loading: fetchingServices } = useGetServicesOnId();
 
+  const priorityOrder = ["man", "woman", "kids", "household"];
+
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const { id } = useParams<{ id: string }>();
@@ -1257,13 +1259,13 @@ const OrderForm: React.FC = () => {
                     <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(35px,0.75fr)_minmax(35px,0.5fr)] gap-x-5 gap-y-3">
                       <div>
                         <label
-                          htmlFor="category"
+                          htmlFor={`category${index}`}
                           className="block text-gray-700 text-sm font-bold mb-2"
                         >
                           Category
                         </label>
                         <select
-                          id="category"
+                          id={`category${index}`}
                           value={item.category_id ?? ""}
                           onChange={(e) =>
                             handleItemChange(
@@ -1284,18 +1286,17 @@ const OrderForm: React.FC = () => {
                           ) : categories.length > 0 ? (
                             categories
                               .sort((a, b) => {
-                                const priorityOrder = [
-                                  "men",
-                                  "women",
-                                  "kids",
-                                  "household",
-                                ];
                                 const aIndex = priorityOrder.indexOf(
                                   a.name.toLowerCase()
                                 );
                                 const bIndex = priorityOrder.indexOf(
                                   b.name.toLowerCase()
                                 );
+
+                                if (aIndex === -1 && bIndex === -1) {
+                                  return a.name.localeCompare(b.name);
+                                }
+
                                 return (
                                   (aIndex === -1 ? Infinity : aIndex) -
                                   (bIndex === -1 ? Infinity : bIndex)
@@ -1322,13 +1323,13 @@ const OrderForm: React.FC = () => {
 
                       <div>
                         <label
-                          htmlFor="product"
+                          htmlFor={`product${index}`}
                           className="block text-gray-700 text-sm font-bold mb-2"
                         >
                           Product
                         </label>
                         <select
-                          id="product"
+                          id={`product${index}`}
                           value={item.product_id ?? ""}
                           onChange={(e) =>
                             handleItemChange(
@@ -1374,13 +1375,13 @@ const OrderForm: React.FC = () => {
 
                       <div>
                         <label
-                          htmlFor="service"
+                          htmlFor={`service${index}`}
                           className="block text-gray-700 text-sm font-bold mb-2"
                         >
                           Service
                         </label>
                         <select
-                          id="service"
+                          id={`service${index}`}
                           value={item.service_id ?? ""}
                           onChange={(e) =>
                             handleItemChange(
@@ -1428,21 +1429,24 @@ const OrderForm: React.FC = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                        <label
+                          className="block text-gray-700 text-sm font-bold mb-2"
+                          htmlFor={`price${index}`}
+                        >
                           Price
                         </label>
                         <input
                           type="text"
+                          id={`price${index}`}
                           value={item.price || ""}
                           onChange={(e) =>
-                            handleItemChange(index, "price", e.target.value)
+                            handleItemChange(
+                              index,
+                              "price",
+                              Number(e.target.value)
+                            )
                           }
-                          className={`input border rounded-md p-2 w-full ${
-                            isNaN(order_id)
-                              ? "border-gray-300 bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
-                              : "border-gray-300"
-                          }`}
-                          readOnly={isNaN(order_id)}
+                          className={`input border rounded-md p-2 w-full border-gray-300 bg-gray-100 text-sm text-gray-600`}
                         />
                         <p className="w-full text-red-500 text-sm">
                           {errors[`items[${index}].price`]}
@@ -1452,14 +1456,14 @@ const OrderForm: React.FC = () => {
                       <div>
                         <label
                           className="block text-gray-700 text-sm font-bold mb-2"
-                          htmlFor="quantity"
+                          htmlFor={`quantity${index}`}
                         >
                           Quantity
                         </label>
                         <div className="relative">
                           <input
                             type="text"
-                            id="quantity"
+                            id={`quantity${index}`}
                             autoComplete="off"
                             value={item.quantity ?? 1}
                             onChange={(e) =>
@@ -1518,13 +1522,13 @@ const OrderForm: React.FC = () => {
                           min="0"
                           step="0.01"
                           readOnly
-                          className="input w-full border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:outline-none"
+                          className="input w-full border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:!border-gray-300"
                         />
                       </div>
 
                       <div className="flex flex-col">
                         <label
-                          htmlFor="description_checkbox"
+                          htmlFor={`description_checkbox${index}`}
                           className="block text-gray-700 text-sm font-bold mb-2"
                         >
                           Remarks
@@ -1532,7 +1536,7 @@ const OrderForm: React.FC = () => {
                         <div className="h-full flex items-center">
                           <input
                             className="checkbox checkbox-lg ml-5"
-                            id="description_checkbox"
+                            id={`description_checkbox${index}`}
                             data-datatable-check="true"
                             type="checkbox"
                             checked={item.showDescription}

@@ -131,6 +131,7 @@ const CouponModal: React.FC = () => {
 
       let success;
       await couponSchema.validate(dataToValidate, { abortEarly: false });
+      setErrors({});
 
       if (coupon?.coupon_id) {
         success = await updateCoupon(coupon.coupon_id, dataToValidate);
@@ -388,6 +389,7 @@ const CouponModal: React.FC = () => {
               </option>
               <option value={1}>Web</option>
               <option value={2}>App</option>
+              {/* <option value={4}>Offline orders</option> */}
               <option value={3}>Both</option>
             </select>
             <p className="text-red-500 text-sm">

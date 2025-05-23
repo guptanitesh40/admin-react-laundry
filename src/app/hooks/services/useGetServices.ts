@@ -8,6 +8,7 @@ interface Service {
   name: string;
   name_gujarati: string;
   name_hindi: string;
+  is_visible: boolean;
   image: string;
 }
 
@@ -16,8 +17,8 @@ const useGetServices = (
   perPage: number = 10,
   search: string = "",
   sortColumn?: string,
-  sortOrder?: string) => {
-
+  sortOrder?: string
+) => {
   const [services, setServices] = useState<Service[]>([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,17 +35,20 @@ const useGetServices = (
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/admin/services?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/admin/services?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.message, { position: 'top-center' });
+        toast.error(errorData.message, { position: "top-center" });
         return;
       }
 
@@ -53,9 +57,12 @@ const useGetServices = (
       setServices(data?.data?.services || []);
       setCount(data?.data?.count || 0);
     } catch (error: any) {
-      toast.error(error?.message || "Network error: Failed to fetch services.", {
-        position: "top-center",
-      });
+      toast.error(
+        error?.message || "Network error: Failed to fetch services.",
+        {
+          position: "top-center",
+        }
+      );
     } finally {
       setLoading(false);
     }
