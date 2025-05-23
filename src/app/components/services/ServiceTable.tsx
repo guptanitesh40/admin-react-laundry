@@ -260,9 +260,9 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                     <span className="sort-label">Hindi name</span>
                   </th>
 
-                  {/* <th className="min-w-[100px]">
-                    <span className="sort-label">Flag</span>
-                  </th> */}
+                  <th className="min-w-[100px]">
+                    <span className="sort-label">Is Visible</span>
+                  </th>
 
                   <th className="min-w-[125px]">Image</th>
                   {(hasPermission(7, "update") ||
@@ -295,18 +295,17 @@ const ServiceTable: React.FC<ServiceTableProps> = ({
                           {service.name_hindi}
                         </span>
                       </td>
-                      {/* <td>
+                      <td>
                         <span className="flex items-center justify-center">
                           <input
                             className="checkbox checkbox-lg"
                             name="check"
                             type="checkbox"
-                            value="3"
-                            checked
+                            checked={service.is_visible}
                             disabled
                           />
                         </span>
-                      </td> */}
+                      </td>
                       <td>
                         <img
                           alt={service.name}

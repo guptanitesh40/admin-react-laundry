@@ -6,6 +6,7 @@ interface Service {
   name: string;
   name_gujarati: string;
   name_hindi: string;
+  is_visible: boolean;
   image: string;
 }
 
@@ -44,7 +45,7 @@ const useGetService = () => {
 
       const data = await response.json();
       setService(data?.data?.service);
-    } catch (error) {
+    } catch {
       toast.error("Network error: Failed to fetch.");
     } finally {
       setLoading(false);

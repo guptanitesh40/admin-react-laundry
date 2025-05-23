@@ -136,10 +136,9 @@ const PriceContentModal: React.FC<PriceContentModalProps> = ({
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-[480px] ban:w-[85%] z-10 relative">
-        {/* {price_content_id && loadingPriceContent && isOpen && (
+        {price_content_id && loadingPriceContent && isOpen && (
           <ModelLoadingTag />
-        )} */}
-        <ModelLoadingTag />
+        )}
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           data-modal-dismiss="true"

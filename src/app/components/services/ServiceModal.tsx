@@ -29,6 +29,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     name: "",
     name_gujarati: "",
     name_hindi: "",
+    is_visible: true,
     image: "" as string | File,
   });
 
@@ -36,6 +37,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     name: "",
     name_gujarati: "",
     name_hindi: "",
+    is_visible: true,
     image: "" as string | File,
   });
 
@@ -53,6 +55,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         name: service.name,
         name_gujarati: service.name_gujarati,
         name_hindi: service.name_hindi,
+        is_visible: service.is_visible,
         image: service.image,
       };
 
@@ -63,12 +66,14 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
         name: "",
         name_gujarati: "",
         name_hindi: "",
+        is_visible: true,
         image: "",
       });
       setInitialFormData({
         name: "",
         name_gujarati: "",
         name_hindi: "",
+        is_visible: true,
         image: "",
       });
       setErrors({});
@@ -122,6 +127,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
       formDataObj.append("name", formData.name);
       formDataObj.append("name_gujarati", formData.name_gujarati);
       formDataObj.append("name_hindi", formData.name_hindi);
+      formDataObj.append("is_visible", String(formData.is_visible));
       if (formData.image instanceof File) {
         formDataObj.append("image", formData.image);
       }
@@ -149,7 +155,7 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 grid place-items-center z-50">
+    <div className="fixed inset-0 grid place-items-center z-50 overflow-auto">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
@@ -239,17 +245,23 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
             )}
           </div>
 
-          {/* <div className="flex flex-col mb-4">
-            <label className="form-label flex items-center gap-2.5 text-sm !font-semibold">
+          <div className="flex flex-col mb-4">
+            <label className="form-label flex items-center gap-1 text-sm !font-semibold">
               <input
                 className="checkbox checkbox-lg"
                 name="check"
                 type="checkbox"
-                value="3"
+                checked={formData.is_visible}
+                onChange={(e) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    is_visible: e.target.checked,
+                  }));
+                }}
               />
               Visible on web and mobile
             </label>
-          </div> */}
+          </div>
 
           <div className="flex gap-4 mt-4">
             <button

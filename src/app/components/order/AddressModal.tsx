@@ -136,7 +136,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-5 rounded-lg shadow-lg max-w-lg smobile:min-w-[85%] z-10 relative">
+      <div className="bg-white p-5 rounded-lg shadow-lg min-w-[450px] !max-w-full z-10 relative">
         <button
           className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
           onClick={onClose}

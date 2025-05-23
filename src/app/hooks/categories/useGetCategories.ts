@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
 interface Category {
+  toLowerCase(): string;
   category_id: number;
   name: string;
   name_gujarati: string;

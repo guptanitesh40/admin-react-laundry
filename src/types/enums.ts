@@ -2,6 +2,7 @@ export enum CouponType {
   "Website" = 1,
   "App" = 2,
   "Both" = 3,
+  "Offline orders" = 4,
 }
 
 export enum DiscountType {

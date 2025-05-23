@@ -6,18 +6,18 @@ import { usePermissions } from "../../hooks";
 const Service: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const [currentService, setCurrentService] = useState<any>(null);
-  const [editMode, setEditMode] = useState<boolean>(false);
+  // const [editMode, setEditMode] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const { hasPermission } = usePermissions();
 
   const handleAddService = () => {
-    setEditMode(false);
+    // setEditMode(false);
     setModalIsOpen(true);
     setCurrentService(null);
   };
 
   const handleEditService = (service_id: number) => {
-    setEditMode(true);
+    // setEditMode(true);
     setCurrentService(service_id);
     setModalIsOpen(true);
   };

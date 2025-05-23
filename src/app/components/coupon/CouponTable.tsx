@@ -4,12 +4,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import dayjs from "dayjs";
-import TableShimmer from "../shimmer/TableShimmer";
 import { CouponType, DiscountType } from "../../../types/enums";
 import * as Yup from "yup";
 import { searchSchema } from "../../validation/searchSchema";
 import Pagination from "../pagination/Pagination";
-import ShimmerEd2 from "../shimmer/ShimmerEd2";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 const CouponTable: React.FC = () => {
@@ -384,38 +382,38 @@ const CouponTable: React.FC = () => {
                   {coupons.map((coupon) => (
                     <tr key={coupon.coupon_id}>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {coupon.coupon_id}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {coupon.code}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {coupon.title}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {coupon.description}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {coupon.discount_value}
-                        </div>
+                        </span>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-2.5">
                           {
                             DiscountType[
                               coupon.discount_type as unknown as keyof typeof DiscountType
                             ]
                           }
-                        </div>
+                        </span>
                       </td>
                       <td>
                         <div className="flex items-center gap-2.5">
