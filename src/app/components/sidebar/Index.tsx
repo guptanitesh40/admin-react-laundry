@@ -799,7 +799,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               <Link to="/branches">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
-                    ["branches", "branch"]
+                    ["branches", "branch", "branch-profile"]
                   )}`}
                 >
                   <div
@@ -906,7 +906,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   </span>
                 </div>
 
-                {/* <div className="menu-accordion gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200"> */}
                 <div
                   className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
                   style={{
@@ -1151,7 +1150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               </Link>
             )}
 
-            {hasPermission(18, "read") && (
+            {hasPermission(19, "read") && (
               <Link to="/customer-logs">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -1173,7 +1172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               </Link>
             )}
 
-            {hasPermission(18, "read") && (
+            {hasPermission(20, "read") && (
               <Link to="/reports">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -1195,7 +1194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               </Link>
             )}
 
-            {hasPermission(18, "read") && (
+            {hasPermission(21, "read") && (
               <Link to="/labels">
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(

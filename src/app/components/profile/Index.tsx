@@ -3,7 +3,6 @@ import { Gender, Role } from "../../../types/enums";
 import useGetUser from "../../hooks/user/useGetuser";
 import { RootState } from "../../utils/store";
 import { useSelector } from "react-redux";
-import ProfileShimmer01 from "../shimmer/ProfileShimmer";
 
 const Profile: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.user_id);

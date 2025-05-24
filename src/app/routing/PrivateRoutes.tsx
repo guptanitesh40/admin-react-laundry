@@ -489,7 +489,8 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-        <Route element={<ProtectedRoute moduleId={18} action="read" />}>
+        
+        <Route element={<ProtectedRoute moduleId={19} action="read" />}>
           <Route
             path="/customer-logs"
             element={
@@ -499,28 +500,34 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
+
+        <Route element={<ProtectedRoute moduleId={20} action="read" />}>
+          <Route
+            path="/reports"
+            element={
+              <Suspense fallback={<Loading />}>
+                <Reports />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={21} action="read" />}>
+          <Route
+            path="/labels"
+            element={
+              <Suspense fallback={<Loading />}>
+                <Labels />
+              </Suspense>
+            }
+          />
+        </Route>
+
         <Route
           path="/profile"
           element={
             <Suspense fallback={<Loading />}>
               <Profile />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Reports />
-            </Suspense>
-          }
-        />
-
-        <Route
-          path="/labels"
-          element={
-            <Suspense fallback={<Loading />}>
-              <Labels />
             </Suspense>
           }
         />

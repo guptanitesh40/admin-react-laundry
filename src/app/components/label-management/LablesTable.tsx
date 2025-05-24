@@ -305,8 +305,8 @@ const LabelsTable: React.FC<LabelsTableProps> = ({ refetchLabels }) => {
 
   return (
     <>
-      {hasPermission(6, "create") && (
-        <div className="flex items-center gap-2.5 absolute top-0 right-10">
+      {hasPermission(21, "update") && (
+        <div className="flex items-center gap-2.5 absolute top-0 right-6 xl:right-10">
           <button
             className="btn btn-primary"
             onClick={handleSave}
@@ -403,7 +403,7 @@ const LabelsTable: React.FC<LabelsTableProps> = ({ refetchLabels }) => {
                         </span>
                       </th>
 
-                      <th className="min-w-[300px]">
+                      <th className="min-w-[250px]">
                         <span
                           className={`sort ${
                             sortColumn === "label_name"
@@ -423,7 +423,7 @@ const LabelsTable: React.FC<LabelsTableProps> = ({ refetchLabels }) => {
                           const { language_id, language_name, language_code } =
                             language;
                           return (
-                            <th className="min-w-[250px]" key={language_id}>
+                            <th className="min-w-[225px]" key={language_id}>
                               <span
                                 className={`sort ${
                                   sortColumn === language_code
@@ -462,6 +462,7 @@ const LabelsTable: React.FC<LabelsTableProps> = ({ refetchLabels }) => {
                                       type="text"
                                       value={label[language_code]}
                                       placeholder={`${label[language_code]}`}
+                                      readOnly={!hasPermission(21, "update")}
                                       onChange={(e) =>
                                         handleInputchange(
                                           label_id,
@@ -469,7 +470,11 @@ const LabelsTable: React.FC<LabelsTableProps> = ({ refetchLabels }) => {
                                           e.target.value
                                         )
                                       }
-                                      className="input placeholder:!text-gray-400"
+                                      className={`input placeholder:!text-gray-400${
+                                        !hasPermission(21, "update")
+                                          ? "!border-gray-300 !bg-gray-100 !cursor-not-allowed !focus:outline-none"
+                                          : ""
+                                      }`}
                                     />
                                   </td>
                                 );
