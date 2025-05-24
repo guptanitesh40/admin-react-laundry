@@ -6,7 +6,6 @@ import { BASE_URL } from "../../utils/constant";
 import { login, logout } from "../../utils/authSlice";
 import { addUser } from "../../utils/userSlice";
 import useGetUserPermissions from "./useGetUserPermissions";
-import { ClockFading } from "lucide-react";
 
 const useValidateToken = () => {
   const dispatch = useDispatch();

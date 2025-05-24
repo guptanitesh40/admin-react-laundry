@@ -29,10 +29,13 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
   setIsLoading,
 }) => {
   const { modulesData } = useGetModulesData();
-  const { assignRolePermission, loading: assigning } = useAssignRolePermission();
+  const { assignRolePermission, loading: assigning } =
+    useAssignRolePermission();
   const { permissionsData, loading } = useGetRolesPermissions();
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [initialPermissions, setInitialPermissions] = useState<Permission[]>([]);
+  const [initialPermissions, setInitialPermissions] = useState<Permission[]>(
+    []
+  );
   const location = useLocation();
   const roleId = location?.state?.role_id;
 
@@ -64,13 +67,14 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
       });
 
       setPermissions(mergedPermissions);
-      setInitialPermissions(JSON.parse(JSON.stringify(mergedPermissions))); 
+      setInitialPermissions(JSON.parse(JSON.stringify(mergedPermissions)));
     }
   }, [modulesData, permissionsData]);
 
   useEffect(() => {
     if (isSave) {
-      const hasChanges = JSON.stringify(permissions) !== JSON.stringify(initialPermissions);
+      const hasChanges =
+        JSON.stringify(permissions) !== JSON.stringify(initialPermissions);
       if (!hasChanges) {
         setIsSave(false);
         return;
@@ -79,9 +83,9 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
       const savePermissions = async () => {
         try {
           const success = assignRolePermission(permissions);
-          
+
           if (success) {
-            setInitialPermissions(JSON.parse(JSON.stringify(permissions))); 
+            setInitialPermissions(JSON.parse(JSON.stringify(permissions)));
             setIsSave(false);
           }
         } catch (error) {
@@ -98,9 +102,9 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
         if (perm.role_id === roleId && perm.module_id === module_id) {
           const updatedPerm = {
             ...perm,
-            [field]: !perm[field], 
+            [field]: !perm[field],
           };
-  
+
           if (field === "read") {
             updatedPerm.read = !perm.read;
           } else if (field === "create" || field === "update") {
@@ -110,16 +114,19 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
           }
           return updatedPerm;
         }
-        return perm; 
+        return perm;
       })
     );
   };
-  
+
   return (
     <div className="card-body">
       <div data-datatable="true" data-datatable-page-size="10">
         <div className="scrollable-x-auto">
-          <table className="table table-auto table-border" data-datatable-table="true">
+          <table
+            className="table table-auto table-border"
+            data-datatable-table="true"
+          >
             <thead>
               <tr>
                 <th className="min-w-[200px]">Modules</th>
@@ -135,7 +142,8 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
               <tbody>
                 {modulesData.map((module: any) => {
                   const permission = permissions.find(
-                    (p) => p.role_id === roleId && p.module_id === module.module_id
+                    (p) =>
+                      p.role_id === roleId && p.module_id === module.module_id
                   );
 
                   return (
@@ -144,11 +152,18 @@ const PermissionTable: React.FC<PermissionTableProps> = ({
                       {["create", "read", "update", "delete"].map((field) => (
                         <td key={field}>
                           <input
-                            className="w-4 h-4"
+                            className="checkbox checkbox-lg"
                             type="checkbox"
-                            checked={permission ? permission[field as keyof Permission] : false}
+                            checked={
+                              permission
+                                ? permission[field as keyof Permission]
+                                : false
+                            }
                             onChange={() =>
-                              handleCheckboxChange(module.module_id, field as keyof Permission)
+                              handleCheckboxChange(
+                                module.module_id,
+                                field as keyof Permission
+                              )
                             }
                           />
                         </td>

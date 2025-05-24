@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import LablesTable from "./LablesTable";
 import toast from "react-hot-toast";
+import { usePermissions } from "../../hooks";
 
 const Index: React.FC = () => {
   const [label, setLabel] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [refetchLabels, setRefetchLabels] = useState<boolean>(false);
+
+  const { hasPermission } = usePermissions();
 
   const handleAddLabel = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,45 +65,46 @@ const Index: React.FC = () => {
               </h1>
             </div>
           </div>
-
-          <div className="bg-gray-200 px-4 py-3 border border-gray-300 rounded-md">
-            <form
-              onSubmit={handleAddLabel}
-              className="flex flex-col gap-3 items-start"
-            >
-              <label
-                htmlFor="new_label"
-                className="form-label text-sm font-semibold"
+          {hasPermission(21, "create") && (
+            <div className="bg-gray-200 px-4 py-3 border border-gray-300 rounded-md">
+              <form
+                onSubmit={handleAddLabel}
+                className="flex flex-col gap-3 items-start"
               >
-                Enter new label
-              </label>
-              <div className="w-full space-y-1">
-                <input
-                  id="new_label"
-                  type="text"
-                  className="input"
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                />
-                {error && <p className="text-red-500 text-sm">{error}</p>}
-              </div>
+                <label
+                  htmlFor="new_label"
+                  className="form-label text-sm font-semibold"
+                >
+                  Enter new label
+                </label>
+                <div className="w-full space-y-1">
+                  <input
+                    id="new_label"
+                    type="text"
+                    className="input"
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                  />
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="h-5.5 w-5.5 border-4 border-white/40 border-t-white border-r-white rounded-full animate-spin"></span>
-                    Adding..
-                  </>
-                ) : (
-                  "Add Label"
-                )}
-              </button>
-            </form>
-          </div>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="h-5.5 w-5.5 border-4 border-white/40 border-t-white border-r-white rounded-full animate-spin"></span>
+                      Adding..
+                    </>
+                  ) : (
+                    "Add Label"
+                  )}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-5 lg:gap-7.5">

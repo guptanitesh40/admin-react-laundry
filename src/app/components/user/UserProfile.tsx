@@ -12,6 +12,7 @@ import CustomerOrders from "./CustomerOrders.tsx";
 import Loading from "../../components/shimmer/Loading.tsx";
 import { FaUserEdit } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
+import { usePermissions } from "../../hooks/index.ts";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,6 +27,8 @@ const UserProfile: React.FC = () => {
   const { userData, fetchUser, count, loading } = useGetUser();
 
   const user = userData?.user;
+
+  const { hasPermission } = usePermissions();
 
   useEffect(() => {
     fetchUser(user_id);
@@ -98,23 +101,24 @@ const UserProfile: React.FC = () => {
           <div className="card pb-2.5">
             <div className="card-header">
               <h3 className="card-title">Personal Information</h3>
-
-              <div className="relative group">
-                <div
-                  className="tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex items-center justify-center whitespace-nowrap"
-                  id="tooltip_hover"
-                >
-                  Edit {isCustomer ? "Customer" : "User"}
+              {hasPermission(8, "update") && (
+                <div className="relative group">
+                  <div
+                    className="tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex items-center justify-center whitespace-nowrap"
+                    id="tooltip_hover"
+                  >
+                    Edit {isCustomer ? "Customer" : "User"}
+                  </div>
+                  <button
+                    className="btn btn-light flex justify-center items-center rounded-full p-0 !h-8 !w-8"
+                    data-tooltip="#tooltip_hover"
+                    data-tooltip-trigger="hover"
+                    onClick={() => handleEditUser(user.user_id)}
+                  >
+                    <FaUserEdit className="h-5 w-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
+                  </button>
                 </div>
-                <button
-                  className="btn btn-light flex justify-center items-center rounded-full p-0 !h-8 !w-8"
-                  data-tooltip="#tooltip_hover"
-                  data-tooltip-trigger="hover"
-                  onClick={() => handleEditUser(user.user_id)}
-                >
-                  <FaUserEdit className="h-5 w-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
-                </button>
-              </div>
+              )}
             </div>
 
             <div className="card-body pt-4 pb-3">
