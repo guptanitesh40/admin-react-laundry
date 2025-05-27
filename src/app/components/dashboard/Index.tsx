@@ -9,6 +9,7 @@ import DeliveryReport from "../report/DeliveryReport";
 import SalesBookingReport from "../report/SalesBookingReport";
 import BranchSalesCollectionReport from "../report/BranchSalesCollectionReport";
 import ActionButtons from "../report/ActionButtons";
+import BDReport from "../report/BDReport";
 
 const DashBoard: React.FC = () => {
   return (
@@ -16,6 +17,9 @@ const DashBoard: React.FC = () => {
       <div className="container-fixed">
         <div className="w-full">
           <ActionButtons />
+        </div>
+        <div className="mt-5 mb-5 w-full" style={{display: "none"}}>
+          <BDReport />
         </div>
         <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
           <OrderReport />

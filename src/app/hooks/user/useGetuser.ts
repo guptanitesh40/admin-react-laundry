@@ -42,13 +42,16 @@ const useGetUser = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/user/${user_id}?${queryParams}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${BASE_URL}/user/${user_id}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

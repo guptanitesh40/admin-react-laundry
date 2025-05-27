@@ -36,17 +36,34 @@ const SalesBookingReport = () => {
     }
   };
 
+  // const categories =
+  //   salesData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
+
+  // const totalSales =
+  //   salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
+
+  // const totalCollection =
+  //   salesData?.map(
+  //     (item: { total_collection: any }) => item.total_collection
+  //   ) || [];
+
+  // const totalUnpaidAmount = salesData?.map(
+  //   (item: { unpaid_amount: any }) => item.unpaid_amount
+  // );
+
   const categories =
     salesData?.map((item: { month: any }) => item.month.split("-")[0]) || [];
+
   const totalSales =
     salesData?.map((item: { total_sales: any }) => item.total_sales) || [];
+
   const totalCollection =
     salesData?.map(
       (item: { total_collection: any }) => item.total_collection
     ) || [];
-  const totalUnpaidAmount = salesData?.map(
-    (item: { unpaid_amount: any }) => item.unpaid_amount
-  );
+
+  const totalUnpaidAmount =
+    salesData?.map((item: { unpaid_amount: any }) => item.unpaid_amount) || [];
 
   const totalOrderAmount = salesData?.reduce(
     (sum: any, item: { total_sales: any }) => sum + item.total_sales,
@@ -104,9 +121,9 @@ const SalesBookingReport = () => {
       },
       markers: {
         size: categories?.length === 1 ? 5 : 0,
-        hover : {
-          size : 7,
-        }
+        hover: {
+          size: 7,
+        },
       },
       stroke: {
         curve: "smooth",
@@ -117,7 +134,7 @@ const SalesBookingReport = () => {
       legend: {
         show: false,
       },
-      
+
       xaxis: {
         type: "category",
         categories: categories,
