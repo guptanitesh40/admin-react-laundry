@@ -589,6 +589,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
               </thead>
               {orders.length > 0 ? (
                 <tbody>
+                  <tr className="bg-gray-600 text-white font-semibold">
+                    <td colSpan={15}>{`Total Count : ${count}`}</td>
+                  </tr>
                   {orders.map((order) => {
                     const isDisabled =
                       (selectedStatus !== null &&

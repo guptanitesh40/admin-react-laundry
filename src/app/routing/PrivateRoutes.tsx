@@ -489,7 +489,7 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
-        
+
         <Route element={<ProtectedRoute moduleId={19} action="read" />}>
           <Route
             path="/customer-logs"

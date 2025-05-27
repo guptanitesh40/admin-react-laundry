@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -74,8 +74,6 @@ const OrderForm: React.FC = () => {
   const { categories, loading: fetchingCategories } = useGetCategories();
   const { fetchProductsOnId, loading: fetchingProducs } = useGetProductsOnId();
   const { fetchServicesOnId, loading: fetchingServices } = useGetServicesOnId();
-
-  const priorityOrder = ["man", "woman", "kids", "household"];
 
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
@@ -417,8 +415,12 @@ const OrderForm: React.FC = () => {
       }
 
       let success;
+      const dataToSend = { ...dataToValidate };
+      if (!dataToSend.company_id) {
+        delete dataToSend.company_id;
+      }
       if (order) {
-        success = await updateOrder(order_id, dataToValidate);
+        success = await updateOrder(order_id, dataToSend);
       } else {
         success = await addOrder(dataToValidate);
       }
@@ -464,24 +466,39 @@ const OrderForm: React.FC = () => {
   };
 
   const handleAddItem = () => {
-    setFormData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        {
-          category_id: null,
-          product_id: null,
-          product_name: "",
-          service_id: null,
-          service_name: "",
-          description: null,
-          price: null,
-          quantity: 1,
-          item_Total: null,
-          showDescription: false,
-        },
-      ],
-    }));
+    // setFormData((prev) => ({
+    //   ...prev,
+    //   items: [
+    //     ...prev.items,
+    //     {
+    //       category_id: null,
+    //       product_id: null,
+    //       product_name: "",
+    //       service_id: null,
+    //       service_name: "",
+    //       description: null,
+    //       price: null,
+    //       quantity: 1,
+    //       item_Total: null,
+    //       showDescription: false,
+    //     },
+    //   ],
+    // }));
+
+    setFormData((prev) => {
+      const lastItem = prev.items[prev.items.length - 1];
+
+      return {
+        ...prev,
+        items: [
+          ...prev.items,
+          {
+            ...lastItem,
+            showDescription: false,
+          },
+        ],
+      };
+    });
   };
 
   const handleRemoveItem = (index: number) => {
@@ -869,7 +886,11 @@ const OrderForm: React.FC = () => {
         }));
       }
     }
-  }, [id, branches, currentUserData]);
+  }, [id, branches, currentUserData, loadingBranches]);
+
+  // useEffect(() => {
+  //   console.log("FormData : ", formData);
+  // }, [formData]);
 
   useEffect(() => {
     if (!loadingCompanies && companies.length > 0 && !id) {
@@ -1006,6 +1027,7 @@ const OrderForm: React.FC = () => {
     ) {
       initializeDefaultCombination();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
   if (loadingOrder && id) {
@@ -1286,11 +1308,21 @@ const OrderForm: React.FC = () => {
                           ) : categories.length > 0 ? (
                             categories
                               .sort((a, b) => {
+                                const priorityOrder = [
+                                  "men",
+                                  "women",
+                                  "kids",
+                                  "household",
+                                ];
+
+                                const normalize = (name: string) =>
+                                  name.trim().toLowerCase();
+
                                 const aIndex = priorityOrder.indexOf(
-                                  a.name.toLowerCase()
+                                  normalize(a.name)
                                 );
                                 const bIndex = priorityOrder.indexOf(
-                                  b.name.toLowerCase()
+                                  normalize(b.name)
                                 );
 
                                 if (aIndex === -1 && bIndex === -1) {

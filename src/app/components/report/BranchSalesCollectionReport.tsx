@@ -133,6 +133,9 @@ const BranchSalesCollectionReport: React.FC = () => {
         x: {
           format: "MMM yyyy",
         },
+        y: {
+          formatter: (value: number) => `₹${value.toLocaleString()}`,
+        },
       },
     },
   };
