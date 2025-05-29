@@ -105,7 +105,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
     try {
       await addressSchema.validate(addressData, { abortEarly: false });
-
+      setErrors({});
       if (userId) {
         const addressResponse = await addAddress(addressData);
         if (addressResponse) {
@@ -178,38 +178,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 {errors.address_type || "\u00A0"}
               </p>
             </div>
-            <div>
-              <label
-                htmlFor="building_number"
-                className="block text-gray-700 font-semibold"
-              >
-                Building Number
-              </label>
-              <input
-                type="text"
-                id="building_number"
-                name="building_number"
-                autoComplete="off"
-                value={addressData.building_number}
-                onChange={(e) =>
-                  setAddressData({
-                    ...addressData,
-                    building_number: e.target.value,
-                  })
-                }
-                className="w-full input border border-gray-300 rounded-md p-2"
-              />
-              <p className="w-full text-red-500 text-sm">
-                {errors.building_number || "\u00A0"}
-              </p>
-            </div>
 
             <div>
               <label
                 htmlFor="area"
                 className="block text-gray-700 font-semibold"
               >
-                Area
+                Search Address
               </label>
 
               <div className="relative">
@@ -280,6 +255,32 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
             <div>
               <label
+                htmlFor="building_number"
+                className="block text-gray-700 font-semibold"
+              >
+                House Number and Society
+              </label>
+              <input
+                type="text"
+                id="building_number"
+                name="building_number"
+                autoComplete="off"
+                value={addressData.building_number}
+                onChange={(e) =>
+                  setAddressData({
+                    ...addressData,
+                    building_number: e.target.value,
+                  })
+                }
+                className="w-full input border border-gray-300 rounded-md p-2"
+              />
+              <p className="w-full text-red-500 text-sm">
+                {errors.building_number || "\u00A0"}
+              </p>
+            </div>
+
+            <div>
+              <label
                 htmlFor="landmark"
                 className="block text-gray-700 font-semibold"
               >
@@ -306,32 +307,6 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
             <div>
               <label
-                htmlFor="pincode"
-                className="block text-gray-700 font-semibold"
-              >
-                Pin code
-              </label>
-              <input
-                type="text"
-                id="pincode"
-                name="pincode"
-                autoComplete="off"
-                value={addressData.pincode}
-                onChange={(e) =>
-                  setAddressData({
-                    ...addressData,
-                    pincode: e.target.value,
-                  })
-                }
-                className="w-full input border border-gray-300 rounded-md p-2"
-              />
-              <p className="w-full text-red-500 text-sm">
-                {errors.pincode || "\u00A0"}
-              </p>
-            </div>
-
-            <div>
-              <label
                 htmlFor="city"
                 className="block text-gray-700 font-semibold"
               >
@@ -353,6 +328,32 @@ const AddressModal: React.FC<AddressModalProps> = ({
               />
               <p className="w-full text-red-500 text-sm">
                 {errors.city || "\u00A0"}
+              </p>
+            </div>
+
+            <div>
+              <label
+                htmlFor="pincode"
+                className="block text-gray-700 font-semibold"
+              >
+                Pin code
+              </label>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                autoComplete="off"
+                value={addressData.pincode}
+                onChange={(e) =>
+                  setAddressData({
+                    ...addressData,
+                    pincode: e.target.value,
+                  })
+                }
+                className="w-full input border border-gray-300 rounded-md p-2"
+              />
+              <p className="w-full text-red-500 text-sm">
+                {errors.pincode || "\u00A0"}
               </p>
             </div>
 

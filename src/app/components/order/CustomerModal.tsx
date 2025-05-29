@@ -391,36 +391,10 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
 
                 <div>
                   <label
-                    htmlFor="building_number"
-                    className="block text-gray-700 font-semibold"
-                  >
-                    Building Number
-                  </label>
-                  <input
-                    type="text"
-                    id="building_number"
-                    name="building_number"
-                    autoComplete="off"
-                    value={addressData.building_number}
-                    onChange={(e) =>
-                      setAddressData({
-                        ...addressData,
-                        building_number: e.target.value,
-                      })
-                    }
-                    className="w-full input border border-gray-300 rounded-md p-2"
-                  />
-                  <p className="w-full text-red-500 text-sm">
-                    {errors.building_number || "\u00A0"}
-                  </p>
-                </div>
-
-                <div>
-                  <label
                     htmlFor="area"
                     className="block text-gray-700 font-semibold"
                   >
-                    Area
+                    Search Address
                   </label>
 
                   <div className="relative">
@@ -491,6 +465,32 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
 
                 <div>
                   <label
+                    htmlFor="building_number"
+                    className="block text-gray-700 font-semibold"
+                  >
+                    House Number
+                  </label>
+                  <input
+                    type="text"
+                    id="building_number"
+                    name="building_number"
+                    autoComplete="off"
+                    value={addressData.building_number}
+                    onChange={(e) =>
+                      setAddressData({
+                        ...addressData,
+                        building_number: e.target.value,
+                      })
+                    }
+                    className="w-full input border border-gray-300 rounded-md p-2"
+                  />
+                  <p className="w-full text-red-500 text-sm">
+                    {errors.building_number || "\u00A0"}
+                  </p>
+                </div>
+
+                <div>
+                  <label
                     htmlFor="landmark"
                     className="block text-gray-700 font-semibold"
                   >
@@ -512,6 +512,31 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                   />
                   <p className="w-full text-red-500 text-sm">
                     {errors.landmark || "\u00A0"}
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="block text-gray-700 font-semibold"
+                  >
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    autoComplete="off"
+                    value={addressData.city}
+                    onChange={(e) =>
+                      setAddressData({
+                        ...addressData,
+                        city: e.target.value,
+                      })
+                    }
+                    className="w-full input border border-gray-300 rounded-md p-2"
+                  />
+                  <p className="w-full text-red-500 text-sm">
+                    {errors.city || "\u00A0"}
                   </p>
                 </div>
 
@@ -538,32 +563,6 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                   />
                   <p className="w-full text-red-500 text-sm">
                     {errors.pincode || "\u00A0"}
-                  </p>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="city"
-                    className="block text-gray-700 font-semibold"
-                  >
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    autoComplete="off"
-                    value={addressData.city}
-                    onChange={(e) =>
-                      setAddressData({
-                        ...addressData,
-                        city: e.target.value,
-                      })
-                    }
-                    className="w-full input border border-gray-300 rounded-md p-2"
-                  />
-                  <p className="w-full text-red-500 text-sm">
-                    {errors.city || "\u00A0"}
                   </p>
                 </div>
 
