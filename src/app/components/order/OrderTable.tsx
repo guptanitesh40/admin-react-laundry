@@ -300,7 +300,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
       selectedOrderIds.includes(order.order_id)
     );
     setPreviewOrders(ordersList);
-
     setDueDTModelIsOpen(true);
 
     // const pendingOrPartialOrders = ordersList.filter(
@@ -589,9 +588,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
               </thead>
               {orders.length > 0 ? (
                 <tbody>
-                  <tr className="bg-gray-600 text-white font-semibold">
-                    <td colSpan={15}>{`Total Count : ${count}`}</td>
-                  </tr>
+                  {/*<tr className="bg-gray-600 text-white font-semibold">
+                    <td>{`Total Count`}</td>
+                    <td>{count}</td>
+                    <td colSpan={2}></td>
+                    <td>{10000}</td>
+                    <td colSpan={7}></td>
+                  </tr>*/}
                   {orders.map((order) => {
                     const isDisabled =
                       (selectedStatus !== null &&
