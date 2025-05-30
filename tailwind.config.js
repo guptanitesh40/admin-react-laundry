@@ -394,6 +394,8 @@ export default {
 				  lg: '1024px',
 				  xl: '1280px',
 				  '2xl': '1536px',
+				  'cs1': "1200px",
+				  'cs2': "1100px",
 			  }
 		  },
 		  custom: ({ theme }) => ({

@@ -888,9 +888,6 @@ const OrderForm: React.FC = () => {
     }
   }, [id, branches, currentUserData, loadingBranches]);
 
-  // useEffect(() => {
-  //   console.log("FormData : ", formData);
-  // }, [formData]);
 
   useEffect(() => {
     if (!loadingCompanies && companies.length > 0 && !id) {
@@ -1040,7 +1037,7 @@ const OrderForm: React.FC = () => {
 
   return (
     <div className="container-fixed">
-      <div className="card max-w-5xl mx-auto p-6 bg-white shadow-md">
+      <div className="card max-w-5xl mx-auto bg-white shadow-md lg:!p-4 xl:!p-6 sm:!p-5 p-3.5">
         <div className="flex">
           <h1 className="text-2xl font-bold mb-6">
             {order ? "Edit Order" : "Add Order"}
@@ -1056,8 +1053,8 @@ const OrderForm: React.FC = () => {
           )}
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-6 mt-4">
-            <div className="col-span-2 grid grid-cols-3 gap-x-6 items-start">
+          <div className="grid md:grid-cols-2 cs1:gap-x-6 gap-x-4  gap-y-5 mt-4 grid-cols-1">
+            <div className="md:!col-span-2 grid md:!grid-cols-3 cs1:gap-x-6 gap-x-4 items-start grid-cols-1">
               <div className="flex flex-col">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -1104,7 +1101,7 @@ const OrderForm: React.FC = () => {
               <div>
                 <label
                   htmlFor="branch"
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="!block text-gray-700 text-sm font-bold mb-2"
                 >
                   Branch
                 </label>
@@ -1276,9 +1273,9 @@ const OrderForm: React.FC = () => {
           {formData.items.map((item, index) => {
             return (
               <React.Fragment key={index}>
-                <div className="border border-gray-200 rounded-xl mt-4 p-4 space-y-2">
+                <div className="border border-gray-200 rounded-xl mt-4 xl:!p-4 space-y-2 p-3.5 max-w-full overflow-hidden">
                   <div>
-                    <div className="grid grid-cols-[minmax(150px,1fr)_minmax(150px,1fr)_minmax(150px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(50px,1fr)_minmax(35px,0.75fr)_minmax(35px,0.5fr)] gap-x-5 gap-y-3">
+                    <div className="grid res-item-container">
                       <div>
                         <label
                           htmlFor={`category${index}`}
@@ -1565,9 +1562,9 @@ const OrderForm: React.FC = () => {
                         >
                           Remarks
                         </label>
-                        <div className="h-full flex items-center">
+                        <div className="h-full w-full flex items-center cs2:justify-center justify-start cs2:ml-0 lgmobile:!ml-4 ml-[9px]">
                           <input
-                            className="checkbox checkbox-lg ml-5"
+                            className="checkbox checkbox-lg"
                             id={`description_checkbox${index}`}
                             data-datatable-check="true"
                             type="checkbox"
@@ -1582,8 +1579,8 @@ const OrderForm: React.FC = () => {
                           />
                         </div>
                       </div>
-                      <div className="flex flex-col items-center">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                      <div className="flex flex-col items-center max-w-[40px]">
+                        <label className="text-gray-700 text-sm font-bold mb-2 lgmobile:block hidden">
                           &nbsp;
                         </label>
                         <div className="grow flex justify-center items-center">
@@ -1643,11 +1640,11 @@ const OrderForm: React.FC = () => {
             );
           })}
 
-          <div className="flex items-center justify-start gap-12 flex-wrap">
+          <div className="flex bndesktop:!items-center justify-start cs2:gap-12 sm:!gap-8 flex-wrap bndesktop:!gap-4 gap-2 bndesktop:!flex-row flex-col items-start mb-4">
             <button
               type="button"
               onClick={handleAddItem}
-              className="btn btn-primary mb-6 mt-4"
+              className="btn btn-primary bndesktop:!mb-6 mt-4"
             >
               Add Item
             </button>
@@ -1659,7 +1656,7 @@ const OrderForm: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 cs1:!gap-6 gap-4">
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
@@ -1755,7 +1752,7 @@ const OrderForm: React.FC = () => {
               />
             </div>
 
-            <div className="col-span-2 grid grid-cols-3 gap-6">
+            <div className="md:!col-span-2 grid sm:!grid-cols-3 cs1:!gap-6 gap-4 grid-cols-1">
               <div className="flex flex-col">
                 <label
                   htmlFor="exp_delivery_time"
