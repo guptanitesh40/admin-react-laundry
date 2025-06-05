@@ -267,7 +267,13 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[105px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -278,14 +284,10 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-
-                  <th className="min-w-[280px]">Current Status</th>
-
-                  <th className="min-w-[280px]">Next Status</th>
 
                   <th className="min-w-[200px]">Workshop Manager</th>
 
@@ -362,6 +364,15 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                 <TableShimmer />
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
+                  <tr className="bg-gray-600 text-white font-semibold">
+                    <td colSpan={2}>Total Count : {1000}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{10000}</td>
+                    <td colSpan={8}>1200</td>
+                  </tr>
+
                   {workshopOrders.map((order) => {
                     const adminStatusClass = getOrderStatusLabel(
                       order.order_status_details.admin_label
@@ -396,7 +407,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         <td>
                           {order.user.first_name} {order.user.last_name}
                         </td>
-                        <td>{order.total}</td>
+
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -419,6 +430,10 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                             </div>
                           )}
                         </td>
+
+                        <td>{order.items.map((item) => item.quantity)}</td>
+                        <td>{order.total}</td>
+
                         <td>
                           {order.workshop.workshopManagerMappings
                             .map(

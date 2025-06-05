@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import DeliveredTable from "./DeliveredOrderTable";
 import { useState } from "react";
 import { RiFilterFill, RiFilterOffFill } from "react-icons/ri";
 import OrderTableFilter from "../OrderTableFilter";
 import { usePermissions } from "../../../hooks";
+import DeliveredOrderTable from "./DeliveredOrderTable";
 
 const DeliveredOrder: React.FC = () => {
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ const DeliveredOrder: React.FC = () => {
                 showOrderStatusFilter={false}
               />
             )}{" "}
-            <DeliveredTable filters={filters} />
+            <DeliveredOrderTable filters={filters} />
           </div>
         </div>
       </div>

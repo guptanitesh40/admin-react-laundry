@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect, useState } from "react";
 import {
   useDeleteOrder,
@@ -31,6 +32,8 @@ interface OrderTableProps {
     pickupBoyFilter: number[];
     deliveryBoyFilter: number[];
     branchFilter: number[];
+    start_date: string;
+    end_date: string;
   };
   selectedOrderIds: number[];
   setSelectedOrderIds: React.Dispatch<React.SetStateAction<number[]>>;
@@ -57,6 +60,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   isEarlyDelivery,
   setIsEarlyDelivery,
 }) => {
+  console.log("Filters : ", filters);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -151,6 +155,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
+    filters.start_date,
+    filters.end_date,
     list,
     orderList
   );
@@ -195,6 +201,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.branchFilter,
+    filters.start_date,
+    filters.end_date,
   ]);
 
   const handleViewOrder = (order_id: number) => {
@@ -461,6 +469,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       <input className="checkbox" type="checkbox" disabled />
                     </label>
                   </th>
+
                   <th className="min-w-[90px]">
                     <span
                       className={`sort ${
@@ -509,7 +518,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[135px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -520,14 +535,28 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Current Status</th>
-
-                  <th className="min-w-[280px]">Next Status</th>
+                  {location.pathname === "/confirmed-orders" && (
+                    <th className="min-w-[150px]">
+                      <span
+                        className={`sort ${
+                          sortColumn === "total"
+                            ? sortOrder === "ASC"
+                              ? "asc"
+                              : "desc"
+                            : ""
+                        }`}
+                        onClick={() => handleSort("paid_amount")}
+                      >
+                        <span className="sort-label">Paid Amount</span>
+                        <span className="sort-icon"></span>
+                      </span>
+                    </th>
+                  )}
 
                   <th className="min-w-[150px]">
                     <span
@@ -588,13 +617,27 @@ const OrderTable: React.FC<OrderTableProps> = ({
               </thead>
               {orders.length > 0 ? (
                 <tbody>
-                  {/*<tr className="bg-gray-600 text-white font-semibold">
-                    <td>{`Total Count`}</td>
-                    <td>{count}</td>
-                    <td colSpan={2}></td>
-                    <td>{10000}</td>
-                    <td colSpan={7}></td>
-                  </tr>*/}
+                  {(location.pathname === "/pickup-orders" || location.pathname === "/confirmed-orders") && (
+                    <tr className="bg-gray-600 text-white font-semibold">
+                      <td colSpan={3}>Total Count : {1000}</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>{10000}</td>
+                      <td>{1200}</td>
+                      {location.pathname === "/confirmed-orders" ? (
+                        <>
+                          <td>{1600}</td>
+                          <td colSpan={5}></td>
+                        </>
+                      ) : (
+                        <>
+                          <td colSpan={5}></td>
+                        </>
+                      )}
+                    </tr>
+                  )}
+
                   {orders.map((order) => {
                     const isDisabled =
                       (selectedStatus !== null &&
@@ -637,8 +680,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
 
-                        <td>{order.total}</td>
-
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -661,6 +702,14 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             </div>
                           )}
                         </td>
+
+                        <td>{order.items.map((item) => item.quantity)}</td>
+
+                        <td>{order.total}</td>
+
+                        {location.pathname === "/confirmed-orders" && (
+                          <td>{order.paid_amount}</td>
+                        )}
 
                         <td>
                           <div className="flex items-center gap-2.5">
@@ -710,7 +759,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                               {hasPermission(3, "update") && (
                                 <button
-                                  className={`mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200`}
+                                  className="mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200"
                                   onClick={() =>
                                     handleUpdateOrder(order.order_id)
                                   }

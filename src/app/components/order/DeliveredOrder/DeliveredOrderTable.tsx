@@ -20,6 +20,8 @@ import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
 
 interface DeliveredOrderTableProps {
   filters: {
+    end_date: string;
+    start_date: string;
     paymentStatusFilter: number[];
     orderStatusFilter: number[];
     paymentTypeFilter: number | undefined;
@@ -62,6 +64,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
+    filters.start_date,
+    filters.end_date,
     list,
     orderList
   );
@@ -106,11 +110,15 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.branchFilter,
+    filters.start_time,
+    filters.end_time,
   ]);
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
+
+  console.log("Delivered Orders");
 
   const handleDeleteOrder = async (order_id: number) => {
     try {
@@ -322,7 +330,11 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[135px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -333,12 +345,42 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Current Status</th>
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("paid_amount")}
+                    >
+                      <span className="sort-label">Paid Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[155px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("kasar_amount")}
+                    >
+                      <span className="sort-label">Kasar Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -404,7 +446,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[160px]">Receipt</th>
+                  <th className="min-w-[130px]">Receipt</th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -415,6 +457,16 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               </thead>
               {orders.length > 0 ? (
                 <tbody>
+                  <tr className="bg-gray-600 text-white font-semibold">
+                    <td colSpan={2}>Total Count : {1000}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{10}</td>
+                    <td>{120000}</td>
+                    <td>{50000}</td>
+                    <td colSpan={7}>{500}</td>
+                  </tr>
+
                   {orders.map((order) => {
                     const adminStatusClass = getOrderStatusLabel(
                       order.order_status_details.admin_label
@@ -435,8 +487,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                           {order.user.first_name + " " + order.user.last_name}
                         </td>
 
-                        <td>{order.total}</td>
-
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
@@ -444,6 +494,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             {order.order_status_details.admin_label}
                           </span>
                         </td>
+
+                        <td>{order.items.map((item) => item.quantity)}</td>
+
+                        <td>{order.total}</td>
+
+                        <td>{order.paid_amount}</td>
+
+                        <td>{order.kasar_amount}</td>
 
                         <td>
                           <div className="flex items-center gap-2.5">

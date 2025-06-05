@@ -462,6 +462,7 @@ const RedyToDeliverTable: React.FC<RedyToDeliverTableProps> = ({ filters }) => {
               </thead>
               {orders.length > 0 ? (
                 <tbody>
+                  
                   {orders.map((order) => {
                     const adminStatusClass = getOrderStatusLabel(
                       order.order_status_details.admin_label

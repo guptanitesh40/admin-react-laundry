@@ -25,10 +25,13 @@ interface Order {
   payment_status: number;
   kasar_amount: number;
   items: any[];
+  quantity: any;
   sub_total: number;
   total: number;
   normal_delivery_charges: number;
   branch_id: number;
+  start_date: string;
+  end_date: string;
 }
 const useGetOrders = (
   pageNumber: number = 1,
@@ -43,6 +46,8 @@ const useGetOrders = (
   delivery_boy_ids?: number[],
   payment_types?: number,
   payment_statuses?: number[],
+  start_date?: string,
+  end_date?: string,
   list: string = "",
   orderList: string = ""
 ) => {
@@ -98,6 +103,10 @@ const useGetOrders = (
     if (payment_types)
       queryParams.append("payment_types", payment_types.toString());
 
+    if (start_date && end_date) {
+      queryParams.append("start_date", start_date);
+      queryParams.append("end_date", end_date);
+    }
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/admin/orders?${queryParams}`, {
@@ -141,6 +150,8 @@ const useGetOrders = (
     delivery_boy_ids,
     payment_types,
     payment_statuses,
+    start_date,
+    end_date,
   ]);
 
   return { orders, count, loading, fetchOrders };

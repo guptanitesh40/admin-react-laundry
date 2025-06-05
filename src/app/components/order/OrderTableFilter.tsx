@@ -4,6 +4,10 @@ import { PaymentStatus } from "../../../types/enums";
 import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
 import MultiSelect from "../MultiSelect/MultiSelect";
 
+import dayjs from "dayjs";
+import { DatePicker } from "antd";
+const { RangePicker } = DatePicker;
+
 interface OptionType {
   label: string;
   value: number;
@@ -32,17 +36,29 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   orderStatusOptions,
   showSearchInput = true,
 }) => {
-  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>([]);
+  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
+    []
+  );
   const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
   const [selectedCustomers, setSelectedCustomers] = useState<OptionType[]>([]);
 
-  const [allPickupBoyOptions, setAllPickupBoyOptions] = useState<OptionType[]>([]);
+  const [allPickupBoyOptions, setAllPickupBoyOptions] = useState<OptionType[]>(
+    []
+  );
   const [pickupBoyOptions, setPickupBoyOptions] = useState<OptionType[]>([]);
-  const [selectedPickupBoys, setSelectedPickupBoys] = useState<OptionType[]>([]);
+  const [selectedPickupBoys, setSelectedPickupBoys] = useState<OptionType[]>(
+    []
+  );
 
-  const [allDeliveryBoyOptions, setAllDeliveryBoyOptions] = useState<OptionType[]>([]);
-  const [deliveryBoyOptions, setDeliveryBoyOptions] = useState<OptionType[]>([]);
-  const [selectedDeliveryBoys, setSelectedDeliveryBoys] = useState<OptionType[]>([]);
+  const [allDeliveryBoyOptions, setAllDeliveryBoyOptions] = useState<
+    OptionType[]
+  >([]);
+  const [deliveryBoyOptions, setDeliveryBoyOptions] = useState<OptionType[]>(
+    []
+  );
+  const [selectedDeliveryBoys, setSelectedDeliveryBoys] = useState<
+    OptionType[]
+  >([]);
 
   const [customerSearch, setCustomerSearch] = useState("");
   const [pickupBoySearch, setPickupBoySearch] = useState("");
@@ -54,6 +70,22 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   const paymentStatusOptions = Object.entries(PaymentStatus)
     .filter(([key, value]) => typeof value === "number")
     .map(([label, value]) => ({ label, value: value as number }));
+
+  const handleDateChange = (dates: [Date, Date]) => {
+    if (dates && dates[0] && dates[1]) {
+      updateFilters({
+        ...filters,
+        start_date: dayjs(dates[0]).format("DD-MM-YYYY"),
+        end_date: dayjs(dates[1]).format("DD-MM-YYYY"),
+      });
+    } else {
+      updateFilters({
+        ...filters,
+        start_date: "",
+        end_date: "",
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchInitialUsers = async () => {
@@ -130,11 +162,12 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
   }, [deliveryBoyOptions, allDeliveryBoyOptions]);
 
   const getCombinedOptions = (
-    selectedOptions: OptionType[], 
-    filteredOptions: OptionType[] 
+    selectedOptions: OptionType[],
+    filteredOptions: OptionType[]
   ): OptionType[] => [
     ...selectedOptions.filter(
-      (selected) => !filteredOptions.some((option) => option.value === selected.value)
+      (selected) =>
+        !filteredOptions.some((option) => option.value === selected.value)
     ),
     ...filteredOptions,
   ];
@@ -149,19 +182,23 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             placeholder="Search Customer"
             selectedValues={selectedCustomers.map((customer) => customer.value)}
             onSelect={(selectedList: any) => {
-              setSelectedCustomers(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedCustomers(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
                 customerFilter: selectedValues,
               });
             }}
             onRemove={(selectedList: any) => {
-              setSelectedCustomers(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedCustomers(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
-                customerFilter: selectedValues, 
+                customerFilter: selectedValues,
               });
             }}
             setSearch={setCustomerSearch}
@@ -230,24 +267,31 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
           />
 
           <MultiSelect
-            options={getCombinedOptions(selectedDeliveryBoys, deliveryBoyOptions)}
+            options={getCombinedOptions(
+              selectedDeliveryBoys,
+              deliveryBoyOptions
+            )}
             displayValue="label"
             placeholder="Search DeliveryBoy"
             selectedValues={filters.deliveryBoyFilter}
             onSelect={(selectedList: any) => {
-              setSelectedDeliveryBoys(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedDeliveryBoys(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
                 deliveryBoyFilter: selectedValues,
               });
             }}
             onRemove={(selectedList: any) => {
-              setSelectedDeliveryBoys(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedDeliveryBoys(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
-                deliveryBoyFilter: selectedValues, 
+                deliveryBoyFilter: selectedValues,
               });
             }}
             setSearch={setDeliveryBoySearch}
@@ -261,19 +305,23 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
             placeholder="Search PickupBoy"
             selectedValues={filters.pickupBoyFilter}
             onSelect={(selectedList: any) => {
-              setSelectedPickupBoys(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedPickupBoys(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
                 pickupBoyFilter: selectedValues,
               });
             }}
             onRemove={(selectedList: any) => {
-              setSelectedPickupBoys(selectedList); 
-              const selectedValues = selectedList.map((item: any) => item.value);
+              setSelectedPickupBoys(selectedList);
+              const selectedValues = selectedList.map(
+                (item: any) => item.value
+              );
               updateFilters({
                 ...filters,
-                pickupBoyFilter: selectedValues, 
+                pickupBoyFilter: selectedValues,
               });
             }}
             setSearch={setPickupBoySearch}
@@ -310,8 +358,8 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
           />
 
           <select
-            className="select select-lg w-[200px] text-sm"
-            value={filters.paymentTypeFilter}
+            className="select select-lg w-full text-sm"
+            value={filters.paymentTypeFilter ?? ""}
             onChange={(e) => {
               updateFilters({
                 ...filters,
@@ -319,12 +367,19 @@ const OrderTableFilter: React.FC<OrderTableFilterProps> = ({
               });
             }}
           >
-            <option value="" selected>
-              Payment type
-            </option>
+            <option value="">Payment type</option>
             <option value={1}>Cash on Delivery</option>
             <option value={2}>Online Payment</option>
           </select>
+
+          <div>
+            <RangePicker
+              className="w-full min-w-[80px] px-3 py-2 rounded-md border-gray-300"
+              popupClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+              format="DD-MM-YYYY"
+            />
+          </div>
         </div>
       </div>
     </>
