@@ -187,6 +187,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     );
   }
 
+
   return (
     <>
       <div className="card-header card-header-space flex-wrap">
@@ -329,76 +330,89 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                 <tbody>
                   {users.map((user) => {
                     return (
-                      <tr key={user.user_id}>
+                      <tr key={user?.user_id}>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
-                          onClick={() => handleViewUser(user.user_id)}
+                          onClick={() => handleViewUser(user?.user_id)}
                         >
                           <div className="flex items-center gap-2.5">
-                            {user.user_id}
+                            {user?.user_id}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-1.5">
-                            {user.first_name} {user.last_name}
+                            {user?.first_name} {user?.last_name}
                           </div>
                         </td>
                         <td>
                           <span
                             className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                              user.role_id
+                              user?.role_id
                             )}`}
                           >
-                            {Role[user.role_id as unknown as keyof typeof Role]}
+                            {
+                              Role[
+                                user?.role_id as unknown as keyof typeof Role
+                              ]
+                            }
                           </span>
                         </td>
-                        <td>{user.email}</td>
+                        <td>{user?.email}</td>
                         <td>
                           <div className="flex items-center gap-1.5">
-                            {user.mobile_number}
+                            {user?.mobile_number}
                           </div>
                         </td>
                         <td>
                           {
                             Gender[
-                              user.gender as unknown as keyof typeof Gender
+                              user?.gender as unknown as keyof typeof Gender
                             ]
                           }
                         </td>
                         <td>
-                          {user?.companies
-                            .map((company: any) => company)
-                            .join(", ")}
+                          {Array.isArray(user?.companies) &&
+                          user.companies.length > 0
+                            ? user.companies
+                                .map((company: any) => company)
+                                .join(", ")
+                            : ""}
                         </td>
-                        <td>
-                          {user?.branches
 
-                            .map((branch: any) => branch)
-                            .join(", ")}{" "}
+                        <td>
+                          {Array.isArray(user?.branches) &&
+                          user.branches.length > 0
+                            ? user.branches
+                                .map((branch: any) => branch)
+                                .join(", ")
+                            : ""}
                         </td>
-                        <td>
-                          {user?.workshops
 
-                            .map((workshop: any) => workshop)
-                            .join(", ")}{" "}
+                        <td>
+                          {Array.isArray(user?.workshops) &&
+                          user.workshops.length > 0
+                            ? user.workshops
+                                .map((workshop: any) => workshop)
+                                .join(", ")
+                            : ""}
                         </td>
 
                         <td className="flex">
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewUser(user.user_id)}
+                            onClick={() => handleViewUser(user?.user_id)}
                           >
                             <FaEye size={18} className="text-gray-600" />
                           </button>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                            onClick={() => handleUpdateUser(user.user_id)}
+                            onClick={() => handleUpdateUser(user?.user_id)}
                           >
                             <FaPencilAlt className="text-yellow-600" />
                           </button>
                           <button
                             className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteUser(user.user_id)}
+                            onClick={() => handleDeleteUser(user?.user_id)}
                           >
                             <FaTrash className="text-red-500" />
                           </button>

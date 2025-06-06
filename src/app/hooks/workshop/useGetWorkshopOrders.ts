@@ -34,6 +34,15 @@ interface WorkshopOrders {
   branches_ids: number;
 }
 
+interface WorkshopOrderData {
+  workshopOrders: WorkshopOrders[];
+  count: number;
+  total_amount: number;
+  paid_amount: number;
+  total_quantity: number;
+  kasar_amount: number;
+}
+
 const useGetWorkshopOrders = (
   pageNumber: number = 1,
   perPage: number = 10,
@@ -48,7 +57,7 @@ const useGetWorkshopOrders = (
   workshop_ids?: number[],
   workshop_manager_ids?: number[]
 ) => {
-  const [workshopOrders, setWorkshopOrders] = useState<WorkshopOrders[]>();
+  const [workshopOrderData, setWorkshopOrderData] = useState<WorkshopOrderData[]>();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -110,7 +119,7 @@ const useGetWorkshopOrders = (
         return;
       }
 
-      setWorkshopOrders(data?.data?.workshopOrders || []);
+      setWorkshopOrderData(data?.data || {});
       setCount(data?.data?.count);
     } catch {
       toast.error("Network error: Failed to fetch workshop orders.");
@@ -136,7 +145,7 @@ const useGetWorkshopOrders = (
     workshop_manager_ids,
   ]);
 
-  return { workshopOrders, loading, count };
+  return { workshopOrderData, loading, count };
 };
 
 export default useGetWorkshopOrders;

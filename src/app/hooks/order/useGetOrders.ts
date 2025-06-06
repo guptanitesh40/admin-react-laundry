@@ -33,6 +33,16 @@ interface Order {
   start_date: string;
   end_date: string;
 }
+
+interface OrdersData {
+  orders: Order[];
+  count: number;
+  total_amount: number;
+  paid_amount: number;
+  total_quantity: number;
+  kasar_amount: number;
+}
+
 const useGetOrders = (
   pageNumber: number = 1,
   perPage: number = 10,
@@ -51,7 +61,7 @@ const useGetOrders = (
   list: string = "",
   orderList: string = ""
 ) => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orderData, setOrderData] = useState<OrdersData>();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -124,7 +134,7 @@ const useGetOrders = (
         return;
       }
 
-      setOrders(data?.data?.orders || []);
+      setOrderData(data?.data || {});
       setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error || "Network error: Failed to fetch.", {
@@ -154,7 +164,7 @@ const useGetOrders = (
     end_date,
   ]);
 
-  return { orders, count, loading, fetchOrders };
+  return { orderData, count, loading, fetchOrders };
 };
 
 export default useGetOrders;

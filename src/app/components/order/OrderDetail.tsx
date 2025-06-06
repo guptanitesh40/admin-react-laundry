@@ -5,6 +5,7 @@ import useGetOrder from "../../hooks/order/useGetOrder";
 import { BiImageAlt, BiRefresh } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
+import { IoIosAttach } from "react-icons/io";
 import {
   useAddNote,
   useDeleteNote,
@@ -19,7 +20,7 @@ import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import OrderCalcelModal from "./OrderCancelModal";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdLinkedCamera } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
@@ -32,6 +33,7 @@ import PickUpBoyModelEd2 from "./PickUpBoyModelEd2";
 import DueDetailsModel from "./DueDetailsModel";
 import { GiRegeneration } from "react-icons/gi";
 import useReGenerateInvoice from "../../hooks/invoice/useRegenerateInvoice";
+import { BASE_URL } from "../../utils/constant";
 
 const schema = Yup.object().shape({
   text_note: Yup.string().required("Please enter text to add note"),
@@ -56,6 +58,7 @@ const OrderDetails: React.FC = () => {
     order_id: null,
     text_note: "",
     images: [] as (string | File)[],
+    is_visible: true,
   });
 
   const [pbModel2IsOpen, setPbModel2IsOpen] = useState<boolean>(false);
@@ -72,6 +75,7 @@ const OrderDetails: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [updatingNote, setUpdatingNote] = useState<boolean>(false);
 
   const [dueDTModelIsOpen, setDueDTModelIsOpen] = useState<boolean>(false);
 
@@ -165,6 +169,7 @@ const OrderDetails: React.FC = () => {
       formDataObj.append("user_id", userId.toString());
       formDataObj.append("order_id", formData.order_id);
       formDataObj.append("text_note", formData.text_note);
+      formDataObj.append("is_visible", formData.is_visible.toString());
 
       if (formData.images && formData.images.length > 0) {
         formData.images.forEach((image) => {
@@ -179,6 +184,7 @@ const OrderDetails: React.FC = () => {
           order_id: null,
           text_note: "",
           images: [] as (string | File)[],
+          is_visible: true,
         });
         setErrorMessage("");
         await fetchOrder(formData.order_id);
@@ -229,7 +235,7 @@ const OrderDetails: React.FC = () => {
   };
 
   const handleOrderTableStatus = async () => {
-    switch (order?.order_status_details.next_step) {
+    switch (order?.order_status_details?.next_step) {
       case "Assign Pickup Boy":
         setModalOpen(true);
         break;
@@ -314,16 +320,16 @@ const OrderDetails: React.FC = () => {
   if (!order) return null;
 
   const adminStatusLabel = getOrderStatusLabel(
-    order.order_status_details.admin_label
+    order?.order_status_details?.admin_label
   );
 
   const nextStepLabel = getOrderStatusLabel(
-    order.order_status_details.next_step
+    order?.order_status_details?.next_step
   );
 
   const paymentStatusLabel =
     PaymentStatus[
-      order.payment_status as unknown as keyof typeof PaymentStatus
+      order?.payment_status as unknown as keyof typeof PaymentStatus
     ];
 
   const handlePrintLabel = (index: number) => {
@@ -353,6 +359,45 @@ const OrderDetails: React.FC = () => {
     reGenerateInvoice(order.order_id);
   };
 
+  const handleToggleNoteVisibility = async (
+    noteId: number,
+    isVisible: boolean
+  ) => {
+    const token = localStorage.getItem("authToken");
+
+    setUpdatingNote(true);
+    try {
+      const response = await fetch(`${BASE_URL}/notes/${noteId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ is_visible: isVisible }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.message || "Failed to update note visibility");
+        return false;
+      }
+
+      await fetchOrder(order_id);
+      toast.success(data.message || "Visibility updated");
+      return true;
+    } catch (error) {
+      toast.error("Network Error: Failed to update note visibility");
+      return false;
+    } finally {
+      setUpdatingNote(false);
+    }
+  };
+
+  const openCamera = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="container mx-auto p-6">
       <div className="card rounded-xl relative">
@@ -360,7 +405,7 @@ const OrderDetails: React.FC = () => {
           className="flex justify-center items-center h-6 w-6 absolute top-4 right-1/2 -translate-x-1/2 text-base font-medium border border-primary rounded-full"
           style={{ display: "none" }}
         >
-          {order.order_status}
+          {order?.order_status}
         </span>
         <div className="flex flex-col gap-4 p-5 rounded-md shadow-md">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -445,9 +490,9 @@ const OrderDetails: React.FC = () => {
 
               {location?.state?.from !== "WorkshopOrderTable" &&
                 hasPermission(3, "update") &&
-                order.payment_status !== 1 &&
-                order.refund_status === 3 &&
-                order.order_status !== 11 && (
+                order?.payment_status !== 1 &&
+                order?.refund_status === 3 &&
+                order?.order_status !== 11 && (
                   <button
                     className="flex items-center sm:btn smmobile:btn-sm smmobile:btn font-semibold btn-success"
                     onClick={handleOrderRefund}
@@ -468,17 +513,17 @@ const OrderDetails: React.FC = () => {
                 <span
                   className={`${adminStatusLabel} badge-outline badge-xl rounded-[30px]`}
                 >
-                  {order.order_status_details.admin_label}
+                  {order?.order_status_details?.admin_label}
                 </span>
               </div>
 
               <div className="flex-1 px-6">
                 <p className="text-sm text-gray-600 mt-1">
-                  {order.order_status_details.description}
+                  {order?.order_status_details?.description}
                 </p>
               </div>
 
-              {order.order_status_details.next_step !== null && (
+              {order?.order_status_details?.next_step !== null && (
                 <div className="flex items-center mobile:flex-col desktop:flex-col gap-2">
                   <span className="text-sm font-medium text-gray-700">
                     Next Step:
@@ -491,7 +536,7 @@ const OrderDetails: React.FC = () => {
                       !hasPermission(16, "update")
                     }
                   >
-                    {order.order_status_details.next_step}
+                    {order?.order_status_details?.next_step}
                   </button>
                   {order?.order_status === 9 && (
                     <button
@@ -521,7 +566,7 @@ const OrderDetails: React.FC = () => {
                   Reason of Refund :
                 </span>
                 <p className="text-sm text-gray-600 mt-1">
-                  {order.refund_descriptions}
+                  {order?.refund_descriptions}
                 </p>
               </div>
 
@@ -530,7 +575,7 @@ const OrderDetails: React.FC = () => {
                   Refund Amount :{" "}
                 </span>
                 <span className="text-sm font-medium text-gray-700">
-                  ₹{order.refund_amount}
+                  ₹{order?.refund_amount}
                 </span>
               </div>
 
@@ -545,7 +590,7 @@ const OrderDetails: React.FC = () => {
                       : "badge badge-warning"
                   } badge-outline badge-sm`}
                 >
-                  {RefundStatus[order.refund_status]}{" "}
+                  {RefundStatus[order?.refund_status]}{" "}
                 </span>
               </div>
 
@@ -568,11 +613,11 @@ const OrderDetails: React.FC = () => {
                 <div className="flex items-baseline justify-start flex-wrap sm:!gap-2 gap-1">
                   <h3 className="card-title text-lg">Order Items</h3>
                   <span className="text-gray-700 text-sm font-bold rounded-lg flex">
-                    Total Items : {order.items.length}
+                    Total Items : {order?.items.length}
                   </span>
                   <span className="text-gray-700 text-sm font-bold rounded-lg flex">
                     Total Quantity :
-                    {order.items.reduce((accumulator, currentValue) => {
+                    {order?.items?.reduce((accumulator, currentValue) => {
                       return accumulator + currentValue.quantity;
                     }, 0)}
                   </span>
@@ -593,25 +638,25 @@ const OrderDetails: React.FC = () => {
               <div className="card-body p-0 ml-4">
                 <div className="scrollable-y-hover pe-4 pb-4 max-h-[400px] mb-4">
                   <div className="space-y-4">
-                    {order.items.length > 0 ? (
-                      order.items.map((item: any, index) => (
+                    {order?.items?.length > 0 ? (
+                      order?.items?.map((item: any, index) => (
                         <div
-                          key={item.item_id}
+                          key={item?.item_id}
                           className="border border-gray-200 rounded-xl gap-2 px-4 py-4 bg-gray-50"
                         >
                           <div className="flex items-center flex-wrap gap-x-4 gap-y-2 justify-between xmobile:flex-col">
                             <div className="flex items-center gap-3.5 xmobile:flex-col">
                               <img
-                                alt={item.product.name}
+                                alt={item?.product.name}
                                 className="w-16 h-16 shrink-0 object-cover rounded"
-                                src={item.product.image}
+                                src={item?.product.image}
                               />
                               <div className="flex flex-col ">
                                 <span className="text-sm font-semibold text-gray-900 mb-px xmobile:ml-8">
-                                  {item.product.name} ({item.quantity})
+                                  {item?.product?.name} ({item?.quantity})
                                 </span>
                                 <span className="text-2sm font-medium text-gray-600">
-                                  Category: {item.category.name}
+                                  Category: {item?.category?.name}
                                 </span>
                               </div>
                             </div>
@@ -620,7 +665,7 @@ const OrderDetails: React.FC = () => {
                                 <span className="mobile:hidden">
                                   Service :{" "}
                                 </span>
-                                <span>{item.service.name}</span>
+                                <span>{item?.service?.name}</span>
                               </div>
                               <div>
                                 <button
@@ -632,13 +677,13 @@ const OrderDetails: React.FC = () => {
                               </div>
                             </div>
                           </div>
-                          {item.description && (
+                          {item?.description && (
                             <div className="mt-2 p-3 bg-gray-100 rounded-md">
                               <p className="text-sm text-gray-600">
                                 <span className="text-sm font-medium text-gray-600">
                                   Description :
                                 </span>{" "}
-                                {item.description}
+                                {item?.description}
                               </p>
                             </div>
                           )}
@@ -685,74 +730,74 @@ const OrderDetails: React.FC = () => {
                         Sub Total:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.sub_total}
+                        ₹{order?.sub_total}
                       </td>
                     </tr>
 
-                    {order.normal_delivery_charges !== 0 && (
+                    {order?.normal_delivery_charges !== 0 && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Normal Delivery Charge:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{order.normal_delivery_charges}
+                          ₹{order?.normal_delivery_charges}
                         </td>
                       </tr>
                     )}
 
-                    {order.express_delivery_charges !== 0 && (
+                    {order?.express_delivery_charges !== 0 && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Express Delivery Charge:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{order.express_delivery_charges}
+                          ₹{order?.express_delivery_charges}
                         </td>
                       </tr>
                     )}
 
-                    {order.express_delivery_hour ? (
+                    {order?.express_delivery_hour ? (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Express Delivery Hours:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.express_delivery_hour} Hours
+                          {order?.express_delivery_hour} Hours
                         </td>
                       </tr>
                     ) : (
                       ""
                     )}
 
-                    {order.kasar_amount !== 0 && (
+                    {order?.kasar_amount !== 0 && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Kasar Amount:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{order.kasar_amount}
+                          ₹{order?.kasar_amount}
                         </td>
                       </tr>
                     )}
 
-                    {order.coupon_code !== "" && (
+                    {order?.coupon_code !== "" && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Coupon Code:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.coupon_code}
+                          {order?.coupon_code}
                         </td>
                       </tr>
                     )}
 
-                    {order.coupon_discount !== 0 && (
+                    {order?.coupon_discount !== 0 && (
                       <tr>
                         <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                           Coupon Discount
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          ₹{order.coupon_discount}
+                          ₹{order?.coupon_discount}
                         </td>
                       </tr>
                     )}
@@ -762,7 +807,7 @@ const OrderDetails: React.FC = () => {
                         Total:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        ₹{order.total}
+                        ₹{order?.total}
                       </td>
                     </tr>
                   </tbody>
@@ -771,7 +816,7 @@ const OrderDetails: React.FC = () => {
             </div>
           </div>
 
-          {order.gst_company_name && order.gstin && (
+          {order?.gst_company_name && order?.gstin && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
                 <div className="card-header">
@@ -786,7 +831,7 @@ const OrderDetails: React.FC = () => {
                             GSTIN :
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.gstin || "N/A"}
+                            {order?.gstin || "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -794,7 +839,7 @@ const OrderDetails: React.FC = () => {
                             Customer Company Name :
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.gst_company_name || "N/A"}
+                            {order?.gst_company_name || "N/A"}
                           </td>
                         </tr>
                       </tbody>
@@ -818,7 +863,7 @@ const OrderDetails: React.FC = () => {
                     </td>
                     <td className="text-sm font-medium text-gray-700">
                       {new Date(
-                        order.estimated_pickup_time
+                        order?.estimated_pickup_time
                       ).toLocaleDateString()}
                     </td>
                   </tr>
@@ -828,7 +873,7 @@ const OrderDetails: React.FC = () => {
                     </td>
                     <td className="text-sm font-medium text-gray-700">
                       {new Date(
-                        order.estimated_delivery_time
+                        order?.estimated_delivery_time
                       ).toLocaleDateString()}
                     </td>
                   </tr>
@@ -856,7 +901,7 @@ const OrderDetails: React.FC = () => {
                           className="flex items-center gap-2.5 text-sm font-medium text-primary cursor-pointer underline"
                           onClick={() => hadleUserNameClick(order?.user_id)}
                         >
-                          {order.user.first_name} {order.user.last_name}
+                          {order?.user?.first_name} {order?.user?.last_name}
                         </td>
                       </tr>
                       <tr>
@@ -864,7 +909,7 @@ const OrderDetails: React.FC = () => {
                           Email:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.user.email}
+                          {order?.user?.email}
                         </td>
                       </tr>
                       <tr>
@@ -872,7 +917,7 @@ const OrderDetails: React.FC = () => {
                           Mobile Number:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.user.mobile_number}
+                          {order?.user?.mobile_number}
                         </td>
                       </tr>
                     </tbody>
@@ -882,7 +927,7 @@ const OrderDetails: React.FC = () => {
             </div>
           </div>
 
-          {order.company && Object.keys(order.company).length > 0 && (
+          {order?.company && Object.keys(order.company).length > 0 && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
                 <div className="card-header">
@@ -897,7 +942,7 @@ const OrderDetails: React.FC = () => {
                             Company Name:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.company.company_name}
+                            {order?.company?.company_name}
                           </td>
                         </tr>
                         <tr>
@@ -905,7 +950,7 @@ const OrderDetails: React.FC = () => {
                             Email:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.company.email}
+                            {order?.company.email}
                           </td>
                         </tr>
                         <tr>
@@ -913,11 +958,11 @@ const OrderDetails: React.FC = () => {
                             Phone Number:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            <span>{order.company.mobile_number}</span>
+                            <span>{order?.company?.mobile_number}</span>
                             {order?.company?.phone_number && (
                               <>
                                 <span>|</span>
-                                <span>{order.company.phone_number}</span>
+                                <span>{order?.company?.phone_number}</span>
                               </>
                             )}
                           </td>
@@ -930,7 +975,7 @@ const OrderDetails: React.FC = () => {
             </div>
           )}
 
-          {order.branch && (
+          {order?.branch && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
                 <div className="card-header">
@@ -945,7 +990,7 @@ const OrderDetails: React.FC = () => {
                             Branch Name:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.branch.branch_name}
+                            {order?.branch?.branch_name}
                           </td>
                         </tr>
                         <tr>
@@ -953,7 +998,7 @@ const OrderDetails: React.FC = () => {
                             Email:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.branch.branch_email}
+                            {order?.branch?.branch_email}
                           </td>
                         </tr>
                         <tr>
@@ -961,7 +1006,7 @@ const OrderDetails: React.FC = () => {
                             Phone Number:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.branch.branch_phone_number}
+                            {order?.branch?.branch_phone_number}
                           </td>
                         </tr>
                       </tbody>
@@ -972,7 +1017,7 @@ const OrderDetails: React.FC = () => {
             </div>
           )}
 
-          {order.pickup_boy && (
+          {order?.pickup_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
                 <div className="flex items-center gap-4">
@@ -981,12 +1026,12 @@ const OrderDetails: React.FC = () => {
                       <h3 className="card-title">Pickup Boy Information</h3>
                     </div>
                     <div className="text-2sm font-medium text-gray-700">
-                      {order.pickup_boy.pickup_boy_name}
+                      {order?.pickup_boy?.pickup_boy_name}
                     </div>
-                    {order.pickup_comment && (
+                    {order?.pickup_comment && (
                       <div className="mt-2 p-3 bg-gray-100 rounded-md">
                         <p className="text-sm text-gray-600">
-                          {order.pickup_comment}
+                          {order?.pickup_comment}
                         </p>
                       </div>
                     )}
@@ -996,7 +1041,7 @@ const OrderDetails: React.FC = () => {
             </div>
           )}
 
-          {order.delivery_boy && (
+          {order?.delivery_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
                 <div className="flex items-center gap-4">
@@ -1005,7 +1050,7 @@ const OrderDetails: React.FC = () => {
                       <h3 className="card-title">Delivery Boy Information</h3>
                     </div>
                     <div className="text-2sm font-medium text-gray-700">
-                      {order.delivery_boy?.delivery_boy_name}
+                      {order?.delivery_boy?.delivery_boy_name}
                     </div>
                   </div>
                 </div>
@@ -1021,9 +1066,9 @@ const OrderDetails: React.FC = () => {
                     <h3 className="card-title">Shipping Address</h3>
                   </div>
                   <div className="text-2sm font-medium text-gray-700">
-                    {order.address_details !== "null" &&
-                    order.address_details.trim() !== ""
-                      ? order.address_details
+                    {order?.address_details !== "null" &&
+                    order?.address_details.trim() !== ""
+                      ? order?.address_details
                       : "Address not provided."}
                   </div>
                 </div>
@@ -1045,7 +1090,7 @@ const OrderDetails: React.FC = () => {
                           Payment Type:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {PaymentType[order.payment_type]}
+                          {PaymentType[order?.payment_type]}
                         </td>
                       </tr>
                       <tr>
@@ -1054,7 +1099,7 @@ const OrderDetails: React.FC = () => {
                         </td>
                         <td
                           className={`badge-outline ${getPaymentStatusLabel(
-                            order.payment_status
+                            order?.payment_status
                           )}`}
                         >
                           {paymentStatusLabel}
@@ -1066,7 +1111,7 @@ const OrderDetails: React.FC = () => {
                             Paid amount:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.paid_amount}
+                            {order?.paid_amount}
                           </td>
                         </tr>
                       )}
@@ -1076,7 +1121,7 @@ const OrderDetails: React.FC = () => {
                             kasar amount:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.kasar_amount}
+                            {order?.kasar_amount}
                           </td>
                         </tr>
                       )}
@@ -1086,7 +1131,7 @@ const OrderDetails: React.FC = () => {
                             Pending amount:
                           </td>
                           <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                            {order.pending_due_amount}
+                            {order?.pending_due_amount}
                           </td>
                         </tr>
                       )}
@@ -1095,7 +1140,7 @@ const OrderDetails: React.FC = () => {
                           Transaction ID:
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.transaction_id || "N/A"}
+                          {order?.transaction_id || "N/A"}
                         </td>
                       </tr>
                       <tr style={{ display: "none" }}>
@@ -1103,7 +1148,7 @@ const OrderDetails: React.FC = () => {
                           GSTIN :
                         </td>
                         <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                          {order.gstin || "N/A"}
+                          {order?.gstin || "N/A"}
                         </td>
                       </tr>
                     </tbody>
@@ -1135,22 +1180,44 @@ const OrderDetails: React.FC = () => {
                 }
                 rows={5}
               />
-              <div className="flex items-center mt-2">
-                <button
-                  className="text-gray-600 hover:text-gray-700 hover:bg-gray-200 rounded-full p-1 transition-all ease-in-out duration-200"
-                  title="Attach image"
-                  onClick={handleIconClick}
-                >
-                  <BiImageAlt size={23} />
-                </button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: "none" }}
-                  multiple
-                  onChange={handleChange}
-                  name="images"
-                />
+              <div className="flex items-center mt-2 gap-4">
+                <div>
+                  <button
+                    className="btn btn-light"
+                    title="Attach image"
+                    onClick={handleIconClick}
+                  >
+                    Attach image <IoIosAttach size={20} />
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    multiple
+                    onChange={handleChange}
+                    name="images"
+                  />
+                </div>
+
+                <div>
+                  <button
+                    className="btn btn-light"
+                    title="Take Photo"
+                    onClick={openCamera}
+                  >
+                    Take Photo <MdLinkedCamera size={20} />
+                  </button>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    capture="user" // front camera
+                    style={{ display: "none" }}
+                    onChange={handleChange}
+                    name="images"
+                  />
+                </div>
               </div>
             </div>
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
@@ -1189,7 +1256,7 @@ const OrderDetails: React.FC = () => {
           </div>
 
           <ul className="mt-4 space-y-4">
-            {order.notes?.map((note: any, index: any) => {
+            {order?.notes?.map((note: any, index: any) => {
               const formattedDate = dayjs(note.created_at).format(
                 "HH:mm, DD/MM/YYYY"
               );
@@ -1198,7 +1265,7 @@ const OrderDetails: React.FC = () => {
                 <div key={index} className="relative">
                   <div className="flex justify-between items-center mb-2">
                     <span className="block text-sm text-gray-600">
-                      • {note.user.first_name} {note.user.last_name}
+                      • {note?.user?.first_name} {note?.user?.last_name}
                     </span>
 
                     <span className="text-xs text-gray-500">
@@ -1207,11 +1274,11 @@ const OrderDetails: React.FC = () => {
                   </div>
 
                   <li className="p-4 border rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 transition duration-200 relative">
-                    <p className="text-gray-800 mb-2">{note.text_note}</p>
+                    <p className="text-gray-800 mb-2">{note?.text_note}</p>
 
-                    {note.images && note.images.length > 0 && (
+                    {note?.images && note?.images?.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-3">
-                        {note.images.map((image: string, index: number) => (
+                        {note?.images?.map((image: string, index: number) => (
                           <img
                             key={index}
                             src={image}
@@ -1222,11 +1289,27 @@ const OrderDetails: React.FC = () => {
                       </div>
                     )}
 
-                    {note.user_id === userId && (
-                      <div className="flex justify-self-end">
+                    {note?.user_id === userId && (
+                      <div className="flex items-center justify-between mt-4">
+                        <label className="flex items-center space-x-2 text-sm text-gray-700">
+                          <input
+                            type="checkbox"
+                            className="checkbox"
+                            checked={note?.is_visible}
+                            disabled={updatingNote}
+                            onChange={(e) =>
+                              handleToggleNoteVisibility(
+                                note?.note_id,
+                                e.target.checked
+                              )
+                            }
+                          />
+                          <span>Visible on website</span>
+                        </label>
+
                         <button
                           className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
-                          onClick={() => hanldeDeleteNote(note.note_id)}
+                          onClick={() => hanldeDeleteNote(note?.note_id)}
                         >
                           <FaTrash className="text-red-500" />
                         </button>

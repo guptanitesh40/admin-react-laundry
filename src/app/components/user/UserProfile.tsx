@@ -45,11 +45,11 @@ const UserProfile: React.FC = () => {
 
   if (!user) return;
 
-  const totalKasarAmount = user.orders.reduce(
+  const totalKasarAmount = user?.orders?.reduce(
     (sum: any, order: { kasar_amount: any }) => sum + order.kasar_amount,
     0
   );
-  const totalOrderAmount = user.orders.reduce(
+  const totalOrderAmount = user?.orders?.reduce(
     (sum: any, order: { total: any }) => sum + order.total,
     0
   );
@@ -69,12 +69,12 @@ const UserProfile: React.FC = () => {
       <div className="flex flex-col bg-gray-50 p-5 rounded-md shadow-md">
         <div className="flex justify-between gap-4 items-center">
           <h1 className="text-xl font-semibold text-gray-900">
-            {user.first_name} {user.last_name}
+            {user?.first_name} {user?.last_name}
           </h1>
           {userData?.total_pending_amount !== 0 && (
             <div className="flex flex-end items-center gap-2">
               <span className="text-sm font-medium text-red-700">
-                Total Pending Amount: ₹{userData.total_pending_amount}
+                Total Pending Amount: ₹{userData?.total_pending_amount}
               </span>
               <button
                 className="font-extralight btn btn-lg btn-light"
@@ -87,10 +87,10 @@ const UserProfile: React.FC = () => {
           {user?.role_id !== 5 && (
             <span
               className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                user.role_id
+                user?.role_id
               )}`}
             >
-              {Role[user.role_id as unknown as keyof typeof Role]}
+              {Role[user?.role_id as unknown as keyof typeof Role]}
             </span>
           )}
         </div>
@@ -113,7 +113,7 @@ const UserProfile: React.FC = () => {
                     className="btn btn-light flex justify-center items-center rounded-full p-0 !h-8 !w-8"
                     data-tooltip="#tooltip_hover"
                     data-tooltip-trigger="hover"
-                    onClick={() => handleEditUser(user.user_id)}
+                    onClick={() => handleEditUser(user?.user_id)}
                   >
                     <FaUserEdit className="h-5 w-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
                   </button>
@@ -129,7 +129,7 @@ const UserProfile: React.FC = () => {
                       Name:
                     </td>
                     <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                      {user.first_name} {user.last_name}
+                      {user?.first_name} {user?.last_name}
                     </td>
                   </tr>
                   <tr>
@@ -137,7 +137,7 @@ const UserProfile: React.FC = () => {
                       Email:
                     </td>
                     <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                      {user.email}
+                      {user?.email}
                     </td>
                   </tr>
                   <tr>
@@ -145,7 +145,7 @@ const UserProfile: React.FC = () => {
                       Mobile Number:
                     </td>
                     <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                      {user.mobile_number}
+                      {user?.mobile_number}
                     </td>
                   </tr>
                   <tr>
@@ -153,7 +153,7 @@ const UserProfile: React.FC = () => {
                       Gender:
                     </td>
                     <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                      {Gender[user.gender as unknown as keyof typeof Gender]}
+                      {Gender[user?.gender as unknown as keyof typeof Gender]}
                     </td>
                   </tr>
 
@@ -166,24 +166,24 @@ const UserProfile: React.FC = () => {
                         <span>
                           <img
                             className="h-14 w-14 rounded-full"
-                            src={user.image}
+                            src={user?.image}
                           />
                         </span>
                       </td>
                     </tr>
                   )}
 
-                  {user.role_id !== 5 && (
+                  {user?.role_id !== 5 && (
                     <tr>
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Role:
                       </td>
                       <span
                         className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                          user.role_id
+                          user?.role_id
                         )}`}
                       >
-                        {Role[user.role_id as unknown as keyof typeof Role]}
+                        {Role[user?.role_id as unknown as keyof typeof Role]}
                       </span>
                     </tr>
                   )}
@@ -193,9 +193,12 @@ const UserProfile: React.FC = () => {
                         Company:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {user.companies
-                          .map((company: any) => company)
-                          .join(",")}{" "}
+                        {Array.isArray(user?.companies) &&
+                        user.companies.length > 0
+                          ? user.companies
+                              .map((company: any) => company)
+                              .join(",")
+                          : ""}
                       </td>
                     </tr>
                   )}
@@ -205,7 +208,7 @@ const UserProfile: React.FC = () => {
                         Branch:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {user.branches.map((branch: any) => branch).join(", ")}{" "}
+                        {Array.isArray(user.branches) && user.branches.length > 0 ? user.branches.map((branch: any) => branch).join(", ") : ""}
                       </td>
                     </tr>
                   )}
@@ -215,9 +218,7 @@ const UserProfile: React.FC = () => {
                         Workshop:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {user.workshops
-                          .map((workshop: any) => workshop)
-                          .join(", ")}{" "}
+                        {Array.isArray(user.workshops) && user.workshops.length > 0 ?user.workshops.map((workshop: any) => workshop).join(", "): ""}
                       </td>
                     </tr>
                   )}
@@ -232,7 +233,7 @@ const UserProfile: React.FC = () => {
         <CustomerOrders user={user} userId={user_id} count={count} />
       )}
 
-      {user?.orders.length > 0 && (
+      {user?.orders?.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <div className="space-y-6">
             <div className="col-span-2 lg:col-span-1 flex">
