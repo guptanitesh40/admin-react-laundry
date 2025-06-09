@@ -26,6 +26,8 @@ const Order: React.FC = () => {
     pickupBoyFilter: [] as number[],
     deliveryBoyFilter: [] as number[],
     branchFilter: [] as number[],
+    start_date: "" as string,
+    end_date: "" as string,
   });
 
   const handleAddOrder = () => {
@@ -136,6 +138,7 @@ const Order: React.FC = () => {
                 filters={filters}
                 updateFilters={updateFilters}
                 orderStatusOptions={orderListStatusOptions}
+                showSearchInput={false}
               />
             )}
             <OrderTable

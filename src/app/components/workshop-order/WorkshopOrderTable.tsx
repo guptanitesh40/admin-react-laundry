@@ -37,7 +37,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { workshopOrders, loading, count } = useGetWorkshopOrders(
+  const { workshopOrderData, loading, count } = useGetWorkshopOrders(
     currentPage,
     perPage,
     search,
@@ -55,6 +55,13 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(count / perPage);
+
+  const {
+    workshopOrders = [],
+    total_amount = 0,
+    total_quantity = 0,
+  } = workshopOrderData || {};
+
 
   useEffect(() => {
     if (pageParams) {
@@ -267,7 +274,13 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[105px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -278,14 +291,10 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-
-                  <th className="min-w-[280px]">Current Status</th>
-
-                  <th className="min-w-[280px]">Next Status</th>
 
                   <th className="min-w-[200px]">Workshop Manager</th>
 
@@ -362,17 +371,26 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                 <TableShimmer />
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
-                  {workshopOrders.map((order) => {
+                  <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
+                    <td colSpan={2}>Total Count : {count}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{total_quantity}</td>
+                    <td colSpan={8}>{total_amount}</td>
+                  </tr>
+
+                  {workshopOrders?.map((order: any) => {
                     const adminStatusClass = getOrderStatusLabel(
-                      order.order_status_details.admin_label
+                      order?.order_status_details?.admin_label
                     );
 
                     const nextStepClass = getOrderStatusLabel(
-                      order.order_status_details.next_step
+                      order?.order_status_details?.next_step
                     );
 
                     return (
-                      <tr key={order.order_id}>
+                      <tr key={order?.order_id}>
                         <th style={{ display: "none" }}>
                           <label className="flex items-center justify-center">
                             <input
@@ -388,63 +406,67 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         </th>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
-                          onClick={() => navigate(`/order/${order.order_id}`)}
+                          onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
-                          #{order.order_id}
+                          #{order?.order_id}
                         </td>
-                        <td>{order.branch.branch_name}</td>
+                        <td>{order?.branch.branch_name}</td>
                         <td>
-                          {order.user.first_name} {order.user.last_name}
+                          {order?.user?.first_name} {order?.user?.last_name}
                         </td>
-                        <td>{order.total}</td>
+
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
                           >
-                            {order.order_status_details.admin_label}
+                            {order?.order_status_details?.admin_label}
                           </span>
                         </td>
 
                         <td>
-                          {order.order_status_details.next_step !== "NULL" && (
+                          {order?.order_status_details?.next_step !== "NULL" && (
                             <div className="tooltip-custom">
                               <span
                                 className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
                               >
-                                {order.order_status_details.next_step}
+                                {order?.order_status_details?.next_step}
                               </span>
                               <div className="tooltip-text">
-                                {order.order_status_details.description}
+                                {order?.order_status_details?.description}
                               </div>
                             </div>
                           )}
                         </td>
+
+                        <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td>
+                        <td>{order?.total}</td>
+
                         <td>
-                          {order.workshop.workshopManagerMappings
+                          {order?.workshop?.workshopManagerMappings
                             .map(
                               (mapping: any) =>
-                                `${mapping.user.first_name} ${mapping.user.last_name}`
+                                `${mapping?.user?.first_name} ${mapping?.user?.last_name}`
                             )
                             .join(", ")}
                         </td>
-                        <td>{order.workshop.workshop_name}</td>
+                        <td>{order?.workshop?.workshop_name}</td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.created_at).format("DD-MM-YYYY")}
+                            {dayjs(order?.created_at).format("DD-MM-YYYY")}
                             <br />
-                            {dayjs(order.created_at).format("hh:mm:ss A")}
+                            {dayjs(order?.created_at).format("hh:mm:ss A")}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_pickup_time).format(
+                            {dayjs(order?.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_delivery_time).format(
+                            {dayjs(order?.estimated_delivery_time).format(
                               "DD-MM-YYYY"
                             )}
                             <br />
@@ -453,7 +475,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         <td>
                           {
                             PaymentType[
-                              order.payment_type as keyof typeof PaymentType
+                              order?.payment_type as keyof typeof PaymentType
                             ]
                           }
                         </td>
@@ -461,7 +483,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         <td>
                           <button
                             className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewOrder(order.order_id)}
+                            onClick={() => handleViewOrder(order?.order_id)}
                           >
                             <FaEye size={18} className="text-gray-600" />
                           </button>

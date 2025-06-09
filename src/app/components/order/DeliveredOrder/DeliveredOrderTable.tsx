@@ -20,6 +20,8 @@ import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
 
 interface DeliveredOrderTableProps {
   filters: {
+    end_date: string;
+    start_date: string;
     paymentStatusFilter: number[];
     orderStatusFilter: number[];
     paymentTypeFilter: number | undefined;
@@ -49,7 +51,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   let list = "order_list";
   let orderList = "delivered_order";
 
-  const { orders, loading, count, fetchOrders } = useGetOrders(
+  const { orderData, loading, count, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
@@ -62,6 +64,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
+    filters.start_date,
+    filters.end_date,
     list,
     orderList
   );
@@ -72,6 +76,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(count / perPage);
+
+  const {
+    orders = [],
+    total_amount = 0,
+    paid_amount = 0,
+    total_quantity = 0,
+    kasar_amount = 0,
+  } = orderData || {};
 
   useEffect(() => {
     if (pageParams) {
@@ -106,11 +118,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.branchFilter,
+    filters.start_date,
+    filters.end_date,
   ]);
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
+
 
   const handleDeleteOrder = async (order_id: number) => {
     try {
@@ -322,7 +337,11 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[135px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -333,12 +352,42 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Current Status</th>
+                  <th className="min-w-[150px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("paid_amount")}
+                    >
+                      <span className="sort-label">Paid Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
+
+                  <th className="min-w-[155px]">
+                    <span
+                      className={`sort ${
+                        sortColumn === "total"
+                          ? sortOrder === "ASC"
+                            ? "asc"
+                            : "desc"
+                          : ""
+                      }`}
+                      onClick={() => handleSort("kasar_amount")}
+                    >
+                      <span className="sort-label">Kasar Amount</span>
+                      <span className="sort-icon"></span>
+                    </span>
+                  </th>
 
                   <th className="min-w-[150px]">
                     <span
@@ -404,7 +453,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[160px]">Receipt</th>
+                  <th className="min-w-[130px]">Receipt</th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -413,55 +462,76 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {orders.length > 0 ? (
+              {orders?.length > 0 ? (
                 <tbody>
-                  {orders.map((order) => {
+                  <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
+                    <td colSpan={2}>Total Count : {count}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{total_quantity}</td>
+                    <td>{total_amount}</td>
+                    <td>{paid_amount}</td>
+                    <td colSpan={7}>{kasar_amount}</td>
+                  </tr>
+
+                  {orders?.map((order) => {
                     const adminStatusClass = getOrderStatusLabel(
-                      order.order_status_details.admin_label
+                      order?.order_status_details?.admin_label
                     );
 
                     return (
-                      <tr key={order.order_id}>
+                      <tr key={order?.order_id}>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
-                          onClick={() => navigate(`/order/${order.order_id}`)}
+                          onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
-                          #{order.order_id}
+                          #{order?.order_id}
                         </td>
 
                         <td>{order?.branch?.branch_name}</td>
 
                         <td>
-                          {order.user.first_name + " " + order.user.last_name}
+                          {order?.user?.first_name + " " + order?.user?.last_name}
                         </td>
-
-                        <td>{order.total}</td>
 
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
                           >
-                            {order.order_status_details.admin_label}
+                            {order?.order_status_details?.admin_label}
                           </span>
                         </td>
 
                         <td>
+                          {order?.items?.reduce(
+                            (total, item) => total + item?.quantity,
+                            0
+                          )}
+                        </td>
+
+                        <td>{order?.total}</td>
+
+                        <td>{order?.paid_amount}</td>
+
+                        <td>{order?.kasar_amount}</td>
+
+                        <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.created_at).format("DD-MM-YYYY")}
+                            {dayjs(order?.created_at).format("DD-MM-YYYY")}
                             <br />
-                            {dayjs(order.created_at).format("hh:mm:ss A")}
+                            {dayjs(order?.created_at).format("hh:mm:ss A")}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_pickup_time).format(
+                            {dayjs(order?.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_delivery_time).format(
+                            {dayjs(order?.estimated_delivery_time).format(
                               "DD-MM-YYYY"
                             )}
                             <br />
@@ -470,7 +540,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                         <td>
                           {
                             PaymentType[
-                              order.payment_type as keyof typeof PaymentType
+                              order?.payment_type as keyof typeof PaymentType
                             ]
                           }
                         </td>
@@ -478,13 +548,13 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                           <button
                             className="flex items-center mr-2 btn btn-light btn-sm"
                             onClick={() =>
-                              handleGenerateInvoice(order.order_id)
+                              handleGenerateInvoice(order?.order_id)
                             }
                             disabled={
-                              generating && invoiceId === order.order_id
+                              generating && invoiceId === order?.order_id
                             }
                           >
-                            {generating && invoiceId === order.order_id ? (
+                            {generating && invoiceId === order?.order_id ? (
                               <>
                                 <i className="ki-filled ki-cheque text-2xl link"></i>
                                 Receipt <LoadingSpinner />
@@ -506,19 +576,19 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                 <button
                                   className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
                                   onClick={() =>
-                                    handleViewOrder(order.order_id)
+                                    handleViewOrder(order?.order_id)
                                   }
                                 >
                                   <FaEye size={18} className="text-gray-600" />
                                 </button>
                               )}
 
-                              {order.order_status !== 11 &&
+                              {order?.order_status !== 11 &&
                                 hasPermission(3, "update") && (
                                   <button
                                     className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                                     onClick={() =>
-                                      handleUpdateOrder(order.order_id)
+                                      handleUpdateOrder(order?.order_id)
                                     }
                                   >
                                     <FaPencilAlt className="text-yellow-600" />
@@ -529,7 +599,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                 <button
                                   className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                                   onClick={() =>
-                                    handleDeleteOrder(order.order_id)
+                                    handleDeleteOrder(order?.order_id)
                                   }
                                 >
                                   <FaTrash className="text-red-500" />

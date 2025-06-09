@@ -89,7 +89,7 @@ const BDReport: React.FC = () => {
 
         <div className="flex justify-between smmobile:flex-wrap items-center w-full">
           <div className="mobile:flex mobile:gap-2 items-center">
-            <h3 className="card-title">New Report</h3>
+            <h3 className="card-title">Branch Booking vs Delivery Report</h3>
           </div>
         </div>
       </div>

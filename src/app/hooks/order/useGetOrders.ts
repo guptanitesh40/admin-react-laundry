@@ -25,11 +25,24 @@ interface Order {
   payment_status: number;
   kasar_amount: number;
   items: any[];
+  quantity: any;
   sub_total: number;
   total: number;
   normal_delivery_charges: number;
   branch_id: number;
+  start_date: string;
+  end_date: string;
 }
+
+interface OrdersData {
+  orders: Order[];
+  count: number;
+  total_amount: number;
+  paid_amount: number;
+  total_quantity: number;
+  kasar_amount: number;
+}
+
 const useGetOrders = (
   pageNumber: number = 1,
   perPage: number = 10,
@@ -43,10 +56,12 @@ const useGetOrders = (
   delivery_boy_ids?: number[],
   payment_types?: number,
   payment_statuses?: number[],
+  start_date?: string,
+  end_date?: string,
   list: string = "",
   orderList: string = ""
 ) => {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orderData, setOrderData] = useState<OrdersData>();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -98,6 +113,10 @@ const useGetOrders = (
     if (payment_types)
       queryParams.append("payment_types", payment_types.toString());
 
+    if (start_date && end_date) {
+      queryParams.append("start_date", start_date);
+      queryParams.append("end_date", end_date);
+    }
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/admin/orders?${queryParams}`, {
@@ -115,7 +134,7 @@ const useGetOrders = (
         return;
       }
 
-      setOrders(data?.data?.orders || []);
+      setOrderData(data?.data || {});
       setCount(data?.data?.count || 0);
     } catch (error: any) {
       toast.error(error || "Network error: Failed to fetch.", {
@@ -141,9 +160,11 @@ const useGetOrders = (
     delivery_boy_ids,
     payment_types,
     payment_statuses,
+    start_date,
+    end_date,
   ]);
 
-  return { orders, count, loading, fetchOrders };
+  return { orderData, count, loading, fetchOrders };
 };
 
 export default useGetOrders;

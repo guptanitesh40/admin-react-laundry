@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useEffect, useState } from "react";
 import {
   useDeleteOrder,
@@ -31,6 +32,8 @@ interface OrderTableProps {
     pickupBoyFilter: number[];
     deliveryBoyFilter: number[];
     branchFilter: number[];
+    start_date: string;
+    end_date: string;
   };
   selectedOrderIds: number[];
   setSelectedOrderIds: React.Dispatch<React.SetStateAction<number[]>>;
@@ -138,7 +141,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOrderIds]);
 
-  const { orders, loading, count, fetchOrders } = useGetOrders(
+  const { orderData, loading, count, fetchOrders } = useGetOrders(
     currentPage,
     perPage,
     search,
@@ -151,6 +154,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
     filters.deliveryBoyFilter,
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
+    filters.start_date,
+    filters.end_date,
     list,
     orderList
   );
@@ -161,6 +166,14 @@ const OrderTable: React.FC<OrderTableProps> = ({
   const navigate = useNavigate();
 
   const totalPages = Math.ceil(count / perPage);
+
+  const {
+    orders = [],
+    total_amount = 0,
+    paid_amount = 0,
+    total_quantity = 0,
+    kasar_amount = 0,
+  } = orderData || {};
 
   useEffect(() => {
     if (pageParams) {
@@ -195,6 +208,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
     filters.pickupBoyFilter,
     filters.deliveryBoyFilter,
     filters.branchFilter,
+    filters.start_date,
+    filters.end_date,
   ]);
 
   const handleViewOrder = (order_id: number) => {
@@ -218,9 +233,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
         const { success, message } = await deleteOrder(order_id);
         if (success) {
           const updatedOrders = orders.filter(
-            (order) => order.order_id !== order_id
+            (order: { order_id: number }) => order.order_id !== order_id
           );
-          if (updatedOrders.length === 0 && currentPage > 1) {
+          if (updatedOrders?.length === 0 && currentPage > 1) {
             setCurrentPage(currentPage - 1);
             setSearchParams({
               page: (currentPage - 1).toString(),
@@ -296,7 +311,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   };
 
   const handleDeliveryStatus = () => {
-    const ordersList = orders.filter((order) =>
+    const ordersList = orders.filter((order: { order_id: number }) =>
       selectedOrderIds.includes(order.order_id)
     );
     setPreviewOrders(ordersList);
@@ -461,6 +476,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       <input className="checkbox" type="checkbox" disabled />
                     </label>
                   </th>
+
                   <th className="min-w-[90px]">
                     <span
                       className={`sort ${
@@ -509,7 +525,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[135px]">
+                  <th className="min-w-[280px]">Current Status</th>
+
+                  <th className="min-w-[280px]">Next Status</th>
+
+                  <th className="min-w-[120px]">Qty</th>
+
+                  <th className="min-w-[180px]">
                     <span
                       className={`sort ${
                         sortColumn === "total"
@@ -520,14 +542,46 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("total")}
                     >
-                      <span className="sort-label">Total Amount</span>
+                      <span className="sort-label">Booking Amount</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Current Status</th>
+                  {location.pathname !== "/pickup-orders" && (
+                    <th className="min-w-[150px]">
+                      <span
+                        className={`sort ${
+                          sortColumn === "total"
+                            ? sortOrder === "ASC"
+                              ? "asc"
+                              : "desc"
+                            : ""
+                        }`}
+                        onClick={() => handleSort("paid_amount")}
+                      >
+                        <span className="sort-label">Paid Amount</span>
+                        <span className="sort-icon"></span>
+                      </span>
+                    </th>
+                  )}
 
-                  <th className="min-w-[280px]">Next Status</th>
+                  {location.pathname === "/orders" && (
+                    <th className="min-w-[155px]">
+                      <span
+                        className={`sort ${
+                          sortColumn === "total"
+                            ? sortOrder === "ASC"
+                              ? "asc"
+                              : "desc"
+                            : ""
+                        }`}
+                        onClick={() => handleSort("kasar_amount")}
+                      >
+                        <span className="sort-label">Kasar Amount</span>
+                        <span className="sort-icon"></span>
+                      </span>
+                    </th>
+                  )}
 
                   <th className="min-w-[150px]">
                     <span
@@ -586,16 +640,29 @@ const OrderTable: React.FC<OrderTableProps> = ({
                   )}
                 </tr>
               </thead>
-              {orders.length > 0 ? (
+              {orders?.length > 0 ? (
                 <tbody>
-                  {/*<tr className="bg-gray-600 text-white font-semibold">
-                    <td>{`Total Count`}</td>
-                    <td>{count}</td>
-                    <td colSpan={2}></td>
-                    <td>{10000}</td>
-                    <td colSpan={7}></td>
-                  </tr>*/}
-                  {orders.map((order) => {
+                  <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
+                    <td colSpan={3}>Total Count : {count}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{total_quantity}</td>
+                    <td>{total_amount}</td>
+
+                    {location.pathname === "/orders" ? (
+                      <>
+                        <td>{paid_amount}</td>
+                        <td colSpan={6}>{kasar_amount}</td>
+                      </>
+                    ) : location.pathname !== "/pickup-orders" ? (
+                      <td colSpan={6}>{paid_amount}</td>
+                    ) : (
+                      <td colSpan={5}></td>
+                    )}
+                  </tr>
+
+                  {orders?.map((order: any) => {
                     const isDisabled =
                       (selectedStatus !== null &&
                         order.order_status !== selectedStatus) ||
@@ -610,7 +677,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     );
 
                     return (
-                      <tr key={order.order_id}>
+                      <tr key={order?.order_id}>
                         <td>
                           <label className="flex items-center justify-center">
                             <input
@@ -626,7 +693,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                         </td>
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
-                          onClick={() => navigate(`/order/${order.order_id}`)}
+                          onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
                           #{order.order_id}
                         </td>
@@ -634,51 +701,70 @@ const OrderTable: React.FC<OrderTableProps> = ({
                         <td>{order?.branch?.branch_name}</td>
 
                         <td>
-                          {order.user.first_name + " " + order.user.last_name}
+                          {order?.user?.first_name +
+                            " " +
+                            order?.user?.last_name}
                         </td>
-
-                        <td>{order.total}</td>
 
                         <td>
                           <span
                             className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
                           >
-                            {order.order_status_details.admin_label}
+                            {order?.order_status_details?.admin_label}
                           </span>
                         </td>
 
                         <td>
-                          {order.order_status_details.next_step !== "NULL" && (
+                          {order?.order_status_details?.next_step !==
+                            "NULL" && (
                             <div className="tooltip-custom">
                               <span
                                 className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
                               >
-                                {order.order_status_details.next_step}
+                                {order?.order_status_details?.next_step}
                               </span>
                               <div className="tooltip-text">
-                                {order.order_status_details.description}
+                                {order?.order_status_details?.description}
                               </div>
                             </div>
                           )}
                         </td>
 
                         <td>
+                          {order?.items?.reduce(
+                            (total: any, item: { quantity: any }) =>
+                              total + item?.quantity,
+                            0
+                          )}
+                        </td>
+
+                        <td>{order?.total}</td>
+
+                        {location.pathname !== "/pickup-orders" && (
+                          <td>{order?.paid_amount}</td>
+                        )}
+
+                        {location.pathname === "/orders" && (
+                          <td>{order?.kasar_amount}</td>
+                        )}
+
+                        <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.created_at).format("DD-MM-YYYY")}
+                            {dayjs(order?.created_at).format("DD-MM-YYYY")}
                             <br />
-                            {dayjs(order.created_at).format("hh:mm:ss A")}
+                            {dayjs(order?.created_at).format("hh:mm:ss A")}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_pickup_time).format(
+                            {dayjs(order?.estimated_pickup_time).format(
                               "DD-MM-YYYY"
                             )}
                           </div>
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order.estimated_delivery_time).format(
+                            {dayjs(order?.estimated_delivery_time).format(
                               "DD-MM-YYYY"
                             )}
                             <br />
@@ -687,7 +773,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                         <td>
                           {
                             PaymentType[
-                              order.payment_type as keyof typeof PaymentType
+                              order?.payment_type as keyof typeof PaymentType
                             ]
                           }
                         </td>
@@ -701,7 +787,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                 <button
                                   className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
                                   onClick={() =>
-                                    handleViewOrder(order.order_id)
+                                    handleViewOrder(order?.order_id)
                                   }
                                 >
                                   <FaEye size={18} className="text-gray-600" />
@@ -710,9 +796,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                               {hasPermission(3, "update") && (
                                 <button
-                                  className={`mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200`}
+                                  className="mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200"
                                   onClick={() =>
-                                    handleUpdateOrder(order.order_id)
+                                    handleUpdateOrder(order?.order_id)
                                   }
                                 >
                                   <FaPencilAlt className="text-yellow-600" />
@@ -747,7 +833,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                 <button
                                   className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                                   onClick={() =>
-                                    handleDeleteOrder(order.order_id)
+                                    handleDeleteOrder(order?.order_id)
                                   }
                                 >
                                   <FaTrash className="text-red-500" />
