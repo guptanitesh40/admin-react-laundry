@@ -1199,7 +1199,7 @@ const OrderDetails: React.FC = () => {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <button
                     className="btn btn-light"
                     title="Take Photo"
@@ -1217,7 +1217,8 @@ const OrderDetails: React.FC = () => {
                     onChange={handleChange}
                     name="images"
                   />
-                </div>
+                </div> */}
+
               </div>
             </div>
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>
