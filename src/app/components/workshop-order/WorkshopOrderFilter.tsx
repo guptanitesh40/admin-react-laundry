@@ -1,128 +1,130 @@
-import React, { useEffect, useState } from "react";
-import useGetUsersByRole from "../../hooks/user/useGetUsersByRole";
-import { useGetBranches, useGetWorkshops } from "../../hooks";
-import { PaymentStatus, WorkshopOrderStatus } from "../../../types/enums";
-import MultiSelect from "../MultiSelect/MultiSelect";
-import { useSelector } from "react-redux";
-import { RootState } from "../../utils/store";
+import React, { useEffect, useState } from 'react'
+import useGetUsersByRole from '../../hooks/user/useGetUsersByRole'
+import { useGetBranches, useGetWorkshops } from '../../hooks'
+import { PaymentStatus, WorkshopOrderStatus } from '../../../types/enums'
+import MultiSelect from '../MultiSelect/MultiSelect'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../utils/store'
+
+import dayjs from 'dayjs'
+import { DatePicker } from 'antd'
+const { RangePicker } = DatePicker
 
 interface OptionType {
-  label: string;
-  value: number;
+  label: string
+  value: number
 }
 
 interface WorkshopOrderFilterProps {
   filters: {
-    paymentStatusFilter: number[];
-    workshopOrderStatusFilter: number[];
-    paymentTypeFilter: number;
-    customerFilter: number[];
-    branchFilter: number[];
-    workshopFilter: number[];
-    workshopManagerFilter: number[];
-  };
-  updateFilters: (filters: any) => void;
-  workshopOrderStatusOptions: any;
+    paymentStatusFilter: number[]
+    workshopOrderStatusFilter: number[]
+    paymentTypeFilter: number
+    customerFilter: number[]
+    branchFilter: number[]
+    workshopFilter: number[]
+    workshopManagerFilter: number[]
+  }
+  updateFilters: (filters: any) => void
+  workshopOrderStatusOptions: any
 }
 
-const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
-  filters,
-  updateFilters,
-  workshopOrderStatusOptions,
-}) => {
-  const roleId = useSelector((state: RootState) => state.user.role_id);
+const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({ filters, updateFilters, workshopOrderStatusOptions }) => {
+  const roleId = useSelector((state: RootState) => state.user.role_id)
 
-  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>(
-    []
-  );
-  const [customerOptions, setCustomerOptions] = useState<OptionType[]>([]);
-  const [selectedCustomers, setSelectedCustomers] = useState<OptionType[]>([]);
+  const [allCustomerOptions, setAllCustomerOptions] = useState<OptionType[]>([])
+  const [customerOptions, setCustomerOptions] = useState<OptionType[]>([])
+  const [selectedCustomers, setSelectedCustomers] = useState<OptionType[]>([])
 
-  const [allWorkshopManagerOptions, setAllWorkshopManagerOptions] = useState<
-    OptionType[]
-  >([]);
-  const [workshopManagerOptions, setWorkshopManagerOptions] = useState<
-    OptionType[]
-  >([]);
-  const [selectedWorkshopManagers, setSelectedWorkshopManagers] = useState<
-    OptionType[]
-  >([]);
+  const [allWorkshopManagerOptions, setAllWorkshopManagerOptions] = useState<OptionType[]>([])
+  const [workshopManagerOptions, setWorkshopManagerOptions] = useState<OptionType[]>([])
+  const [selectedWorkshopManagers, setSelectedWorkshopManagers] = useState<OptionType[]>([])
 
-  const [customerSearch, setCustomerSearch] = useState("");
-  const [workshopManagerSearch, setWorkshopManagerSearch] = useState("");
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [workshopManagerSearch, setWorkshopManagerSearch] = useState('')
 
-  const { fetchUsersByRole } = useGetUsersByRole();
-  const { branches } = useGetBranches();
-  const { workshops } = useGetWorkshops(1, 1000);
+  const { fetchUsersByRole } = useGetUsersByRole()
+  const { branches } = useGetBranches()
+  const { workshops } = useGetWorkshops(1, 1000)
 
   const paymentStatusOptions = Object.entries(PaymentStatus)
-    .filter(([key, value]) => typeof value === "number")
-    .map(([label, value]) => ({ label, value: value as number }));
+    .filter(([key, value]) => typeof value === 'number')
+    .map(([label, value]) => ({ label, value: value as number }))
+
+  const handleDateChange = (dates: [Date, Date]) => {
+    if (dates && dates[0] && dates[1]) {
+      updateFilters({
+        ...filters,
+        start_date: dayjs(dates[0]).format('DD-MM-YYYY'),
+        end_date: dayjs(dates[1]).format('DD-MM-YYYY'),
+      })
+    } else {
+      updateFilters({
+        ...filters,
+        start_date: '',
+        end_date: '',
+      })
+    }
+  }
 
   useEffect(() => {
     const fetchInitialUsers = async () => {
-      const customers = await fetchUsersByRole(5);
-      const workshopManagers = await fetchUsersByRole(6);
+      const customers = await fetchUsersByRole(5)
+      const workshopManagers = await fetchUsersByRole(6)
 
       const formatOptions = (users: any[]) =>
         users.map((user) => ({
           label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
           value: user.user_id,
-        }));
+        }))
 
-      setAllCustomerOptions(formatOptions(customers));
-      setAllWorkshopManagerOptions(formatOptions(workshopManagers));
-    };
+      setAllCustomerOptions(formatOptions(customers))
+      setAllWorkshopManagerOptions(formatOptions(workshopManagers))
+    }
 
-    fetchInitialUsers();
-  }, []);
+    fetchInitialUsers()
+  }, [])
 
   useEffect(() => {
     const fetchFilteredUsers = async () => {
-      const customers = await fetchUsersByRole(5, customerSearch);
+      const customers = await fetchUsersByRole(5, customerSearch)
       const formattedOptions = customers.map((user: any) => ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
-      }));
+      }))
 
-      setCustomerOptions(formattedOptions);
-    };
+      setCustomerOptions(formattedOptions)
+    }
 
     if (customerSearch) {
-      fetchFilteredUsers();
+      fetchFilteredUsers()
     } else {
-      setCustomerOptions(allCustomerOptions);
+      setCustomerOptions(allCustomerOptions)
     }
-  }, [customerSearch, allCustomerOptions]);
+  }, [customerSearch, allCustomerOptions])
 
   useEffect(() => {
     const fetchFilteredUsers = async () => {
-      const workshopManagers = await fetchUsersByRole(6, workshopManagerSearch);
+      const workshopManagers = await fetchUsersByRole(6, workshopManagerSearch)
       const formattedOptions = workshopManagers.map((user: any) => ({
         label: `${user.first_name} ${user.last_name} (${user.mobile_number})`,
         value: user.user_id,
-      }));
+      }))
 
-      setWorkshopManagerOptions(formattedOptions);
-    };
+      setWorkshopManagerOptions(formattedOptions)
+    }
 
     if (workshopManagerSearch) {
-      fetchFilteredUsers();
+      fetchFilteredUsers()
     } else {
-      setWorkshopManagerOptions(allWorkshopManagerOptions);
+      setWorkshopManagerOptions(allWorkshopManagerOptions)
     }
-  }, [workshopManagerOptions, allWorkshopManagerOptions]);
+  }, [workshopManagerOptions, allWorkshopManagerOptions])
 
-  const getCombinedOptions = (
-    selectedOptions: OptionType[],
-    filteredOptions: OptionType[]
-  ): OptionType[] => [
-    ...selectedOptions.filter(
-      (selected) =>
-        !filteredOptions.some((option) => option.value === selected.value)
-    ),
+  const getCombinedOptions = (selectedOptions: OptionType[], filteredOptions: OptionType[]): OptionType[] => [
+    ...selectedOptions.filter((selected) => !filteredOptions.some((option) => option.value === selected.value)),
     ...filteredOptions,
-  ];
+  ]
 
   return (
     <>
@@ -154,32 +156,25 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           )}
 
           <MultiSelect
-            options={getCombinedOptions(
-              selectedWorkshopManagers,
-              workshopManagerOptions
-            )}
+            options={getCombinedOptions(selectedWorkshopManagers, workshopManagerOptions)}
             displayValue="label"
             placeholder="Select Workshop Manager"
             selectedValues={filters.workshopManagerFilter}
             onSelect={(selectedList: any) => {
-              setSelectedWorkshopManagers(selectedList);
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
+              setSelectedWorkshopManagers(selectedList)
+              const selectedValues = selectedList.map((item: any) => item.value)
               updateFilters({
                 ...filters,
                 workshopManagerFilter: selectedValues,
-              });
+              })
             }}
             onRemove={(selectedList: any) => {
-              setSelectedWorkshopManagers(selectedList);
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
+              setSelectedWorkshopManagers(selectedList)
+              const selectedValues = selectedList.map((item: any) => item.value)
               updateFilters({
                 ...filters,
                 workshopManagerFilter: selectedValues,
-              });
+              })
             }}
             className="w-full"
           />
@@ -190,24 +185,20 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
             placeholder="Search Customer"
             selectedValues={selectedCustomers.map((customer) => customer.value)}
             onSelect={(selectedList: any) => {
-              setSelectedCustomers(selectedList);
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
+              setSelectedCustomers(selectedList)
+              const selectedValues = selectedList.map((item: any) => item.value)
               updateFilters({
                 ...filters,
                 customerFilter: selectedValues,
-              });
+              })
             }}
             onRemove={(selectedList: any) => {
-              setSelectedCustomers(selectedList);
-              const selectedValues = selectedList.map(
-                (item: any) => item.value
-              );
+              setSelectedCustomers(selectedList)
+              const selectedValues = selectedList.map((item: any) => item.value)
               updateFilters({
                 ...filters,
                 customerFilter: selectedValues,
-              });
+              })
             }}
             setSearch={setCustomerSearch}
             className="w-full"
@@ -245,17 +236,13 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
             onSelect={(selectedList) =>
               updateFilters({
                 ...filters,
-                workshopOrderStatusFilter: selectedList.map(
-                  (item) => item.value
-                ),
+                workshopOrderStatusFilter: selectedList.map((item) => item.value),
               })
             }
             onRemove={(selectedList) =>
               updateFilters({
                 ...filters,
-                workshopOrderStatusFilter: selectedList.map(
-                  (item) => item.value
-                ),
+                workshopOrderStatusFilter: selectedList.map((item) => item.value),
               })
             }
             isCustomLabel={true}
@@ -286,23 +273,31 @@ const WorkshopOrderFilter: React.FC<WorkshopOrderFilterProps> = ({
           />
 
           <select
-            className="select select-lg w-[200px] text-sm"
-            value={filters.paymentTypeFilter || ""}
+            className="select select-lg w-full  text-sm"
+            value={filters.paymentTypeFilter || ''}
             onChange={(e) =>
               updateFilters({
                 ...filters,
                 paymentTypeFilter: Number(e.target.value),
               })
-            }
-          >
+            }>
             <option value="">Payment type</option>
             <option value={1}>Cash on Delivery</option>
             <option value={2}>Online Payment</option>
           </select>
+
+          <div>
+            <RangePicker
+              className="w-full min-w-[80px] px-3 py-2 rounded-md border-gray-300"
+              popupClassName="custom-rangepicker-dropdown"
+              onChange={handleDateChange}
+              format="DD-MM-YYYY"
+            />
+          </div>
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default WorkshopOrderFilter;
+export default WorkshopOrderFilter

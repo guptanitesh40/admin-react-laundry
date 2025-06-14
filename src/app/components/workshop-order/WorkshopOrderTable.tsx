@@ -13,6 +13,8 @@ import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 
 interface WorkshopOrderTableProps {
   filters: {
+    end_date: string;
+    start_date: string;
     paymentStatusFilter: number[];
     workshopOrderStatusFilter: number[];
     paymentTypeFilter: number | undefined;
@@ -49,7 +51,9 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     filters.paymentTypeFilter,
     filters.paymentStatusFilter,
     filters.workshopFilter,
-    filters.workshopManagerFilter
+    filters.workshopManagerFilter,
+    filters.start_date,
+    filters.end_date,
   );
 
   const navigate = useNavigate();
