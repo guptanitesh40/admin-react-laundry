@@ -64,9 +64,6 @@ const useGetWorkshopOrders = (
   const [loading, setLoading] = useState<boolean>(false)
 
 
-  console.log("start_date in", start_date)
-  console.log("end_date", end_date)
-
   const fetchWorkshopOrders = async () => {
     const token = localStorage.getItem('authToken')
     const queryParams = new URLSearchParams()
