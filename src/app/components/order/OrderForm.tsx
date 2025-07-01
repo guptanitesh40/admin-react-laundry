@@ -1,4 +1,4 @@
-// /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -888,7 +888,6 @@ const OrderForm: React.FC = () => {
     }
   }, [id, branches, currentUserData, loadingBranches]);
 
-
   useEffect(() => {
     if (!loadingCompanies && companies.length > 0 && !id) {
       const defaultOption = companies.find(
@@ -938,82 +937,6 @@ const OrderForm: React.FC = () => {
       products = await fetchProductsOnId(categoryId);
       setProductCache((prev) => ({ ...prev, [categoryId]: products }));
     }
-
-    const defaultProduct =
-      products.find((prod) => prod.product_name.toLowerCase() === "shirt") ||
-      products?.[0];
-
-    if (!defaultProduct) return;
-
-    const productId = defaultProduct.product_product_id;
-
-    setFormData((prev) => {
-      const updatedItems = [...prev.items];
-      updatedItems[0] = {
-        ...updatedItems[0],
-        product_id: productId,
-      };
-
-      return {
-        ...prev,
-        items: updatedItems,
-      };
-    });
-
-    const cacheKey = `${categoryId}_${productId}`;
-    let services = serviceCache[cacheKey];
-
-    if (!services) {
-      services = await fetchServicesOnId(categoryId, productId);
-      setServiceCache((prev) => ({ ...prev, [cacheKey]: services }));
-    }
-
-    const defaultService =
-      services.find(
-        (service: any) => service.service_name.toLowerCase() === "washing"
-      ) || services?.[0];
-
-    if (!defaultService) return;
-
-    const serviceId = defaultService.service_service_id;
-
-    setFormData((prev) => {
-      const updatedItems = [...prev.items];
-      updatedItems[0] = {
-        ...updatedItems[0],
-        service_id: serviceId,
-      };
-
-      return {
-        ...prev,
-        items: updatedItems,
-      };
-    });
-
-    const pricesData = await fetchPrices02();
-
-    const price = pricesData[`${categoryId}_${productId}_${serviceId}`];
-    const quantity = Number(formData.items[0]?.quantity || 1);
-
-    setFormData((prev) => {
-      const updatedItems = [...prev.items];
-      updatedItems[0] = {
-        ...updatedItems[0],
-        price,
-        item_Total: price * quantity,
-      };
-
-      const newFormData = { ...prev, items: updatedItems };
-      const newSubTotal = calculateItemTotal(newFormData);
-      const updatedSubTotal = newSubTotal - prev.coupon_discount;
-
-      const newTotal =
-        updatedSubTotal +
-        Number(prev.express_delivery_charges || 0) +
-        Number(prev.normal_delivery_charges || 0);
-
-      return { ...newFormData, sub_total: updatedSubTotal, total: newTotal };
-    });
   };
 
   useEffect(() => {
@@ -1026,6 +949,7 @@ const OrderForm: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
+
 
   if (loadingOrder && id) {
     return <Loading />;
