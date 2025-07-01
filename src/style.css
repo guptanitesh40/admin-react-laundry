@@ -10045,6 +10045,11 @@ label.rating-label {
   z-index: 1;
 }
 
+.sticky-search-header {
+  /* position: sticky; */
+  top: 70px;
+}
+
 /* New Report table */
 
 .new-report-container {
