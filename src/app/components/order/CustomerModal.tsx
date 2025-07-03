@@ -150,6 +150,14 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
           full_name: `${userResponse.first_name} ${userResponse.last_name}`,
         };
 
+        if (!formattedData.landmark) {
+          delete formattedData.landmark;
+        }
+
+        if (!formattedData.pincode) {
+          delete formattedData.pincode;
+        }
+
         const addressResponse = await addAddress(formattedData, false);
 
         if (addressResponse) {
