@@ -103,11 +103,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const cleanedAddressData = { ...addressData };
+
+    if (!cleanedAddressData.pincode) {
+      delete cleanedAddressData.pincode;
+    }
+    if (!cleanedAddressData.landmark) {
+      delete cleanedAddressData.landmark;
+    }
+
     try {
       await addressSchema.validate(addressData, { abortEarly: false });
       setErrors({});
       if (userId) {
-        const addressResponse = await addAddress(addressData);
+        const addressResponse = await addAddress(cleanedAddressData);
         if (addressResponse) {
           onAddressAdded(addressResponse);
           onClose();

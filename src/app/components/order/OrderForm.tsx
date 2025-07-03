@@ -950,7 +950,6 @@ const OrderForm: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
-
   if (loadingOrder && id) {
     return <Loading />;
   }
