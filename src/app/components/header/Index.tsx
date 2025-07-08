@@ -6,6 +6,7 @@ import { RootState } from "../../utils/store";
 import SendPaymentLinkModal from "../sidebar/SendPaymentLinkModal";
 import { RiShareForwardFill } from "react-icons/ri";
 import { usePermissions } from "../../hooks";
+import dayjs from "dayjs";
 
 interface HeaderProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,13 +22,9 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
   const user = useSelector((state: RootState) => state.user);
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const { hasPermission } = usePermissions();
+  const [currentTime, setCurrentTime] = useState<string>("");
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, navigate]);
+  const { hasPermission } = usePermissions();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -38,6 +35,24 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
   const handleMobileNavClick = () => {
     setIsOpen(true);
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(dayjs().format("ddd D MMM, hh:mm A"));
+    };
+
+    updateTime();
+
+    const interval = setInterval(updateTime, 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!user || !user.user_id) return null;
 
@@ -68,81 +83,89 @@ export const Header: React.FC<HeaderProps> = ({ setIsOpen }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 lg:gap-10 justify-end flex-1">
-          {hasPermission(3, "read") && (
-            <button
-              className="btn btn-sm btn-primary payment-btn"
-              onClick={() => setModalOpen(true)}
-            >
-              <RiShareForwardFill className="w-4 h-4 text-blue-600" />
-              Request Payment
-            </button>
-          )}
+        <div className="flex items-center justify-between flex-1 gap-8 mobile:gap-4 lgscreen:gap-2">
+          <div className="sm:text-base font-semibold text-muted tracking-wide text-gray-700 xs:block mobile:text-xs text-wrap">
+            {currentTime}
+          </div>
 
-          <div className="menu" data-menu="true">
-            <div
-              className="menu-item"
-              data-menu-item-offset="20px, 10px"
-              data-menu-item-placement="bottom-end"
-              data-menu-item-toggle="dropdown"
-              data-menu-item-trigger="click|lg:click"
-            >
-              <div className="menu-toggle btn btn-icon rounded-full">
-                <img
-                  alt="profile-picture"
-                  className="size-9 rounded-full border-2 border-success shrink-0"
-                  src={user.image ? user.image : "/media/images/blank.png"}
-                />
-              </div>
+          <div className="flex items-center gap-2 lg:gap-10 justify-end flex-1 h-full">
+            {hasPermission(3, "read") && (
+              <button
+                className="btn btn-sm btn-primary payment-btn"
+                onClick={() => setModalOpen(true)}
+              >
+                <RiShareForwardFill className="w-4 h-4 text-blue-600" />
+                Request Payment
+              </button>
+            )}
 
-              <div className="menu-dropdown menu-default light:border-gray-300 w-full max-w-[250px] margin-x">
-                <div className="flex items-center justify-between px-5 py-1.5 gap-1.5">
-                  <div className="flex items-center gap-2">
-                    <img
-                      alt="profile-picture"
-                      className="size-9 rounded-full border-2 border-success"
-                      src={user.image ? user.image : "/media/images/blank.png"}
-                    />
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-sm text-gray-800 font-semibold leading-none">
-                        {user.first_name} {user.last_name}
-                      </span>
-                      <span className="text-xs text-gray-600 font-medium leading-none">
-                        {user.email}
-                      </span>
+            <div className="menu" data-menu="true">
+              <div
+                className="menu-item"
+                data-menu-item-offset="20px, 10px"
+                data-menu-item-placement="bottom-end"
+                data-menu-item-toggle="dropdown"
+                data-menu-item-trigger="click|lg:click"
+              >
+                <div className="menu-toggle btn btn-icon rounded-full">
+                  <img
+                    alt="profile-picture"
+                    className="size-9 rounded-full border-2 border-success shrink-0"
+                    src={user.image ? user.image : "/media/images/blank.png"}
+                  />
+                </div>
+
+                <div className="menu-dropdown menu-default light:border-gray-300 w-full max-w-[250px] margin-x">
+                  <div className="flex items-center justify-between px-5 py-1.5 gap-1.5">
+                    <div className="flex items-center gap-2">
+                      <img
+                        alt="profile-picture"
+                        className="size-9 rounded-full border-2 border-success"
+                        src={
+                          user.image ? user.image : "/media/images/blank.png"
+                        }
+                      />
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-sm text-gray-800 font-semibold leading-none">
+                          {user.first_name} {user.last_name}
+                        </span>
+                        <span className="text-xs text-gray-600 font-medium leading-none">
+                          {user.email}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="menu-separator"></div>
+                  <div className="menu-separator"></div>
 
-                <div className="flex flex-col">
-                  <div className="menu-item">
-                    <button
-                      className="menu-link"
-                      onClick={() => navigate("/profile")}
-                      role="navigation"
-                      data-menu-item-toggle="dropdown"
-                      data-menu-item-trigger="click|lg:click"
-                    >
-                      <span className="menu-icon">
-                        <i className="ki-filled ki-profile-circle"></i>
-                      </span>
-                      <span className="menu-title">My Profile</span>
-                    </button>
+                  <div className="flex flex-col">
+                    <div className="menu-item">
+                      <button
+                        className="menu-link"
+                        onClick={() => navigate("/profile")}
+                        role="navigation"
+                        data-menu-item-toggle="dropdown"
+                        data-menu-item-trigger="click|lg:click"
+                      >
+                        <span className="menu-icon">
+                          <i className="ki-filled ki-profile-circle"></i>
+                        </span>
+                        <span className="menu-title">My Profile</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div className="menu-separator"></div>
+                  <div className="menu-separator"></div>
 
-                <div className="flex flex-col">
-                  <div className="menu-item px-4 py-1.5 items-center">
-                    <button
-                      className="btn btn-sm btn-light"
-                      onClick={handleLogout}
-                    >
-                      Log out
-                    </button>
+                  <div className="flex flex-col">
+                    <div className="menu-item px-4 py-1.5 items-center">
+                      <button
+                        className="btn btn-sm btn-light"
+                        onClick={handleLogout}
+                      >
+                        Log out
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

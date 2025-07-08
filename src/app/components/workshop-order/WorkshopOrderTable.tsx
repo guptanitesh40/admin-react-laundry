@@ -53,7 +53,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     filters.workshopFilter,
     filters.workshopManagerFilter,
     filters.start_date,
-    filters.end_date,
+    filters.end_date
   );
 
   const navigate = useNavigate();
@@ -65,7 +65,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     total_amount = 0,
     total_quantity = 0,
   } = workshopOrderData || {};
-
 
   useEffect(() => {
     if (pageParams) {
@@ -184,6 +183,9 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={40}>40</option>
+            <option value={50}>50</option>
           </select>
           <span>per page</span>
         </div>
@@ -428,7 +430,8 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                         </td>
 
                         <td>
-                          {order?.order_status_details?.next_step !== "NULL" && (
+                          {order?.order_status_details?.next_step !==
+                            "NULL" && (
                             <div className="tooltip-custom">
                               <span
                                 className={`${nextStepClass} badge-outline badge-xl rounded-[30px]`}
@@ -442,7 +445,8 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                           )}
                         </td>
 
-                        <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td>
+                        {/* <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td> */}
+                        <td>{order?.total_quantity}</td>
                         <td>{order?.total}</td>
 
                         <td>

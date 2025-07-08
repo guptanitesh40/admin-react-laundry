@@ -10,7 +10,6 @@ import {
 } from "../../../hooks";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import LoadingSpinner from "../../shimmer/LoadingSpinner";
-import TableShimmer from "../../shimmer/TableShimmer";
 import { getOrderStatusLabel } from "../../../utils/orderStatusClasses";
 import dayjs from "dayjs";
 import { PaymentType } from "../../../../types/enums";
@@ -48,8 +47,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<any>();
-  let list = "order_list";
-  let orderList = "delivered_order";
+  const list = "order_list";
+  const orderList = "delivered_order";
 
   const { orderData, loading, count, fetchOrders } = useGetOrders(
     currentPage,
@@ -246,6 +245,9 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={40}>40</option>
+            <option value={50}>50</option>
           </select>
           <span>per page</span>
         </div>
