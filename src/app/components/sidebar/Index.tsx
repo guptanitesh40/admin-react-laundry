@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { MdOutlineHistory } from "react-icons/md";
 import { FaRegPlayCircle } from "react-icons/fa";
 import { IoPricetagOutline } from "react-icons/io5";
+import { AiOutlineFrown } from "react-icons/ai";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isWebContentOpen, setIsWebContentOpen] = useState(false);
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -980,7 +982,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               </Link>
             )}
 
-            {hasPermission(16, "read") && (
+            {/* {hasPermission(16, "read") && (
               <Link to="/workshop-order" style={{ display: "none" }}>
                 <div
                   className={`menu-item transition-colors duration-200 ${getItemClass(
@@ -1021,7 +1023,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   </div>
                 </div>
               </Link>
-            )}
+            )} */}
 
             {hasPermission(17, "read") && (
               <Link to="/customer-feedback">
@@ -1214,6 +1216,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   </div>
                 </div>
               </Link>
+            )}
+
+            {hasPermission(3, "read") && (
+              <div className={`menu-item`}>
+                <div
+                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px]"
+                  tabIndex={0}
+                  onClick={() => setIsWebContentOpen((prev) => !prev)}
+                >
+                  <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
+                    <AiOutlineFrown className="h-full w-full p-1" />
+                  </span>
+
+                  <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
+                    Web Content
+                  </span>
+
+                  <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
+                    <i
+                      className={`ki-filled text-2xs ${
+                        isWebContentOpen ? "ki-minus" : "ki-plus"
+                      }`}
+                    ></i>
+                  </span>
+                </div>
+
+                <div
+                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
+                  style={{
+                    maxHeight: isWebContentOpen ? "255px" : "0px",
+                  }}
+                >
+                  <Link to="/web-content/our-service">
+                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Our Service
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </div>
             )}
           </div>
         </div>

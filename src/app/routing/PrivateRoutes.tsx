@@ -66,6 +66,10 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/roles-permissions/Permissions")
   );
   const Logs = lazy(() => import("../components/customer-logs/Index"));
+  // const WebContent = lazy(() => import("../components/web-content/Index"));
+  const DynamicOurService = lazy(
+    () => import("../components/web-content/our-service/OurService")
+  );
 
   const { loading } = useValidateToken();
 
@@ -522,6 +526,16 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
+
+        {/* Routes For Dynamic Web Content */}
+        <Route
+          path="/web-content/our-service"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicOurService />
+            </Suspense>
+          }
+        />
 
         <Route
           path="/profile"
