@@ -126,6 +126,7 @@ const OrderForm: React.FC = () => {
   const [focusOn, setFocusOn] = useState<boolean>(false);
   const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
+  const [defaultCategoryId, setDefaultCategoryId] = useState(null);
 
   const currentUserData = useSelector((store) => store?.user);
 
@@ -472,39 +473,24 @@ const OrderForm: React.FC = () => {
   };
 
   const handleAddItem = () => {
-    // setFormData((prev) => ({
-    //   ...prev,
-    //   items: [
-    //     ...prev.items,
-    //     {
-    //       category_id: null,
-    //       product_id: null,
-    //       product_name: "",
-    //       service_id: null,
-    //       service_name: "",
-    //       description: null,
-    //       price: null,
-    //       quantity: 1,
-    //       item_Total: null,
-    //       showDescription: false,
-    //     },
-    //   ],
-    // }));
-
-    setFormData((prev) => {
-      const lastItem = prev.items[prev.items.length - 1];
-
-      return {
-        ...prev,
-        items: [
-          ...prev.items,
-          {
-            ...lastItem,
-            showDescription: false,
-          },
-        ],
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          category_id: defaultCategoryId,
+          product_id: null,
+          product_name: "",
+          service_id: null,
+          service_name: "",
+          description: null,
+          price: null,
+          quantity: 1,
+          item_Total: null,
+          showDescription: false,
+        },
+      ],
+    }));
   };
 
   const handleRemoveItem = (index: number) => {
@@ -883,7 +869,7 @@ const OrderForm: React.FC = () => {
             branch_id: branchDetail.branch_id,
           }));
         } else {
-          toast("This branch manager has no valid branch");
+          // toast("This branch manager has no valid branch");
         }
       } else {
         setFormData((prev) => ({
@@ -923,7 +909,8 @@ const OrderForm: React.FC = () => {
 
     if (!defaultCategory) return;
 
-    const categoryId = defaultCategory.category_id;
+    const categoryId = defaultCategory?.category_id;
+    setDefaultCategoryId(categoryId);
 
     setFormData((prev) => {
       const updatedItems = [...prev.items];
@@ -955,10 +942,6 @@ const OrderForm: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
-
-  // useEffect(() => {
-  //   console.log("FormData : ", formData);
-  // }, [formData]);
 
   const getDeliveryDate = ({
     express_delivery_charges,
