@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 import dayjs from "dayjs";
 import { searchSchema } from "../../validation/searchSchema";
 import * as Yup from "yup";
-import TableShimmer from "../shimmer/TableShimmer";
 import { CompanyOwed } from "../../../types/enums";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
@@ -182,6 +181,9 @@ const CompanyTable: React.FC = () => {
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={40}>40</option>
+            <option value={50}>50</option>
           </select>
           <span>per page</span>
         </div>

@@ -29,7 +29,7 @@ import LoadingSpinner from "../shimmer/LoadingSpinner";
 import { useSelector } from "react-redux";
 import useFetchSettings from "../../hooks/settings/useGetSetting";
 import Loading from "../shimmer/Loading";
-import useGetPrices02 from "../../hooks/price/useGetPrices02";
+import dayjs from "dayjs";
 
 interface item {
   category_id: number;
@@ -67,6 +67,12 @@ interface FormData {
   company_id: number | null;
   gstin: string;
   gst_company_name: string;
+}
+
+interface DeliveryInputs {
+  express_delivery_charges: number | null;
+  express_delivery_hour: number | null;
+  normal_delivery_charges: number | null;
 }
 
 const OrderForm: React.FC = () => {
@@ -119,8 +125,7 @@ const OrderForm: React.FC = () => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [focusOn, setFocusOn] = useState<boolean>(false);
   const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
-
-  const { fetchPrices02 } = useGetPrices02();
+  const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
 
   const currentUserData = useSelector((store) => store?.user);
 
@@ -400,6 +405,7 @@ const OrderForm: React.FC = () => {
         abortEarly: false,
         context: { total },
       });
+      setErrors({});
 
       const isDataChanged = () => {
         return (Object.keys(formData) as (keyof typeof formData)[]).some(
@@ -443,7 +449,7 @@ const OrderForm: React.FC = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") {
-      setFormData((prev) => ({ ...prev, address_id: null }));
+      setFormData((prev) => ({ ...prev, address_id: null, user_id: null }));
     }
     setUserSearch(e.target.value);
     setIsSearchMode(true);
@@ -950,6 +956,46 @@ const OrderForm: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
+  // useEffect(() => {
+  //   console.log("FormData : ", formData);
+  // }, [formData]);
+
+  const getDeliveryDate = ({
+    express_delivery_charges,
+    express_delivery_hour,
+    normal_delivery_charges,
+  }: DeliveryInputs): string | null => {
+    if (express_delivery_charges && express_delivery_hour) {
+      return dayjs().add(express_delivery_hour, "hour").format("DD/MM/YYYY");
+    } else if (normal_delivery_charges) {
+      const day = Number(settings?.estimate_delivery_normal_day || 4);
+      return dayjs().add(day, "day").format("DD/MM/YYYY");
+    } else {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (
+      formData?.express_delivery_charges ||
+      formData?.express_delivery_hour ||
+      formData?.normal_delivery_charges
+    ) {
+      const date = getDeliveryDate({
+        express_delivery_charges: formData?.express_delivery_charges,
+        express_delivery_hour: formData?.express_delivery_hour,
+        normal_delivery_charges: formData?.normal_delivery_charges,
+      });
+      setDeliveryDate(date);
+    } else {
+      setDeliveryDate(null);
+    }
+  }, [
+    formData?.express_delivery_charges,
+    formData?.express_delivery_hour,
+    formData?.normal_delivery_charges,
+  ]);
+
   if (loadingOrder && id) {
     return <Loading />;
   }
@@ -1170,13 +1216,34 @@ const OrderForm: React.FC = () => {
                 <option value="" disabled>
                   Select Address
                 </option>
-                {address.length > 0 ? (
-                  address.map((addr) => (
-                    <option key={addr.address_id} value={addr.address_id}>
-                      {addr.building_number}, {addr.area}, {addr.landmark},{" "}
-                      {addr.city}, {addr.state},{addr.country}, {addr.pincode}
-                    </option>
-                  ))
+                {address.length > 0 && userSearch ? (
+                  address.map((addr) => {
+                    const {
+                      building_number,
+                      area,
+                      landmark,
+                      city,
+                      state,
+                      country,
+                      pincode,
+                    } = addr;
+                    const parts = [
+                      building_number,
+                      area,
+                      landmark,
+                      city,
+                      state,
+                      country,
+                      pincode,
+                    ].filter(Boolean);
+                    const str = parts.join(", ");
+
+                    return (
+                      <option key={addr.address_id} value={addr.address_id}>
+                        {str}
+                      </option>
+                    );
+                  })
                 ) : (
                   <option disabled>No Address Available</option>
                 )}
@@ -1675,91 +1742,93 @@ const OrderForm: React.FC = () => {
               />
             </div>
 
-            <div className="md:!col-span-2 grid sm:!grid-cols-3 cs1:!gap-6 gap-4 grid-cols-1">
-              <div className="flex flex-col">
-                <label
-                  htmlFor="exp_delivery_time"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Express Delivery Time
-                </label>
-                <select
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
-                  id="exp_delivery_time"
-                  value={formData.express_delivery_hour || ""}
-                  onChange={(e) => {
-                    handleDeliveryTimeChange(Number(e.target.value));
-                  }}
-                >
-                  <option value="">Select Express Delivery Time</option>
-                  <option value={24}>24 Hrs</option>
-                  <option value={48}>48 Hrs</option>
-                  <option value={72}>72 Hrs</option>
-                </select>
-                {/* <p className="w-full text-red-500 text-sm">{error.message || "\u00A0"}</p> */}
-              </div>
+            <div className="flex flex-col md:!col-span-2">
+              <div className="md:!col-span-2 grid sm:!grid-cols-3 cs1:!gap-6 gap-4 grid-cols-1">
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="exp_delivery_time"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Express Delivery Time
+                  </label>
+                  <select
+                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                    id="exp_delivery_time"
+                    value={formData.express_delivery_hour || ""}
+                    onChange={(e) => {
+                      handleDeliveryTimeChange(Number(e.target.value));
+                    }}
+                  >
+                    <option value="">Select Express Delivery Time</option>
+                    <option value={24}>24 Hrs</option>
+                    <option value={48}>48 Hrs</option>
+                    <option value={72}>72 Hrs</option>
+                  </select>
+                </div>
 
-              <div className="flex flex-col">
-                <label
-                  htmlFor="express_delivery_charges"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Express Delivery Charge
-                </label>
-                <input
-                  type="text"
-                  id="express_delivery_charges"
-                  autoComplete="off"
-                  min="0"
-                  value={formData.express_delivery_charges || ""}
-                  onChange={(e) =>
-                    handleChargeChange(
-                      "express_delivery_charges",
-                      e.target.value
-                    )
-                  }
-                  className={`${
-                    formData.normal_delivery_charges > 0
-                      ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
-                      : "input border border-gray-300 rounded-md p-2"
-                  }`}
-                  readOnly={formData.normal_delivery_charges > 0}
-                />
-                <p className="w-full text-red-500 text-sm">
-                  {errors.express_delivery_charges || "\u00A0"}
-                </p>
-              </div>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="express_delivery_charges"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Express Delivery Charge
+                  </label>
+                  <input
+                    type="text"
+                    id="express_delivery_charges"
+                    autoComplete="off"
+                    min="0"
+                    value={formData.express_delivery_charges || ""}
+                    onChange={(e) =>
+                      handleChargeChange(
+                        "express_delivery_charges",
+                        e.target.value
+                      )
+                    }
+                    className={`${
+                      formData.normal_delivery_charges > 0
+                        ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
+                        : "input border border-gray-300 rounded-md p-2"
+                    }`}
+                    readOnly={formData.normal_delivery_charges > 0}
+                  />
+                </div>
 
-              <div className="flex flex-col">
-                <label
-                  htmlFor="normal_delivery_charges"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Normal Delivery Charge
-                </label>
-                <input
-                  type="text"
-                  id="normal_delivery_charges"
-                  min="0"
-                  autoComplete="off"
-                  value={formData.normal_delivery_charges || ""}
-                  onChange={(e) =>
-                    handleChargeChange(
-                      "normal_delivery_charges",
-                      e.target.value
-                    )
-                  }
-                  className={`${
-                    formData.express_delivery_charges > 0
-                      ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
-                      : "input border border-gray-300 rounded-md p-2"
-                  }`}
-                  readOnly={formData.express_delivery_charges > 0}
-                />
-                <p className="w-full text-red-500 text-sm">
-                  {errors.normal_delivery_charges || "\u00A0"}
-                </p>
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="normal_delivery_charges"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Normal Delivery Charge
+                  </label>
+                  <input
+                    type="text"
+                    id="normal_delivery_charges"
+                    min="0"
+                    autoComplete="off"
+                    value={formData.normal_delivery_charges || ""}
+                    onChange={(e) =>
+                      handleChargeChange(
+                        "normal_delivery_charges",
+                        e.target.value
+                      )
+                    }
+                    className={`${
+                      formData.express_delivery_charges > 0
+                        ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
+                        : "input border border-gray-300 rounded-md p-2"
+                    }`}
+                    readOnly={formData.express_delivery_charges > 0}
+                  />
+                </div>
               </div>
+              {deliveryDate && !order_id && (
+                <p className="w-full text-green-500 text-sm font-medium mt-1">
+                  {`Your order will be delivered on ${
+                    deliveryDate ? deliveryDate : "\u00A0"
+                  }`}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col">

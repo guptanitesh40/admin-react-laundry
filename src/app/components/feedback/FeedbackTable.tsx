@@ -11,7 +11,6 @@ import { getPublishStatusLabel } from "../../utils/publishStatus";
 import dayjs from "dayjs";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import toast from "react-hot-toast";
-import TableShimmer from "../shimmer/TableShimmer";
 import { ratingStarClasses } from "../../utils/ratingStarClasses";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
@@ -186,6 +185,9 @@ const FeedbackTable: React.FC = () => {
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={40}>40</option>
+            <option value={50}>50</option>
           </select>
           <span>per page</span>
         </div>

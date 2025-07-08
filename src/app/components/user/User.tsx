@@ -59,7 +59,7 @@ const User: React.FC = () => {
           <div className="card card-grid min-w-full">
             {filter && (
               <UserFilter filters={filters} updateFilters={updateFilters} />
-            )}{" "}
+            )}
             <UserTable filters={filters} />
           </div>
         </div>
