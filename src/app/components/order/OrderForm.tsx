@@ -491,21 +491,6 @@ const OrderForm: React.FC = () => {
         },
       ],
     }));
-
-    // setFormData((prev) => {
-    //   const lastItem = prev.items[prev.items.length - 1];
-
-    //   return {
-    //     ...prev,
-    //     items: [
-    //       ...prev.items,
-    //       {
-    //         ...lastItem,
-    //         showDescription: false,
-    //       },
-    //     ],
-    //   };
-    // });
   };
 
   const handleRemoveItem = (index: number) => {
