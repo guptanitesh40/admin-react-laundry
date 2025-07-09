@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../../utils/constant";
 
-const useGetOurServices = () => {
-  const [services, setServices] = useState([]);
+const useGetLaundryBenefits = () => {
+  const [benefits, setBenefits] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchOurServices = async () => {
+  const fetchLaundryBenefits = async () => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
+
     try {
-      const response = await fetch(`${BASE_URL}/services-list`, {
+      const response = await fetch(`${BASE_URL}/benefits`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -21,12 +22,13 @@ const useGetOurServices = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message, { position: "top-center" });
+        toast.error(data.message || "Failed to fetch benefits", {
+          position: "top-center",
+        });
         return;
       }
 
-      //   setBanners(data?.data?.banner || []);
-      setServices(data?.data || []);
+      setBenefits(data?.data || []);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -37,10 +39,10 @@ const useGetOurServices = () => {
   };
 
   useEffect(() => {
-    fetchOurServices();
+    fetchLaundryBenefits();
   }, []);
 
-  return { services, loading, fetchOurServices };
+  return { benefits, loading, fetchLaundryBenefits };
 };
 
-export default useGetOurServices;
+export default useGetLaundryBenefits;

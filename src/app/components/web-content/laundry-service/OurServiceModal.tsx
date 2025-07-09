@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
-import useAddLaundryBenefit from "../../../hooks/web-content/laundry-benefits/useAddLaundryBenefit";
-import useUpdateLaundryBenefit from "../../../hooks/web-content/laundry-benefits/useUpdateLaundryBenefit";
+import useAddOurService from "../../../hooks/web-content/our-service/useAddOurService";
+import useUpdateOurService from "../../../hooks/web-content/our-service/useUpdateOurService";
 import { ourServiceSchema } from "./validation/ourServiceSchema";
 
 interface Data {
-  benefit_id: number;
+  service_list_id: number;
   title: string;
+  description: string;
   image: string | File;
 }
 
@@ -26,16 +27,18 @@ const BannerModal: React.FC<BannerModalProps> = ({
   data,
   setIsSubmit,
 }) => {
-  const { addLaundryBenefit, loading: adding } = useAddLaundryBenefit();
-  const { updateLaundryBenefit, loading: updating } = useUpdateLaundryBenefit();
+  const { addOurService, loading: adding } = useAddOurService();
+  const { updateOurService, loading: updating } = useUpdateOurService();
 
   const [formData, setFormData] = useState({
     title: "",
+    description: "",
     image: "" as string | File,
   });
 
   const [initialFormData, setInitialFormData] = useState({
     title: "",
+    description: "",
     image: "" as string | File,
   });
 
@@ -45,6 +48,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
     if (isOpen && data && isEdit) {
       const fetchedData = {
         title: data.title,
+        description: data.description,
         image: data.image,
       };
       setFormData(fetchedData);
@@ -52,15 +56,28 @@ const BannerModal: React.FC<BannerModalProps> = ({
     }
   }, [isOpen, data, isEdit]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const target = e.target;
 
-    if (name === "image" && files && files.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        image: files[0],
-      }));
-    } else {
+    if (target instanceof HTMLInputElement) {
+      const { name, value, files } = target;
+
+      if (name === "image" && files && files.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          image: files[0],
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    } else if (target instanceof HTMLTextAreaElement) {
+      const { name, value } = target;
+
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -71,8 +88,12 @@ const BannerModal: React.FC<BannerModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const schema = ourServiceSchema(isEdit);
-      await schema.validate(formData, { abortEarly: false });
+      const isEditing = !!data;
+      const schema = ourServiceSchema(isEditing);
+
+      await schema.validate(formData, {
+        abortEarly: false,
+      });
       setErrors({});
 
       const isDataChanged = () => {
@@ -96,17 +117,30 @@ const BannerModal: React.FC<BannerModalProps> = ({
 
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
+      formDataObj.append("description", formData.description);
       if (formData.image instanceof File) {
         formDataObj.append("image", formData.image);
       }
 
-      const result = isEdit
-        ? await updateLaundryBenefit(data?.benefit_id, formDataObj)
-        : await addLaundryBenefit(formDataObj);
-
-      if (result) {
-        setIsSubmit(true);
-        onClose();
+      if (isEdit) {
+        const result = await updateOurService(
+          data?.service_list_id,
+          formDataObj
+        );
+        if (result) {
+          setIsSubmit(true);
+          onClose();
+        } else {
+          return;
+        }
+      } else {
+        const result = await addOurService(formDataObj);
+        if (result) {
+          setIsSubmit(true);
+          onClose();
+        } else {
+          return;
+        }
       }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -130,18 +164,17 @@ const BannerModal: React.FC<BannerModalProps> = ({
         onClick={onClose}
       ></div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[375px] smobile:min-w-[87%] z-10 relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px] smobile:min-w-[87%] z-10 relative">
         <button
-          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0  mr-5 mt-5 lg:mr-5 shadow-default"
+          data-modal-dismiss="true"
           onClick={onClose}
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-
         <h1 className="text-2xl font-bold mb-6">
-          {isEdit ? "Edit Benefit" : "Add Benefit"}
+          {data ? "Edit Our Service" : "Add Our Service"}
         </h1>
-
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-2">
             <div className="col-span-1">
@@ -161,6 +194,23 @@ const BannerModal: React.FC<BannerModalProps> = ({
             </div>
 
             <div className="col-span-1">
+              <label className="mb-2 font-semibold" htmlFor="description">
+                Description
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="h-20 input border border-gray-300 rounded-md p-2"
+                rows={5}
+              />
+              <p className="text-red-500 text-sm">
+                {errors.description || "\u00A0"}
+              </p>
+            </div>
+
+            <div className="col-span-1">
               <div className="flex items-center gap-2">
                 <label className="font-semibold" htmlFor="image">
                   Image
@@ -177,7 +227,9 @@ const BannerModal: React.FC<BannerModalProps> = ({
                 onChange={handleChange}
                 className="input border border-gray-300 rounded-md mt-1 file-input"
               />
-              <p className="text-red-500 text-sm">{errors.image || "\u00A0"}</p>
+              <p className="text-red-500 text-sm">
+                {errors.image ? errors.image : "\u00A0"}
+              </p>
             </div>
 
             <div className="flex gap-4 mt-4">
@@ -193,8 +245,8 @@ const BannerModal: React.FC<BannerModalProps> = ({
                     ? "Adding..."
                     : "Updating..."
                   : isEdit
-                  ? "Update Benefit"
-                  : "Add Benefit"}
+                  ? "Update Our Service"
+                  : "Add Our Service"}
               </button>
               <button
                 type="button"

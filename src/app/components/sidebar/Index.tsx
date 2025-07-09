@@ -42,6 +42,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     return location.pathname.split("/")[1] === item ? "active" : "";
   };
 
+  const getSubmenuItemClass2 = (item: string) => {
+    return location.pathname.split("/")[2] === item ? "active" : "";
+  };
+
   useEffect(() => {
     if (isOpen) {
       const backdrop = document.createElement("div");
@@ -69,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   useEffect(() => {
     const userRoutes = ["/users", "/roles"];
-    const subOrderRoutes = [
+    const orderRoutes = [
       "/order/add",
       "/orders",
       "/pickup-orders",
@@ -78,15 +82,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       "/workshop-order",
       "/redy-to-deliver",
     ];
+    const webContentRoutes = [
+      "/web-content/our-service",
+      "/web-content/choose-us",
+      "/web-content/laundry-benefits",
+      "/web-content/laundry-services",
+    ];
 
     const path = location.pathname;
 
-    const isOrderRoute =
-      path.startsWith("/order") || subOrderRoutes.includes(path);
-    const isUserRoute = userRoutes.includes(path);
+    const isUserRoute = userRoutes.some((route) => path.startsWith(route));
+    const isOrderRoute = orderRoutes.some((route) => path.startsWith(route));
+    const isWebContentRoute = webContentRoutes.some((route) =>
+      path.startsWith(route)
+    );
 
-    setIsOrderMenuOpen(isOrderRoute);
     setIsUserMenuOpen(isUserRoute);
+    setIsOrderMenuOpen(isOrderRoute);
+    setIsWebContentOpen(isWebContentRoute);
   }, [location.pathname]);
 
   return (
@@ -1221,18 +1234,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {hasPermission(3, "read") && (
               <div className={`menu-item`}>
                 <div
-                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px]"
+                  className="menu-link flex items-center grow cursor-pointer border border-transparent gap-[15px] pl-[10px] pr-[10px] py-[6px] ml-1"
                   tabIndex={0}
                   onClick={() => setIsWebContentOpen((prev) => !prev)}
                 >
                   <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
                     <AiOutlineFrown className="h-full w-full p-1" />
                   </span>
-
                   <span className="menu-title text-sm font-semibold text-gray-700 menu-item-active:text-primary menu-link-hover:!text-primary">
                     Web Content
                   </span>
-
                   <span className="menu-arrow text-gray-400 w-[20px] shrink-0 justify-end ml-1 mr-[-10px]">
                     <i
                       className={`ki-filled text-2xs ${
@@ -1249,7 +1260,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   }}
                 >
                   <Link to="/web-content/our-service">
-                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                    <div
+                      className={`menu-item ${getSubmenuItemClass2(
+                        "our-service"
+                      )}`}
+                    >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
                         tabIndex={0}
@@ -1261,15 +1276,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       </div>
                     </div>
                   </Link>
-                </div>
-                <div
-                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
-                  style={{
-                    maxHeight: isWebContentOpen ? "255px" : "0px",
-                  }}
-                >
                   <Link to="/web-content/choose-us">
-                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                    <div
+                      className={`menu-item ${getSubmenuItemClass2(
+                        "choose-us"
+                      )}`}
+                    >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
                         tabIndex={0}
@@ -1281,15 +1293,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       </div>
                     </div>
                   </Link>
-                </div>
-                <div
-                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
-                  style={{
-                    maxHeight: isWebContentOpen ? "255px" : "0px",
-                  }}
-                >
                   <Link to="/web-content/laundry-benefits">
-                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                    <div
+                      className={`menu-item ${getSubmenuItemClass2(
+                        "laundry-benefits"
+                      )}`}
+                    >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
                         tabIndex={0}
@@ -1297,6 +1306,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
                         <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
                           Laundry Benefits
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                  <Link to="/web-content/laundry-services">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass2(
+                        "laundry-services"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Laundry Services
                         </span>
                       </div>
                     </div>

@@ -1,13 +1,18 @@
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-// import { useDeleteBanner, useGetBanners, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
-import useGetOurServices from "../../../hooks/web-content/our-service/useGetOurServices";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
+import useDeleteLaundryBenefit from "../../../hooks/web-content/laundry-benefits/useDeleteLaundryBenefit";
+import useGetLaundryBenefits from "../../../hooks/web-content/laundry-benefits/useGetLaundryBenefits";
+
+interface Data {
+  benefit_id: number;
+  title: string;
+  image: string | File;
+}
 
 interface OurServiceTableProps {
-  setEditBanner: (banner_id: number) => void;
+  setEditBanner: (data: Data) => void;
   isSubmit: boolean;
   setIsSubmit: (value: boolean) => void;
 }
@@ -17,14 +22,14 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
   isSubmit,
   setIsSubmit,
 }) => {
-  // const { deleteBanner } = useDeleteBanner();
+  const { deleteLaundryBenefit } = useDeleteLaundryBenefit();
 
-  const { services, loading, fetchOurServices } = useGetOurServices();
+  const { benefits, loading, fetchLaundryBenefits } = useGetLaundryBenefits();
 
   useEffect(() => {
     const refetchData = async () => {
       if (isSubmit) {
-        fetchOurServices();
+        fetchLaundryBenefits();
         setIsSubmit(false);
       }
     };
@@ -45,29 +50,20 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
         cancelButtonText: "No, cancel",
       });
 
-      // if (isConfirmed) {
-      //   const { success, message } = await deleteBanner(banner_id);
-      //   if (success) {
-      //     const updatedBanners = banners.filter(
-      //       (banner) => banner.banner_id !== banner_id
-      //     );
-      //     if (updatedBanners.length === 0 && currentPage > 1) {
-      //       setCurrentPage(currentPage - 1);
-      //       setSearchParams({
-      //         page: (currentPage - 1).toString(),
-      //         perPage: perPage.toString(),
-      //       });
-      //     }
-      //     await fetchBanners();
-      //     Swal.fire(message);
-      //   } else {
-      //     Swal.fire(message);
-      //   }
-      // }
+      if (isConfirmed) {
+        const { success, message } = await deleteLaundryBenefit(id);
+
+        if (success) {
+          await fetchLaundryBenefits();
+          Swal.fire("Deleted!", message, "success");
+        } else {
+          Swal.fire("Error", message, "error");
+        }
+      }
     } catch (error: any) {
       Swal.fire({
         title: "Error",
-        text: error.message,
+        text: error?.message || "Unexpected error occurred",
         icon: "error",
       });
     }
@@ -91,24 +87,21 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                   <th className="w-[60px]">
                     <span className="sort-label">Id</span>
                   </th>
-                  <th className="min-w-[105px]">Image</th>
+                  <th className="min-w-[125px] w-[125px]">Image</th>
                   <th className="min-w-[160px]">
                     <span className="sort-label">Title</span>
                   </th>
-                  <th className="min-w-[205px]">
-                    <span className="sort-label">Description</span>
-                  </th>
-                  <th className="min-w-[125px]">Actions</th>
+                  <th className="min-w-[125px] w-[125px]">Actions</th>
                 </tr>
               </thead>
 
-              {services.length > 0 ? (
+              {benefits.length > 0 ? (
                 <tbody>
-                  {services.map((item) => (
-                    <tr key={item.service_list_id}>
+                  {benefits.map((item) => (
+                    <tr key={item.benefit_id}>
                       <td>
                         <div className="flex items-center gap-2.5">
-                          {item.service_list_id}
+                          {item.benefit_id}
                         </div>
                       </td>
                       <td className="flex justify-center items-center">
@@ -124,11 +117,6 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                         </div>
                       </td>
                       <td>
-                        <div className="flex items-center gap-1.5">
-                          {item.description}
-                        </div>
-                      </td>
-                      <td>
                         <button
                           className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
                           onClick={() => setEditBanner(item)}
@@ -137,7 +125,7 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                         </button>
                         <button
                           className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() => handleDelete(item.service_list_id)}
+                          onClick={() => handleDelete(item.benefit_id)}
                         >
                           <FaTrash className="text-red-500" />
                         </button>
@@ -148,7 +136,7 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={4} className="text-center">
                       No data available
                     </td>
                   </tr>

@@ -1,7 +1,5 @@
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-// import { useDeleteBanner, useGetBanners, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
 import useGetChooseUs from "../../../hooks/web-content/choose-us/useGetChooseUs";
@@ -88,7 +86,7 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                   <th className="min-w-[205px]">
                     <span className="sort-label">Description</span>
                   </th>
-                  <th className="w-[125px]">Actions</th>
+                  <th className="min-w-[125px] w-[125px]">Actions</th>
                 </tr>
               </thead>
 

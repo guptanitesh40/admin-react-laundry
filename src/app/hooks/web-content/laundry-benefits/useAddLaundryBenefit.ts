@@ -2,15 +2,15 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../../utils/constant";
 
-const useAddOurService = () => {
+const useAddLaundryBenefit = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const addOurService = async (formData: FormData) => {
+  const addLaundryBenefit = async (formData: FormData) => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/services-list`, {
+      const response = await fetch(`${BASE_URL}/benefits`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -21,13 +21,13 @@ const useAddOurService = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || "Failed to add service", {
+        toast.error(data.message || "Failed to add laundry benefit", {
           position: "top-center",
         });
         return false;
       }
 
-      toast.success(data.message || "Service added successfully", {
+      toast.success(data.message || "Laundry benefit added successfully", {
         position: "top-center",
       });
       return true;
@@ -41,7 +41,7 @@ const useAddOurService = () => {
     }
   };
 
-  return { addOurService, loading };
+  return { addLaundryBenefit, loading };
 };
 
-export default useAddOurService;
+export default useAddLaundryBenefit;

@@ -77,6 +77,9 @@ const PrivateRoutes: React.FC = () => {
   const DynamicLaundryBenefits = lazy(
     () => import("../components/web-content/laundry-benefits/OurService")
   );
+  const DynamicLaundryService = lazy(
+    () => import("../components/web-content/laundry-service/OurService")
+  );
 
   const { loading } = useValidateToken();
 
@@ -556,6 +559,14 @@ const PrivateRoutes: React.FC = () => {
           element={
             <Suspense fallback={<Loading />}>
               <DynamicLaundryBenefits />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/web-content/laundry-services"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicLaundryService />
             </Suspense>
           }
         />

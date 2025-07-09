@@ -2,46 +2,42 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../../utils/constant";
 
-const useUpdateOurService = () => {
+const useDeleteOurService = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateOurService = async (id: number, formData: FormData) => {
+  const deleteOurService = async (id: number) => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
     try {
       const response = await fetch(`${BASE_URL}/services-list/${id}`, {
-        method: "PUT",
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || "Failed to update service", {
+        toast.error(data.message || "Failed to delete service", {
           position: "top-center",
         });
-        return false;
+        return { success: false, message: data.message || "Delete failed" };
       }
 
-      toast.success(data.message || "Service updated successfully", {
-        position: "top-center",
-      });
-      return true;
+      return { success: true, message: data.message || "Deleted successfully" };
     } catch (error: any) {
       toast.error(error?.message || "Network error", {
         position: "top-center",
       });
-      return false;
+      return { success: false, message: error?.message || "Network error" };
     } finally {
       setLoading(false);
     }
   };
 
-  return { updateOurService, loading };
+  return { deleteOurService, loading };
 };
 
-export default useUpdateOurService;
+export default useDeleteOurService;

@@ -5,7 +5,9 @@ import { BASE_URL } from "../../../utils/constant";
 const useDeleteChooseUs = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const deleteChooseUs = async (id: number): Promise<{ success: boolean; message: string }> => {
+  const deleteChooseUs = async (
+    id: number
+  ): Promise<{ success: boolean; message: string }> => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
 
@@ -25,7 +27,6 @@ const useDeleteChooseUs = () => {
         return { success: false, message };
       }
 
-      toast.success(message, { position: "top-center" });
       return { success: true, message };
     } catch (error: any) {
       const message = error?.message || "Network error";
