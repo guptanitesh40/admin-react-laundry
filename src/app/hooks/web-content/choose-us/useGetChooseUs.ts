@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../../utils/constant";
 
-const useGetOurServices = () => {
-  const [services, setServices] = useState([]);
+const useGetChooseUs = () => {
+  const [chooseUsItems, setChooseUsItems] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const fetchOurServices = async () => {
+  const fetchChooseUsItems = async () => {
     const token = localStorage.getItem("authToken");
     setLoading(true);
+
     try {
-      const response = await fetch(`${BASE_URL}/services-list`, {
+      const response = await fetch(`${BASE_URL}/why-choose-us`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -21,12 +22,13 @@ const useGetOurServices = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message, { position: "top-center" });
+        toast.error(data.message || "Failed to fetch Choose Us data", {
+          position: "top-center",
+        });
         return;
       }
 
-      //   setBanners(data?.data?.banner || []);
-      setServices(data?.data || []);
+      setChooseUsItems(data?.data || []);
     } catch (error: any) {
       toast.error(error?.message || "Network error: Failed to fetch.", {
         position: "top-center",
@@ -37,10 +39,10 @@ const useGetOurServices = () => {
   };
 
   useEffect(() => {
-    fetchOurServices();
+    fetchChooseUsItems();
   }, []);
 
-  return { services, loading, fetchOurServices };
+  return { chooseUsItems, loading, fetchChooseUsItems };
 };
 
-export default useGetOurServices;
+export default useGetChooseUs;

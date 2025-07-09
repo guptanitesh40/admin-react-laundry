@@ -1262,6 +1262,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                   </Link>
                 </div>
+                <div
+                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
+                  style={{
+                    maxHeight: isWebContentOpen ? "255px" : "0px",
+                  }}
+                >
+                  <Link to="/web-content/choose-us">
+                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Choose Us
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+                <div
+                  className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
+                  style={{
+                    maxHeight: isWebContentOpen ? "255px" : "0px",
+                  }}
+                >
+                  <Link to="/web-content/laundry-benefits">
+                    <div className={`menu-item ${getSubmenuItemClass("")}`}>
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Laundry Benefits
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               </div>
             )}
           </div>

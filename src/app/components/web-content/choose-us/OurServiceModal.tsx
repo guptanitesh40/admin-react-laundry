@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import * as Yup from "yup";
-import useAddOurService from "../../../hooks/web-content/our-service/useAddOurService";
-import useUpdateOurService from "../../../hooks/web-content/our-service/useUpdateOurService";
+import useAddChooseUs from "../../../hooks/web-content/choose-us/useAddChooseUs";
+import useUpdateChooseUs from "../../../hooks/web-content/choose-us/useUpdateChooseUs";
 import { ourServiceSchema } from "./validation/ourServiceSchema";
 
 interface Data {
-  service_list_id: number;
+  why_choose_us_id: number;
   title: string;
   description: string;
-  image: string | File;
 }
 
 interface BannerModalProps {
@@ -27,19 +26,17 @@ const BannerModal: React.FC<BannerModalProps> = ({
   data,
   setIsSubmit,
 }) => {
-  const { addOurService, loading: adding } = useAddOurService();
-  const { updateOurService, loading: updating } = useUpdateOurService();
+  const { updateChooseUs, loading: updating } = useUpdateChooseUs();
+  const { addChooseUs, loading: adding } = useAddChooseUs();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    image: "" as string | File,
   });
 
   const [initialFormData, setInitialFormData] = useState({
     title: "",
     description: "",
-    image: "" as string | File,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -49,7 +46,6 @@ const BannerModal: React.FC<BannerModalProps> = ({
       const fetchedData = {
         title: data.title,
         description: data.description,
-        image: data.image,
       };
       setFormData(fetchedData);
       setInitialFormData(fetchedData);
@@ -59,82 +55,47 @@ const BannerModal: React.FC<BannerModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const target = e.target;
+    const { name, value } = e.target;
 
-    if (target instanceof HTMLInputElement) {
-      const { name, value, files } = target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-      if (name === "image" && files && files.length > 0) {
-        setFormData((prev) => ({
-          ...prev,
-          image: files[0],
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      }
-    } else if (target instanceof HTMLTextAreaElement) {
-      const { name, value } = target;
-
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+  const isDataChanged = () => {
+    return (
+      formData.title !== initialFormData.title ||
+      formData.description !== initialFormData.description
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const isEditing = !!data;
-      const schema = ourServiceSchema(isEditing);
-
-      await schema.validate(formData, {
+      await ourServiceSchema.validate(formData, {
         abortEarly: false,
       });
       setErrors({});
-
-      const isDataChanged = () => {
-        return (Object.keys(formData) as (keyof typeof formData)[]).some(
-          (key) => {
-            if (key === "image") {
-              return (
-                formData.image instanceof File ||
-                formData.image !== initialFormData.image
-              );
-            }
-            return formData[key] !== initialFormData[key];
-          }
-        );
-      };
 
       if (!isDataChanged()) {
         onClose();
         return;
       }
 
-      const formDataObj = new FormData();
-      formDataObj.append("title", formData.title);
-      formDataObj.append("description", formData.description);
-      if (formData.image instanceof File) {
-        formDataObj.append("image", formData.image);
-      }
+      const payload = {
+        title: formData.title,
+        description: formData.description,
+      };
 
       if (isEdit) {
-        const result = await updateOurService(
-          data?.service_list_id,
-          formDataObj
-        );
+        const result = await updateChooseUs(data?.why_choose_us_id, payload);
         if (result) {
           setIsSubmit(true);
           onClose();
-        } else {
-          return;
         }
       } else {
-        const result = await addOurService(formDataObj);
+        const result = await addChooseUs(payload);
         if (result) {
           setIsSubmit(true);
           onClose();
@@ -173,7 +134,7 @@ const BannerModal: React.FC<BannerModalProps> = ({
           <i className="ki-filled ki-cross"></i>
         </button>
         <h1 className="text-2xl font-bold mb-6">
-          {data ? "Edit Our Service" : "Add Our Service"}
+          {isEdit ? "Edit Card" : "Add Card"}
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-2">
@@ -210,28 +171,6 @@ const BannerModal: React.FC<BannerModalProps> = ({
               </p>
             </div>
 
-            <div className="col-span-1">
-              <div className="flex items-center gap-2">
-                <label className="font-semibold" htmlFor="image">
-                  Image
-                </label>
-                <span className="text-sm text-gray-500">
-                  (JPG, JPEG, PNG | 80×80 px)
-                </span>
-              </div>
-              <input
-                type="file"
-                id="image"
-                name="image"
-                accept="image/*"
-                onChange={handleChange}
-                className="input border border-gray-300 rounded-md mt-1 file-input"
-              />
-              <p className="text-red-500 text-sm">
-                {errors.image ? errors.image : "\u00A0"}
-              </p>
-            </div>
-
             <div className="flex gap-4 mt-4">
               <button
                 type="submit"
@@ -245,8 +184,8 @@ const BannerModal: React.FC<BannerModalProps> = ({
                     ? "Adding..."
                     : "Updating..."
                   : isEdit
-                  ? "Update Our Service"
-                  : "Add Our Service"}
+                  ? "Update Card"
+                  : "Add Card"}
               </button>
               <button
                 type="button"
