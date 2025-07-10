@@ -1,0 +1,1 @@
+import{j as r}from"./index-Cq7_SQ1n.js";const n=15,t=10,o=()=>r.jsx("tbody",{children:Array.from({length:t}).map((a,s)=>r.jsx("tr",{children:Array.from({length:n}).map((m,e)=>r.jsx("td",{className:"!m-0 !p-2",children:r.jsx("span",{className:"inline-block w-full h-6 bg-gray-200 animate-pulse rounded-md p-4"})},e))},s))});export{o as T};
