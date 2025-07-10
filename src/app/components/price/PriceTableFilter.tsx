@@ -40,7 +40,7 @@ const PriceTableFilter: React.FC<PriceTableFilterProps> = ({
             updateFilters({ ...filters, categoryId: selected });
           }}
           className="w-full"
-          isSearchInput={false}
+          isSearchInput={true}
         />
 
         <MultiSelect
@@ -60,7 +60,7 @@ const PriceTableFilter: React.FC<PriceTableFilterProps> = ({
             updateFilters({ ...filters, productId: selected });
           }}
           className="w-full"
-          isSearchInput={false}
+          isSearchInput={true}
         />
 
         <MultiSelect
@@ -80,7 +80,7 @@ const PriceTableFilter: React.FC<PriceTableFilterProps> = ({
             updateFilters({ ...filters, serviceId: selected });
           }}
           className="w-full"
-          isSearchInput={false}
+          isSearchInput={true}
         />
       </div>
     </div>
@@ -88,95 +88,3 @@ const PriceTableFilter: React.FC<PriceTableFilterProps> = ({
 };
 
 export default PriceTableFilter;
-
-// // components/filters/PriceTableFilter.tsx
-// import React from "react";
-
-// interface FilterOptions {
-//   categoryId: number | null;
-//   productId: number | null;
-//   serviceId: number | null;
-// }
-
-// interface Option {
-//   value: number;
-//   label: string;
-// }
-
-// interface PriceTableFilterProps {
-//   filters: FilterOptions;
-//   updateFilters: (filters: FilterOptions) => void;
-//   categories: Option[];
-//   products: Option[];
-//   services: Option[];
-// }
-
-// const PriceTableFilter: React.FC<PriceTableFilterProps> = ({
-//   filters,
-//   updateFilters,
-//   categories,
-//   products,
-//   services,
-// }) => {
-//   return (
-//     <div className="card p-3">
-//       <div className="grid grid-cols-3 sm:grid-cols-3 gap-4">
-//         <select
-//           className="select select-bordered w-full"
-//           value={filters.categoryId ?? ""}
-//           onChange={(e) =>
-//             updateFilters({
-//               ...filters,
-//               categoryId: Number(e.target.value) || null,
-//             })
-//           }
-//         >
-//           <option value="">Select Category</option>
-//           {categories.map((cat) => (
-//             <option key={cat.value} value={cat.value}>
-//               {cat.label}
-//             </option>
-//           ))}
-//         </select>
-
-//         <select
-//           className="select select-bordered w-full"
-//           value={filters.productId ?? ""}
-//           onChange={(e) =>
-//             updateFilters({
-//               ...filters,
-//               productId: Number(e.target.value) || null,
-//             })
-//           }
-//         >
-//           <option value="">Select Product</option>
-//           {products.map((prod) => (
-//             <option key={prod.value} value={prod.value}>
-//               {prod.label}
-//             </option>
-//           ))}
-//         </select>
-
-//         <select
-//           className="select select-bordered w-full"
-//           value={filters.serviceId ?? ""}
-//           onChange={(e) =>
-//             updateFilters({
-//               ...filters,
-//               serviceId: Number(e.target.value) || null,
-//             })
-//           }
-//         >
-//           <option value="">Select Service</option>
-//           {services.map((srv) => (
-//             <option key={srv.value} value={srv.value}>
-//               {srv.label}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PriceTableFilter;

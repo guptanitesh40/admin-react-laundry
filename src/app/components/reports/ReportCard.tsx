@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole02 from "../../hooks/user/useGetUserByRole02";
+import { useGetCompanies } from "../../hooks";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import toast from "react-hot-toast";
@@ -20,29 +21,33 @@ const ReportCard: React.FC<ReportCardProps> = ({
   const role_id = 5;
   const [search, setSearch] = useState("");
   const { users, loading: loadingUsers } = useGetUsersByRole02(role_id, search);
+  const { companies, loading: loadingCompanies } = useGetCompanies(1, 1000);
   const [selectedCustomers, setSelectedCustomers] = useState<any[]>([]);
+  const [selectedCompanies, setSelectedCompanies] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     start_time: "",
     end_time: "",
   });
 
-  let customerOptions = [
-    {
-      label: "Loading...",
-      value: 0,
-    },
-  ];
-
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const token = localStorage.getItem("authToken");
 
-  if (!loadingUsers && users.length) {
-    customerOptions = users.map((user: any) => ({
+  const customerOptions = useMemo(() => {
+    if (loadingUsers) return [{ label: "Loading...", value: 0 }];
+    return users.map((user) => ({
       label: `${user.first_name} ${user.last_name}`,
       value: user.user_id,
     }));
-  }
+  }, [users, loadingUsers]);
+
+  const companyOptions = useMemo(() => {
+    if (loadingCompanies) return [{ label: "Loading...", value: 0 }];
+    return companies.map((company) => ({
+      label: company.company_name,
+      value: company.company_id,
+    }));
+  }, [companies, loadingCompanies]);
 
   const handleDateChange = (dates: any) => {
     if (dates) {
@@ -105,6 +110,11 @@ const ReportCard: React.FC<ReportCardProps> = ({
         return queryParam.append("user_id", customer_id);
       });
     }
+    if (selectedCompanies.length) {
+      selectedCompanies.forEach((company_id) => {
+        return queryParam.append("company_id", company_id);
+      });
+    }
 
     try {
       const response = await fetch(
@@ -154,9 +164,28 @@ const ReportCard: React.FC<ReportCardProps> = ({
 
         <div className="mui-multiselect-parent">
           <MultiSelect
+            options={companyOptions}
+            displayValue="label"
+            placeholder="Select Company"
+            selectedValues={selectedCompanies}
+            onSelect={(selectedList: any[]) => {
+              const selectedIds = selectedList.map((item) => item.value);
+              setSelectedCompanies(selectedIds);
+            }}
+            onRemove={(selectedList: any[]) => {
+              const selectedIds = selectedList.map((item) => item.value);
+              setSelectedCompanies(selectedIds);
+            }}
+            className="w-full"
+            isSearchInput={false}
+          />
+        </div>
+
+        <div className="mui-multiselect-parent">
+          <MultiSelect
             options={customerOptions}
             displayValue="label"
-            placeholder="Search Customer"
+            placeholder="Select Customer"
             selectedValues={selectedCustomers}
             onSelect={(selectedList: any[]) => {
               const selectedIds = selectedList.map((item) => item.value);
@@ -179,9 +208,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
           onClick={() => handleBtnClick(index)}
         >
           {loading && <span className="absolute inset-0 loading-bar"></span>}
-          <span>
-            {loading ? "Downloading..." : "Download"}
-          </span>
+          <span>{loading ? "Downloading..." : "Download"}</span>
         </button>
       </div>
     </div>
