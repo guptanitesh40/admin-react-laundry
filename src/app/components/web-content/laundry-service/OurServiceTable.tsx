@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 // import { useDeleteBanner, useGetBanners, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
@@ -20,12 +19,13 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
 }) => {
   const { deleteOurService } = useDeleteOurService();
 
-  const { services, loading, fetchOurServices } = useGetOurServices();
+  const { services,, fetchOurServices } = useGetOurServices();
+  const { laundryServices, loading, fetchLaundryServices } = useGetLaundryServices();
 
   useEffect(() => {
     const refetchData = async () => {
       if (isSubmit) {
-        fetchOurServices();
+        fetchLaundryServices();
         setIsSubmit(false);
       }
     };
@@ -94,9 +94,9 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                 </tr>
               </thead>
 
-              {services.length > 0 ? (
+              {laundryServices.length > 0 ? (
                 <tbody>
-                  {services.map((item) => (
+                  {laundryServices.map((item) => (
                     <tr key={item.service_list_id}>
                       <td>
                         <div className="flex items-center gap-2.5">
