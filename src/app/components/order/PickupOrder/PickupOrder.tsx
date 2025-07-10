@@ -108,7 +108,7 @@ const PickupOrder: React.FC = () => {
                 orderStatusOptions={pickupOrderStatusOptions}
                 showSearchInput={false}
               />
-            )}{" "}
+            )}
             {/* <PickupOrderTable filters={filters} /> */}
             <OrderTable
               filters={filters}

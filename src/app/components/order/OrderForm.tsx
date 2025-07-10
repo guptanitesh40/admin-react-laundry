@@ -72,7 +72,6 @@ interface FormData {
 interface DeliveryInputs {
   express_delivery_charges: number | null;
   express_delivery_hour: number | null;
-  normal_delivery_charges: number | null;
 }
 
 const OrderForm: React.FC = () => {
@@ -126,7 +125,6 @@ const OrderForm: React.FC = () => {
   const [focusOn, setFocusOn] = useState<boolean>(false);
   const [remainingAmount, setRemainingAmount] = useState<number | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
-  const [defaultCategoryId, setDefaultCategoryId] = useState(null);
 
   const currentUserData = useSelector((store) => store?.user);
 
@@ -473,24 +471,28 @@ const OrderForm: React.FC = () => {
   };
 
   const handleAddItem = () => {
-    setFormData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        {
-          category_id: defaultCategoryId,
-          product_id: null,
-          product_name: "",
-          service_id: null,
-          service_name: "",
-          description: null,
-          price: null,
-          quantity: 1,
-          item_Total: null,
-          showDescription: false,
-        },
-      ],
-    }));
+    setFormData((prev) => {
+      const lastItem = prev.items[prev.items.length - 1];
+
+      return {
+        ...prev,
+        items: [
+          ...prev.items,
+          {
+            category_id: lastItem?.category_id || null,
+            product_id: null,
+            product_name: "",
+            service_id: null,
+            service_name: "",
+            description: null,
+            price: null,
+            quantity: 1,
+            item_Total: null,
+            showDescription: false,
+          },
+        ],
+      };
+    });
   };
 
   const handleRemoveItem = (index: number) => {
@@ -910,7 +912,6 @@ const OrderForm: React.FC = () => {
     if (!defaultCategory) return;
 
     const categoryId = defaultCategory?.category_id;
-    setDefaultCategoryId(categoryId);
 
     setFormData((prev) => {
       const updatedItems = [...prev.items];
@@ -946,29 +947,24 @@ const OrderForm: React.FC = () => {
   const getDeliveryDate = ({
     express_delivery_charges,
     express_delivery_hour,
-    normal_delivery_charges,
   }: DeliveryInputs): string | null => {
+    if (loadingSetting || !settings?.estimate_delivery_normal_day) {
+      return null;
+    }
+    const day = Number(settings?.estimate_delivery_normal_day);
     if (express_delivery_charges && express_delivery_hour) {
       return dayjs().add(express_delivery_hour, "hour").format("DD/MM/YYYY");
-    } else if (normal_delivery_charges) {
-      const day = Number(settings?.estimate_delivery_normal_day || 4);
-      return dayjs().add(day, "day").format("DD/MM/YYYY");
     } else {
-      return null;
+      return dayjs().add(day, "day").format("DD/MM/YYYY");
     }
   };
 
   useEffect(() => {
-    if (
-      formData?.express_delivery_charges ||
-      formData?.express_delivery_hour ||
-      formData?.normal_delivery_charges
-    ) {
-      const date = getDeliveryDate({
-        express_delivery_charges: formData?.express_delivery_charges,
-        express_delivery_hour: formData?.express_delivery_hour,
-        normal_delivery_charges: formData?.normal_delivery_charges,
-      });
+    const date = getDeliveryDate({
+      express_delivery_charges: formData?.express_delivery_charges,
+      express_delivery_hour: formData?.express_delivery_hour,
+    });
+    if (date) {
       setDeliveryDate(date);
     } else {
       setDeliveryDate(null);
@@ -976,7 +972,7 @@ const OrderForm: React.FC = () => {
   }, [
     formData?.express_delivery_charges,
     formData?.express_delivery_hour,
-    formData?.normal_delivery_charges,
+    settings,
   ]);
 
   if (loadingOrder && id) {
