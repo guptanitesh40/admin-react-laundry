@@ -38,11 +38,18 @@ interface Combination {
   price: number;
 }
 
+interface FilterOptions {
+  categoryId: number[];
+  productId: number[];
+  serviceId: number[];
+}
+
 interface PriceTableProps {
   isSave: boolean;
   setIsSave: (value: boolean) => void;
   setIsLoading: (value: boolean) => void;
   search: string;
+  filters: FilterOptions;
 }
 
 const PriceTable: React.FC<PriceTableProps> = ({
@@ -50,6 +57,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
   setIsSave,
   setIsLoading,
   search,
+  filters,
 }) => {
   const { categories } = useGetCategories(1, 1000);
   const { products } = useGetProducts(1, 1000);
@@ -101,14 +109,30 @@ const PriceTable: React.FC<PriceTableProps> = ({
   );
 
   const combinations = getCombinations(categories, products, services, prices);
+  console.log(combinations);
 
   const filteredCombinations = combinations
     .filter((combination) => {
       const searchLower = (search || "").trim().toLowerCase();
-      return (
+      const matchesSearch =
         combination.category.name.toLowerCase().includes(searchLower) ||
         combination.product.name.toLowerCase().includes(searchLower) ||
-        combination.service.name.toLowerCase().includes(searchLower)
+        combination.service.name.toLowerCase().includes(searchLower);
+
+      const matchesCategory =
+        filters.categoryId.length === 0 ||
+        filters.categoryId.includes(combination.category.category_id);
+
+      const matchesProduct =
+        filters.productId.length === 0 ||
+        filters.productId.includes(combination.product.product_id);
+
+      const matchesService =
+        filters.serviceId.length === 0 ||
+        filters.serviceId.includes(combination.service.service_id);
+
+      return (
+        matchesSearch && matchesCategory && matchesProduct && matchesService
       );
     })
     .sort((a: any, b: any) => {
@@ -122,6 +146,27 @@ const PriceTable: React.FC<PriceTableProps> = ({
       }
       return 0;
     });
+
+  // const filteredCombinations = combinations
+  //   .filter((combination) => {
+  //     const searchLower = (search || "").trim().toLowerCase();
+  //     return (
+  //       combination.category.name.toLowerCase().includes(searchLower) ||
+  //       combination.product.name.toLowerCase().includes(searchLower) ||
+  //       combination.service.name.toLowerCase().includes(searchLower)
+  //     );
+  //   })
+  //   .sort((a: any, b: any) => {
+  //     if (["category", "product", "service"].includes(sortColumn)) {
+  //       return sortOrder === "ASC"
+  //         ? a[sortColumn].name.localeCompare(b[sortColumn].name)
+  //         : b[sortColumn].name.localeCompare(a[sortColumn].name);
+  //     }
+  //     if (sortColumn === "price") {
+  //       return sortOrder === "ASC" ? a.price - b.price : b.price - a.price;
+  //     }
+  //     return 0;
+  //   });
 
   useEffect(() => {
     if (isSave) {

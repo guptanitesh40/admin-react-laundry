@@ -10,6 +10,9 @@ import { searchSchema } from "../../validation/searchSchema";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -23,9 +26,27 @@ interface WorkshopOrderTableProps {
     workshopFilter: number[];
     workshopManagerFilter: number[];
   };
+  selectedOrderIds: number[];
+  setSelectedOrderIds: React.Dispatch<React.SetStateAction<number[]>>;
+  selectedStatus: number | null;
+  setSelectedStatus: React.Dispatch<React.SetStateAction<number | null>>;
+  nextStatus: string | null;
+  setNextStatus: React.Dispatch<React.SetStateAction<string | null>>;
+  trackingState: number | null;
+  setTrackingState: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
+const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
+  filters,
+  selectedOrderIds,
+  setSelectedOrderIds,
+  selectedStatus,
+  setSelectedStatus,
+  nextStatus,
+  setNextStatus,
+  trackingState,
+  setTrackingState,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState<number>(10);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,22 +60,25 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { workshopOrderData, loading, count } = useGetWorkshopOrders(
-    currentPage,
-    perPage,
-    search,
-    sortColumn,
-    sortOrder,
-    filters.workshopOrderStatusFilter,
-    filters.customerFilter,
-    filters.branchFilter,
-    filters.paymentTypeFilter,
-    filters.paymentStatusFilter,
-    filters.workshopFilter,
-    filters.workshopManagerFilter,
-    filters.start_date,
-    filters.end_date
-  );
+  const { changeOrderStatus, loading: changingStatus } = useChangeOrderStatus();
+
+  const { workshopOrderData, loading, count, fetchWorkshopOrders } =
+    useGetWorkshopOrders(
+      currentPage,
+      perPage,
+      search,
+      sortColumn,
+      sortOrder,
+      filters.workshopOrderStatusFilter,
+      filters.customerFilter,
+      filters.branchFilter,
+      filters.paymentTypeFilter,
+      filters.paymentStatusFilter,
+      filters.workshopFilter,
+      filters.workshopManagerFilter,
+      filters.start_date,
+      filters.end_date
+    );
 
   const navigate = useNavigate();
 
@@ -65,6 +89,44 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     total_amount = 0,
     total_quantity = 0,
   } = workshopOrderData || {};
+
+  const handleCheckboxChange = (order: object) => {
+    const { order_id } = order;
+
+    setSelectedOrderIds((prevSelectedOrderIds) => {
+      const isSelected = prevSelectedOrderIds.includes(order_id);
+      const updatedSelection = isSelected
+        ? prevSelectedOrderIds.filter((id) => id !== order_id)
+        : [...prevSelectedOrderIds, order_id];
+      // console.log(updatedSelection);
+      return updatedSelection;
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedOrderIds([]);
+    setSelectedStatus(null);
+    setNextStatus(null);
+    setTrackingState(null);
+  };
+
+  useEffect(() => {
+    if (selectedOrderIds.length === 0) {
+      setSelectedStatus(null);
+      setNextStatus(null);
+    } else if (selectedOrderIds.length === 1) {
+      const order = workshopOrders.find((item: any) =>
+        selectedOrderIds.includes(item?.order_id)
+      );
+
+      if (order) {
+        console.log(order);
+        setSelectedStatus(order.order_status);
+        setNextStatus(order.order_status_details.next_step);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOrderIds]);
 
   useEffect(() => {
     if (pageParams) {
@@ -158,6 +220,64 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
 
+  const changeStatus = async () => {
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        html: `Want to change order status to <span style="color: #1B84FF; font-weight: 500;">"${nextStatus}"</span> ?`,
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        icon: undefined,
+        didClose: () => {
+          setTrackingState(null);
+        },
+      });
+
+      if (isConfirmed) {
+        const next = selectedStatus + 1;
+
+        const success = await changeOrderStatus(selectedOrderIds, next);
+
+        if (success) {
+          clearSelection();
+          await fetchWorkshopOrders();
+        }
+      }
+    } catch {
+      toast.error("Error while changing status");
+    }
+  };
+
+  useEffect(() => {
+    if (trackingState !== null) {
+      switch (trackingState) {
+        case 5:
+          changeStatus();
+          break;
+        case 6:
+          changeStatus();
+          break;
+        case 7:
+          changeStatus();
+          break;
+        // case 8:
+        //   changeStatus();
+        //   break;
+        // case 9:
+        //   setPbBoyModelIsOpen(true);
+        //   break;
+        // case 10:
+        //   handleDeliveryStatus();
+        //   break;
+        default:
+          toast("Invalid order status...");
+      }
+    }
+  }, [trackingState]);
+
   if (loading) {
     return (
       <TableShimmerEd2
@@ -227,7 +347,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
             >
               <thead>
                 <tr>
-                  <th className="!px-3" style={{ display: "none" }}>
+                  <th className="!px-3">
                     <label className="flex items-center justify-center">
                       <input className="checkbox" type="checkbox" disabled />
                     </label>
@@ -382,11 +502,17 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td>{total_quantity}</td>
                     <td colSpan={8}>{total_amount}</td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
+                    // console.log(order);
+                    const isDisabled =
+                      (selectedStatus !== null &&
+                        order.order_status !== selectedStatus) ||
+                      [11, 12, 13].includes(order.order_status);
                     const adminStatusClass = getOrderStatusLabel(
                       order?.order_status_details?.admin_label
                     );
@@ -397,16 +523,16 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order?.order_id}>
-                        <th style={{ display: "none" }}>
+                        <th>
                           <label className="flex items-center justify-center">
                             <input
                               className="checkbox"
                               type="checkbox"
-                              // disabled={isDisabled}
-                              // checked={selectedOrderIds.includes(
-                              //   order.order_id
-                              // )}
-                              // onChange={() => handleCheckboxChange(order)}
+                              disabled={isDisabled}
+                              checked={selectedOrderIds.includes(
+                                order.order_id
+                              )}
+                              onChange={() => handleCheckboxChange(order)}
                             />
                           </label>
                         </th>

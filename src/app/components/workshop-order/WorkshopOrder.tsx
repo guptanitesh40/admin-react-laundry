@@ -7,6 +7,11 @@ import { OrderStatus } from "../../../types/enums";
 const WorkshopOrder: React.FC = () => {
   const [isFilter, setIsFilter] = useState<boolean>(false);
 
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [nextStatus, setNextStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+  const [trackingState, setTrackingState] = useState<number | null>(null);
+
   const [filters, setFilters] = useState({
     paymentStatusFilter: [] as number[],
     workshopOrderStatusFilter: [] as number[],
@@ -21,7 +26,7 @@ const WorkshopOrder: React.FC = () => {
     setFilters(newFilters);
   };
 
- const getOrderStatusOptions = (excludedKey: (keyof typeof OrderStatus)[]) => {
+  const getOrderStatusOptions = (excludedKey: (keyof typeof OrderStatus)[]) => {
     return Object.entries(OrderStatus)
       .filter(([key]) => excludedKey.includes(key as keyof typeof OrderStatus))
       .map(([label, value]) => ({ label, value: value as number }));
@@ -32,6 +37,12 @@ const WorkshopOrder: React.FC = () => {
     "Order Received at Workshop",
     "Order Work In Progress",
   ]);
+
+  const hanldeSetNextStatus = () => {
+    if (selectedStatus) {
+      setTrackingState(selectedStatus);
+    }
+  };
 
   return (
     <>
@@ -44,7 +55,8 @@ const WorkshopOrder: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none">
+        {/* <div className="flex flex-auto items-center gap-2.5 mb-4 shadow-none"> */}
+        <div className="flex flex-auto items-center justify-between gap-2.5 mb-4 shadow-none">
           <button
             className="btn btn-sm btn-primary shadow-none"
             onClick={() => setIsFilter(!isFilter)}
@@ -56,6 +68,15 @@ const WorkshopOrder: React.FC = () => {
               <RiFilterOffFill color="skyblue" size={23} />
             )}
           </button>
+
+          {nextStatus && (
+            <button
+              className="btn btn-sm btn-outline btn-success"
+              onClick={hanldeSetNextStatus}
+            >
+              {nextStatus}
+            </button>
+          )}
         </div>
       </div>
 
@@ -69,7 +90,17 @@ const WorkshopOrder: React.FC = () => {
                 workshopOrderStatusOptions={workshopOrderStatusOptions}
               />
             )}{" "}
-            <WorkshopOrderTable filters={filters} />
+            <WorkshopOrderTable
+              filters={filters}
+              selectedOrderIds={selectedOrderIds}
+              setSelectedOrderIds={setSelectedOrderIds}
+              setNextStatus={setNextStatus}
+              selectedStatus={selectedStatus}
+              setSelectedStatus={setSelectedStatus}
+              nextStatus={nextStatus}
+              trackingState={trackingState}
+              setTrackingState={setTrackingState}
+            />
           </div>
         </div>
       </div>
