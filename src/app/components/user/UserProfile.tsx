@@ -1,18 +1,16 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useGetUser from "../../hooks/user/useGetuser";
-import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
-import { Gender, PaymentStatus, PaymentType, Role } from "../../../types/enums";
-import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
+import { Gender, Role } from "../../../types/enums";
 import { LiaRupeeSignSolid } from "react-icons/lia";
-import OrderListModal from "./DuoOrderListModal.tsx";
 import { getRoleClass } from "../../utils/roleClasses";
 import DuoOrderListModal from "./DuoOrderListModal.tsx";
 import CustomerOrders from "./CustomerOrders.tsx";
 import Loading from "../../components/shimmer/Loading.tsx";
 import { FaUserEdit } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { usePermissions } from "../../hooks/index.ts";
+import { usePermissions, useRestoreUser } from "../../hooks/index.ts";
+import Swal from "sweetalert2";
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +23,7 @@ const UserProfile: React.FC = () => {
   const [refetch, setRefetch] = useState<boolean>(false);
 
   const { userData, fetchUser, count, loading } = useGetUser();
+  const { restoreUser } = useRestoreUser();
 
   const user = userData?.user;
 
@@ -38,10 +37,6 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     setIsCustomer(location.pathname.split("/")[1] === "customer");
   }, [location.pathname]);
-
-  if (!user && loading) {
-    return <Loading />;
-  }
 
   if (!user) return;
 
@@ -64,6 +59,53 @@ const UserProfile: React.FC = () => {
     );
   };
 
+  const handleRestoreUser = async (user_id: number) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You want to restore this user?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, restore it!",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Restoring user...",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const { success, message } = await restoreUser(user_id);
+        setRefetch(true);
+
+        if (success) {
+          Swal.fire("Restored!", message, "success");
+        } else {
+          Swal.fire("Failed", message, "error");
+        }
+      }
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  };
+
+  if (!user && loading) {
+    return <Loading />;
+  }
+
+  const isDeleted = !!user?.deleted_at;
+
   return (
     <div className="container mx-auto p-6">
       <div className="flex flex-col bg-gray-50 p-5 rounded-md shadow-md">
@@ -84,14 +126,24 @@ const UserProfile: React.FC = () => {
               </button>
             </div>
           )}
-          {user?.role_id !== 5 && (
-            <span
-              className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                user?.role_id
-              )}`}
+
+          {isDeleted ? (
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={() => handleRestoreUser(user?.user_id)}
             >
-              {Role[user?.role_id as unknown as keyof typeof Role]}
-            </span>
+              Restore {isCustomer ? "Customer" : "User"}
+            </button>
+          ) : (
+            user.role_id !== 5 && (
+              <span
+                className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
+                  user.role_id
+                )}`}
+              >
+                {Role[user.role_id as keyof typeof Role]}
+              </span>
+            )
           )}
         </div>
       </div>
@@ -101,7 +153,7 @@ const UserProfile: React.FC = () => {
           <div className="card pb-2.5">
             <div className="card-header">
               <h3 className="card-title">Personal Information</h3>
-              {hasPermission(8, "update") && (
+              {!isDeleted && hasPermission(8, "update") && (
                 <div className="relative group">
                   <div
                     className="tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex items-center justify-center whitespace-nowrap"
@@ -178,13 +230,16 @@ const UserProfile: React.FC = () => {
                       <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
                         Role:
                       </td>
-                      <span
-                        className={`mt-1 p-2 rounded-md text-sm ${getRoleClass(
-                          user?.role_id
-                        )}`}
-                      >
-                        {Role[user?.role_id as unknown as keyof typeof Role]}
-                      </span>
+
+                      <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                        <span
+                          className={`p-2 rounded-md text-sm ${getRoleClass(
+                            user?.role_id
+                          )}`}
+                        >
+                          {Role[user?.role_id as unknown as keyof typeof Role]}
+                        </span>
+                      </td>
                     </tr>
                   )}
                   {user?.companies?.length > 0 && (
@@ -208,7 +263,12 @@ const UserProfile: React.FC = () => {
                         Branch:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {Array.isArray(user.branches) && user.branches.length > 0 ? user.branches.map((branch: any) => branch).join(", ") : ""}
+                        {Array.isArray(user.branches) &&
+                        user.branches.length > 0
+                          ? user.branches
+                              .map((branch: any) => branch)
+                              .join(", ")
+                          : ""}
                       </td>
                     </tr>
                   )}
@@ -218,7 +278,12 @@ const UserProfile: React.FC = () => {
                         Workshop:
                       </td>
                       <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
-                        {Array.isArray(user.workshops) && user.workshops.length > 0 ?user.workshops.map((workshop: any) => workshop).join(", "): ""}
+                        {Array.isArray(user.workshops) &&
+                        user.workshops.length > 0
+                          ? user.workshops
+                              .map((workshop: any) => workshop)
+                              .join(", ")
+                          : ""}
                       </td>
                     </tr>
                   )}

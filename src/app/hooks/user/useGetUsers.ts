@@ -16,6 +16,7 @@ interface User {
   workshops: any;
   branch_ids: [];
   company_ids: [];
+  deleted_at: string;
 }
 
 const useGetUsers = (

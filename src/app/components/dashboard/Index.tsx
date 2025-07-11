@@ -10,17 +10,26 @@ import SalesBookingReport from "../report/SalesBookingReport";
 import BranchSalesCollectionReport from "../report/BranchSalesCollectionReport";
 import ActionButtons from "../report/ActionButtons";
 import BDReport from "../report/BDReport";
+import { Role } from "../../../types/enums";
+import { useSelector } from "react-redux";
 
 const DashBoard: React.FC = () => {
+  const user_roleId = useSelector((state) => state?.auth?.role_id);
+  const enum_roleId = Role["Workshop Manager"];
+
+  const isWorkshopManager = user_roleId === enum_roleId;
   return (
     <>
       <div className="container-fixed">
         <div className="w-full">
           <ActionButtons />
         </div>
-        <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
-          <BDReport />
-        </div>
+        {!isWorkshopManager && (
+          <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
+            <BDReport />
+          </div>
+        )}
+
         <div className="mt-5 mb-5 grid grid-cols-1 xl:grid-cols-2 gap-5 sm:grid-cols-1 lg:grid-cols-1 lg:gap-5 w-full">
           <OrderReport />
           <DeliveryReport />

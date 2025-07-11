@@ -61,6 +61,7 @@ export { default as useGetUsers} from './user/useGetUsers';
 export { default as useAddUser} from './user/useAddUser';
 export { default as useDeleteUser } from './user/useDeleteUser';
 export { default as useUpdateUser } from './user/useUpdateUser';
+export { default as useRestoreUser} from "./user/useRestoreUser.ts"
 
 export { default as useGetAddress } from './address/useGetAddress';
 
