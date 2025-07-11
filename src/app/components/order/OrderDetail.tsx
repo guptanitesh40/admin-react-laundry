@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums";
 import useGetOrder from "../../hooks/order/useGetOrder";
-import { BiImageAlt, BiRefresh } from "react-icons/bi";
+import { BiRefresh } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
 import { IoIosAttach } from "react-icons/io";
@@ -20,7 +20,7 @@ import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import OrderCalcelModal from "./OrderCancelModal";
-import { MdCancel, MdLinkedCamera } from "react-icons/md";
+import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
@@ -31,7 +31,6 @@ import { RootState } from "../../utils/store";
 import Loading from "../shimmer/Loading";
 import PickUpBoyModelEd2 from "./PickUpBoyModelEd2";
 import DueDetailsModel from "./DueDetailsModel";
-import { GiRegeneration } from "react-icons/gi";
 import useReGenerateInvoice from "../../hooks/invoice/useRegenerateInvoice";
 import { BASE_URL } from "../../utils/constant";
 
@@ -1218,7 +1217,6 @@ const OrderDetails: React.FC = () => {
                     name="images"
                   />
                 </div> */}
-
               </div>
             </div>
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>

@@ -38,6 +38,7 @@ const CustomerTable: React.FC = () => {
     genderFilter,
     role
   );
+  console.log("users : ", users);
   const { deleteUser } = useDeleteUser();
   const { hasPermission } = usePermissions();
 
@@ -330,10 +331,17 @@ const CustomerTable: React.FC = () => {
               {users.length > 0 ? (
                 <tbody>
                   {users?.map((customer: any) => {
+                    const isDeleted = false;
+                    // const isDeleted = customer?.email === "test@email.com";
                     return (
-                      <tr key={customer.user_id}>
+                      <tr
+                        key={customer.user_id}
+                        className={`${isDeleted ? "text-red-500" : ""}`}
+                      >
                         <td
-                          className="cursor-pointer text-blue-600 hover:underline"
+                          className={`cursor-pointer hover:underline ${
+                            isDeleted ? "text-red-500" : "text-blue-600"
+                          }`}
                           onClick={() => handleViewCustomer(customer.user_id)}
                         >
                           <div className="flex items-center gap-2.5">

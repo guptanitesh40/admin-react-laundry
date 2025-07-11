@@ -67,6 +67,7 @@ interface FormData {
   company_id: number | null;
   gstin: string;
   gst_company_name: string;
+  description: string;
 }
 
 interface DeliveryInputs {
@@ -166,6 +167,7 @@ const OrderForm: React.FC = () => {
     company_id: null,
     gstin: "",
     gst_company_name: "",
+    description: "",
   });
 
   const [retrivedData, setRetrivedData] = useState<FormData>({
@@ -204,6 +206,7 @@ const OrderForm: React.FC = () => {
     company_id: null,
     gstin: "",
     gst_company_name: "",
+    description: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -334,6 +337,7 @@ const OrderForm: React.FC = () => {
         company_id: order.company_id,
         gstin: order.gstin,
         gst_company_name: order.gst_company_name,
+        description: order?.description,
       };
 
       setFormData(initialFormData);
@@ -527,13 +531,16 @@ const OrderForm: React.FC = () => {
         coupon_discount: 0,
       }));
     }
+
     setFormData((prev) => {
       const updatedItems = prev.items.map((item, i) => {
         if (i === index) {
           const updatedItem = { ...item, [field]: value };
+
           if (field === "showDescription") {
             updatedItem.showDescription = value;
           }
+
           const category_id = Number(updatedItem.category_id);
           const product_id = Number(updatedItem.product_id);
           const service_id = Number(updatedItem.service_id);
@@ -541,6 +548,7 @@ const OrderForm: React.FC = () => {
 
           if (field === "category_id") {
             const categoryId = Number(value);
+
             if (!productCache[categoryId]) {
               fetchProductsOnId(categoryId).then((products) => {
                 setProductCache((prevCache) => ({
@@ -549,8 +557,12 @@ const OrderForm: React.FC = () => {
                 }));
               });
             }
+
             updatedItem.product_id = null;
             updatedItem.service_id = null;
+            updatedItem.price = null;
+            updatedItem.quantity = 1;
+            updatedItem.item_Total = null;
           }
 
           if (field === "product_id") {
@@ -566,10 +578,18 @@ const OrderForm: React.FC = () => {
                 }));
               });
             }
+
             updatedItem.service_id = null;
+            updatedItem.price = null;
+            updatedItem.quantity = 1;
+            updatedItem.item_Total = null;
           }
 
-          if (["category_id", "product_id", "service_id"].includes(field)) {
+          if (
+            ["category_id", "product_id", "service_id"].includes(field) &&
+            field !== "category_id" &&
+            field !== "product_id"
+          ) {
             if (category_id && product_id && service_id) {
               const price = getPriceForCombination(
                 category_id,
@@ -587,8 +607,10 @@ const OrderForm: React.FC = () => {
           } else if (field === "quantity") {
             updatedItem.item_Total = updatedItem.price * Number(value);
           }
+
           return updatedItem;
         }
+
         return item;
       });
 
@@ -1609,7 +1631,7 @@ const OrderForm: React.FC = () => {
             );
           })}
 
-          <div className="flex bndesktop:!items-center justify-start cs2:gap-12 sm:!gap-8 flex-wrap bndesktop:!gap-4 gap-2 bndesktop:!flex-row flex-col items-start mb-4">
+          <div className="flex bndesktop:!items-center justify-start cs2:gap-12 sm:!gap-8 flex-wrap bndesktop:!gap-4 gap-2 bndesktop:!flex-row flex-col items-start mb-2">
             <button
               type="button"
               onClick={handleAddItem}
@@ -1626,6 +1648,28 @@ const OrderForm: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 cs1:!gap-6 gap-4">
+            <div className="md:col-span-2">
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Order Note
+                </label>
+                <textarea
+                  rows={3}
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      description: e.target.value,
+                    })
+                  }
+                  className="h-full input border border-gray-300 rounded-md p-2 w-full"
+                />
+              </div>
+            </div>
             <div className="flex flex-col">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
