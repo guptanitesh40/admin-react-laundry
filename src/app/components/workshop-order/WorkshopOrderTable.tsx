@@ -13,6 +13,7 @@ import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
+import { IoPrint } from "react-icons/io5";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -165,6 +166,16 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
+    }
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -615,12 +626,23 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                         </td>
 
                         <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewOrder(order?.order_id)}
-                          >
-                            <FaEye size={18} className="text-gray-600" />
-                          </button>
+                          <div className="flex">
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                              onClick={() => handleViewOrder(order?.order_id)}
+                            >
+                              <FaEye size={18} className="text-gray-600" />
+                            </button>
+
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                                title="Download Invoice"
+
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

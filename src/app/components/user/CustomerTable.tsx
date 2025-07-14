@@ -4,11 +4,17 @@ import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Gender } from "../../../types/enums";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
-import { useDeleteUser, useGetUsers, usePermissions } from "../../hooks";
+import {
+  useDeleteUser,
+  useGetUsers,
+  usePermissions,
+  useRestoreUser,
+} from "../../hooks";
 import Swal from "sweetalert2";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import { MdRestore } from "react-icons/md";
 
 const CustomerTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -27,7 +33,7 @@ const CustomerTable: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const navigate = useNavigate();
 
-  let role = 5;
+  const role = 5;
 
   const { users, loading, count, fetchUsers } = useGetUsers(
     currentPage,
@@ -38,7 +44,7 @@ const CustomerTable: React.FC = () => {
     genderFilter,
     role
   );
-  console.log("users : ", users);
+  const { restoreUser } = useRestoreUser();
   const { deleteUser } = useDeleteUser();
   const { hasPermission } = usePermissions();
 
@@ -126,12 +132,12 @@ const CustomerTable: React.FC = () => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        text: "You want to delete this customer !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Yes, delete",
         cancelButtonText: "No, cancel",
       });
 
@@ -150,6 +156,47 @@ const CustomerTable: React.FC = () => {
           Swal.fire(message);
         } else {
           Swal.fire(message);
+        }
+      }
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  };
+
+  const handleRestoreCustomer = async (customer_id: number) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You want to restore this customer ?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, restore",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Restoring Customer...",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const { success, message } = await restoreUser(customer_id);
+        await fetchUsers();
+
+        if (success) {
+          Swal.fire("Restored!", message, "success");
+        } else {
+          Swal.fire("Failed", message, "error");
         }
       }
     } catch (error: any) {
@@ -331,8 +378,7 @@ const CustomerTable: React.FC = () => {
               {users.length > 0 ? (
                 <tbody>
                   {users?.map((customer: any) => {
-                    const isDeleted = false;
-                    // const isDeleted = customer?.email === "test@email.com";
+                    const isDeleted = !!customer?.deleted_at;
                     return (
                       <tr
                         key={customer.user_id}
@@ -386,25 +432,40 @@ const CustomerTable: React.FC = () => {
 
                             {hasPermission(8, "update") && (
                               <button
-                                className="bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                disabled={isDeleted}
+                                className={`p-3 rounded-full transition-all duration-200 ${
+                                  isDeleted
+                                    ? "bg-gray-200 text-gray-400 !cursor-not-allowed"
+                                    : "bg-yellow-100 hover:bg-yellow-200 text-yellow-600 hover:text-yellow-700"
+                                }`}
                                 onClick={() =>
                                   handleUpdateCustomer(customer.user_id)
                                 }
                               >
-                                <FaPencilAlt className="text-yellow-600" />
+                                <FaPencilAlt />
                               </button>
                             )}
 
-                            {hasPermission(8, "delete") && (
-                              <button
-                                className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                                onClick={() =>
-                                  handleDeleteCustomer(customer.user_id)
-                                }
-                              >
-                                <FaTrash className="text-red-500" />
-                              </button>
-                            )}
+                            {hasPermission(8, "delete") &&
+                              (isDeleted ? (
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleRestoreCustomer(customer?.user_id)
+                                  }
+                                >
+                                  <MdRestore className="text-red-500 h-4.5 w-4.5" />
+                                </button>
+                              ) : (
+                                <button
+                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  onClick={() =>
+                                    handleDeleteCustomer(customer?.user_id)
+                                  }
+                                >
+                                  <FaTrash className="text-red-500" />
+                                </button>
+                              ))}
                           </td>
                         )}
                       </tr>

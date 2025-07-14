@@ -22,6 +22,10 @@ import toast from "react-hot-toast";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
 import WorkshopModal from "./AssignWorkshopModal";
 import DueDetailsModel from "./DueDetailsModel";
+import { IoMdDownload } from "react-icons/io";
+import { RiFilePaper2Fill } from "react-icons/ri";
+import { MdSimCardDownload } from "react-icons/md";
+import { IoPrint } from "react-icons/io5";
 
 interface OrderTableProps {
   filters: {
@@ -254,6 +258,16 @@ const OrderTable: React.FC<OrderTableProps> = ({
         text: error.message,
         icon: "error",
       });
+    }
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
     }
   };
 
@@ -809,38 +823,23 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                 </button>
                               )}
 
-                              {/* {hasPermission(3, "update") && (
-                                <button
-                                  className={`mr-3 p-3 rounded-full ${
-                                    (order?.order_status > 0 &&
-                                      order?.order_status < 7) ||
-                                    order?.order_status === 9
-                                      ? "bg-yellow-100 hover:bg-yellow-200"
-                                      : "bg-gray-100 hover:bg-gray-200 !cursor-not-allowed"
-                                  }`}
-                                  disabled={
-                                    !(
-                                      (order?.order_status > 0 &&
-                                        order?.order_status < 7) ||
-                                      order?.order_status === 9
-                                    )
-                                  }
-                                  onClick={() =>
-                                    handleUpdateOrder(order.order_id)
-                                  }
-                                >
-                                  <FaPencilAlt className="text-yellow-600" />
-                                </button>
-                              )} */}
-
                               {hasPermission(3, "delete") && (
                                 <button
-                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  className="mr-3 p-3 bg-red-100 hover:bg-red-200  rounded-full"
                                   onClick={() =>
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
                                   <FaTrash className="text-red-500" />
+                                </button>
+                              )}
+
+                              {hasPermission(3, "read") && (
+                                <button
+                                  className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                                  onClick={() => handleDownloadInvoice(order)}
+                                >
+                                  <IoPrint className="text-teal-600 h-4.5 w-4.5" />
                                 </button>
                               )}
                             </div>

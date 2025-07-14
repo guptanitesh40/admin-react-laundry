@@ -63,7 +63,9 @@ const UserProfile: React.FC = () => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: "You want to restore this user?",
+        text: isCustomer
+          ? "You want to restore this customer?"
+          : "You want to restore this user?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#28a745",
@@ -74,7 +76,7 @@ const UserProfile: React.FC = () => {
 
       if (result.isConfirmed) {
         Swal.fire({
-          title: "Restoring user...",
+          title: isCustomer ? "Restoring customer..." : "Restoring user...",
           allowOutsideClick: false,
           allowEscapeKey: false,
           didOpen: () => {
