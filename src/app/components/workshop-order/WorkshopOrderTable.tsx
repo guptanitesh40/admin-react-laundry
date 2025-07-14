@@ -501,6 +501,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
                   <th className="min-w-[165px]">Payment type</th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
+
                   <th className="min-w-[50px]">Action</th>
                 </tr>
               </thead>
@@ -515,11 +523,11 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     <td></td>
                     <td></td>
                     <td>{total_quantity}</td>
-                    <td colSpan={8}>{total_amount}</td>
+                    <td>{total_amount}</td>
+                    <td colSpan={9}></td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
-                    // console.log(order);
                     const isDisabled =
                       (selectedStatus !== null &&
                         order.order_status !== selectedStatus) ||
@@ -582,7 +590,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           )}
                         </td>
 
-                        {/* <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td> */}
                         <td>{order?.total_quantity}</td>
                         <td>{order?.total}</td>
 
@@ -625,6 +632,9 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           }
                         </td>
 
+                        <td></td>
+                        <td></td>
+
                         <td>
                           <div className="flex">
                             <button
@@ -637,8 +647,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                             <button
                               className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
                               onClick={() => handleDownloadInvoice(order)}
-                                title="Download Invoice"
-
+                              title="Download Invoice"
                             >
                               <IoPrint className="text-teal-600 h-4.5 w-4.5" />
                             </button>

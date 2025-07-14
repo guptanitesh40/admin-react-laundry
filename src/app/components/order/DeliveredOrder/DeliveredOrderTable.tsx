@@ -468,6 +468,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
                   <th className="min-w-[130px]">Receipt</th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
+
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
                     hasPermission(3, "delete")) && (
@@ -484,7 +492,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
                     <td>{paid_amount}</td>
-                    <td colSpan={7}>{kasar_amount}</td>
+                    <td>{kasar_amount}</td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {orders?.map((order) => {
@@ -582,6 +591,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             )}
                           </button>
                         </td>
+                        <td></td>
+                        <td></td>
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (
@@ -639,7 +650,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={16} className="text-center">
                       No Order available
                     </td>
                   </tr>

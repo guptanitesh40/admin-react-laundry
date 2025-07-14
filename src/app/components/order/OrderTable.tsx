@@ -647,8 +647,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       <span className="sort-icon"></span>
                     </span>
                   </th>
-
                   <th className="min-w-[165px]">Payment type</th>
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -670,12 +675,16 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     {location.pathname === "/orders" ? (
                       <>
                         <td>{paid_amount}</td>
-                        <td colSpan={6}>{kasar_amount}</td>
+                        <td>{kasar_amount}</td>
+                        <td colSpan={7}></td>
                       </>
                     ) : location.pathname !== "/pickup-orders" ? (
-                      <td colSpan={6}>{paid_amount}</td>
+                      <>
+                        <td>{paid_amount}</td>
+                        <td colSpan={7}></td>
+                      </>
                     ) : (
-                      <td colSpan={5}></td>
+                      <td colSpan={7}></td>
                     )}
                   </tr>
 
@@ -795,7 +804,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             ]
                           }
                         </td>
-
+                        <td></td>
+                        <td></td>
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||
                           hasPermission(3, "read")) && (
