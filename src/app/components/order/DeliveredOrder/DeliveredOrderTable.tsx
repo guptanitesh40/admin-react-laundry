@@ -16,6 +16,8 @@ import { PaymentType } from "../../../../types/enums";
 import Swal from "sweetalert2";
 import Pagination from "../../pagination/Pagination";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
+import { IoPrint } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 interface DeliveredOrderTableProps {
   filters: {
@@ -125,7 +127,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
 
-
   const handleDeleteOrder = async (order_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
@@ -164,6 +165,16 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
         text: error.message,
         icon: "error",
       });
+    }
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
     }
   };
 
@@ -457,6 +468,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
                   <th className="min-w-[130px]">Receipt</th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
+
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
                     hasPermission(3, "delete")) && (
@@ -473,7 +492,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
                     <td>{paid_amount}</td>
-                    <td colSpan={7}>{kasar_amount}</td>
+                    <td>{kasar_amount}</td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {orders?.map((order) => {
@@ -493,7 +513,9 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                         <td>{order?.branch?.branch_name}</td>
 
                         <td>
-                          {order?.user?.first_name + " " + order?.user?.last_name}
+                          {order?.user?.first_name +
+                            " " +
+                            order?.user?.last_name}
                         </td>
 
                         <td>
@@ -569,6 +591,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             )}
                           </button>
                         </td>
+                        <td></td>
+                        <td></td>
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (
@@ -588,7 +612,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                               {order?.order_status !== 11 &&
                                 hasPermission(3, "update") && (
                                   <button
-                                    className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                                    className="mr-3 p-3 bg-yellow-100 hover:bg-yellow-200 rounded-full"
                                     onClick={() =>
                                       handleUpdateOrder(order?.order_id)
                                     }
@@ -599,12 +623,21 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
                               {hasPermission(3, "delete") && (
                                 <button
-                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  className="mr-3 p-3 bg-red-100 hover:bg-red-200 rounded-full"
                                   onClick={() =>
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
                                   <FaTrash className="text-red-500" />
+                                </button>
+                              )}
+
+                              {hasPermission(3, "read") && (
+                                <button
+                                  className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                                  onClick={() => handleDownloadInvoice(order)}
+                                >
+                                  <IoPrint className="text-teal-600 h-4.5 w-4.5" />
                                 </button>
                               )}
                             </div>
@@ -617,7 +650,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={16} className="text-center">
                       No Order available
                     </td>
                   </tr>

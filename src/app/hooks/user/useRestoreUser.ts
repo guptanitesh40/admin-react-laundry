@@ -1,5 +1,4 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 
 const useRestoreUser = () => {
   const [loading, setLoading] = useState<boolean>(false);

@@ -861,9 +861,7 @@ const OrderDetails: React.FC = () => {
                       Estimated Pickup Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
-                      {new Date(
-                        order?.estimated_pickup_time
-                      ).toLocaleDateString()}
+                      {dayjs(order?.estimated_pickup_time).format("DD/MM/YYYY")}
                     </td>
                   </tr>
                   <tr>
@@ -871,9 +869,9 @@ const OrderDetails: React.FC = () => {
                       Estimated Delivery Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
-                      {new Date(
-                        order?.estimated_delivery_time
-                      ).toLocaleDateString()}
+                      {dayjs(order?.estimated_delivery_time).format(
+                        "DD/MM/YYYY"
+                      )}
                     </td>
                   </tr>
                 </tbody>

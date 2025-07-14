@@ -23,7 +23,6 @@ const Price: React.FC = () => {
   });
 
   const updateFilterValues = (newValues: typeof filterValues) => {
-    console.log("newValues : ", newValues);
     setFilterValues(newValues);
   };
 

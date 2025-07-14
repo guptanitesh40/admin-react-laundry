@@ -1,10 +1,4 @@
-import {
-  useDeleteUser,
-  useGetBranches,
-  useGetCompanies,
-  useGetUsers,
-  useRestoreUser,
-} from "../../hooks";
+import { useDeleteUser, useGetUsers, useRestoreUser } from "../../hooks";
 import { useEffect, useState } from "react";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -34,8 +28,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
-  const perPageForList = 1000;
-  const pageNumberForList = 1;
 
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
@@ -54,8 +46,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   );
   const { deleteUser } = useDeleteUser();
   const { restoreUser } = useRestoreUser();
-  const { companies } = useGetCompanies(pageNumberForList, perPageForList);
-  const { branches } = useGetBranches(pageNumberForList, perPageForList);
 
   const navigate = useNavigate();
 
@@ -155,7 +145,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        text: "You want to delete this user !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
@@ -471,7 +461,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                               className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
                               onClick={() => handleRestoreUser(user?.user_id)}
                             >
-                              <MdRestore className="text-red-500 h-4 w-4" />
+                              <MdRestore className="text-red-500 h-4.5 w-4.5" />
                             </button>
                           ) : (
                             <button

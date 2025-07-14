@@ -13,6 +13,7 @@ import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
+import { IoPrint } from "react-icons/io5";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -98,7 +99,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
       const updatedSelection = isSelected
         ? prevSelectedOrderIds.filter((id) => id !== order_id)
         : [...prevSelectedOrderIds, order_id];
-      // console.log(updatedSelection);
       return updatedSelection;
     });
   };
@@ -120,7 +120,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
       );
 
       if (order) {
-        console.log(order);
         setSelectedStatus(order.order_status);
         setNextStatus(order.order_status_details.next_step);
       }
@@ -165,6 +164,16 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
+    }
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -490,6 +499,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
                   <th className="min-w-[165px]">Payment type</th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
+
                   <th className="min-w-[50px]">Action</th>
                 </tr>
               </thead>
@@ -504,11 +521,11 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     <td></td>
                     <td></td>
                     <td>{total_quantity}</td>
-                    <td colSpan={8}>{total_amount}</td>
+                    <td>{total_amount}</td>
+                    <td colSpan={9}></td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
-                    // console.log(order);
                     const isDisabled =
                       (selectedStatus !== null &&
                         order.order_status !== selectedStatus) ||
@@ -571,7 +588,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           )}
                         </td>
 
-                        {/* <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td> */}
                         <td>{order?.total_quantity}</td>
                         <td>{order?.total}</td>
 
@@ -614,13 +630,26 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           }
                         </td>
 
+                        <td></td>
+                        <td></td>
+
                         <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewOrder(order?.order_id)}
-                          >
-                            <FaEye size={18} className="text-gray-600" />
-                          </button>
+                          <div className="flex">
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                              onClick={() => handleViewOrder(order?.order_id)}
+                            >
+                              <FaEye size={18} className="text-gray-600" />
+                            </button>
+
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                              title="Download Invoice"
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -629,7 +658,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>

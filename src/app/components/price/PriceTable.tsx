@@ -109,7 +109,6 @@ const PriceTable: React.FC<PriceTableProps> = ({
   );
 
   const combinations = getCombinations(categories, products, services, prices);
-  console.log(combinations);
 
   const filteredCombinations = combinations
     .filter((combination) => {
