@@ -99,7 +99,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
       const updatedSelection = isSelected
         ? prevSelectedOrderIds.filter((id) => id !== order_id)
         : [...prevSelectedOrderIds, order_id];
-      // console.log(updatedSelection);
       return updatedSelection;
     });
   };
@@ -121,7 +120,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
       );
 
       if (order) {
-        console.log(order);
         setSelectedStatus(order.order_status);
         setNextStatus(order.order_status_details.next_step);
       }
@@ -660,7 +658,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>
