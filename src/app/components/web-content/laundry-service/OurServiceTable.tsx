@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
-// import { useDeleteBanner, useGetBanners, usePermissions } from "../../hooks";
 import Swal from "sweetalert2";
-import useGetOurServices from "../../../hooks/web-content/our-service/useGetOurServices";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
-import useDeleteOurService from "../../../hooks/web-content/our-service/useDeleteOurService";
+import useGetLaundryServices from "../../../hooks/web-content/laundry-services/useGetLaundryServices";
+import useDeleteLaundryService from "../../../hooks/web-content/laundry-services/useDeleteLaundryService";
 
 interface OurServiceTableProps {
   setEditBanner: (banner_id: number) => void;
@@ -17,10 +16,10 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
   isSubmit,
   setIsSubmit,
 }) => {
-  const { deleteOurService } = useDeleteOurService();
+  const { deleteLaundryService } = useDeleteLaundryService();
 
-  const { services,, fetchOurServices } = useGetOurServices();
-  const { laundryServices, loading, fetchLaundryServices } = useGetLaundryServices();
+  const { laundryServices, loading, fetchLaundryServices } =
+    useGetLaundryServices();
 
   useEffect(() => {
     const refetchData = async () => {
@@ -47,16 +46,27 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
       });
 
       if (isConfirmed) {
-        const { success, message } = await deleteOurService(id);
+        Swal.fire({
+          title: "Deleting...",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const { success, message } = await deleteLaundryService(id);
+
+        Swal.close();
 
         if (success) {
-          await fetchOurServices();
+          setIsSubmit(true);
           Swal.fire("Deleted!", message, "success");
         } else {
           Swal.fire("Error", message, "error");
         }
       }
     } catch (error: any) {
+      Swal.close();
       Swal.fire({
         title: "Error",
         text: error?.message || "Unexpected error occurred",
@@ -87,8 +97,11 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
                   <th className="min-w-[160px]">
                     <span className="sort-label">Title</span>
                   </th>
-                  <th className="min-w-[205px]">
+                  <th className="min-w-[250px]">
                     <span className="sort-label">Description</span>
+                  </th>
+                  <th className="min-w-[225px]">
+                    <span className="sort-label">Note</span>
                   </th>
                   <th className="min-w-[125px] w-[125px]">Actions</th>
                 </tr>
@@ -96,51 +109,67 @@ const OurServiceTable: React.FC<OurServiceTableProps> = ({
 
               {laundryServices.length > 0 ? (
                 <tbody>
-                  {laundryServices.map((item) => (
-                    <tr key={item.service_list_id}>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          {item.service_list_id}
-                        </div>
-                      </td>
-                      <td className="flex justify-center items-center">
-                        <img
-                          alt={item.image}
-                          className="rounded-lg size-16 shrink-0"
-                          src={item.image}
-                        />
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          {item.title}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex items-center gap-1.5">
-                          {item.description}
-                        </div>
-                      </td>
-                      <td>
-                        <button
-                          className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                          onClick={() => setEditBanner(item)}
-                        >
-                          <FaPencilAlt className="text-yellow-600" />
-                        </button>
-                        <button
-                          className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                          onClick={() => handleDelete(item.service_list_id)}
-                        >
-                          <FaTrash className="text-red-500" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {laundryServices.map((item) => {
+                    const {
+                      laundry_service_id,
+                      image,
+                      title,
+                      description,
+                      note,
+                    } = item;
+                    return (
+                      <tr key={laundry_service_id}>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            {laundry_service_id}
+                          </div>
+                        </td>
+                        <td>
+                          <img
+                            alt={image}
+                            className="rounded-lg size-16 shrink-0"
+                            src={image}
+                          />
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {title}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {description}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-1.5">
+                            {note}
+                          </div>
+                        </td>
+                        <td>
+                          <button
+                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            onClick={() => setEditBanner(item)}
+                          >
+                            <FaPencilAlt className="text-yellow-600" />
+                          </button>
+                          <button
+                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                            onClick={() =>
+                              handleDelete(item.laundry_service_id)
+                            }
+                          >
+                            <FaTrash className="text-red-500" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={6} className="text-center">
                       No data available
                     </td>
                   </tr>
