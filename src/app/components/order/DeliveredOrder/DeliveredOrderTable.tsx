@@ -37,7 +37,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   filters,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -295,7 +295,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
@@ -476,6 +476,10 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     <span className="sort-label">Delivered By</span>
                   </th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Workshop By</span>
+                  </th>
+
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
                     hasPermission(3, "delete")) && (
@@ -493,7 +497,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     <td>{total_amount}</td>
                     <td>{paid_amount}</td>
                     <td>{kasar_amount}</td>
-                    <td colSpan={8}></td>
+                    <td colSpan={9}></td>
                   </tr>
 
                   {orders?.map((order) => {
@@ -591,7 +595,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             )}
                           </button>
                         </td>
-                        <td></td>
+                        <td>{order?.confirm_by_user?.name}</td>
+                        <td>{order?.delivered_by_user?.name}</td>
                         <td></td>
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
@@ -609,17 +614,16 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                 </button>
                               )}
 
-                              {order?.order_status !== 11 &&
-                                hasPermission(3, "update") && (
-                                  <button
-                                    className="mr-3 p-3 bg-yellow-100 hover:bg-yellow-200 rounded-full"
-                                    onClick={() =>
-                                      handleUpdateOrder(order?.order_id)
-                                    }
-                                  >
-                                    <FaPencilAlt className="text-yellow-600" />
-                                  </button>
-                                )}
+                              {hasPermission(3, "update") && (
+                                <button
+                                  className="mr-3 p-3 bg-yellow-100 hover:bg-yellow-200 rounded-full"
+                                  onClick={() =>
+                                    handleUpdateOrder(order?.order_id)
+                                  }
+                                >
+                                  <FaPencilAlt className="text-yellow-600 h-4 w-4" />
+                                </button>
+                              )}
 
                               {hasPermission(3, "delete") && (
                                 <button
@@ -628,7 +632,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
-                                  <FaTrash className="text-red-500" />
+                                  <FaTrash className="text-red-500 h-4 w-4" />
                                 </button>
                               )}
 
@@ -650,7 +654,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={16} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>

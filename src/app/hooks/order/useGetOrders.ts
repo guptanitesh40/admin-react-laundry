@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import toast, { Toast } from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
+interface ConfirmBy {
+  name?: string;
+  mobile_number?: string;
+  email?: string;
+}
+
 interface Order {
   created_at: any;
   branch: any;
@@ -32,6 +38,8 @@ interface Order {
   branch_id: number;
   start_date: string;
   end_date: string;
+  confirm_by_user?: ConfirmBy;
+  delivered_by_user?: ConfirmBy;
 }
 
 interface OrdersData {

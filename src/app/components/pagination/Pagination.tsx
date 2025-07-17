@@ -69,7 +69,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, count, totalRecord
                 ) : (
                   <button   
                     key={index}
-                    className={`btn btn-light ${currentPage === page ? "active-btn" : ""}`}
+                    className={`btn btn-light !bg-red-800 ${currentPage === page ? "active-btn" : ""}`}
                     onClick={() => onPageChange(page)}
                   >
                     {page}

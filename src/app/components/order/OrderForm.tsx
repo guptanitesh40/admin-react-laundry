@@ -84,6 +84,7 @@ const OrderForm: React.FC = () => {
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const { id } = useParams<{ id: string }>();
+  console.log(id);
 
   const { updateOrder, loading: updating } = useUpdateOrder();
   const { addOrder, loading: adding } = useAddOrder();
