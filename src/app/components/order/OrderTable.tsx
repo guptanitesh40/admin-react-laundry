@@ -65,7 +65,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   setIsEarlyDelivery,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -419,6 +419,17 @@ const OrderTable: React.FC<OrderTableProps> = ({
     }
   }, [trackingState]);
 
+  const getCols = () => {
+    const { pathname } = location;
+    if (pathname === "/orders") {
+      return 18;
+    } else if (pathname === "/pickup-orders") {
+      return 16;
+    } else {
+      return 17;
+    }
+  };
+
   if (loading) {
     return (
       <TableShimmerEd2
@@ -481,7 +492,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
@@ -654,6 +665,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
                   <th className="min-w-[150px]">
                     <span className="sort-label">Delivered By</span>
                   </th>
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Workshop By</span>
+                  </th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -676,15 +690,15 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       <>
                         <td>{paid_amount}</td>
                         <td>{kasar_amount}</td>
-                        <td colSpan={7}></td>
+                        <td colSpan={8}></td>
                       </>
                     ) : location.pathname !== "/pickup-orders" ? (
                       <>
                         <td>{paid_amount}</td>
-                        <td colSpan={7}></td>
+                        <td colSpan={8}></td>
                       </>
                     ) : (
-                      <td colSpan={7}></td>
+                      <td colSpan={8}></td>
                     )}
                   </tr>
 
@@ -804,7 +818,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             ]
                           }
                         </td>
-                        <td></td>
+                        <td>{order?.confirm_by_user?.name}</td>
+                        <td>{order?.delivered_by_user?.name}</td>
                         <td></td>
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||
@@ -829,7 +844,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                     handleUpdateOrder(order?.order_id)
                                   }
                                 >
-                                  <FaPencilAlt className="text-yellow-600" />
+                                  <FaPencilAlt className="text-yellow-600 h-4 w-4" />
                                 </button>
                               )}
 
@@ -840,7 +855,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
-                                  <FaTrash className="text-red-500" />
+                                  <FaTrash className="text-red-500 h-4 w-4" />
                                 </button>
                               )}
 
@@ -862,7 +877,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={getCols()} className="text-center">
                       No Order available
                     </td>
                   </tr>

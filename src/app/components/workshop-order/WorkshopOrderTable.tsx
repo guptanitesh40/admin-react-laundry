@@ -49,7 +49,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
   setTrackingState,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -349,7 +349,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
@@ -507,6 +507,10 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     <span className="sort-label">Delivered By</span>
                   </th>
 
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Workshop By</span>
+                  </th>
+
                   <th className="min-w-[50px]">Action</th>
                 </tr>
               </thead>
@@ -522,7 +526,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     <td></td>
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
-                    <td colSpan={9}></td>
+                    <td colSpan={10}></td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
@@ -630,7 +634,8 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           }
                         </td>
 
-                        <td></td>
+                        <td>{order?.confirm_by_user?.name}</td>
+                        <td>{order?.delivered_by_user?.name}</td>
                         <td></td>
 
                         <td>
@@ -658,7 +663,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={17} className="text-center">
+                    <td colSpan={18} className="text-center">
                       No Order available
                     </td>
                   </tr>
