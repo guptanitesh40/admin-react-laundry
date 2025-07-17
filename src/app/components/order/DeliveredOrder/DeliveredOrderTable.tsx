@@ -595,8 +595,8 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             )}
                           </button>
                         </td>
-                        <td>{order?.confirm_by_user?.name}</td>
-                        <td>{order?.delivered_by_user?.name}</td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
