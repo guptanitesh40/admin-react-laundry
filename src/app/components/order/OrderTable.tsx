@@ -22,9 +22,6 @@ import toast from "react-hot-toast";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
 import WorkshopModal from "./AssignWorkshopModal";
 import DueDetailsModel from "./DueDetailsModel";
-import { IoMdDownload } from "react-icons/io";
-import { RiFilePaper2Fill } from "react-icons/ri";
-import { MdSimCardDownload } from "react-icons/md";
 import { IoPrint } from "react-icons/io5";
 
 interface OrderTableProps {
@@ -818,8 +815,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             ]
                           }
                         </td>
-                        <td>{order?.confirm_by_user?.name}</td>
-                        <td>{order?.delivered_by_user?.name}</td>
+                        <td></td>
+                        <td></td>
                         <td></td>
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||

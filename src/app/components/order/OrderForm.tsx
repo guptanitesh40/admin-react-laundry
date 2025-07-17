@@ -84,7 +84,6 @@ const OrderForm: React.FC = () => {
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
   const { id } = useParams<{ id: string }>();
-  console.log(id);
 
   const { updateOrder, loading: updating } = useUpdateOrder();
   const { addOrder, loading: adding } = useAddOrder();
@@ -308,12 +307,33 @@ const OrderForm: React.FC = () => {
         username: fullName,
         user_id: order.user_id || null,
         items: order.items.map((item: any) => {
+          console.log(item);
           const category_id = item.category.category_id;
           const product_id = item.product?.product_id || null;
           const service_id = item.service?.service_id || null;
 
           const product_name = item.product?.name || "";
           const service_name = item.service?.name || "";
+
+          if (!productCache[category_id]) {
+            fetchProductsOnId(category_id).then((products) => {
+              setProductCache((prevCache) => ({
+                ...prevCache,
+                [category_id]: products,
+              }));
+            });
+          }
+
+          const cacheKey: string = `${category_id}_${product_id}`;
+
+          if (!serviceCache[cacheKey]) {
+            fetchServicesOnId(category_id, product_id).then((services) => {
+              setServiceCache((prevCache) => ({
+                ...prevCache,
+                [cacheKey]: services,
+              }));
+            });
+          }
 
           return {
             category_id,
