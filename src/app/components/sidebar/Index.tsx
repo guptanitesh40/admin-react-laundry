@@ -1168,7 +1168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <MdOutlineHistory className="h-full w-full p-1" />
+                      <MdOutlineHistory className="h-full w-full p-1 text-[#cb9ad7]" />
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Customer Logs
@@ -1190,7 +1190,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <FaRegPlayCircle className="h-full w-full p-1" />
+                      <FaRegPlayCircle className="h-full w-full p-1 text-[#cb9ad7]" />
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Reports
@@ -1212,7 +1212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <IoPricetagOutline className="h-full w-full p-1" />
+                      <IoPricetagOutline className="h-full w-full p-1 text-[#cb9ad7]" />
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Label Management
