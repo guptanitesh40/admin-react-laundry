@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   useAddPrice,
   useGetCategories,
@@ -11,7 +11,6 @@ import {
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
-import Pagination from "./PricePagination";
 
 interface Category {
   category_id: number;
@@ -75,9 +74,10 @@ const PriceTable: React.FC<PriceTableProps> = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(10);
 
+  // const [search, setSearch] = useState<string>("");
+  // const [searchInput, setSearchInput] = useState<string>("");
+  // const [errorMessage, setErrorMessage] = useState<string>("");
   const { hasPermission } = usePermissions();
 
   const getCombinations = useCallback(
@@ -108,11 +108,7 @@ const PriceTable: React.FC<PriceTableProps> = ({
     [categories, products, services, prices]
   );
 
-  // const combinations = getCombinations(categories, products, services, prices);
-  const combinations = useMemo(
-    () => getCombinations(categories, products, services, prices),
-    [categories, products, services, prices]
-  );
+  const combinations = getCombinations(categories, products, services, prices);
 
   const filteredCombinations = combinations
     .filter((combination) => {
@@ -150,29 +146,26 @@ const PriceTable: React.FC<PriceTableProps> = ({
       return 0;
     });
 
-  const totalPages = Math.ceil(filteredCombinations?.length / perPage);
-
-  const paginatedItems = filteredCombinations.slice(
-    (currentPage - 1) * perPage,
-    (currentPage - 1) * perPage + perPage
-  );
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
-
-  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPerPage = Number(e.target.value);
-    setPerPage(newPerPage);
-    setCurrentPage(1);
-    // setSearchParams({ page: "1", perPage: newPerPage.toString() });
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filters]);
+  // const filteredCombinations = combinations
+  //   .filter((combination) => {
+  //     const searchLower = (search || "").trim().toLowerCase();
+  //     return (
+  //       combination.category.name.toLowerCase().includes(searchLower) ||
+  //       combination.product.name.toLowerCase().includes(searchLower) ||
+  //       combination.service.name.toLowerCase().includes(searchLower)
+  //     );
+  //   })
+  //   .sort((a: any, b: any) => {
+  //     if (["category", "product", "service"].includes(sortColumn)) {
+  //       return sortOrder === "ASC"
+  //         ? a[sortColumn].name.localeCompare(b[sortColumn].name)
+  //         : b[sortColumn].name.localeCompare(a[sortColumn].name);
+  //     }
+  //     if (sortColumn === "price") {
+  //       return sortOrder === "ASC" ? a.price - b.price : b.price - a.price;
+  //     }
+  //     return 0;
+  //   });
 
   useEffect(() => {
     if (isSave) {
@@ -260,6 +253,22 @@ const PriceTable: React.FC<PriceTableProps> = ({
     }));
   };
 
+  // const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     await searchSchema.validate(
+  //       { search: searchInput },
+  //       { abortEarly: false }
+  //     );
+  //     setSearch(searchInput);
+  //     setErrorMessage("");
+  //   } catch (error) {
+  //     if (error instanceof Yup.ValidationError) {
+  //       setErrorMessage(error.errors[0]);
+  //     }
+  //   }
+  // };
+
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
@@ -296,29 +305,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
     <>
       <div className="grid gap-5 lg:gap-7.5 mt-4">
         <div className="card card-grid min-w-full">
-          <div className="card-header card-header-space flex-wrap">
-            <div className="flex items-center gap-2 mb-4">
-              <span>Show</span>
-              <select
-                className="select select-sm w-16"
-                data-datatable-size="true"
-                name="perpage"
-                value={perPage}
-                onChange={handlePerPageChange}
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-                <option value={500}>500</option>
-                <option value={1000}>1000</option>
-              </select>
-              <span>per page</span>
-            </div>
-          </div>
           <div className="card-body">
             <div data-datatable="true" data-datatable-page-size="10">
-              <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
+              <div className="scrollable-x-auto">
                 <table
                   className="table table-auto table-border"
                   data-datatable-table="true"
@@ -391,76 +380,71 @@ const PriceTable: React.FC<PriceTableProps> = ({
                   </thead>
                   <tbody>
                     {filteredCombinations.length > 0 ? (
-                      filteredCombinations
-                        .slice(
-                          (currentPage - 1) * perPage,
-                          (currentPage - 1) * perPage + perPage
-                        )
-                        .map((combination, index) => {
-                          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-                          const isEditing = editing.has(key);
+                      filteredCombinations.map((combination, index) => {
+                        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+                        const isEditing = editing.has(key);
 
-                          return (
-                            <tr
-                              key={index}
-                              className={`font-semibold ${
-                                combination.price ? "" : "text-red-500"
-                              }`}
-                            >
-                              <td>{(currentPage - 1) * perPage + index + 1}</td>
-                              <td>{combination.category.name}</td>
-                              <td>{combination.product.name}</td>
-                              <td>{combination.service.name}</td>
-                              <td className="relative">
-                                {isEditing ? (
-                                  <input
-                                    ref={(el) => (inputRefs.current[key] = el)}
-                                    type="text"
-                                    className="w-full h-full absolute inset-0 input input-bordered"
-                                    value={
-                                      updatedPrices[key] !== undefined
-                                        ? updatedPrices[key]
-                                        : combination.price || ""
-                                    }
-                                    onChange={(e) =>
-                                      handlePriceChange(
-                                        key,
-                                        e.target.value === ""
-                                          ? 0
-                                          : Number(e.target.value)
-                                      )
-                                    }
-                                    onBlur={() => handleInputBlur(key)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        setIsSave(true);
-                                      }
-                                    }}
-                                  />
-                                ) : (
-                                  <span
-                                    className={`${
-                                      hasPermission(10, "update") ||
-                                      hasPermission(10, "create")
-                                        ? "cursor-pointer h-full flex"
-                                        : "h-full flex"
-                                    }`}
-                                    onClick={
-                                      hasPermission(10, "update") ||
-                                      hasPermission(10, "create")
-                                        ? () => handleEditClick(key)
-                                        : undefined
-                                    }
-                                  >
-                                    {updatedPrices[key] !== undefined
+                        return (
+                          <tr
+                            key={index}
+                            className={`font-semibold ${
+                              combination.price ? "" : "text-red-500"
+                            }`}
+                          >
+                            <td>{index + 1}</td>
+                            <td>{combination.category.name}</td>
+                            <td>{combination.product.name}</td>
+                            <td>{combination.service.name}</td>
+                            <td className="relative">
+                              {isEditing ? (
+                                <input
+                                  ref={(el) => (inputRefs.current[key] = el)}
+                                  type="text"
+                                  className="w-full h-full absolute inset-0 input input-bordered"
+                                  value={
+                                    updatedPrices[key] !== undefined
                                       ? updatedPrices[key]
-                                      : combination.price || "Add Price"}
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })
+                                      : combination.price || ""
+                                  }
+                                  onChange={(e) =>
+                                    handlePriceChange(
+                                      key,
+                                      e.target.value === ""
+                                        ? 0
+                                        : Number(e.target.value)
+                                    )
+                                  }
+                                  onBlur={() => handleInputBlur(key)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      setIsSave(true);
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <span
+                                  className={`${
+                                    hasPermission(10, "update") ||
+                                    hasPermission(10, "create")
+                                      ? "cursor-pointer h-full flex"
+                                      : "h-full flex"
+                                  }`}
+                                  onClick={
+                                    hasPermission(10, "update") ||
+                                    hasPermission(10, "create")
+                                      ? () => handleEditClick(key)
+                                      : undefined
+                                  }
+                                >
+                                  {updatedPrices[key] !== undefined
+                                    ? updatedPrices[key]
+                                    : combination.price || "Add Price"}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr>
                         <td colSpan={5} className="text-center">
@@ -471,14 +455,6 @@ const PriceTable: React.FC<PriceTableProps> = ({
                   </tbody>
                 </table>
               </div>
-              <Pagination
-                count={filteredCombinations.length}
-                currentPage={currentPage}
-                totalRecords={paginatedItems?.length}
-                perPage={perPage}
-                onPageChange={handlePageChange}
-                label="prices"
-              />
             </div>
           </div>
         </div>
