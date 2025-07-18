@@ -45,6 +45,7 @@ const OrderDetails: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.user_id);
 
   const { order, fetchOrder, loading: fetchingData } = useGetOrder();
+  console.log(order);
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
@@ -393,8 +394,13 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const openCamera = () => {
-    fileInputRef.current?.click();
+  const getActionDoenBy = (log: any, key: string) => {
+    return "";
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
   };
 
   return (
@@ -923,7 +929,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
-
           {order?.company && Object.keys(order.company).length > 0 && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
@@ -971,7 +976,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.branch && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
@@ -1013,7 +1017,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.pickup_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
@@ -1037,7 +1040,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.delivery_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
@@ -1054,7 +1056,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           <div className="card rounded-xl">
             <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
               <div className="flex items-center gap-4">
@@ -1072,7 +1073,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
-
           <div className="col-span-2 lg:col-span-1 flex">
             <div className="card min-w-full">
               <div className="card-header">
@@ -1154,6 +1154,62 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+          {order?.orderLogs.length > 0 && (
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">Action Log</h3>
+                </div>
+                <div className="card-body pt-4 pb-3">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        {/* {order?.orderLog} */}
+                        {getActionDoenBy(order?.orderLogs, "confirmed_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Confirmed By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(
+                                order?.orderLogs,
+                                "confirmed_by"
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                        {getActionDoenBy(order?.orderLogs, "workshop_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Workshop By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                            </td>
+                          </tr>
+                        )}
+
+                        {getActionDoenBy(order?.orderLogs, "delivered_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Delivered By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(
+                                order?.orderLogs,
+                                "delivered_by"
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

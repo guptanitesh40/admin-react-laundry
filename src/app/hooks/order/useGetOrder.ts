@@ -1,6 +1,19 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+interface User {
+  email?: string;
+  first_name: string;
+  last_name: string;
+  mobile_number?: string;
+  user_id: number;
+}
+
+interface OrderLog {
+  type: string;
+  user: User;
+}
+
 interface Order {
   delivery_boy_id: number | null;
   pickup_boy_id: number | null;
@@ -52,6 +65,7 @@ interface Order {
   gstin: string;
   gst_company_name: string;
   company: any;
+  orderLogs?: OrderLog[];
 }
 
 const useGetOrder = () => {
