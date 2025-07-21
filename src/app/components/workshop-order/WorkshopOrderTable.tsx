@@ -260,6 +260,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
     }
   };
 
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
+  };
+
   useEffect(() => {
     if (trackingState !== null) {
       switch (trackingState) {
@@ -634,9 +642,17 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                           }
                         </td>
 
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "confirmed_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                        </td>
 
                         <td>
                           <div className="flex">

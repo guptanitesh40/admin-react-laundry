@@ -231,6 +231,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     await generateInvoice(order_id);
   };
 
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
+  };
+
   if (loading) {
     return (
       <TableShimmerEd2
@@ -595,9 +603,19 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             )}
                           </button>
                         </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "confirmed_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                        </td>
+
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (

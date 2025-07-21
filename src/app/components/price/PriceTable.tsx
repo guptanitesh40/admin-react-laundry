@@ -1,41 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  useAddPrice,
-  useGetCategories,
-  useGetPrice,
-  useGetProducts,
-  useGetServices,
-  usePermissions,
-} from "../../hooks";
-import toast from "react-hot-toast";
+import { useEffect, useRef, useState } from "react";
+import { useAddPrice, usePermissions } from "../../hooks";
 import { useSearchParams } from "react-router-dom";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import useGetPrice02 from "../../hooks/price/useGetPrice02";
+import Pagination from "../pagination/Pagination";
+import { searchSchema } from "../../validation/searchSchema";
+import * as Yup from "yup";
 
-interface Category {
+interface PriceItemType {
   category_id: number;
-  name: string;
-}
-
-interface Product {
   product_id: number;
-  name: string;
-}
-
-interface Service {
   service_id: number;
-  name: string;
-}
-
-interface Price {
-  [key: string]: number;
-}
-
-interface Combination {
-  category: Category;
-  product: Product;
-  service: Service;
   price: number;
+  category_name: string;
+  product_name: string;
+  service_name: string;
 }
 
 interface FilterOptions {
@@ -48,7 +28,6 @@ interface PriceTableProps {
   isSave: boolean;
   setIsSave: (value: boolean) => void;
   setIsLoading: (value: boolean) => void;
-  search: string;
   filters: FilterOptions;
 }
 
@@ -56,171 +35,127 @@ const PriceTable: React.FC<PriceTableProps> = ({
   isSave,
   setIsSave,
   setIsLoading,
-  search,
   filters,
 }) => {
-  const { categories } = useGetCategories(1, 1000);
-  const { products } = useGetProducts(1, 1000);
-  const { services } = useGetServices(1, 1000);
-  const { prices, loading, fetchPrices } = useGetPrice();
-  const { addPrice, loading: adding } = useAddPrice();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(500);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const [updatedPrices, setUpdatedPrices] = useState<{ [key: string]: number }>(
-    {}
-  );
+  const { prices, loading, count, fetchPrices } = useGetPrice02();
+
+  const { addPrices, loading: adding } = useAddPrice();
+
+  const [updatedPrices, setUpdatedPrices] = useState<{
+    [key: string]: {
+      category_id: number;
+      product_id: number;
+      service_id: number;
+      price: number;
+    };
+  }>({});
 
   const [editing, setEditing] = useState<Set<string>>(new Set());
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
-  const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
 
-  // const [search, setSearch] = useState<string>("");
-  // const [searchInput, setSearchInput] = useState<string>("");
-  // const [errorMessage, setErrorMessage] = useState<string>("");
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [refetch, setRefetch] = useState(false);
+
   const { hasPermission } = usePermissions();
 
-  const getCombinations = useCallback(
-    (
-      categories: Category[],
-      products: Product[],
-      services: Service[],
-      prices: Price[]
-    ): Combination[] => {
-      const combinations: Combination[] = [];
+  const handleEditClick = (key: string) => {
+    setEditingKey(key);
+  };
 
-      categories.forEach((category) => {
-        products.forEach((product) => {
-          services.forEach((service) => {
-            const key = `${category.category_id}_${product.product_id}_${service.service_id}`;
-            combinations.push({
-              category,
-              product,
-              service,
-              price: prices[key] || 0,
-            });
-          });
-        });
-      });
+  const handlePriceChange = (item: PriceItemType, value: number) => {
+    const key = `${item.category_id}_${item.product_id}_${item.service_id}`;
+    setUpdatedPrices((prev) => ({
+      ...prev,
+      [key]: {
+        category_id: item.category_id,
+        product_id: item.product_id,
+        service_id: item.service_id,
+        price: value,
+      },
+    }));
+  };
 
-      return combinations;
-    },
-    [categories, products, services, prices]
-  );
-
-  const combinations = getCombinations(categories, products, services, prices);
-
-  const filteredCombinations = combinations
-    .filter((combination) => {
-      const searchLower = (search || "").trim().toLowerCase();
-      const matchesSearch =
-        combination.category.name.toLowerCase().includes(searchLower) ||
-        combination.product.name.toLowerCase().includes(searchLower) ||
-        combination.service.name.toLowerCase().includes(searchLower);
-
-      const matchesCategory =
-        filters.categoryId.length === 0 ||
-        filters.categoryId.includes(combination.category.category_id);
-
-      const matchesProduct =
-        filters.productId.length === 0 ||
-        filters.productId.includes(combination.product.product_id);
-
-      const matchesService =
-        filters.serviceId.length === 0 ||
-        filters.serviceId.includes(combination.service.service_id);
-
-      return (
-        matchesSearch && matchesCategory && matchesProduct && matchesService
-      );
-    })
-    .sort((a: any, b: any) => {
-      if (["category", "product", "service"].includes(sortColumn)) {
-        return sortOrder === "ASC"
-          ? a[sortColumn].name.localeCompare(b[sortColumn].name)
-          : b[sortColumn].name.localeCompare(a[sortColumn].name);
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      if (sortOrder === "ASC") {
+        setSortOrder("DESC");
+      } else {
+        setSortOrder("ASC");
       }
-      if (sortColumn === "price") {
-        return sortOrder === "ASC" ? a.price - b.price : b.price - a.price;
-      }
-      return 0;
+    } else {
+      setSortColumn(column);
+      setSortOrder("ASC");
+    }
+  };
+
+  const handleInputBlur = (key: string) => {
+    setEditing((prev) => {
+      const updatedEditing = new Set(prev);
+      updatedEditing.delete(key);
+      return updatedEditing;
     });
+  };
 
-  // const filteredCombinations = combinations
-  //   .filter((combination) => {
-  //     const searchLower = (search || "").trim().toLowerCase();
-  //     return (
-  //       combination.category.name.toLowerCase().includes(searchLower) ||
-  //       combination.product.name.toLowerCase().includes(searchLower) ||
-  //       combination.service.name.toLowerCase().includes(searchLower)
-  //     );
-  //   })
-  //   .sort((a: any, b: any) => {
-  //     if (["category", "product", "service"].includes(sortColumn)) {
-  //       return sortOrder === "ASC"
-  //         ? a[sortColumn].name.localeCompare(b[sortColumn].name)
-  //         : b[sortColumn].name.localeCompare(a[sortColumn].name);
-  //     }
-  //     if (sortColumn === "price") {
-  //       return sortOrder === "ASC" ? a.price - b.price : b.price - a.price;
-  //     }
-  //     return 0;
-  //   });
+  const totalPages = Math.ceil(count / perPage);
 
-  useEffect(() => {
-    if (isSave) {
-      const isDataChanged = combinations.some((combination) => {
-        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-        return (
-          updatedPrices[key] !== undefined &&
-          updatedPrices[key] !== combination.price
-        );
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setSearchParams({
+        page: newPage.toString(),
+        perPage: perPage.toString(),
       });
+    }
+  };
 
-      if (!isDataChanged) {
-        setIsSave(false);
-        return;
-      }
+  const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPerPage = Number(e.target.value);
+    setPerPage(newPerPage);
+    setCurrentPage(1);
+    setSearchParams({ page: "1", perPage: newPerPage.toString() });
+  };
 
-      const updatedData = combinations
-        .map((combination) => {
-          const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
-
-          return {
-            category_id: combination.category.category_id,
-            product_id: combination.product.product_id,
-            service_id: combination.service.service_id,
-            price:
-              updatedPrices[key] !== undefined
-                ? updatedPrices[key]
-                : combination.price,
-          };
-        })
-        .filter((combination) => combination.price > 0);
-
-      try {
-        addPrice(updatedData).then(() => {
-          fetchPrices().then(() => {
-            setUpdatedPrices({});
-            setEditing(new Set());
-          });
-        });
-      } catch (error) {
-        toast.error("Failed to save prices.");
+  const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await searchSchema.validate(
+        { search: searchInput },
+        { abortEarly: false }
+      );
+      setSearch(searchInput);
+      setErrorMessage("");
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        setErrorMessage(error.errors[0]);
       }
     }
-    setIsSave(false);
-  }, [isSave, addPrice, combinations, updatedPrices]);
+  };
 
   useEffect(() => {
-    const keys = Array.from(editing);
-    if (keys.length > 0) {
-      const key = keys[0];
-      if (inputRefs.current[key]) {
-        inputRefs.current[key]?.focus();
-      }
+    if (editingKey && inputRefs.current[editingKey]) {
+      inputRefs.current[editingKey].focus();
     }
-  }, [editing]);
+  }, [editingKey]);
+
+  useEffect(() => {
+    fetchPrices({
+      page_number: currentPage,
+      per_page: perPage,
+      sort_by: sortColumn,
+      order: sortOrder,
+      search: search,
+      filters: filters,
+    });
+  }, [currentPage, perPage, sortColumn, sortOrder, search, filters, refetch]);
 
   useEffect(() => {
     if (search) {
@@ -238,53 +173,27 @@ const PriceTable: React.FC<PriceTableProps> = ({
     }
   }, [adding]);
 
-  const handleEditClick = (key: string) => {
-    setEditing((prev) => {
-      const updatedEditing = new Set(prev);
-      updatedEditing.add(key);
-      return updatedEditing;
-    });
-  };
+  useEffect(() => {
+    if (!isSave) return;
 
-  const handlePriceChange = (key: string, value: number) => {
-    setUpdatedPrices((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+    const savePrices = async () => {
+      if (Object.keys(updatedPrices).length === 0) {
+        setIsSave(false);
+        return;
+      }
 
-  // const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   try {
-  //     await searchSchema.validate(
-  //       { search: searchInput },
-  //       { abortEarly: false }
-  //     );
-  //     setSearch(searchInput);
-  //     setErrorMessage("");
-  //   } catch (error) {
-  //     if (error instanceof Yup.ValidationError) {
-  //       setErrorMessage(error.errors[0]);
-  //     }
-  //   }
-  // };
+      const payload = Object.values(updatedPrices);
+      const result = await addPrices(payload);
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      sortOrder === "ASC" ? setSortOrder("DESC") : setSortOrder("ASC");
-    } else {
-      setSortColumn(column);
-      setSortOrder("ASC");
-    }
-  };
+      if (result) {
+        setRefetch((prev) => !prev);
+        setUpdatedPrices({});
+      }
+      setIsSave(false);
+    };
 
-  const handleInputBlur = (key: string) => {
-    setEditing((prev) => {
-      const updatedEditing = new Set(prev);
-      updatedEditing.delete(key);
-      return updatedEditing;
-    });
-  };
+    savePrices();
+  }, [isSave]);
 
   if (loading) {
     return (
@@ -305,9 +214,60 @@ const PriceTable: React.FC<PriceTableProps> = ({
     <>
       <div className="grid gap-5 lg:gap-7.5 mt-4">
         <div className="card card-grid min-w-full">
+          <div className="card-header card-header-space flex-wrap items-center">
+            <div className="flex items-center gap-2 mb-4">
+              <span>Show</span>
+              <select
+                className="select select-sm w-16"
+                data-datatable-size="true"
+                name="perpage"
+                value={perPage}
+                onChange={handlePerPageChange}
+              >
+                <option value={100}>100</option>
+                <option value={500}>500</option>
+                <option value={1000}>1000</option>
+                <option value={1500}>1500</option>
+                <option value={2000}>2000</option>
+              </select>
+              <span>per page</span>
+            </div>
+
+            <div className="flex items-center gap-4 flex-1 justify-end">
+              <div className="flex flex-col items-end">
+                <form
+                  onSubmit={onSearchSubmit}
+                  className="flex items-center gap-2"
+                >
+                  <label className="input input-sm h-10 flex items-center gap-2">
+                    <input
+                      type="search"
+                      value={searchInput}
+                      onChange={(e) => {
+                        setSearchInput(e.target.value);
+                        if (e.target.value === "") {
+                          setSearch("");
+                          setErrorMessage("");
+                        }
+                      }}
+                      placeholder="Search..."
+                      className="min-w-[185px]"
+                    />
+                    <button type="submit" className="btn btn-sm btn-icon">
+                      <i className="ki-filled ki-magnifier"></i>
+                    </button>
+                  </label>
+                </form>
+                <p className="text-red-500 text-sm mt-1">
+                  {errorMessage || "\u00A0"}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="card-body">
             <div data-datatable="true" data-datatable-page-size="10">
-              <div className="scrollable-x-auto">
+              <div className="scrollable-x-auto scrollable-y-auto max-h-[450px]">
                 <table
                   className="table table-auto table-border"
                   data-datatable-table="true"
@@ -379,42 +339,54 @@ const PriceTable: React.FC<PriceTableProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredCombinations.length > 0 ? (
-                      filteredCombinations.map((combination, index) => {
-                        const key = `${combination.category.category_id}_${combination.product.product_id}_${combination.service.service_id}`;
+                    {prices.length > 0 ? (
+                      prices.map((item, index) => {
+                        const {
+                          price,
+                          category_name,
+                          category_id,
+                          product_name,
+                          product_id,
+                          service_name,
+                          service_id,
+                        } = item;
+                        const key = `${category_id}_${product_id}_${service_id}`;
                         const isEditing = editing.has(key);
 
                         return (
                           <tr
                             key={index}
                             className={`font-semibold ${
-                              combination.price ? "" : "text-red-500"
+                              price ? "" : "text-red-500"
                             }`}
                           >
-                            <td>{index + 1}</td>
-                            <td>{combination.category.name}</td>
-                            <td>{combination.product.name}</td>
-                            <td>{combination.service.name}</td>
+                            <td>{(currentPage - 1) * perPage + index + 1}</td>
+                            <td>{category_name}</td>
+                            <td>{product_name}</td>
+                            <td>{service_name}</td>
                             <td className="relative">
-                              {isEditing ? (
+                              {editingKey === key ? (
                                 <input
                                   ref={(el) => (inputRefs.current[key] = el)}
                                   type="text"
                                   className="w-full h-full absolute inset-0 input input-bordered"
                                   value={
-                                    updatedPrices[key] !== undefined
-                                      ? updatedPrices[key]
-                                      : combination.price || ""
+                                    updatedPrices[key]?.price !== undefined
+                                      ? updatedPrices[key].price
+                                      : price || ""
                                   }
                                   onChange={(e) =>
                                     handlePriceChange(
-                                      key,
+                                      item,
                                       e.target.value === ""
                                         ? 0
                                         : Number(e.target.value)
                                     )
                                   }
-                                  onBlur={() => handleInputBlur(key)}
+                                  onBlur={() => {
+                                    handleInputBlur(key);
+                                    setEditingKey(null);
+                                  }}
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                       setIsSave(true);
@@ -436,9 +408,9 @@ const PriceTable: React.FC<PriceTableProps> = ({
                                       : undefined
                                   }
                                 >
-                                  {updatedPrices[key] !== undefined
-                                    ? updatedPrices[key]
-                                    : combination.price || "Add Price"}
+                                  {updatedPrices[key]?.price !== undefined
+                                    ? updatedPrices[key].price
+                                    : price || "Add Price"}
                                 </span>
                               )}
                             </td>
@@ -455,6 +427,15 @@ const PriceTable: React.FC<PriceTableProps> = ({
                   </tbody>
                 </table>
               </div>
+
+              <Pagination
+                count={count}
+                currentPage={currentPage}
+                totalRecords={prices?.length}
+                perPage={perPage}
+                onPageChange={handlePageChange}
+                label="prices"
+              />
             </div>
           </div>
         </div>

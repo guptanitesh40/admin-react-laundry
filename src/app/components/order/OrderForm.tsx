@@ -307,7 +307,6 @@ const OrderForm: React.FC = () => {
         username: fullName,
         user_id: order.user_id || null,
         items: order.items.map((item: any) => {
-          console.log(item);
           const category_id = item.category.category_id;
           const product_id = item.product?.product_id || null;
           const service_id = item.service?.service_id || null;

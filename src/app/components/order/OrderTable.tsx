@@ -371,6 +371,25 @@ const OrderTable: React.FC<OrderTableProps> = ({
     }
   };
 
+  const getCols = () => {
+    const { pathname } = location;
+    if (pathname === "/orders") {
+      return 18;
+    } else if (pathname === "/pickup-orders") {
+      return 16;
+    } else {
+      return 17;
+    }
+  };
+
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
+  };
+
   useEffect(() => {
     if (isEarlyDelivery) {
       handleDeliveryStatus();
@@ -415,17 +434,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
       }
     }
   }, [trackingState]);
-
-  const getCols = () => {
-    const { pathname } = location;
-    if (pathname === "/orders") {
-      return 18;
-    } else if (pathname === "/pickup-orders") {
-      return 16;
-    } else {
-      return 17;
-    }
-  };
 
   if (loading) {
     return (
@@ -815,9 +823,19 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             ]
                           }
                         </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "confirmed_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                        </td>
+
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||
                           hasPermission(3, "read")) && (

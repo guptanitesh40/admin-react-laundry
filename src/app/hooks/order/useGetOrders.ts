@@ -2,6 +2,19 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
+interface User {
+  email?: string;
+  first_name: string;
+  last_name: string;
+  mobile_number?: string;
+  user_id: number;
+}
+
+interface OrderLog {
+  type: string;
+  user: User;
+}
+
 interface Order {
   created_at: any;
   branch: any;
@@ -34,6 +47,7 @@ interface Order {
   end_date: string;
   confirm_by_user?: any;
   delivered_by_user?: any;
+  orderLogs?: OrderLog[];
 }
 
 interface OrdersData {
@@ -135,7 +149,6 @@ const useGetOrders = (
         toast.error(data.message, { position: "top-center" });
         return;
       }
-
       setOrderData(data?.data || {});
       setCount(data?.data?.count || 0);
     } catch (error: any) {

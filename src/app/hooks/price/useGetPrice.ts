@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { BASE_URL } from "../../utils/constant";
 
@@ -15,7 +15,7 @@ const useGetPrice = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/prices`, {
+      const response = await fetch(`${BASE_URL}/prices/admin`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
