@@ -468,7 +468,8 @@ const OrderDetails: React.FC = () => {
 
               {((order?.order_status > 0 && order?.order_status < 7) ||
                 order?.order_status === 9 ||
-                order?.order_status === 10) &&
+                order?.order_status === 10 ||
+                order?.order_status === 11) &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
