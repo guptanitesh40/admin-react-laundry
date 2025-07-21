@@ -261,7 +261,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
   };
 
   const getActionDoenBy = (log: any, key: string) => {
-    return "";
     const data = log.find((item: any) => item?.type === key);
     if (!log.length || !key || !data) {
       return "";

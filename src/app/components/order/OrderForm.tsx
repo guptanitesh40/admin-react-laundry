@@ -77,7 +77,6 @@ interface DeliveryInputs {
 
 const OrderForm: React.FC = () => {
   const { prices, loading: loadingPrices } = useGetPrice();
-  // console.log(prices);
   const { categories, loading: fetchingCategories } = useGetCategories();
   const { fetchProductsOnId, loading: fetchingProducs } = useGetProductsOnId();
   const { fetchServicesOnId, loading: fetchingServices } = useGetServicesOnId();
@@ -308,7 +307,6 @@ const OrderForm: React.FC = () => {
         username: fullName,
         user_id: order.user_id || null,
         items: order.items.map((item: any) => {
-          console.log(item);
           const category_id = item.category.category_id;
           const product_id = item.product?.product_id || null;
           const service_id = item.service?.service_id || null;
@@ -618,7 +616,6 @@ const OrderForm: React.FC = () => {
                 product_id,
                 service_id
               );
-              console.log("Price : ", price);
               updatedItem.price = price;
               updatedItem.item_Total = price * quantity;
             } else {
@@ -656,7 +653,6 @@ const OrderForm: React.FC = () => {
     service_id: number
   ): number => {
     const key = `${category_id}_${product_id}_${service_id}`;
-    console.log(key);
     return prices[key] || 0;
   };
 

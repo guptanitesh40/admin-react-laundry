@@ -1,9 +1,8 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { BASE_URL } from "../../utils/constant";
 
-const ADD_PRICE_URL = `${import.meta.env.VITE_BASE_URL}/prices`;
-
-interface PriceData {
+interface PriceRecord {
   category_id: number;
   product_id: number;
   service_id: number;
@@ -11,52 +10,47 @@ interface PriceData {
 }
 
 const useAddPrice = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-  const addPrice = async (priceData: PriceData[]) => {
-    const token = localStorage.getItem('authToken');
-    if (priceData.length === 0) {
-      toast.error("No changes detected. Please provide a price to save.", { position: 'top-center' });
-      return false;
+  const addPrices = async (records: PriceRecord[]) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      toast.error("Auth token not found");
+      return;
+    }
+
+    if (records.length === 0) {
+      toast("No prices to update");
+      return;
     }
 
     setLoading(true);
-
     try {
-      const payload = { prices: priceData };
-
-      const response = await fetch(ADD_PRICE_URL, {
+      const response = await fetch(`${BASE_URL}/prices`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ prices: records }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        const message = errorData.message;
-        toast.error(message, { position: 'top-center' });
-        return false;
+        throw new Error(data.message || "Failed to add prices");
       }
 
-      const result = await response.json();
-      toast.success(result.message , { position: 'top-center' });
-      return true;
+      toast.success("Prices added successfully");
+      return data;
     } catch (error: any) {
-      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        toast.error('Network error: Failed to fetch.', { position: 'top-center' });
-      } else {
-        toast.error('An unexpected error occurred.', { position: 'top-center' });
-      }
-      return false;
+      toast.error(error.message || "Failed to added prices");
     } finally {
       setLoading(false);
     }
   };
 
-  return { addPrice, loading };
+  return { addPrices, loading };
 };
 
 export default useAddPrice;

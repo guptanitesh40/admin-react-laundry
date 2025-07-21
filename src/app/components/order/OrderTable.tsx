@@ -383,7 +383,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
   };
 
   const getActionDoenBy = (log: any, key: string) => {
-    return "";
     const data = log.find((item: any) => item?.type === key);
     if (!log.length || !key || !data) {
       return "";
@@ -721,8 +720,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     const nextStepClass = getOrderStatusLabel(
                       order.order_status_details.next_step
                     );
-
-                    console.log(order);
 
                     return (
                       <tr key={order?.order_id}>

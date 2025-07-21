@@ -6,12 +6,19 @@ interface Price {
   [key: string]: any;
 }
 
+interface PriceFilters {
+  categoryId?: number[];
+  productId?: number[];
+  serviceId?: number[];
+}
+
 interface FetchParams {
   per_page?: number;
   page_number?: number;
   search?: string;
   sort_by?: string;
   order?: "ASC" | "DESC" | "";
+  filters?: PriceFilters;
 }
 
 const useGetPrice02 = () => {
@@ -20,11 +27,12 @@ const useGetPrice02 = () => {
   const [count, setCount] = useState<number>(0);
 
   const fetchPrices = async ({
-    per_page = 10,
+    per_page = 500,
     page_number = 1,
     search = "",
     sort_by = "",
     order = "",
+    filters = {},
   }: FetchParams = {}) => {
     const token = localStorage.getItem("authToken");
 
@@ -44,6 +52,18 @@ const useGetPrice02 = () => {
     if (search) queryParams.append("search", search);
     if (sort_by) queryParams.append("sort_by", sort_by);
     if (order) queryParams.append("order", order);
+
+    filters?.categoryId?.forEach((id) => {
+      queryParams.append("category_ids", String(id));
+    });
+
+    filters?.productId?.forEach((id) => {
+      queryParams.append("product_ids", String(id));
+    });
+
+    filters?.serviceId?.forEach((id) => {
+      queryParams.append("service_ids", String(id));
+    });
 
     try {
       const response = await fetch(`${BASE_URL}/prices?${queryParams}`, {

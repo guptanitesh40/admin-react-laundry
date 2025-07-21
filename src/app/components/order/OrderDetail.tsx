@@ -45,7 +45,6 @@ const OrderDetails: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.user_id);
 
   const { order, fetchOrder, loading: fetchingData } = useGetOrder();
-  console.log(order);
   const { addNote, loading } = useAddNote();
   const { deleteNote } = useDeleteNote();
   const { updateOrderStatus } = useUpdateOrderStatus();
@@ -395,7 +394,6 @@ const OrderDetails: React.FC = () => {
   };
 
   const getActionDoenBy = (log: any, key: string) => {
-    return "";
     const data = log.find((item: any) => item?.type === key);
     if (!log.length || !key || !data) {
       return "";
@@ -1164,7 +1162,6 @@ const OrderDetails: React.FC = () => {
                   <div className="scrollable-x-auto">
                     <table className="table-auto">
                       <tbody>
-                        {/* {order?.orderLog} */}
                         {getActionDoenBy(order?.orderLogs, "confirmed_by") && (
                           <tr>
                             <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
@@ -1251,26 +1248,6 @@ const OrderDetails: React.FC = () => {
                     name="images"
                   />
                 </div>
-
-                {/* <div>
-                  <button
-                    className="btn btn-light"
-                    title="Take Photo"
-                    onClick={openCamera}
-                  >
-                    Take Photo <MdLinkedCamera size={20} />
-                  </button>
-
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    capture="user" // front camera
-                    style={{ display: "none" }}
-                    onChange={handleChange}
-                    name="images"
-                  />
-                </div> */}
               </div>
             </div>
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>

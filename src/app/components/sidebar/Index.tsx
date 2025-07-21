@@ -269,7 +269,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                   </Link>
 
-                  {/* <Link to="/quick-order/add" className="bg-red-200">
+                  <Link to="/quick-order/add" className="bg-red-200">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
                         "/quick-order/add"
@@ -285,7 +285,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         </span>
                       </div>
                     </div>
-                  </Link> */}
+                  </Link>
 
                   <Link to="/pickup-orders">
                     <div

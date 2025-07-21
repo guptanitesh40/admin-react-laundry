@@ -163,7 +163,6 @@ const OrderForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
 
     try {
       await quickOrderSchema.validate(formData, { abortEarly: false });
@@ -174,7 +173,6 @@ const OrderForm: React.FC = () => {
         error.inner.forEach((err) => {
           formErrors[err.path || ""] = err.message;
         });
-        console.log(formErrors);
         setErrors(formErrors);
       } else {
         toast.error("Failed to submit the form. Please try again.");
@@ -256,10 +254,6 @@ const OrderForm: React.FC = () => {
         address_id: address.address_id,
       }));
     }
-  };
-
-  const handleDeliveryTimeChange = (value: number) => {
-    console.log("handle data change...");
   };
 
   useEffect(() => {
