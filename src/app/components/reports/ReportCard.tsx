@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole02 from "../../hooks/user/useGetUserByRole02";
-import { useGetCompanies } from "../../hooks";
+import { useGetBranches, useGetCompanies } from "../../hooks";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import toast from "react-hot-toast";
@@ -20,10 +20,22 @@ const ReportCard: React.FC<ReportCardProps> = ({
 }) => {
   const role_id = 5;
   const [search, setSearch] = useState("");
-  const { users, loading: loadingUsers } = useGetUsersByRole02(role_id, search);
-  const { companies, loading: loadingCompanies } = useGetCompanies(1, 1000);
+
   const [selectedCustomers, setSelectedCustomers] = useState<any[]>([]);
   const [selectedCompanies, setSelectedCompanies] = useState<any[]>([]);
+  const [selectedBranches, setSelectedBranches] = useState<any[]>([]);
+
+  const { users, loading: loadingUsers } = useGetUsersByRole02(role_id, search);
+  const { companies, loading: loadingCompanies } = useGetCompanies(1, 1000);
+  const { branches, loading: loadingBranches } = useGetBranches(
+    1,
+    1000,
+    "",
+    "",
+    "",
+    selectedCompanies
+  );
+
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     start_time: "",
@@ -48,6 +60,14 @@ const ReportCard: React.FC<ReportCardProps> = ({
       value: company.company_id,
     }));
   }, [companies, loadingCompanies]);
+
+  const branchOptions = useMemo(() => {
+    if (loadingBranches) return [{ label: "Loading...", value: 0 }];
+    return branches.map((branch) => ({
+      label: branch.branch_name,
+      value: branch.branch_id,
+    }));
+  }, [branches, loadingBranches]);
 
   const handleDateChange = (dates: any) => {
     if (dates) {
@@ -115,6 +135,11 @@ const ReportCard: React.FC<ReportCardProps> = ({
         return queryParam.append("company_id", company_id);
       });
     }
+    if (selectedBranches.length) {
+      selectedBranches.forEach((branch_id) => {
+        return queryParam.append("branch_id", branch_id);
+      });
+    }
 
     try {
       const response = await fetch(
@@ -175,6 +200,25 @@ const ReportCard: React.FC<ReportCardProps> = ({
             onRemove={(selectedList: any[]) => {
               const selectedIds = selectedList.map((item) => item.value);
               setSelectedCompanies(selectedIds);
+            }}
+            className="w-full"
+            isSearchInput={false}
+          />
+        </div>
+
+        <div className="mui-multiselect-parent">
+          <MultiSelect
+            options={branchOptions}
+            displayValue="label"
+            placeholder="Select Branch"
+            selectedValues={selectedBranches}
+            onSelect={(selectedList: any[]) => {
+              const selectedIds = selectedList.map((item) => item.value);
+              setSelectedBranches(selectedIds);
+            }}
+            onRemove={(selectedList: any[]) => {
+              const selectedIds = selectedList.map((item) => item.value);
+              setSelectedBranches(selectedIds);
             }}
             className="w-full"
             isSearchInput={false}

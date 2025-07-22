@@ -104,7 +104,6 @@ const ConfirmedOrder: React.FC = () => {
               nextStatus={nextStatus}
               trackingState={trackingState}
               setTrackingState={setTrackingState}
-                            
             />
           </div>
         </div>

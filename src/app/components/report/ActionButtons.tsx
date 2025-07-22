@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { CiShop } from "react-icons/ci";
 
 const ActionButtons: React.FC = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-7.5 h-full items-stretch">
+    <div className="flex justify-between items-start gap-4 h-full flex-wrap">
       <Link
         to="/order/add"
-        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50  grow min-w-[150px]"
       >
         <div className="p-2 rounded-full bg-blue-100">
           <svg
@@ -54,7 +55,7 @@ const ActionButtons: React.FC = () => {
 
       <Link
         to="/pickup-orders"
-        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50  grow min-w-[150px]"
       >
         <div className="p-2 rounded-full bg-yellow-100">
           <svg
@@ -80,7 +81,7 @@ const ActionButtons: React.FC = () => {
 
       <Link
         to="/confirmed-orders"
-        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50  grow min-w-[150px]"
       >
         <div className="p-2 rounded-full bg-green-100">
           <svg
@@ -120,8 +121,21 @@ const ActionButtons: React.FC = () => {
       </Link>
 
       <Link
+        to="/workshop-order"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-white border border-gray-200 rounded-xl shadow-sm transition-all duration-300 ease-in-out hover:shadow-md hover:bg-gray-50 grow min-w-[150px]"
+      >
+        <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 shadow-sm">
+          <CiShop className="h-5.5 w-5.5" strokeWidth={0.5} />
+        </div>
+
+        <span className="text-xs sm:text-sm font-semibold text-gray-700 tracking-wide text-center">
+          Workshop Orders
+        </span>
+      </Link>
+
+      <Link
         to="/redy-to-deliver"
-        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50  grow min-w-[150px]"
       >
         <div className="p-2 rounded-full bg-orange-100">
           <svg
@@ -149,7 +163,7 @@ const ActionButtons: React.FC = () => {
 
       <Link
         to="/delivered-orders"
-        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50"
+        className="card p-4 sm:p-6 flex flex-col items-center justify-center gap-2 sm:gap-4 h-full bg-cover bg-no-repeat channel-stats-bg transition-all duration-300 ease-in-out hover:shadow-lg hover:bg-gray-50  grow min-w-[150px]"
       >
         <div className="p-2 rounded-full bg-teal-100">
           <svg

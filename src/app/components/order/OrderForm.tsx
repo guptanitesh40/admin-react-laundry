@@ -1017,6 +1017,8 @@ const OrderForm: React.FC = () => {
     settings,
   ]);
 
+  const isDelivered = order?.order_status === 11;
+
   if (loadingOrder && id) {
     return <Loading />;
   }
@@ -1282,6 +1284,7 @@ const OrderForm: React.FC = () => {
           </div>
 
           {formData.items.map((item, index) => {
+            const isRemoveDisabled = formData.items.length === 1 || isDelivered;
             return (
               <React.Fragment key={index}>
                 <div className="border border-gray-200 rounded-xl mt-4 xl:!p-4 space-y-2 p-3.5 max-w-full overflow-hidden">
@@ -1304,6 +1307,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
+                          disabled={isDelivered}
                           className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
@@ -1378,6 +1382,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
+                          disabled={isDelivered}
                           className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
@@ -1430,6 +1435,7 @@ const OrderForm: React.FC = () => {
                               e.target.value
                             )
                           }
+                          disabled={isDelivered}
                           className="select border border-gray-300 rounded-md p-2 w-full text-sm"
                         >
                           <option value="" disabled>
@@ -1486,6 +1492,7 @@ const OrderForm: React.FC = () => {
                               Number(e.target.value)
                             )
                           }
+                          disabled={isDelivered}
                           className={`input border rounded-md p-2 w-full border-gray-300 bg-gray-100 text-sm text-gray-600`}
                         />
                         <p className="w-full text-red-500 text-sm">
@@ -1513,11 +1520,14 @@ const OrderForm: React.FC = () => {
                                 Number(e.target.value)
                               )
                             }
+                            disabled={isDelivered}
                             className="w-full p-2 text-sm focus:outline-none input text-center"
                           />
                           <button
                             type="button"
-                            className="absolute top-1/2 left-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition"
+                            className={`absolute top-1/2 left-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition ${
+                              isDelivered ? "!cursor-not-allowed" : ""
+                            }`}
                             onClick={() =>
                               handleItemChange(
                                 index,
@@ -1525,13 +1535,20 @@ const OrderForm: React.FC = () => {
                                 Math.max(1, (item.quantity ?? 1) - 1)
                               )
                             }
+                            disabled={isDelivered}
                           >
-                            <i className="ki-filled ki-minus text-gray-600 text-base" />
+                            <i
+                              className={`ki-filled ki-minus text-base ${
+                                isDelivered ? "text-gray-300" : "text-gray-500"
+                              }`}
+                            />
                           </button>
 
                           <button
                             type="button"
-                            className="absolute top-1/2 right-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition"
+                            className={`absolute top-1/2 right-1.5 -translate-y-1/2 p-1 rounded hover:bg-gray-200 transition ${
+                              isDelivered ? "!cursor-not-allowed" : ""
+                            }`}
                             onClick={() =>
                               handleItemChange(
                                 index,
@@ -1539,8 +1556,13 @@ const OrderForm: React.FC = () => {
                                 (item.quantity ?? 1) + 1
                               )
                             }
+                            disabled={isDelivered}
                           >
-                            <i className="ki-filled ki-plus text-gray-500 text-base" />
+                            <i
+                              className={`ki-filled ki-plus text-base ${
+                                isDelivered ? "text-gray-300" : "text-gray-500"
+                              }`}
+                            />
                           </button>
                         </div>
                       </div>
@@ -1561,6 +1583,7 @@ const OrderForm: React.FC = () => {
                           }
                           min="0"
                           step="0.01"
+                          disabled={isDelivered}
                           readOnly
                           className="input w-full border border-gray-300 bg-gray-100 text-sm text-gray-600 rounded-md p-2 cursor-not-allowed focus:!border-gray-300"
                         />
@@ -1587,6 +1610,7 @@ const OrderForm: React.FC = () => {
                                 e.target.checked
                               )
                             }
+                            disabled={isDelivered}
                           />
                         </div>
                       </div>
@@ -1598,18 +1622,18 @@ const OrderForm: React.FC = () => {
                           <button
                             type="button"
                             className={`p-2 rounded-full ${
-                              formData.items.length > 1
-                                ? "bg-red-100 hover:bg-red-200"
-                                : "bg-gray-200 cursor-not-allowed"
+                              isRemoveDisabled
+                                ? "bg-gray-200 !cursor-not-allowed"
+                                : "bg-red-100 hover:bg-red-200"
                             }`}
                             onClick={() => handleRemoveItem(index)}
-                            disabled={formData.items.length === 1}
+                            disabled={isRemoveDisabled}
                           >
                             <FaTrash
                               className={`${
-                                formData.items.length > 1
-                                  ? "text-red-500"
-                                  : "text-gray-400"
+                                isRemoveDisabled
+                                  ? "text-gray-400"
+                                  : "text-red-500"
                               }`}
                             />
                           </button>
@@ -1656,6 +1680,7 @@ const OrderForm: React.FC = () => {
               type="button"
               onClick={handleAddItem}
               className="btn btn-primary bndesktop:!mb-6 mt-4"
+              disabled={isDelivered}
             >
               Add Item
             </button>

@@ -4,12 +4,12 @@ export const sendPaymentLinkSchema = yup.object().shape({
   user_id: yup.number().required("Please select customer"),
   amount: yup
     .number()
-    .transform((value, originalValue) => {
-      return originalValue === "" ? undefined : Number(originalValue);
-    })
-    .required("Amount is required")
-    .positive("Amount must be a positive number")
-    .typeError("Amount must be a valid number"),
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? undefined : Number(originalValue)
+    )
+    .typeError("Amount must be a valid number")
+    .min(1, "Min amount is 1 or more")
+    .required("Amount is required"),
   customer: yup.object().shape({
     contact: yup
       .string()
@@ -17,7 +17,9 @@ export const sendPaymentLinkSchema = yup.object().shape({
       .required("Mobile number is required"),
     email: yup
       .string()
-      .email("Invalid email format")
-      .required("Email is required"),
+      .transform((value) => (value === "" ? undefined : value))
+      .optional()
+      .nullable()
+      .email("Please enter valid email address"),
   }),
 });
