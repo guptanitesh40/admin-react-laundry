@@ -380,7 +380,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Order Id</span>
+                      <span className="sort-label">Order Number</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -505,15 +505,15 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">Payment type</th>
+                  {/* <th className="min-w-[165px]">Payment type</th> */}
 
                   <th className="min-w-[150px]">
                     <span className="sort-label">Confirmed By</span>
                   </th>
 
-                  <th className="min-w-[150px]">
+                  {/* <th className="min-w-[150px]">
                     <span className="sort-label">Delivered By</span>
-                  </th>
+                  </th> */}
 
                   <th className="min-w-[150px]">
                     <span className="sort-label">Workshop By</span>
@@ -527,14 +527,13 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
                   <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
-                    <td colSpan={2}>Total Count : {count}</td>
-                    <td></td>
+                    <td colSpan={3}>Total Count : {count}</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
-                    <td colSpan={10}></td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
@@ -634,21 +633,22 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                             <br />
                           </div>
                         </td>
-                        <td>
+
+                        {/* <td>
                           {
                             PaymentType[
                               order?.payment_type as keyof typeof PaymentType
                             ]
                           }
-                        </td>
+                        </td> */}
 
                         <td>
                           {getActionDoenBy(order?.orderLogs, "confirmed_by")}
                         </td>
 
-                        <td>
+                        {/* <td>
                           {getActionDoenBy(order?.orderLogs, "delivered_by")}
-                        </td>
+                        </td> */}
 
                         <td>
                           {getActionDoenBy(order?.orderLogs, "workshop_by")}
@@ -679,7 +679,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={18} className="text-center">
+                    <td colSpan={16} className="text-center">
                       No Order available
                     </td>
                   </tr>

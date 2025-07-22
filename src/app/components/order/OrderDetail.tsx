@@ -314,10 +314,6 @@ const OrderDetails: React.FC = () => {
     navigate(`/customer/${userId}`);
   };
 
-  if (fetchingData) return <Loading />;
-
-  if (!order) return null;
-
   const adminStatusLabel = getOrderStatusLabel(
     order?.order_status_details?.admin_label
   );
@@ -400,6 +396,10 @@ const OrderDetails: React.FC = () => {
     }
     return `${data.user.first_name} ${data.user.last_name}`;
   };
+
+  if (fetchingData) return <Loading />;
+
+  if (!order) return null;
 
   return (
     <div className="container mx-auto p-6">

@@ -2357,7 +2357,8 @@ video {
     margin-right: auto;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-    max-width: 1280px;
+    max-width: 100%;
+    /* max-width: 1280px; */
   }
 }
 
@@ -10142,7 +10143,7 @@ label.rating-label {
       minmax(150px, 1fr)
       minmax(150px, 1fr)
       minmax(50px, 1fr)
-      minmax(80px, 1fr)
+      minmax(100px, 1fr)
       minmax(68px, 1fr)
       minmax(35px, 0.75fr)
       minmax(35px, 0.5fr) !important;

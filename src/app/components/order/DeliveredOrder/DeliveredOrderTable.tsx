@@ -310,7 +310,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
             >
               <thead>
                 <tr>
-                  <th className="min-w-[90px]">
+                  <th className="min-w-[100px]">
                     <span
                       className={`sort ${
                         sortColumn === "order_id"
@@ -321,7 +321,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Id</span>
+                      <span className="sort-label">Order Number</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
@@ -474,8 +474,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[130px]">Receipt</th>
-
                   <th className="min-w-[150px]">
                     <span className="sort-label">Confirmed By</span>
                   </th>
@@ -498,14 +496,13 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               {orders?.length > 0 ? (
                 <tbody>
                   <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
-                    <td colSpan={2}>Total Count : {count}</td>
-                    <td></td>
+                    <td colSpan={3}>Total Count : {count}</td>
                     <td></td>
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
                     <td>{paid_amount}</td>
                     <td>{kasar_amount}</td>
-                    <td colSpan={9}></td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {orders?.map((order) => {
@@ -580,29 +577,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             ]
                           }
                         </td>
-                        <td>
-                          <button
-                            className="flex items-center mr-2 btn btn-light btn-sm"
-                            onClick={() =>
-                              handleGenerateInvoice(order?.order_id)
-                            }
-                            disabled={
-                              generating && invoiceId === order?.order_id
-                            }
-                          >
-                            {generating && invoiceId === order?.order_id ? (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt <LoadingSpinner />
-                              </>
-                            ) : (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt
-                              </>
-                            )}
-                          </button>
-                        </td>
 
                         <td>
                           {getActionDoenBy(order?.orderLogs, "confirmed_by")}
@@ -672,7 +646,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={17} className="text-center">
+                    <td colSpan={16} className="text-center">
                       No Order available
                     </td>
                   </tr>
