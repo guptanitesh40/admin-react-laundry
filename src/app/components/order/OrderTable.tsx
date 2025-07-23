@@ -905,10 +905,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order?.estimated_delivery_time).format(
-                              "DD-MM-YYYY"
-                            )}
-                            <br />
+                            {order?.delivery_date
+                              ? dayjs(order?.delivery_date).format(
+                                  "DD-MM-YYYY hh:mm:ss A"
+                                )
+                              : dayjs(order?.estimated_delivery_time).format(
+                                  "DD-MM-YYYY"
+                                )}
                           </div>
                         </td>
 

@@ -3,31 +3,31 @@ import ReportCard from "./ReportCard";
 
 const reports = [
   {
-    name: "total Order Report",
+    name: "Total Order Report",
     dynamic_url: "total-orders",
   },
   {
-    name: "payment Transaction Report",
+    name: "Payment Transaction Report",
     dynamic_url: "payment-transaction",
   },
   {
-    name: "refund Report",
+    name: "Refund Report",
     dynamic_url: "refund-report",
   },
   {
-    name: "in Active Customer Report",
+    name: "In Active Customer Report",
     dynamic_url: "inactive-customer-report",
   },
   {
-    name: "gst Report",
+    name: "GST Report",
     dynamic_url: "gst",
   },
   {
-    name: "pick Up Report",
+    name: "Pick Up Report",
     dynamic_url: "pickup",
   },
   {
-    name: "delivery Report",
+    name: "Delivery Report",
     dynamic_url: "delivery",
   },
 ];
