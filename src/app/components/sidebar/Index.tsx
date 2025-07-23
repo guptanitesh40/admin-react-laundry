@@ -3,9 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { usePermissions } from "../../hooks";
 import { useSelector } from "react-redux";
-import { MdOutlineHistory } from "react-icons/md";
-import { FaRegPlayCircle } from "react-icons/fa";
-import { IoPricetagOutline } from "react-icons/io5";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -269,7 +266,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                   </Link>
 
-                  {/* <Link to="/quick-order/add" className="bg-red-200">
+                  <Link to="/quick-order/add" className="bg-red-200">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
                         "/quick-order/add"
@@ -285,7 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         </span>
                       </div>
                     </div>
-                  </Link> */}
+                  </Link>
 
                   <Link to="/pickup-orders">
                     <div

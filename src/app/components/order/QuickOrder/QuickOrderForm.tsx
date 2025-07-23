@@ -2,10 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  useAddOrder,
   useGeneratePaymentLink,
   useGetAddress,
-  useGetBranches,
   useGetCompanies,
 } from "../../../hooks";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +15,8 @@ import { useSelector } from "react-redux";
 import * as Yup from "yup";
 import Loading from "../../shimmer/Loading";
 import { quickOrderSchema } from "./validation/quickOrderSchema";
+import useGetBranchesV2 from "../../../hooks/branch/useGetBranchesV2";
+import useAddQuickOrder from "../../../hooks/order/useAddQuickOrder";
 
 interface FormData {
   company_id: number | null;
@@ -34,8 +34,6 @@ interface FormData {
 
   payment_type: number;
 
-  order_status: number | null;
-
   gstin: string;
   gst_company_name: string;
 }
@@ -48,15 +46,17 @@ const OrderForm: React.FC = () => {
     pageNumber,
     perPage
   );
-  const { branches, loading: loadingBranches } = useGetBranches(
-    pageNumber,
-    perPage
-  );
+  const {
+    branches,
+    loading: loadingBranches,
+    fetchBranches,
+  } = useGetBranchesV2();
+  const { addQuickOrder, loading: addingQuickOrder } = useAddQuickOrder();
+
   const currentUserData = useSelector((store) => store?.user);
 
   const [userSearch, setUserSearch] = useState("");
   const [isSearchMode, setIsSearchMode] = useState(true);
-  const { addOrder, loading: adding } = useAddOrder();
 
   const [haveGstIn, setHaveGstIn] = useState<boolean>(false);
 
@@ -68,20 +68,16 @@ const OrderForm: React.FC = () => {
 
   const { address, fetchAddress } = useGetAddress();
   const { userData, fetchUser } = useGetUser();
-  const { generatePaymentLink, loading: sendingLink } =
-    useGeneratePaymentLink();
   const user = userData?.user;
   const location = useLocation();
+  const navigate = useNavigate();
   const prevUrl = location?.state?.prevUrl || "/orders";
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [focusOn, setFocusOn] = useState<boolean>(false);
-  const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
     company_id: null,
@@ -98,8 +94,6 @@ const OrderForm: React.FC = () => {
     normal_delivery_charges: null,
 
     payment_type: 1,
-
-    order_status: 1,
     gstin: "",
     gst_company_name: "",
   });
@@ -167,6 +161,19 @@ const OrderForm: React.FC = () => {
     try {
       await quickOrderSchema.validate(formData, { abortEarly: false });
       setErrors({});
+
+      const payload = {
+        ...formData,
+        sub_total: 0,
+        payment_status: 1,
+        transaction_id: "",
+        order_status: 1,
+      };
+
+      const success = await addQuickOrder(payload);
+      if (success) {
+        navigate("/orders");
+      }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const formErrors: Record<string, string> = {};
@@ -272,37 +279,29 @@ const OrderForm: React.FC = () => {
   }, [companies, loadingCompanies]);
 
   useEffect(() => {
-    if (branches?.length && currentUserData && !loadingBranches) {
-      const userBranchIds = currentUserData.user_branch || [];
-
-      if (userBranchIds.length) {
-        const branchDetail = branches.find(
-          (branch) => branch.branch_id === userBranchIds[0]
-        );
-
-        if (branchDetail) {
-          setFormData((prev) => ({
-            ...prev,
-            branch_id: branchDetail.branch_id,
-          }));
-        } else {
-          setFormData((prev) => ({
-            ...prev,
-            branch_id: branches[0].branch_id,
-          }));
-        }
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          branch_id: branches[0].branch_id,
-        }));
-      }
+    if (formData.company_id) {
+      fetchBranches(formData.company_id);
     }
-  }, [branches, currentUserData, loadingBranches]);
+  }, [formData.company_id]);
+
+  useEffect(() => {
+    if (branches.length > 0) {
+      const userBranchId = currentUserData?.user_branch?.[0];
+
+      const matched = branches.find((b) => b.branch_id === userBranchId);
+      const defaultBranchId = matched?.branch_id ?? branches[0].branch_id;
+
+      setFormData((prev) => ({
+        ...prev,
+        branch_id: defaultBranchId,
+      }));
+    }
+  }, [branches, currentUserData]);
 
   if (loadingCompanies || loadingBranches) {
     return <Loading />;
   }
+
   return (
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto bg-white shadow-md lg:!p-4 xl:!p-6 sm:!p-5 p-3.5">
@@ -414,7 +413,7 @@ const OrderForm: React.FC = () => {
                 autoComplete="off"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
-                className="input border border-gray-300 rounded-md p-2 w-full mb-2"
+                className="input border border-gray-300 rounded-md p-2 w-full"
                 placeholder="Search customer..."
                 onFocus={() => {
                   setFocusOn(true);
@@ -554,12 +553,17 @@ const OrderForm: React.FC = () => {
                     id="exp_delivery_time"
                     value={formData.express_delivery_hour || ""}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        express_delivery_hour: e.target.value
-                          ? Number(e.target.value)
-                          : null,
-                      })
+                      e.target.value
+                        ? setFormData({
+                            ...formData,
+                            express_delivery_hour: Number(e.target.value),
+                            normal_delivery_charges: null,
+                          })
+                        : setFormData({
+                            ...formData,
+                            express_delivery_charges: null,
+                            express_delivery_hour: null,
+                          })
                     }
                   >
                     <option value="">Select Express Delivery Time</option>
@@ -583,10 +587,12 @@ const OrderForm: React.FC = () => {
                     min="0"
                     value={formData.express_delivery_charges || ""}
                     onChange={(e) =>
-                      handleChargeChange(
-                        "express_delivery_charges",
-                        e.target.value
-                      )
+                      setFormData({
+                        ...formData,
+                        express_delivery_charges: e.target.value
+                          ? Number(e.target.value)
+                          : null,
+                      })
                     }
                     className={`${
                       formData.normal_delivery_charges > 0
@@ -611,17 +617,23 @@ const OrderForm: React.FC = () => {
                     autoComplete="off"
                     value={formData.normal_delivery_charges || ""}
                     onChange={(e) =>
-                      handleChargeChange(
-                        "normal_delivery_charges",
-                        e.target.value
-                      )
+                      setFormData({
+                        ...formData,
+                        normal_delivery_charges: e.target.value
+                          ? Number(e.target.value)
+                          : null,
+                      })
                     }
                     className={`${
-                      formData.express_delivery_charges > 0
-                        ? "input border border-gray-300 rounded-md p-2 bg-gray-100 cursor-not-allowed focus:outline-none"
-                        : "input border border-gray-300 rounded-md p-2"
+                      !formData?.express_delivery_charges &&
+                      !formData?.express_delivery_hour
+                        ? "input border border-gray-300 rounded-md p-2"
+                        : "input border border-gray-300 rounded-md p-2 bg-gray-100 !cursor-not-allowed !focus:outline-none"
                     }`}
-                    readOnly={formData.express_delivery_charges > 0}
+                    readOnly={
+                      !!formData?.express_delivery_charges ||
+                      !!formData?.express_delivery_hour
+                    }
                   />
                 </div>
               </div>
@@ -733,17 +745,17 @@ const OrderForm: React.FC = () => {
             <button
               type="submit"
               className={`btn btn-primary ${
-                adding ? "opacity-50 cursor-not-allowed" : ""
+                addingQuickOrder ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={adding}
+              disabled={addingQuickOrder}
             >
-              {adding ? "Adding..." : "Add Order"}
+              {addingQuickOrder ? "Adding..." : "Add Quick Order"}
             </button>
             <button
               type="button"
               onClick={handleCancel}
               className="btn btn-secondary"
-              disabled={adding}
+              disabled={addingQuickOrder}
             >
               Cancel
             </button>

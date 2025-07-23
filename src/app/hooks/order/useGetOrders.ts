@@ -47,6 +47,7 @@ interface Order {
   end_date: string;
   confirm_by_user?: any;
   delivered_by_user?: any;
+  delivery_date: string;
   orderLogs?: OrderLog[];
 }
 
