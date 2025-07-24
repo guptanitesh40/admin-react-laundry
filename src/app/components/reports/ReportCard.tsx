@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import MultiSelect from "../MultiSelect/MultiSelect";
 import useGetUsersByRole02 from "../../hooks/user/useGetUserByRole02";
 import { useGetBranches, useGetCompanies } from "../../hooks";
@@ -18,14 +18,22 @@ const ReportCard: React.FC<ReportCardProps> = ({
   index,
   dynamic_url,
 }) => {
-  const role_id = 5;
+  const user_role_id = 5;
+  const delivery_pickup_role_id = 4;
   const [search, setSearch] = useState("");
+  const [search2, setSearch2] = useState("");
 
   const [selectedCustomers, setSelectedCustomers] = useState<any[]>([]);
+  const [selectedDelPickUsers, setSelectedDelPickUsers] = useState<any[]>([]);
   const [selectedCompanies, setSelectedCompanies] = useState<any[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<any[]>([]);
 
-  const { users, loading: loadingUsers } = useGetUsersByRole02(role_id, search);
+  const { users, loading: loadingUsers } = useGetUsersByRole02(
+    user_role_id,
+    search
+  );
+  const { users: delivery_pickup_users, loading: loadingUsers2 } =
+    useGetUsersByRole02(delivery_pickup_role_id, search2);
   const { companies, loading: loadingCompanies } = useGetCompanies(1, 1000);
   const { branches, loading: loadingBranches } = useGetBranches(
     1,
@@ -52,6 +60,21 @@ const ReportCard: React.FC<ReportCardProps> = ({
       value: user.user_id,
     }));
   }, [users, loadingUsers]);
+
+  const deliveryPickupOptions = useMemo(() => {
+    if (reportTitle !== "Pick Up Report" && reportTitle !== "Delivery Report") {
+      return [];
+    }
+
+    if (loadingUsers2) {
+      return [{ label: "Loading...", value: 0 }];
+    }
+
+    return delivery_pickup_users.map((user) => ({
+      label: `${user.first_name} ${user.last_name}`,
+      value: user.user_id,
+    }));
+  }, [reportTitle, delivery_pickup_users, loadingUsers2]);
 
   const companyOptions = useMemo(() => {
     if (loadingCompanies) return [{ label: "Loading...", value: 0 }];
@@ -128,6 +151,11 @@ const ReportCard: React.FC<ReportCardProps> = ({
     if (selectedCustomers.length) {
       selectedCustomers.forEach((customer_id) => {
         return queryParam.append("user_id", customer_id);
+      });
+    }
+    if (selectedDelPickUsers.length) {
+      selectedDelPickUsers.forEach((customer_id) => {
+        return queryParam.append("driver_id", customer_id);
       });
     }
     if (selectedCompanies.length) {
@@ -244,6 +272,34 @@ const ReportCard: React.FC<ReportCardProps> = ({
             isSearchInput={true}
           />
         </div>
+
+        {(reportTitle === "Pick Up Report" ||
+          reportTitle === "Delivery Report") && (
+          <div className="mui-multiselect-parent">
+            <MultiSelect
+              options={deliveryPickupOptions}
+              defaultOption="No Data Found"
+              displayValue="label"
+              placeholder={
+                reportTitle === "Pick Up Report"
+                  ? "Select PickUp Boy"
+                  : "Select Delivery Boy"
+              }
+              selectedValues={selectedDelPickUsers}
+              onSelect={(selectedList: any[]) => {
+                const selectedIds = selectedList.map((item) => item.value);
+                setSelectedDelPickUsers(selectedIds);
+              }}
+              onRemove={(selectedList: any[]) => {
+                const selectedIds = selectedList.map((item) => item.value);
+                setSelectedDelPickUsers(selectedIds);
+              }}
+              setSearch={setSearch2}
+              className="w-full"
+              isSearchInput={true}
+            />
+          </div>
+        )}
       </div>
       <div className="card-footer">
         <button

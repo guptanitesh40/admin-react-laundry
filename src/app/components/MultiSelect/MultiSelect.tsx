@@ -204,7 +204,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 );
               })
             ) : showNoCustomers ? (
-              <li className="no-search">No customers found</li>
+              <li className="no-search">No Data found</li>
             ) : noDataAvailableLabel ? (
               <li className="no-search">{noDataAvailableLabel}</li>
             ) : showNoResults ? (
