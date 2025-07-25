@@ -160,7 +160,6 @@ const UserProfile: React.FC = () => {
   };
 
   const handleAddressSelect = (address: any) => {
-    console.log(address);
     // if (address) {
     //   setFormData((prev) => ({
     //     ...prev,
@@ -365,7 +364,7 @@ const UserProfile: React.FC = () => {
 
       {user?.role_id === 5 && user && (
         <>
-          <CustomerAddress
+          {/* <CustomerAddress
             addresses={dummyAddresses}
             // addresses={user.addresses}
             onAdd={() => setAddressModelIsOpen(true)}
@@ -376,7 +375,7 @@ const UserProfile: React.FC = () => {
               handlAddressDelete(id);
             }}
             // onDelete={(id) => handleDelete(id)}
-          />
+          /> */}
           <CustomerOrders user={user} userId={user_id} count={count} />
         </>
       )}
