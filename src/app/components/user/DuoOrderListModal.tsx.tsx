@@ -37,7 +37,6 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   const page = 1;
 
   const user = userData?.user;
-  console.log(user);
 
   useEffect(() => {
     if (modalOpen) {
