@@ -513,13 +513,13 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
   const getCols = () => {
     if (currentPath === "/orders") {
-      return 14;
+      return 19;
     } else if (currentPath === "/pickup-orders") {
-      return 16;
+      return 17;
     } else if (currentPath === "/confirmed-orders") {
-      return 13;
+      return 14;
     } else {
-      return 16;
+      return 15;
     }
   };
 
@@ -613,6 +613,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="w-[75px]">Print</th>
 
                   <th className="min-w-[200px]">
                     <span
@@ -766,15 +768,15 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </th>
                   )}
 
-                  {showDeliveredBy && (
-                    <th className="min-w-[150px]">
-                      <span className="sort-label">Delivered By</span>
-                    </th>
-                  )}
-
                   {showWorkshopBy && (
                     <th className="min-w-[150px]">
                       <span className="sort-label">Workshop By</span>
+                    </th>
+                  )}
+
+                  {showDeliveredBy && (
+                    <th className="min-w-[150px]">
+                      <span className="sort-label">Delivered By</span>
                     </th>
                   )}
 
@@ -789,6 +791,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                 <tbody>
                   <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
                     <td colSpan={3}>Total Count : {count}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     {!isConfirmedOrderRoute && <td></td>}
@@ -831,6 +834,17 @@ const OrderTable: React.FC<OrderTableProps> = ({
                           onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
                           #{order.order_id}
+                        </td>
+
+                        <td>
+                          {hasPermission(3, "read") && (
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          )}
                         </td>
 
                         <td>{order?.branch?.branch_name}</td>
@@ -931,15 +945,15 @@ const OrderTable: React.FC<OrderTableProps> = ({
                           </td>
                         )}
 
-                        {showDeliveredBy && (
-                          <td>
-                            {getActionDoenBy(order?.orderLogs, "delivered_by")}
-                          </td>
-                        )}
-
                         {showWorkshopBy && (
                           <td>
                             {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                          </td>
+                        )}
+
+                        {showDeliveredBy && (
+                          <td>
+                            {getActionDoenBy(order?.orderLogs, "delivered_by")}
                           </td>
                         )}
 
@@ -978,15 +992,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                   }
                                 >
                                   <FaTrash className="text-red-500 h-4 w-4" />
-                                </button>
-                              )}
-
-                              {hasPermission(3, "read") && (
-                                <button
-                                  className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
-                                  onClick={() => handleDownloadInvoice(order)}
-                                >
-                                  <IoPrint className="text-teal-600 h-4.5 w-4.5" />
                                 </button>
                               )}
                             </div>

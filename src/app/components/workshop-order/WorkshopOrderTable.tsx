@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGetWorkshopOrders } from "../../hooks";
+import { useGetWorkshopOrders, usePermissions } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TableShimmer from "../shimmer/TableShimmer";
 import { PaymentType } from "../../../types/enums";
@@ -62,6 +62,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { changeOrderStatus, loading: changingStatus } = useChangeOrderStatus();
+  const { hasPermission } = usePermissions();
 
   const { workshopOrderData, loading, count, fetchWorkshopOrders } =
     useGetWorkshopOrders(
@@ -385,6 +386,8 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     </span>
                   </th>
 
+                  <th className="w-[75px]">Print</th>
+
                   <th className="min-w-[200px]">
                     <span
                       className={`sort ${
@@ -531,6 +534,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
                     <td colSpan={8}></td>
@@ -551,7 +555,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
 
                     return (
                       <tr key={order?.order_id}>
-                        <th>
+                        <td>
                           <label className="flex items-center justify-center">
                             <input
                               className="checkbox"
@@ -563,13 +567,26 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                               onChange={() => handleCheckboxChange(order)}
                             />
                           </label>
-                        </th>
+                        </td>
+
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
                           #{order?.order_id}
                         </td>
+
+                        <td>
+                          {hasPermission(3, "read") && (
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          )}
+                        </td>
+
                         <td>{order?.branch.branch_name}</td>
                         <td>
                           {order?.user?.first_name} {order?.user?.last_name}
@@ -662,14 +679,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
                             >
                               <FaEye size={18} className="text-gray-600" />
                             </button>
-
-                            <button
-                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
-                              onClick={() => handleDownloadInvoice(order)}
-                              title="Download Invoice"
-                            >
-                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
-                            </button>
                           </div>
                         </td>
                       </tr>
@@ -679,7 +688,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={16} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>

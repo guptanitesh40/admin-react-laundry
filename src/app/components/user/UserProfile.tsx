@@ -11,6 +11,38 @@ import { FaUserEdit } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usePermissions, useRestoreUser } from "../../hooks/index.ts";
 import Swal from "sweetalert2";
+import CustomerAddress from "./CustomerAddress.tsx";
+import AddressModal from "./address/AddressModel.tsx";
+
+const dummyAddresses = [
+  {
+    id: 1,
+    name: "Vir Dhoriya",
+    phone: "9876543210",
+    address_line: "123 Green Avenue, Near Mall",
+    city: "Ahmedabad",
+    pincode: "380001",
+    state: "gujarat",
+  },
+  {
+    id: 2,
+    name: "Ravi Patel",
+    phone: "9123456780",
+    address_line: "45 Sunrise Apartments, SG Highway",
+    city: "Surat",
+    pincode: "395007",
+    state: "gujarat",
+  },
+  {
+    id: 3,
+    name: "Priya Shah",
+    phone: "9988776655",
+    address_line: "12 Garden View, Ellisbridge",
+    city: "Vadodara",
+    pincode: "390011",
+    state: "gujarat",
+  },
+];
 
 const UserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +53,9 @@ const UserProfile: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>();
   const [isCustomer, setIsCustomer] = useState<boolean>(false);
   const [refetch, setRefetch] = useState<boolean>(false);
+
+  const [addressModelIsOpen, setAddressModelIsOpen] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const { userData, fetchUser, count, loading } = useGetUser();
   const { restoreUser } = useRestoreUser();
@@ -100,6 +135,38 @@ const UserProfile: React.FC = () => {
         icon: "error",
       });
     }
+  };
+
+  const handlAddressDelete = (id: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to delete this address!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Event has been deleted.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  const handleAddressSelect = (address: any) => {
+    console.log(address);
+    // if (address) {
+    //   setFormData((prev) => ({
+    //     ...prev,
+    //     address_id: address.address_id,
+    //   }));
+    // }
   };
 
   if (!user && loading) {
@@ -297,7 +364,21 @@ const UserProfile: React.FC = () => {
       </div>
 
       {user?.role_id === 5 && user && (
-        <CustomerOrders user={user} userId={user_id} count={count} />
+        <>
+          <CustomerAddress
+            addresses={dummyAddresses}
+            // addresses={user.addresses}
+            onAdd={() => setAddressModelIsOpen(true)}
+            // onAdd={() => setShowAddModal(true)}
+            onEdit={(id) => console.log(`${id}`)}
+            // onEdit={(id) => handleEdit(id)}
+            onDelete={(id) => {
+              handlAddressDelete(id);
+            }}
+            // onDelete={(id) => handleDelete(id)}
+          />
+          <CustomerOrders user={user} userId={user_id} count={count} />
+        </>
       )}
 
       {user?.orders?.length > 0 && (
@@ -365,6 +446,17 @@ const UserProfile: React.FC = () => {
         setRefetch={setRefetch}
         count={count}
       />
+
+      {addressModelIsOpen && (
+        <AddressModal
+          isOpen={addressModelIsOpen}
+          onAddressAdded={handleAddressSelect}
+          setIsSubmit={setIsSubmit}
+          onClose={() => setAddressModelIsOpen(false)}
+          userId={user?.user_id}
+          fullname={`${user?.first_name} ${user?.last_name}`}
+        />
+      )}
     </div>
   );
 };
