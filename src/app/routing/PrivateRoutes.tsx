@@ -73,6 +73,20 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/reports/ReportPreview")
   );
 
+  // Routes For Dynamic Web Content
+  const DynamicOurService = lazy(
+    () => import("../components/web-content/our-service/OurService")
+  );
+  const DynamicChooseUs = lazy(
+    () => import("../components/web-content/choose-us/OurService")
+  );
+  const DynamicLaundryBenefits = lazy(
+    () => import("../components/web-content/laundry-benefits/OurService")
+  );
+  const DynamicLaundryService = lazy(
+    () => import("../components/web-content/laundry-service/OurService")
+  );
+
   const { loading } = useValidateToken();
 
   if (loading) {
@@ -550,6 +564,40 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
+
+        {/* Routes For Dynamic Web Content */}
+        <Route
+          path="/web-content/our-service"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicOurService />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/web-content/choose-us"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicChooseUs />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/web-content/laundry-benefits"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicLaundryBenefits />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/web-content/laundry-services"
+          element={
+            <Suspense fallback={<Loading />}>
+              <DynamicLaundryService />
+            </Suspense>
+          }
+        />
 
         <Route
           path="/profile"
