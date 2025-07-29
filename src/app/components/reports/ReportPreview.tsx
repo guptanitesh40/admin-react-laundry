@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import Loading from "../shimmer/Loading";
+import toast from "react-hot-toast";
 
 const ReportPreview = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -31,8 +32,8 @@ const ReportPreview = () => {
         };
         reader.readAsArrayBuffer(blob);
       })
-      .catch((err) => {
-        console.error("Failed to fetch or parse Excel file", err);
+      .catch(() => {
+        toast.error("Failed to fetch or parse Excel file");
       })
       .finally(() => {
         setLoading(false);

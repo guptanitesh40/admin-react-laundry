@@ -208,12 +208,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
       }
       if (userId) {
         if (isEditMode && address?.address_id) {
-          console.log("update address logic");
           const updated = await updateAddress(
             address.address_id,
             cleanedAddressData
           );
-          console.log("updated : ", updated);
           if (updated.statusCode === 200) {
             onAddressAdded(updated);
             onClose();
