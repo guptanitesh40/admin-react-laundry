@@ -128,6 +128,16 @@ const UserForm: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      if (typeof user.deleted_at === "string" && user.deleted_at !== "") {
+        toast.error("This user has been deleted and cannot be edited.");
+        if (isCustomer) {
+          navigate("/customers");
+        } else {
+          navigate("/users");
+        }
+        return;
+      }
+
       const fetchedData = {
         ...formData,
         first_name: user.first_name,

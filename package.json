@@ -51,6 +51,7 @@
     "sweetalert2": "^11.6.13",
     "tailwind-datepicker-react": "^1.4.3",
     "tailwind-scrollbar-hide": "^1.1.7",
+    "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

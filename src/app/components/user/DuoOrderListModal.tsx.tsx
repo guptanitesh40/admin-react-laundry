@@ -42,6 +42,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
     if (modalOpen) {
       fetchUser(userId, page, count);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalOpen, userId]);
 
   useEffect(() => {
@@ -150,15 +151,21 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 lgscreen:flex-col lgscreen:gap-2 lgscreen:items-start">
           <h1 className="text-2xl font-bold">Orders</h1>
-          <button
-            className="btn btn-primary btn-lg flex flex-end mt-10"
-            onClick={handleSave}
-            disabled={loading}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+
+          <div className="flex items-start gap-2 lgscreen:w-full lgscreen:justify-between lgscreen:!items-center">
+            {/* <span className="text-sm font-medium text-red-700">
+              Total Pending Amount: ₹{1000}
+            </span> */}
+            <button
+              className="btn btn-primary btn-lg flex flex-end mt-10 lgscreen:mt-0"
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save"}
+            </button>
+          </div>
         </div>
         <div className="grid gap-5 lg:gap-5.5">
           <div className="card card-grid min-w-full">
@@ -176,108 +183,130 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
                       <th className="min-w-[120px]">Payment Status</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {filteredOrders.map((order) => {
-                      const currentTotal =
-                        (order.paid_amount || 0) +
-                        (order.kasar_amount || 0) +
-                        (order.current_paid || 0);
 
-                      const paymentStatusClass = getPaymentStatusLabel(
-                        order.payment_status,
-                        true
-                      );
-
-                      return (
-                        <tr key={order.order_id} className="custom-row">
-                          <td>#{order.order_id}</td>
-                          <td>₹{order.total || 0}</td>
-                          <td>₹{order.paid_amount || 0}</td>
-                          <td>
-                            <input
-                              type="text"
-                              className="input input-bordered"
-                              value={order.kasar_amount || 0}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  order.order_id,
-                                  "kasar_amount",
-                                  Number(e.target.value)
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              className="input input-bordered"
-                              value={order.current_paid || 0}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  order.order_id,
-                                  "current_paid",
-                                  Number(e.target.value)
-                                )
-                              }
-                            />
-                          </td>
-                          <td
-                            className={
-                              currentTotal > (order.total || 0)
-                                ? "text-red-500"
-                                : ""
-                            }
-                          >
-                            <span>₹{order.current_total || 0}</span>
-                            {currentTotal > (order.total || 0) ? (
-                              <span className="flex mt-1 font-serif">
-                                greater then pending amount
+                  {loadingOrders ? (
+                    <tbody>
+                      {Array.from({ length: 4 }).map((_, ind) => (
+                        <tr key={ind}>
+                          {Array.from({ length: 7 }).map((_, index) => (
+                            <td key={index} className="!px-3 !py-3">
+                              <span className="inline-block w-full bg-gray-200 animate-pulse rounded-md text-xl">
+                                &nbsp;
                               </span>
-                            ) : (
-                              ""
-                            )}
-                          </td>
-                          <td>
-                            <div>
-                              <select
-                                className={`select select-lg w-[170px] text-sm ${paymentStatusClass}`}
-                                data-datatable-size="true"
-                                data-tooltip="#custom_tooltip"
-                                value={order.payment_status}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {filteredOrders.map((order) => {
+                        const currentTotal =
+                          (order.paid_amount || 0) +
+                          (order.kasar_amount || 0) +
+                          (order.current_paid || 0);
+
+                        const paymentStatusClass = getPaymentStatusLabel(
+                          order.payment_status,
+                          true
+                        );
+
+                        return (
+                          <tr key={order.order_id} className="custom-row">
+                            <td>#{order.order_id}</td>
+                            <td>₹{order.total || 0}</td>
+                            <td>₹{order.paid_amount || 0}</td>
+                            <td>
+                              <input
+                                type="text"
+                                className="input input-bordered"
+                                value={order.kasar_amount || 0}
                                 onChange={(e) =>
                                   handleInputChange(
                                     order.order_id,
-                                    "payment_status",
+                                    "kasar_amount",
                                     Number(e.target.value)
                                   )
                                 }
-                              >
-                                <option
-                                  value="1"
-                                  className={`${paymentStatusClass}`}
-                                  disabled={fullPayment || !fullPayment}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="input input-bordered"
+                                value={order.current_paid || 0}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    order.order_id,
+                                    "current_paid",
+                                    Number(e.target.value)
+                                  )
+                                }
+                              />
+                            </td>
+                            <td
+                              className={
+                                currentTotal > (order.total || 0)
+                                  ? "text-red-500"
+                                  : ""
+                              }
+                            >
+                              <span>₹{order.current_total || 0}</span>
+                              {currentTotal > (order.total || 0) ? (
+                                <span className="flex mt-1 font-serif">
+                                  greater then pending amount
+                                </span>
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                            <td>
+                              <div>
+                                <select
+                                  className={`select select-lg w-[170px] text-sm ${paymentStatusClass}`}
+                                  data-datatable-size="true"
+                                  data-tooltip="#custom_tooltip"
+                                  value={order.payment_status}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      order.order_id,
+                                      "payment_status",
+                                      Number(e.target.value)
+                                    )
+                                  }
                                 >
-                                  Pending
-                                </option>
-                                <option value="2" disabled={!fullPayment || order.paid_amount === 0}>
-                                  Received
-                                </option>
-                                <option value="3" disabled={fullPayment}>
-                                  Partial Received
-                                </option>
-                              </select>
-                              <div
-                                className="hidden rounded-xl shadow-default p-3 bg-light border border-gray-200 text-gray-700 text-xs font-normal"
-                                id="custom_tooltip"
-                              >
-                                Change Payment Status
+                                  <option
+                                    value="1"
+                                    className={`${paymentStatusClass}`}
+                                    disabled={fullPayment || !fullPayment}
+                                  >
+                                    Pending
+                                  </option>
+                                  <option
+                                    value="2"
+                                    disabled={
+                                      !fullPayment || order.paid_amount === 0
+                                    }
+                                  >
+                                    Received
+                                  </option>
+                                  <option value="3" disabled={fullPayment}>
+                                    Partial Received
+                                  </option>
+                                </select>
+                                <div
+                                  className="hidden rounded-xl shadow-default p-3 bg-light border border-gray-200 text-gray-700 text-xs font-normal"
+                                  id="custom_tooltip"
+                                >
+                                  Change Payment Status
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  )}
                 </table>
               </div>
             </div>

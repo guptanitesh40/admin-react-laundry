@@ -31,6 +31,9 @@ const PrivateRoutes: React.FC = () => {
   const Banner = lazy(() => import("../components/banner/Banner"));
   const Order = lazy(() => import("../components/order/Order"));
   const OrderForm = lazy(() => import("../components/order/OrderForm"));
+  const QuickOrderForm = lazy(
+    () => import("../components/order/QuickOrder/QuickOrderForm")
+  );
   const OrderDetail = lazy(() => import("../components/order/OrderDetail"));
   const User = lazy(() => import("../components/user/User"));
   const UserForm = lazy(() => import("../components/user/UserForm"));
@@ -66,6 +69,9 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/roles-permissions/Permissions")
   );
   const Logs = lazy(() => import("../components/customer-logs/Index"));
+  const ReportPreview = lazy(
+    () => import("../components/reports/ReportPreview")
+  );
 
   // Routes For Dynamic Web Content
   const DynamicOurService = lazy(
@@ -86,7 +92,7 @@ const PrivateRoutes: React.FC = () => {
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="w-16 h-16 border-8 border-dashed rounded-full animate-spin border-blue-600"></div>{" "}
+        <div className="w-16 h-16 border-8 border-blue-600 border-dashed rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -355,6 +361,17 @@ const PrivateRoutes: React.FC = () => {
             }
           />
         </Route>
+        <Route element={<ProtectedRoute moduleId={3} action="create" />}>
+          <Route
+            path="/quick-order/add"
+            element={
+              <Suspense fallback={<Loading />}>
+                <QuickOrderForm />
+              </Suspense>
+            }
+          />
+        </Route>
+
         <Route element={<ProtectedRoute moduleId={3} action="update" />}>
           <Route
             path="/order/edit/:id"
@@ -521,6 +538,17 @@ const PrivateRoutes: React.FC = () => {
             element={
               <Suspense fallback={<Loading />}>
                 <Reports />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={20} action="read" />}>
+          <Route
+            path="/report-preview"
+            element={
+              <Suspense fallback={<Loading />}>
+                <ReportPreview />
               </Suspense>
             }
           />

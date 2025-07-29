@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-
 import React, { useEffect, useState } from "react";
 import {
   useDeleteOrder,
@@ -22,6 +21,8 @@ import toast from "react-hot-toast";
 import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
 import WorkshopModal from "./AssignWorkshopModal";
 import DueDetailsModel from "./DueDetailsModel";
+import { useLocation } from "react-router-dom";
+import { IoPrint } from "react-icons/io5";
 
 interface OrderTableProps {
   filters: {
@@ -61,7 +62,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   setIsEarlyDelivery,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -78,6 +79,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
   const [selectedOrders, setSelectedOrders] = useState<any>([]);
   const [remainingPaidOrders, setRemainingPaidOrders] = useState<any>([]);
   const [previewOrders, setPreviewOrders] = useState<any>([]);
+
+  const location = useLocation();
 
   const pathMappings = [
     { path: "/orders", list: "", orderList: "" },
@@ -257,6 +260,16 @@ const OrderTable: React.FC<OrderTableProps> = ({
     }
   };
 
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
+    }
+  };
+
   const handleUpdateOrder = (order_id: number) => {
     navigate(`/order/edit/${order_id}`, {
       state: { prevUrl: location.pathname },
@@ -360,6 +373,14 @@ const OrderTable: React.FC<OrderTableProps> = ({
     }
   };
 
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
+  };
+
   useEffect(() => {
     if (isEarlyDelivery) {
       handleDeliveryStatus();
@@ -404,6 +425,103 @@ const OrderTable: React.FC<OrderTableProps> = ({
       }
     }
   }, [trackingState]);
+
+  const currentPath = location.pathname;
+  const isConfirmedOrderRoute = currentPath === "/confirmed-orders";
+
+  const columnsConfig: Record<
+    string,
+    {
+      showCurrentStatus: boolean;
+      showPickupDate: boolean;
+      showPaymentType: boolean;
+      showConfirmedBy: boolean;
+      showDeliveredBy: boolean;
+      showWorkshopBy: boolean;
+    }
+  > = {
+    "/orders": {
+      showCurrentStatus: true,
+      showPickupDate: true,
+      showPaymentType: true,
+      showConfirmedBy: true,
+      showDeliveredBy: true,
+      showWorkshopBy: true,
+    },
+    "/pickup-orders": {
+      showCurrentStatus: true,
+      showPickupDate: true,
+      showPaymentType: true,
+      showConfirmedBy: true,
+      showDeliveredBy: true,
+      showWorkshopBy: true,
+    },
+    "/confirmed-orders": {
+      showCurrentStatus: false,
+      showPickupDate: true,
+      showPaymentType: false,
+      showConfirmedBy: true,
+      showDeliveredBy: false,
+      showWorkshopBy: false,
+    },
+    "/redy-to-deliver": {
+      showCurrentStatus: true,
+      showPickupDate: false,
+      showPaymentType: false,
+      showConfirmedBy: true,
+      showDeliveredBy: false,
+      showWorkshopBy: true,
+    },
+  };
+
+  const {
+    showCurrentStatus,
+    showPickupDate,
+    showPaymentType,
+    showConfirmedBy,
+    showDeliveredBy,
+    showWorkshopBy,
+  } = columnsConfig[currentPath] || {};
+
+  const getRouteSpeColumn = () => {
+    if (currentPath === "/orders") {
+      return (
+        <>
+          <td>{paid_amount}</td>
+          <td>{kasar_amount}</td>
+          <td colSpan={8}></td>
+        </>
+      );
+    } else if (currentPath === "/confirmed-orders") {
+      return (
+        <>
+          <td>{paid_amount}</td>
+          <td colSpan={5}></td>
+        </>
+      );
+    } else if (currentPath === "/redy-to-deliver") {
+      return (
+        <>
+          <td>{paid_amount}</td>
+          <td colSpan={5}></td>
+        </>
+      );
+    } else {
+      return <td colSpan={8}></td>;
+    }
+  };
+
+  const getCols = () => {
+    if (currentPath === "/orders") {
+      return 19;
+    } else if (currentPath === "/pickup-orders") {
+      return 17;
+    } else if (currentPath === "/confirmed-orders") {
+      return 14;
+    } else {
+      return 15;
+    }
+  };
 
   if (loading) {
     return (
@@ -467,7 +585,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
@@ -480,7 +598,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </label>
                   </th>
 
-                  <th className="min-w-[90px]">
+                  <th className="min-w-[100px]">
                     <span
                       className={`sort ${
                         sortColumn === "order_id"
@@ -491,10 +609,12 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Id</span>
+                      <span className="sort-label">Order Number</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="w-[75px]">Print</th>
 
                   <th className="min-w-[200px]">
                     <span
@@ -528,7 +648,9 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[280px]">Current Status</th>
+                  {showCurrentStatus && (
+                    <th className="min-w-[280px]">Current Status</th>
+                  )}
 
                   <th className="min-w-[280px]">Next Status</th>
 
@@ -602,21 +724,23 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[150px]">
-                    <span
-                      className={`sort ${
-                        sortColumn === "estimated_pickup_time"
-                          ? sortOrder === "ASC"
-                            ? "asc"
-                            : "desc"
-                          : ""
-                      }`}
-                      onClick={() => handleSort("estimated_pickup_time")}
-                    >
-                      <span className="sort-label">Pickup Date</span>
-                      <span className="sort-icon"></span>
-                    </span>
-                  </th>
+                  {showPickupDate && (
+                    <th className="min-w-[150px]">
+                      <span
+                        className={`sort ${
+                          sortColumn === "estimated_pickup_time"
+                            ? sortOrder === "ASC"
+                              ? "asc"
+                              : "desc"
+                            : ""
+                        }`}
+                        onClick={() => handleSort("estimated_pickup_time")}
+                      >
+                        <span className="sort-label">Pickup Date</span>
+                        <span className="sort-icon"></span>
+                      </span>
+                    </th>
+                  )}
 
                   <th className="min-w-[150px]">
                     <span
@@ -634,7 +758,27 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">Payment type</th>
+                  {showPaymentType && (
+                    <th className="min-w-[165px]">Payment type</th>
+                  )}
+
+                  {showConfirmedBy && (
+                    <th className="min-w-[150px]">
+                      <span className="sort-label">Confirmed By</span>
+                    </th>
+                  )}
+
+                  {showWorkshopBy && (
+                    <th className="min-w-[150px]">
+                      <span className="sort-label">Workshop By</span>
+                    </th>
+                  )}
+
+                  {showDeliveredBy && (
+                    <th className="min-w-[150px]">
+                      <span className="sort-label">Delivered By</span>
+                    </th>
+                  )}
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -650,19 +794,10 @@ const OrderTable: React.FC<OrderTableProps> = ({
                     <td></td>
                     <td></td>
                     <td></td>
+                    {!isConfirmedOrderRoute && <td></td>}
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
-
-                    {location.pathname === "/orders" ? (
-                      <>
-                        <td>{paid_amount}</td>
-                        <td colSpan={6}>{kasar_amount}</td>
-                      </>
-                    ) : location.pathname !== "/pickup-orders" ? (
-                      <td colSpan={6}>{paid_amount}</td>
-                    ) : (
-                      <td colSpan={5}></td>
-                    )}
+                    {getRouteSpeColumn()}
                   </tr>
 
                   {orders?.map((order: any) => {
@@ -701,6 +836,17 @@ const OrderTable: React.FC<OrderTableProps> = ({
                           #{order.order_id}
                         </td>
 
+                        <td>
+                          {hasPermission(3, "read") && (
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          )}
+                        </td>
+
                         <td>{order?.branch?.branch_name}</td>
 
                         <td>
@@ -709,13 +855,15 @@ const OrderTable: React.FC<OrderTableProps> = ({
                             order?.user?.last_name}
                         </td>
 
-                        <td>
-                          <span
-                            className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
-                          >
-                            {order?.order_status_details?.admin_label}
-                          </span>
-                        </td>
+                        {showCurrentStatus && (
+                          <td>
+                            <span
+                              className={`${adminStatusClass} relative badge-outline badge-xl rounded-[30px]`}
+                            >
+                              {order?.order_status_details?.admin_label}
+                            </span>
+                          </td>
+                        )}
 
                         <td>
                           {order?.order_status_details?.next_step !==
@@ -759,28 +907,55 @@ const OrderTable: React.FC<OrderTableProps> = ({
                           </div>
                         </td>
 
+                        {showPickupDate && (
+                          <td>
+                            <div className="flex items-center gap-2.5">
+                              {dayjs(order?.estimated_pickup_time).format(
+                                "DD-MM-YYYY"
+                              )}
+                            </div>
+                          </td>
+                        )}
+
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order?.estimated_pickup_time).format(
-                              "DD-MM-YYYY"
-                            )}
+                            {order?.delivery_date
+                              ? dayjs(order?.delivery_date).format(
+                                  "DD-MM-YYYY hh:mm:ss A"
+                                )
+                              : dayjs(order?.estimated_delivery_time).format(
+                                  "DD-MM-YYYY"
+                                )}
                           </div>
                         </td>
-                        <td>
-                          <div className="flex items-center gap-2.5">
-                            {dayjs(order?.estimated_delivery_time).format(
-                              "DD-MM-YYYY"
-                            )}
-                            <br />
-                          </div>
-                        </td>
-                        <td>
-                          {
-                            PaymentType[
-                              order?.payment_type as keyof typeof PaymentType
-                            ]
-                          }
-                        </td>
+
+                        {showPaymentType && (
+                          <td>
+                            {
+                              PaymentType[
+                                order?.payment_type as keyof typeof PaymentType
+                              ]
+                            }
+                          </td>
+                        )}
+
+                        {showConfirmedBy && (
+                          <td>
+                            {getActionDoenBy(order?.orderLogs, "confirmed_by")}
+                          </td>
+                        )}
+
+                        {showWorkshopBy && (
+                          <td>
+                            {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                          </td>
+                        )}
+
+                        {showDeliveredBy && (
+                          <td>
+                            {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                          </td>
+                        )}
 
                         {(hasPermission(3, "update") ||
                           hasPermission(3, "delete") ||
@@ -805,42 +980,18 @@ const OrderTable: React.FC<OrderTableProps> = ({
                                     handleUpdateOrder(order?.order_id)
                                   }
                                 >
-                                  <FaPencilAlt className="text-yellow-600" />
+                                  <FaPencilAlt className="text-yellow-600 h-4 w-4" />
                                 </button>
                               )}
 
-                              {/* {hasPermission(3, "update") && (
-                                <button
-                                  className={`mr-3 p-3 rounded-full ${
-                                    (order?.order_status > 0 &&
-                                      order?.order_status < 7) ||
-                                    order?.order_status === 9
-                                      ? "bg-yellow-100 hover:bg-yellow-200"
-                                      : "bg-gray-100 hover:bg-gray-200 !cursor-not-allowed"
-                                  }`}
-                                  disabled={
-                                    !(
-                                      (order?.order_status > 0 &&
-                                        order?.order_status < 7) ||
-                                      order?.order_status === 9
-                                    )
-                                  }
-                                  onClick={() =>
-                                    handleUpdateOrder(order.order_id)
-                                  }
-                                >
-                                  <FaPencilAlt className="text-yellow-600" />
-                                </button>
-                              )} */}
-
                               {hasPermission(3, "delete") && (
                                 <button
-                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  className="mr-3 p-3 bg-red-100 hover:bg-red-200  rounded-full"
                                   onClick={() =>
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
-                                  <FaTrash className="text-red-500" />
+                                  <FaTrash className="text-red-500 h-4 w-4" />
                                 </button>
                               )}
                             </div>
@@ -853,7 +1004,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={getCols()} className="text-center">
                       No Order available
                     </td>
                   </tr>

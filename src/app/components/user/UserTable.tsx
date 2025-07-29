@@ -1,9 +1,4 @@
-import {
-  useDeleteUser,
-  useGetBranches,
-  useGetCompanies,
-  useGetUsers,
-} from "../../hooks";
+import { useDeleteUser, useGetUsers, useRestoreUser } from "../../hooks";
 import { useEffect, useState } from "react";
 import { FaEye, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -14,6 +9,7 @@ import { searchSchema } from "../../validation/searchSchema";
 import { getRoleClass } from "../../utils/roleClasses";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import { MdRestore } from "react-icons/md";
 
 interface UserTableProps {
   filters: {
@@ -32,8 +28,6 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
   const pageParams = searchParams.get("page");
   const perPageParams = searchParams.get("perPage");
-  const perPageForList = 1000;
-  const pageNumberForList = 1;
 
   const [search, setSearch] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
@@ -51,8 +45,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     filters.branchFilter
   );
   const { deleteUser } = useDeleteUser();
-  const { companies } = useGetCompanies(pageNumberForList, perPageForList);
-  const { branches } = useGetBranches(pageNumberForList, perPageForList);
+  const { restoreUser } = useRestoreUser();
 
   const navigate = useNavigate();
 
@@ -107,11 +100,52 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
     }
   };
 
+  const handleRestoreUser = async (user_id: number) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You want to restore this user?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, restore it!",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Restoring user...",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const { success, message } = await restoreUser(user_id);
+        await fetchUsers();
+
+        if (success) {
+          Swal.fire("Restored!", message, "success");
+        } else {
+          Swal.fire("Failed", message, "error");
+        }
+      }
+    } catch (error: any) {
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  };
+
   const handleDeleteUser = async (user_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        text: "You want to delete this user !",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
@@ -331,17 +365,20 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
               {users.length > 0 ? (
                 <tbody>
                   {users.map((user) => {
+                    const isDeleted = !!user.deleted_at;
                     return (
                       <tr key={user?.user_id}>
                         <td
-                          className="cursor-pointer text-blue-600 hover:underline"
+                          className={`cursor-pointer text-blue-600 hover:underline ${
+                            isDeleted ? "text-red-500" : ""
+                          }`}
                           onClick={() => handleViewUser(user?.user_id)}
                         >
                           <div className="flex items-center gap-2.5">
                             {user?.user_id}
                           </div>
                         </td>
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           <div className="flex items-center gap-1.5">
                             {user?.first_name} {user?.last_name}
                           </div>
@@ -359,20 +396,22 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                             }
                           </span>
                         </td>
-                        <td>{user?.email}</td>
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
+                          {user?.email}
+                        </td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           <div className="flex items-center gap-1.5">
                             {user?.mobile_number}
                           </div>
                         </td>
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           {
                             Gender[
                               user?.gender as unknown as keyof typeof Gender
                             ]
                           }
                         </td>
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           {Array.isArray(user?.companies) &&
                           user.companies.length > 0
                             ? user.companies
@@ -381,7 +420,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                             : ""}
                         </td>
 
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           {Array.isArray(user?.branches) &&
                           user.branches.length > 0
                             ? user.branches
@@ -390,7 +429,7 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                             : ""}
                         </td>
 
-                        <td>
+                        <td className={`${isDeleted ? "text-red-500" : ""}`}>
                           {Array.isArray(user?.workshops) &&
                           user.workshops.length > 0
                             ? user.workshops
@@ -407,17 +446,31 @@ const UserTable: React.FC<UserTableProps> = ({ filters }) => {
                             <FaEye size={18} className="text-gray-600" />
                           </button>
                           <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
+                            disabled={isDeleted}
+                            className={`mr-3 p-3 rounded-full transition-all duration-200 ${
+                              isDeleted
+                                ? "bg-gray-200 text-gray-400 !cursor-not-allowed"
+                                : "bg-yellow-100 hover:bg-yellow-200 text-yellow-600 hover:text-yellow-700"
+                            }`}
                             onClick={() => handleUpdateUser(user?.user_id)}
                           >
-                            <FaPencilAlt className="text-yellow-600" />
+                            <FaPencilAlt />
                           </button>
-                          <button
-                            className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
-                            onClick={() => handleDeleteUser(user?.user_id)}
-                          >
-                            <FaTrash className="text-red-500" />
-                          </button>
+                          {isDeleted ? (
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() => handleRestoreUser(user?.user_id)}
+                            >
+                              <MdRestore className="text-red-500 h-4.5 w-4.5" />
+                            </button>
+                          ) : (
+                            <button
+                              className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                              onClick={() => handleDeleteUser(user?.user_id)}
+                            >
+                              <FaTrash className="text-red-500" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

@@ -1,5 +1,6 @@
 import React from "react";
 import ReportCard from "./ReportCard";
+import NewReportCard from "./NewReportCard";
 
 const reports = [
   {
@@ -15,13 +16,14 @@ const reports = [
     dynamic_url: "refund-report",
   },
   {
-    name: "In Active Customer report",
+    name: "In Active Customer Report",
     dynamic_url: "inactive-customer-report",
   },
   {
     name: "GST Report",
     dynamic_url: "gst",
   },
+  { name: "Service Wise Report", dynamic_url: "service-wise-report" },
   {
     name: "Pick Up Report",
     dynamic_url: "pickup",
@@ -44,15 +46,27 @@ const Index: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reports.map((report, index) => (
-            <ReportCard
-              key={index}
-              reportTitle={report.name}
-              dynamic_url={report.dynamic_url}
-              index={index}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          {reports.map((report, index) => {
+            if (report.name === "Service Wise Report") {
+              return (
+                <NewReportCard
+                  key={index}
+                  reportTitle={report.name}
+                  dynamic_url={report.dynamic_url}
+                />
+              );
+            } else {
+              return (
+                <ReportCard
+                  key={index}
+                  reportTitle={report.name}
+                  dynamic_url={report.dynamic_url}
+                  index={index}
+                />
+              );
+            }
+          })}
         </div>
       </div>
     </main>

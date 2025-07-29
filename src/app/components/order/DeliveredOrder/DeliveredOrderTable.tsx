@@ -16,6 +16,8 @@ import { PaymentType } from "../../../../types/enums";
 import Swal from "sweetalert2";
 import Pagination from "../../pagination/Pagination";
 import TableShimmerEd2 from "../../shimmer/TableShimmerEd2";
+import { IoPrint } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 interface DeliveredOrderTableProps {
   filters: {
@@ -35,7 +37,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   filters,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -125,7 +127,6 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
     navigate(`/order/${order_id}`, { state: { from: "OrderTable" } });
   };
 
-
   const handleDeleteOrder = async (order_id: number) => {
     try {
       const { isConfirmed } = await Swal.fire({
@@ -164,6 +165,16 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
         text: error.message,
         icon: "error",
       });
+    }
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
     }
   };
 
@@ -218,6 +229,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
   const handleGenerateInvoice = async (order_id: number) => {
     setInvoiceId(order_id);
     await generateInvoice(order_id);
+  };
+
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
   };
 
   if (loading) {
@@ -284,14 +303,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
             >
               <thead>
                 <tr>
-                  <th className="min-w-[90px]">
+                  <th className="min-w-[100px]">
                     <span
                       className={`sort ${
                         sortColumn === "order_id"
@@ -302,10 +321,12 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Id</span>
+                      <span className="sort-label">Order Number</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="w-[75px]">Print</th>
 
                   <th className="min-w-[200px]">
                     <span
@@ -455,7 +476,17 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                     </span>
                   </th>
 
-                  <th className="min-w-[130px]">Receipt</th>
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Workshop By</span>
+                  </th>
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th>
 
                   {(hasPermission(3, "read") ||
                     hasPermission(3, "update") ||
@@ -467,13 +498,14 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               {orders?.length > 0 ? (
                 <tbody>
                   <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
-                    <td colSpan={2}>Total Count : {count}</td>
+                    <td colSpan={3}>Total Count : {count}</td>
                     <td></td>
                     <td></td>
                     <td>{total_quantity}</td>
                     <td>{total_amount}</td>
                     <td>{paid_amount}</td>
-                    <td colSpan={7}>{kasar_amount}</td>
+                    <td>{kasar_amount}</td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {orders?.map((order) => {
@@ -490,10 +522,23 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                           #{order?.order_id}
                         </td>
 
+                        <td>
+                          {hasPermission(3, "read") && (
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          )}
+                        </td>
+
                         <td>{order?.branch?.branch_name}</td>
 
                         <td>
-                          {order?.user?.first_name + " " + order?.user?.last_name}
+                          {order?.user?.first_name +
+                            " " +
+                            order?.user?.last_name}
                         </td>
 
                         <td>
@@ -533,10 +578,13 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                         </td>
                         <td>
                           <div className="flex items-center gap-2.5">
-                            {dayjs(order?.estimated_delivery_time).format(
-                              "DD-MM-YYYY"
-                            )}
-                            <br />
+                            {order?.delivery_date
+                              ? dayjs(order?.delivery_date).format(
+                                  "DD-MM-YYYY hh:mm:ss A"
+                                )
+                              : dayjs(order?.estimated_delivery_time).format(
+                                  "DD-MM-YYYY"
+                                )}
                           </div>
                         </td>
                         <td>
@@ -546,29 +594,19 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                             ]
                           }
                         </td>
+
                         <td>
-                          <button
-                            className="flex items-center mr-2 btn btn-light btn-sm"
-                            onClick={() =>
-                              handleGenerateInvoice(order?.order_id)
-                            }
-                            disabled={
-                              generating && invoiceId === order?.order_id
-                            }
-                          >
-                            {generating && invoiceId === order?.order_id ? (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt <LoadingSpinner />
-                              </>
-                            ) : (
-                              <>
-                                <i className="ki-filled ki-cheque text-2xl link"></i>
-                                Receipt
-                              </>
-                            )}
-                          </button>
+                          {getActionDoenBy(order?.orderLogs, "confirmed_by")}
                         </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                        </td>
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                        </td>
+
                         {(hasPermission(3, "read") ||
                           hasPermission(3, "update") ||
                           hasPermission(3, "delete")) && (
@@ -585,26 +623,25 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
                                 </button>
                               )}
 
-                              {order?.order_status !== 11 &&
-                                hasPermission(3, "update") && (
-                                  <button
-                                    className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-3 rounded-full"
-                                    onClick={() =>
-                                      handleUpdateOrder(order?.order_id)
-                                    }
-                                  >
-                                    <FaPencilAlt className="text-yellow-600" />
-                                  </button>
-                                )}
+                              {hasPermission(3, "update") && (
+                                <button
+                                  className="mr-3 p-3 bg-yellow-100 hover:bg-yellow-200 rounded-full"
+                                  onClick={() =>
+                                    handleUpdateOrder(order?.order_id)
+                                  }
+                                >
+                                  <FaPencilAlt className="text-yellow-600 h-4 w-4" />
+                                </button>
+                              )}
 
                               {hasPermission(3, "delete") && (
                                 <button
-                                  className="bg-red-100 hover:bg-red-200 p-3 rounded-full"
+                                  className="mr-3 p-3 bg-red-100 hover:bg-red-200 rounded-full"
                                   onClick={() =>
                                     handleDeleteOrder(order?.order_id)
                                   }
                                 >
-                                  <FaTrash className="text-red-500" />
+                                  <FaTrash className="text-red-500 h-4 w-4" />
                                 </button>
                               )}
                             </div>
@@ -617,7 +654,7 @@ const DeliveredOrderTable: React.FC<DeliveredOrderTableProps> = ({
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>

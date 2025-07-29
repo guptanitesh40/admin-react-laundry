@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PaymentStatus, PaymentType, RefundStatus } from "../../../types/enums";
 import useGetOrder from "../../hooks/order/useGetOrder";
-import { BiImageAlt, BiRefresh } from "react-icons/bi";
+import { BiRefresh } from "react-icons/bi";
 import dayjs from "dayjs";
 import { RxCross2 } from "react-icons/rx";
 import { IoIosAttach } from "react-icons/io";
@@ -20,7 +20,7 @@ import PickupBoyModal from "./PickupBoyModal";
 import WorkshopModal from "./AssignWorkshopModal";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import OrderCalcelModal from "./OrderCancelModal";
-import { MdCancel, MdLinkedCamera } from "react-icons/md";
+import { MdCancel } from "react-icons/md";
 import { HiReceiptRefund } from "react-icons/hi2";
 import OrderRefundModal from "./OrderRefundModal";
 import { getPaymentStatusLabel } from "../../utils/paymentStatusClasses";
@@ -31,7 +31,6 @@ import { RootState } from "../../utils/store";
 import Loading from "../shimmer/Loading";
 import PickUpBoyModelEd2 from "./PickUpBoyModelEd2";
 import DueDetailsModel from "./DueDetailsModel";
-import { GiRegeneration } from "react-icons/gi";
 import useReGenerateInvoice from "../../hooks/invoice/useRegenerateInvoice";
 import { BASE_URL } from "../../utils/constant";
 
@@ -315,10 +314,6 @@ const OrderDetails: React.FC = () => {
     navigate(`/customer/${userId}`);
   };
 
-  if (fetchingData) return <Loading />;
-
-  if (!order) return null;
-
   const adminStatusLabel = getOrderStatusLabel(
     order?.order_status_details?.admin_label
   );
@@ -394,9 +389,17 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const openCamera = () => {
-    fileInputRef.current?.click();
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
   };
+
+  if (fetchingData) return <Loading />;
+
+  if (!order) return null;
 
   return (
     <div className="container mx-auto p-6">
@@ -465,7 +468,8 @@ const OrderDetails: React.FC = () => {
 
               {((order?.order_status > 0 && order?.order_status < 7) ||
                 order?.order_status === 9 ||
-                order?.order_status === 10) &&
+                order?.order_status === 10 ||
+                order?.order_status === 11) &&
                 hasPermission(3, "update") && (
                   <button
                     className="flex items-center font-medium sm:btn btn-primary smmobile:btn-sm smmobile:btn"
@@ -862,9 +866,7 @@ const OrderDetails: React.FC = () => {
                       Estimated Pickup Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
-                      {new Date(
-                        order?.estimated_pickup_time
-                      ).toLocaleDateString()}
+                      {dayjs(order?.estimated_pickup_time).format("DD/MM/YYYY")}
                     </td>
                   </tr>
                   <tr>
@@ -872,9 +874,9 @@ const OrderDetails: React.FC = () => {
                       Estimated Delivery Time:
                     </td>
                     <td className="text-sm font-medium text-gray-700">
-                      {new Date(
-                        order?.estimated_delivery_time
-                      ).toLocaleDateString()}
+                      {dayjs(order?.estimated_delivery_time).format(
+                        "DD/MM/YYYY"
+                      )}
                     </td>
                   </tr>
                 </tbody>
@@ -926,7 +928,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
-
           {order?.company && Object.keys(order.company).length > 0 && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
@@ -974,7 +975,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.branch && (
             <div className="col-span-2 lg:col-span-1 flex">
               <div className="card min-w-full">
@@ -1016,7 +1016,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.pickup_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
@@ -1040,7 +1039,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           {order?.delivery_boy && (
             <div className="card rounded-xl">
               <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
@@ -1057,7 +1055,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           )}
-
           <div className="card rounded-xl">
             <div className="flex items-center justify-between grow gap-5 p-5 bg-[center_right_-8rem] bg-no-repeat bg-[length:700px] upgrade-bg">
               <div className="flex items-center gap-4">
@@ -1075,7 +1072,6 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
-
           <div className="col-span-2 lg:col-span-1 flex">
             <div className="card min-w-full">
               <div className="card-header">
@@ -1157,6 +1153,61 @@ const OrderDetails: React.FC = () => {
               </div>
             </div>
           </div>
+          {order?.orderLogs.length > 0 && (
+            <div className="col-span-2 lg:col-span-1 flex">
+              <div className="card min-w-full">
+                <div className="card-header">
+                  <h3 className="card-title">Action Log</h3>
+                </div>
+                <div className="card-body pt-4 pb-3">
+                  <div className="scrollable-x-auto">
+                    <table className="table-auto">
+                      <tbody>
+                        {getActionDoenBy(order?.orderLogs, "confirmed_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Confirmed By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(
+                                order?.orderLogs,
+                                "confirmed_by"
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                        {getActionDoenBy(order?.orderLogs, "workshop_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Workshop By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(order?.orderLogs, "workshop_by")}
+                            </td>
+                          </tr>
+                        )}
+
+                        {getActionDoenBy(order?.orderLogs, "delivered_by") && (
+                          <tr>
+                            <td className="text-sm font-medium text-gray-500 min-w-36 pb-5 pe-6">
+                              Delivered By :
+                            </td>
+                            <td className="flex items-center gap-2.5 text-sm font-medium text-gray-700">
+                              {getActionDoenBy(
+                                order?.orderLogs,
+                                "delivered_by"
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1198,27 +1249,6 @@ const OrderDetails: React.FC = () => {
                     name="images"
                   />
                 </div>
-
-                {/* <div>
-                  <button
-                    className="btn btn-light"
-                    title="Take Photo"
-                    onClick={openCamera}
-                  >
-                    Take Photo <MdLinkedCamera size={20} />
-                  </button>
-
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    capture="user" // front camera
-                    style={{ display: "none" }}
-                    onChange={handleChange}
-                    name="images"
-                  />
-                </div> */}
-
               </div>
             </div>
             <p className="text-red-500 text-sm">{errorMessage || "\u00A0"}</p>

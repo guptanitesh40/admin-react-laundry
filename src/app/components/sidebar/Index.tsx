@@ -39,7 +39,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       : "hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-white rounded-lg transition-all duration-200";
 
   const getSubmenuItemClass = (item: string) => {
-    return location.pathname.split("/")[1] === item ? "active" : "";
+    if (location.pathname.split("/")[1] === "user" && item === "/users") {
+      return "active";
+    } else {
+      return location.pathname === item ? "active" : "";
+    }
   };
 
   const getSubmenuItemClass2 = (item: string) => {
@@ -81,6 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       "/confirmed-orders",
       "/workshop-order",
       "/redy-to-deliver",
+      "/quick-order/add",
     ];
     const webContentRoutes = [
       "/web-content/our-service",
@@ -258,12 +263,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 <div
                   className={`gap-0.5 pl-[10px] relative before:absolute before:left-[56px] before:top-0 before:bottom-0 before:border-l before:border-gray-200 overflow-hidden order-submenu-animation`}
                   style={{
-                    maxHeight: isOrderMenuOpen ? "255px" : "0px",
+                    maxHeight: isOrderMenuOpen ? "290px" : "0px",
                   }}
                 >
                   <Link to="/order/add" className="bg-red-200">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("order")}`}
+                      className={`menu-item ${getSubmenuItemClass(
+                        "/order/add"
+                      )}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -277,10 +284,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     </div>
                   </Link>
 
+                  <Link to="/quick-order/add" className="bg-red-200">
+                    <div
+                      className={`menu-item ${getSubmenuItemClass(
+                        "/quick-order/add"
+                      )}`}
+                    >
+                      <div
+                        className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
+                        tabIndex={0}
+                      >
+                        <span className="menu-bullet flex ml-[36px] w-[6px] relative before:absolute before:top-0 before:size-[6px] before:rounded-full before:-translate-x-1/2 before:-translate-y-1/2 menu-item-active:before:bg-primary menu-item-hover:before:bg-primary"></span>
+                        <span className="menu-title text-2sm font-medium text-gray-700 menu-item-active:text-primary menu-item-active:font-semibold menu-link-hover:!text-primary">
+                          Add Quick PickUp Order
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+
                   <Link to="/pickup-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "pickup-orders"
+                        "/pickup-orders"
                       )}`}
                     >
                       <div
@@ -298,7 +323,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/confirmed-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "confirmed-orders"
+                        "/confirmed-orders"
                       )}`}
                     >
                       <div
@@ -316,7 +341,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/workshop-order">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "workshop-order"
+                        "/workshop-order"
                       )}`}
                     >
                       <div
@@ -334,7 +359,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/redy-to-deliver">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "redy-to-deliver"
+                        "/redy-to-deliver"
                       )}`}
                     >
                       <div
@@ -352,7 +377,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/delivered-orders">
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "delivered-orders"
+                        "/delivered-orders"
                       )}`}
                     >
                       <div
@@ -369,7 +394,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
                   <Link to="/orders">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("orders")}`}
+                      className={`menu-item ${getSubmenuItemClass("/orders")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -386,7 +411,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/booking-orders" style={{ display: "none" }}>
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "booking-orders"
+                        "/booking-orders"
                       )}`}
                     >
                       <div
@@ -404,7 +429,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   <Link to="/pickup-orders" style={{ display: "none" }}>
                     <div
                       className={`menu-item ${getSubmenuItemClass(
-                        "pickup-orders"
+                        "/pickup-orders"
                       )}`}
                     >
                       <div
@@ -929,7 +954,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 >
                   <Link to="/users">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("users")}`}
+                      className={`menu-item ${getSubmenuItemClass("/users")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -945,7 +970,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
                   <Link to="/roles">
                     <div
-                      className={`menu-item ${getSubmenuItemClass("roles")}`}
+                      className={`menu-item ${getSubmenuItemClass("/roles")}`}
                     >
                       <div
                         className="menu-link border border-transparent items-center grow menu-item-active:bg-secondary-active dark:menu-item-active:bg-coal-300 dark:menu-item-active:border-gray-100 menu-item-active:rounded-lg hover:bg-secondary-active dark:hover:bg-coal-300 dark:hover:border-gray-100 hover:rounded-lg gap-[14px] pl-[10px] pr-[10px] py-[8px]"
@@ -1177,7 +1202,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <MdOutlineHistory className="h-full w-full p-1" />
+                      <svg
+                        width="22"
+                        height="22"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M9 17C13.4183 17 17 13.4183 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17Z"
+                          stroke="#cb9ad7"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M9 4.2V9L12.2 10.6"
+                          stroke="#cb9ad7"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Customer Logs
@@ -1199,7 +1245,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <FaRegPlayCircle className="h-full w-full p-1" />
+                      <svg
+                        width="20"
+                        height="22"
+                        viewBox="0 0 16 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 15V13M8 15V11M11 15V9M13 19H3C1.89543 19 1 18.1046 1 17V3C1 1.89543 1.89543 1 3 1H8.5858C8.851 1 9.1054 1.10536 9.2929 1.29289L14.7071 6.70711C14.8946 6.89464 15 7.149 15 7.41421V17C15 18.1046 14.1046 19 13 19Z"
+                          stroke="#cb9ad7"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Reports
@@ -1221,7 +1281,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     tabIndex={0}
                   >
                     <span className="menu-icon flex items-center justify-center text-gray-500 dark:text-gray-400 w-[32px] h-[32px]">
-                      <IoPricetagOutline className="h-full w-full p-1" />
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M18.4585 11.7155L11.7249 18.4491C11.5505 18.6238 11.3433 18.7623 11.1153 18.8568C10.8873 18.9513 10.6429 19 10.396 19C10.1492 19 9.9048 18.9513 9.67678 18.8568C9.44876 18.7623 9.24161 18.6238 9.06717 18.4491L1 10.3914V1H10.3914L18.4585 9.06717C18.8083 9.41909 19.0047 9.89514 19.0047 10.3914C19.0047 10.8876 18.8083 11.3636 18.4585 11.7155Z"
+                          stroke="#cb9ad7"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M5.69568 5.69568H5.70568"
+                          stroke="#cb9ad7"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </span>
                     <span className="menu-title text-sm font-semibold text-gray-700 dark:text-gray-300">
                       Label Management

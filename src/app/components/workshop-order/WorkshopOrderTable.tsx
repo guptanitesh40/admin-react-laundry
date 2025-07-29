@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useGetWorkshopOrders } from "../../hooks";
+import { useGetWorkshopOrders, usePermissions } from "../../hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TableShimmer from "../shimmer/TableShimmer";
 import { PaymentType } from "../../../types/enums";
@@ -10,6 +10,10 @@ import { searchSchema } from "../../validation/searchSchema";
 import { getOrderStatusLabel } from "../../utils/orderStatusClasses";
 import Pagination from "../pagination/Pagination";
 import TableShimmerEd2 from "../shimmer/TableShimmerEd2";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import useChangeOrderStatus from "../../hooks/order/useChangeOrderStatus";
+import { IoPrint } from "react-icons/io5";
 
 interface WorkshopOrderTableProps {
   filters: {
@@ -23,11 +27,29 @@ interface WorkshopOrderTableProps {
     workshopFilter: number[];
     workshopManagerFilter: number[];
   };
+  selectedOrderIds: number[];
+  setSelectedOrderIds: React.Dispatch<React.SetStateAction<number[]>>;
+  selectedStatus: number | null;
+  setSelectedStatus: React.Dispatch<React.SetStateAction<number | null>>;
+  nextStatus: string | null;
+  setNextStatus: React.Dispatch<React.SetStateAction<string | null>>;
+  trackingState: number | null;
+  setTrackingState: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
+const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({
+  filters,
+  selectedOrderIds,
+  setSelectedOrderIds,
+  selectedStatus,
+  setSelectedStatus,
+  nextStatus,
+  setNextStatus,
+  trackingState,
+  setTrackingState,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(50);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | null>(null);
@@ -39,22 +61,26 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const { workshopOrderData, loading, count } = useGetWorkshopOrders(
-    currentPage,
-    perPage,
-    search,
-    sortColumn,
-    sortOrder,
-    filters.workshopOrderStatusFilter,
-    filters.customerFilter,
-    filters.branchFilter,
-    filters.paymentTypeFilter,
-    filters.paymentStatusFilter,
-    filters.workshopFilter,
-    filters.workshopManagerFilter,
-    filters.start_date,
-    filters.end_date
-  );
+  const { changeOrderStatus, loading: changingStatus } = useChangeOrderStatus();
+  const { hasPermission } = usePermissions();
+
+  const { workshopOrderData, loading, count, fetchWorkshopOrders } =
+    useGetWorkshopOrders(
+      currentPage,
+      perPage,
+      search,
+      sortColumn,
+      sortOrder,
+      filters.workshopOrderStatusFilter,
+      filters.customerFilter,
+      filters.branchFilter,
+      filters.paymentTypeFilter,
+      filters.paymentStatusFilter,
+      filters.workshopFilter,
+      filters.workshopManagerFilter,
+      filters.start_date,
+      filters.end_date
+    );
 
   const navigate = useNavigate();
 
@@ -65,6 +91,42 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     total_amount = 0,
     total_quantity = 0,
   } = workshopOrderData || {};
+
+  const handleCheckboxChange = (order: object) => {
+    const { order_id } = order;
+
+    setSelectedOrderIds((prevSelectedOrderIds) => {
+      const isSelected = prevSelectedOrderIds.includes(order_id);
+      const updatedSelection = isSelected
+        ? prevSelectedOrderIds.filter((id) => id !== order_id)
+        : [...prevSelectedOrderIds, order_id];
+      return updatedSelection;
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedOrderIds([]);
+    setSelectedStatus(null);
+    setNextStatus(null);
+    setTrackingState(null);
+  };
+
+  useEffect(() => {
+    if (selectedOrderIds.length === 0) {
+      setSelectedStatus(null);
+      setNextStatus(null);
+    } else if (selectedOrderIds.length === 1) {
+      const order = workshopOrders.find((item: any) =>
+        selectedOrderIds.includes(item?.order_id)
+      );
+
+      if (order) {
+        setSelectedStatus(order.order_status);
+        setNextStatus(order.order_status_details.next_step);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOrderIds]);
 
   useEffect(() => {
     if (pageParams) {
@@ -103,6 +165,16 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
   const handleViewOrder = (order_id: number) => {
     navigate(`/order/${order_id}`, { state: { from: "WorkshopOrderTable" } });
+  };
+
+  const handleDownloadInvoice = (order: any) => {
+    const fileUrl = order?.order_invoice?.fileUrl;
+
+    if (fileUrl) {
+      window.open(fileUrl, "_blank");
+    } else {
+      toast.error("Please generate the invoice before downloading.");
+    }
   };
 
   const onSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -157,6 +229,72 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
     setCurrentPage(1);
     setSearchParams({ page: "1", perPage: newPerPage.toString() });
   };
+
+  const changeStatus = async () => {
+    try {
+      const { isConfirmed } = await Swal.fire({
+        title: "Are you sure?",
+        html: `Want to change order status to <span style="color: #1B84FF; font-weight: 500;">"${nextStatus}"</span> ?`,
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        icon: undefined,
+        didClose: () => {
+          setTrackingState(null);
+        },
+      });
+
+      if (isConfirmed) {
+        const next = selectedStatus + 1;
+
+        const success = await changeOrderStatus(selectedOrderIds, next);
+
+        if (success) {
+          clearSelection();
+          await fetchWorkshopOrders();
+        }
+      }
+    } catch {
+      toast.error("Error while changing status");
+    }
+  };
+
+  const getActionDoenBy = (log: any, key: string) => {
+    const data = log.find((item: any) => item?.type === key);
+    if (!log.length || !key || !data) {
+      return "";
+    }
+    return `${data.user.first_name} ${data.user.last_name}`;
+  };
+
+  useEffect(() => {
+    if (trackingState !== null) {
+      switch (trackingState) {
+        case 5:
+          changeStatus();
+          break;
+        case 6:
+          changeStatus();
+          break;
+        case 7:
+          changeStatus();
+          break;
+        // case 8:
+        //   changeStatus();
+        //   break;
+        // case 9:
+        //   setPbBoyModelIsOpen(true);
+        //   break;
+        // case 10:
+        //   handleDeliveryStatus();
+        //   break;
+        default:
+          toast("Invalid order status...");
+      }
+    }
+  }, [trackingState]);
 
   if (loading) {
     return (
@@ -220,14 +358,14 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
       <div className="card-body">
         <div data-datatable="true" data-datatable-page-size="10">
-          <div className="scrollable-x-auto">
+          <div className="scrollable-x-auto scrollable-y-auto max-h-[500px]">
             <table
               className="table table-auto table-border"
               data-datatable-table="true"
             >
               <thead>
                 <tr>
-                  <th className="!px-3" style={{ display: "none" }}>
+                  <th className="!px-3">
                     <label className="flex items-center justify-center">
                       <input className="checkbox" type="checkbox" disabled />
                     </label>
@@ -243,10 +381,12 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                       }`}
                       onClick={() => handleSort("order_id")}
                     >
-                      <span className="sort-label">Order Id</span>
+                      <span className="sort-label">Order Number</span>
                       <span className="sort-icon"></span>
                     </span>
                   </th>
+
+                  <th className="w-[75px]">Print</th>
 
                   <th className="min-w-[200px]">
                     <span
@@ -368,7 +508,19 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                     </span>
                   </th>
 
-                  <th className="min-w-[165px]">Payment type</th>
+                  {/* <th className="min-w-[165px]">Payment type</th> */}
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Confirmed By</span>
+                  </th>
+
+                  {/* <th className="min-w-[150px]">
+                    <span className="sort-label">Delivered By</span>
+                  </th> */}
+
+                  <th className="min-w-[150px]">
+                    <span className="sort-label">Workshop By</span>
+                  </th>
 
                   <th className="min-w-[50px]">Action</th>
                 </tr>
@@ -378,15 +530,21 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
               ) : workshopOrders?.length > 0 ? (
                 <tbody>
                   <tr className="bg-blue-50 text-blue-900 font-semibold border-t border-blue-100">
-                    <td colSpan={2}>Total Count : {count}</td>
+                    <td colSpan={3}>Total Count : {count}</td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td>{total_quantity}</td>
-                    <td colSpan={8}>{total_amount}</td>
+                    <td>{total_amount}</td>
+                    <td colSpan={8}></td>
                   </tr>
 
                   {workshopOrders?.map((order: any) => {
+                    const isDisabled =
+                      (selectedStatus !== null &&
+                        order.order_status !== selectedStatus) ||
+                      [11, 12, 13].includes(order.order_status);
                     const adminStatusClass = getOrderStatusLabel(
                       order?.order_status_details?.admin_label
                     );
@@ -397,25 +555,38 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
 
                     return (
                       <tr key={order?.order_id}>
-                        <th style={{ display: "none" }}>
+                        <td>
                           <label className="flex items-center justify-center">
                             <input
                               className="checkbox"
                               type="checkbox"
-                              // disabled={isDisabled}
-                              // checked={selectedOrderIds.includes(
-                              //   order.order_id
-                              // )}
-                              // onChange={() => handleCheckboxChange(order)}
+                              disabled={isDisabled}
+                              checked={selectedOrderIds.includes(
+                                order.order_id
+                              )}
+                              onChange={() => handleCheckboxChange(order)}
                             />
                           </label>
-                        </th>
+                        </td>
+
                         <td
                           className="cursor-pointer text-blue-600 hover:underline"
                           onClick={() => navigate(`/order/${order?.order_id}`)}
                         >
                           #{order?.order_id}
                         </td>
+
+                        <td>
+                          {hasPermission(3, "read") && (
+                            <button
+                              className="p-3 rounded-full bg-teal-100 hover:bg-teal-200"
+                              onClick={() => handleDownloadInvoice(order)}
+                            >
+                              <IoPrint className="text-teal-600 h-4.5 w-4.5" />
+                            </button>
+                          )}
+                        </td>
+
                         <td>{order?.branch.branch_name}</td>
                         <td>
                           {order?.user?.first_name} {order?.user?.last_name}
@@ -445,7 +616,6 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                           )}
                         </td>
 
-                        {/* <td>{order?.items?.map((item: { quantity: any; }) => item?.quantity)}</td> */}
                         <td>{order?.total_quantity}</td>
                         <td>{order?.total}</td>
 
@@ -480,21 +650,36 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
                             <br />
                           </div>
                         </td>
-                        <td>
+
+                        {/* <td>
                           {
                             PaymentType[
                               order?.payment_type as keyof typeof PaymentType
                             ]
                           }
+                        </td> */}
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "confirmed_by")}
+                        </td>
+
+                        {/* <td>
+                          {getActionDoenBy(order?.orderLogs, "delivered_by")}
+                        </td> */}
+
+                        <td>
+                          {getActionDoenBy(order?.orderLogs, "workshop_by")}
                         </td>
 
                         <td>
-                          <button
-                            className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
-                            onClick={() => handleViewOrder(order?.order_id)}
-                          >
-                            <FaEye size={18} className="text-gray-600" />
-                          </button>
+                          <div className="flex">
+                            <button
+                              className="mr-3 bg-yellow-100 hover:bg-yellow-200 p-[11px] rounded-full"
+                              onClick={() => handleViewOrder(order?.order_id)}
+                            >
+                              <FaEye size={18} className="text-gray-600" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -503,7 +688,7 @@ const WorkshopOrderTable: React.FC<WorkshopOrderTableProps> = ({ filters }) => {
               ) : (
                 <tbody>
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={17} className="text-center">
                       No Order available
                     </td>
                   </tr>

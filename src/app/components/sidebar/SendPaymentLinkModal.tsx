@@ -136,14 +136,20 @@ const SendPaymentLinkModal: React.FC<SendPaymentLinkModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       await sendPaymentLinkSchema.validate(formData, { abortEarly: false });
+      setErrors({});
 
+      const { contact, name, email } = formData.customer || {};
       const formattedData = {
         ...formData,
         amount: Number(formData.amount),
         currency: "INR",
+        customer: {
+          contact,
+          name,
+          ...(email ? { email } : {}),
+        },
       };
 
       await generatePaymentLink(formattedData);
