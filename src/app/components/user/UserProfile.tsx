@@ -220,7 +220,7 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-7.5 mt-5">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 lg:gap-7.5 mt-5 items-stretch">
         <div className="col-span-1">
           <div className="card pb-2.5">
             <div className="card-header">
@@ -364,29 +364,10 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {user?.role_id === 5 && user && (
-        <>
-          <CustomerAddress
-            addresses={user?.address}
-            onAdd={() => {
-              setAddressModelIsOpen(true);
-              setSelectedAddress(null);
-            }}
-            onEdit={(id) => handleAddressEdit(id)}
-            onDelete={(id) => {
-              handleAddressDelete(id);
-            }}
-          />
-          <CustomerOrders user={user} userId={user_id} count={count} />
-        </>
-      )}
-
-      {user?.orders?.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 mt-6 lg:grid-cols-2">
+        {user?.orders?.length > 0 && (
           <div className="space-y-6">
-            <div className="flex col-span-2 lg:col-span-1">
+            <div className="flex h-full col-span-2 lg:col-span-1">
               <div className="card grow">
                 <div className="card-header">
                   <h3 className="card-title">Orders Summary</h3>
@@ -438,7 +419,24 @@ const UserProfile: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        )}
+      </div>
+
+      {user?.role_id === 5 && user && (
+        <>
+          <CustomerAddress
+            addresses={user?.address}
+            onAdd={() => {
+              setAddressModelIsOpen(true);
+              setSelectedAddress(null);
+            }}
+            onEdit={(id) => handleAddressEdit(id)}
+            onDelete={(id) => {
+              handleAddressDelete(id);
+            }}
+          />
+          <CustomerOrders user={user} userId={user_id} count={count} />
+        </>
       )}
 
       <DuoOrderListModal

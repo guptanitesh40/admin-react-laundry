@@ -36,6 +36,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   const [fullPayment, setFullPayment] = useState<boolean>();
   const page = 1;
 
+  const total_due = userData?.total_pending_amount;
   const user = userData?.user;
 
   useEffect(() => {
@@ -65,14 +66,19 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   const handleInputChange = (orderId: number, field: string, value: number) => {
     const updated = filteredOrders.map((order) => {
       if (order.order_id === orderId) {
-        const updatedOrder = {
-          ...order,
-          [field]: value,
-        };
+        const updatedOrder = { ...order, [field]: value };
+
+        if (field === "kasar_amount") {
+          const total = order.total || 0;
+          const paid = order.paid_amount || 0;
+          const kasar = value || 0;
+
+          const remaining = total - paid - kasar;
+          updatedOrder.current_paid = remaining > 0 ? remaining : 0;
+        }
 
         updatedOrder.current_total =
-          (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0) ||
-          0;
+          (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0);
 
         if (updatedOrder.current_total === 0) {
           updatedOrder.payment_status = 1;
@@ -93,12 +99,11 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
     });
 
     setFilteredOrders(updated);
-    const updatedOrder = updated.find((order) => order.order_id === orderId);
 
+    const updatedOrder = updated.find((order) => order.order_id === orderId);
     if (updatedOrder) {
       setUpdatedOrders((prev) => {
         const existingIndex = prev.findIndex((o) => o.order_id === orderId);
-
         if (existingIndex > -1) {
           const updatedPrev = [...prev];
           updatedPrev[existingIndex] = updatedOrder;
@@ -108,6 +113,53 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
       });
     }
   };
+
+  // const handleInputChange = (orderId: number, field: string, value: number) => {
+  //   const updated = filteredOrders.map((order) => {
+  //     if (order.order_id === orderId) {
+  //       const updatedOrder = {
+  //         ...order,
+  //         [field]: value,
+  //       };
+
+  //       updatedOrder.current_total =
+  //         (updatedOrder.current_paid || 0) + (updatedOrder.kasar_amount || 0) ||
+  //         0;
+
+  //       if (updatedOrder.current_total === 0) {
+  //         updatedOrder.payment_status = 1;
+  //       } else if (
+  //         updatedOrder.current_total === order.total ||
+  //         updatedOrder.current_total === order.total - order.paid_amount
+  //       ) {
+  //         setFullPayment(true);
+  //         updatedOrder.payment_status = 2;
+  //       } else {
+  //         setFullPayment(false);
+  //         updatedOrder.payment_status = 3;
+  //       }
+
+  //       return updatedOrder;
+  //     }
+  //     return order;
+  //   });
+
+  //   setFilteredOrders(updated);
+  //   const updatedOrder = updated.find((order) => order.order_id === orderId);
+
+  //   if (updatedOrder) {
+  //     setUpdatedOrders((prev) => {
+  //       const existingIndex = prev.findIndex((o) => o.order_id === orderId);
+
+  //       if (existingIndex > -1) {
+  //         const updatedPrev = [...prev];
+  //         updatedPrev[existingIndex] = updatedOrder;
+  //         return updatedPrev;
+  //       }
+  //       return [...prev, updatedOrder];
+  //     });
+  //   }
+  // };
 
   const handleSave = async () => {
     if (updatedOrders.length === 0) {
@@ -138,28 +190,28 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
   if (!modalOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] z-10 relative max-h-[80vh] overflow-auto">
         <button
-          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          className="absolute top-0 right-0 mt-5 mr-5 btn btn-sm btn-icon btn-light btn-outline lg:mr-5 shadow-default"
           data-modal-dismiss="true"
           onClick={onClose}
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <div className="flex justify-between items-center mb-6 lgscreen:flex-col lgscreen:gap-2 lgscreen:items-start">
+        <div className="flex items-center justify-between mb-6 lgscreen:flex-col lgscreen:gap-2 lgscreen:items-start">
           <h1 className="text-2xl font-bold">Orders</h1>
 
           <div className="flex items-start gap-2 lgscreen:w-full lgscreen:justify-between lgscreen:!items-center">
-            {/* <span className="text-sm font-medium text-red-700">
-              Total Pending Amount: ₹{1000}
-            </span> */}
+            <span className="text-sm font-medium text-red-700">
+              Total Pending Amount: ₹{total_due}
+            </span>
             <button
-              className="btn btn-primary btn-lg flex flex-end mt-10 lgscreen:mt-0"
+              className="flex mt-10 btn btn-primary btn-lg flex-end lgscreen:mt-0"
               onClick={handleSave}
               disabled={loading}
             >
@@ -168,7 +220,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
           </div>
         </div>
         <div className="grid gap-5 lg:gap-5.5">
-          <div className="card card-grid min-w-full">
+          <div className="min-w-full card card-grid">
             <div className="card-body">
               <div className="scrollable-x-auto">
                 <table className="table table-auto table-border">
@@ -190,7 +242,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
                         <tr key={ind}>
                           {Array.from({ length: 7 }).map((_, index) => (
                             <td key={index} className="!px-3 !py-3">
-                              <span className="inline-block w-full bg-gray-200 animate-pulse rounded-md text-xl">
+                              <span className="inline-block w-full text-xl bg-gray-200 rounded-md animate-pulse">
                                 &nbsp;
                               </span>
                             </td>
@@ -295,7 +347,7 @@ const DuoOrderListModal: React.FC<DuoOrderListModalProps> = ({
                                   </option>
                                 </select>
                                 <div
-                                  className="hidden rounded-xl shadow-default p-3 bg-light border border-gray-200 text-gray-700 text-xs font-normal"
+                                  className="hidden p-3 text-xs font-normal text-gray-700 border border-gray-200 rounded-xl shadow-default bg-light"
                                   id="custom_tooltip"
                                 >
                                   Change Payment Status

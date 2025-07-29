@@ -46,7 +46,7 @@ const Index: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+        <div className="grid items-start grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {reports.map((report, index) => {
             if (report.name === "Service Wise Report") {
               return (

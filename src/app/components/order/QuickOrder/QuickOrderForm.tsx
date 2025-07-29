@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  useGeneratePaymentLink,
   useGetAddress,
   useGetCompanies,
 } from "../../../hooks";
@@ -306,21 +305,21 @@ const OrderForm: React.FC = () => {
     <div className="container-fixed">
       <div className="card max-w-5xl mx-auto bg-white shadow-md lg:!p-4 xl:!p-6 sm:!p-5 p-3.5">
         <div className="flex">
-          <h1 className="text-2xl font-bold mb-6">Add Quick Order</h1>
+          <h1 className="mb-6 text-2xl font-bold">Add Quick Order</h1>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="grid md:grid-cols-2 cs1:gap-x-6 gap-x-4  gap-y-5 mt-4 grid-cols-1">
+          <div className="grid grid-cols-1 mt-4 md:grid-cols-2 cs1:gap-x-6 gap-x-4 gap-y-5">
             <div className="md:!col-span-2 grid md:!grid-cols-2 cs1:gap-x-6 gap-x-4 items-start grid-cols-1">
               <div className="flex flex-col">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-bold text-gray-700"
                   htmlFor="company_id"
                 >
                   Company
                 </label>
                 <select
                   id="company_id"
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  className="w-full p-2 text-sm border border-gray-300 rounded-md select"
                   value={formData.company_id || ""}
                   onChange={(e) => {
                     setFormData({
@@ -347,7 +346,7 @@ const OrderForm: React.FC = () => {
                     <option>No Data available</option>
                   )}
                 </select>
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors.company_id || "\u00A0"}
                 </p>
               </div>
@@ -361,7 +360,7 @@ const OrderForm: React.FC = () => {
                 </label>
                 <select
                   id="branch"
-                  className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                  className="w-full p-2 text-sm border border-gray-300 rounded-md select"
                   value={formData.branch_id || ""}
                   onChange={(e) =>
                     setFormData({
@@ -383,24 +382,24 @@ const OrderForm: React.FC = () => {
                     <option>No Data Available</option>
                   )}
                 </select>
-                <p className="w-full text-red-500 text-sm">
+                <p className="w-full text-sm text-red-500">
                   {errors.branch_id || "\u00A0"}
                 </p>
               </div>
             </div>
 
             <div className="relative col-span-1">
-              <span className="flex justify-between items-center">
+              <span className="flex items-center justify-between">
                 <label
                   htmlFor="username"
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-bold text-gray-700"
                 >
                   Customer name
                 </label>
 
                 <button
                   type="button"
-                  className="btn btn-sm btn-primary -mt-6 sm:btn-lg"
+                  className="-mt-6 btn btn-sm btn-primary sm:btn-lg"
                   onClick={handleAddUser}
                 >
                   Add Customer
@@ -413,7 +412,7 @@ const OrderForm: React.FC = () => {
                 autoComplete="off"
                 value={userSearch || ""}
                 onChange={handleSearchChange}
-                className="input border border-gray-300 rounded-md p-2 w-full"
+                className="w-full p-2 border border-gray-300 rounded-md input"
                 placeholder="Search customer..."
                 onFocus={() => {
                   setFocusOn(true);
@@ -430,7 +429,7 @@ const OrderForm: React.FC = () => {
                     users.map((user: any) => (
                       <li
                         key={user.user_id}
-                        className="p-2 hover:bg-gray-200 cursor-pointer rounded"
+                        className="p-2 rounded cursor-pointer hover:bg-gray-200"
                         onClick={() => handleUserClick(user)}
                       >
                         {user.first_name} {user.last_name} ({user.mobile_number}
@@ -442,23 +441,23 @@ const OrderForm: React.FC = () => {
                   )}
                 </ul>
               )}
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.username || "\u00A0"}
               </p>
             </div>
 
             <div className="relative col-span-1">
-              <span className="flex justify-between items-center">
+              <span className="flex items-center justify-between">
                 <label
                   htmlFor="address"
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-bold text-gray-700"
                 >
                   Customer address
                 </label>
 
                 <button
                   type="button"
-                  className="btn btn-sm btn-primary -mt-6"
+                  className="-mt-6 btn btn-sm btn-primary"
                   onClick={handleAddAddress}
                 >
                   Add address
@@ -469,7 +468,7 @@ const OrderForm: React.FC = () => {
                 id="address"
                 value={formData.address_id ?? ""}
                 onChange={handleAddressChange}
-                className="select border border-gray-300 rounded-md w-full text-sm"
+                className="w-full text-sm border border-gray-300 rounded-md select"
               >
                 <option value="" disabled>
                   Select Address
@@ -506,7 +505,7 @@ const OrderForm: React.FC = () => {
                   <option disabled>No Address Available</option>
                 )}
               </select>
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.address_id || "\u00A0"}
               </p>
             </div>
@@ -517,7 +516,7 @@ const OrderForm: React.FC = () => {
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block mb-2 text-sm font-bold text-gray-700"
                 >
                   Order Note
                 </label>
@@ -531,9 +530,9 @@ const OrderForm: React.FC = () => {
                       description: e.target.value,
                     })
                   }
-                  className="h-full input border border-gray-300 rounded-md p-2 w-full"
+                  className="w-full h-full p-2 border border-gray-300 rounded-md input"
                 />
-                <p className="w-full text-red-500 text-sm">
+                <p className="w-full text-sm text-red-500">
                   {errors.description || "\u00A0"}
                 </p>
               </div>
@@ -544,12 +543,12 @@ const OrderForm: React.FC = () => {
                 <div className="flex flex-col">
                   <label
                     htmlFor="exp_delivery_time"
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block mb-2 text-sm font-bold text-gray-700"
                   >
                     Express Delivery Time
                   </label>
                   <select
-                    className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md select"
                     id="exp_delivery_time"
                     value={formData.express_delivery_hour || ""}
                     onChange={(e) =>
@@ -576,7 +575,7 @@ const OrderForm: React.FC = () => {
                 <div className="flex flex-col">
                   <label
                     htmlFor="express_delivery_charges"
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block mb-2 text-sm font-bold text-gray-700"
                   >
                     Express Delivery Charge
                   </label>
@@ -606,7 +605,7 @@ const OrderForm: React.FC = () => {
                 <div className="flex flex-col">
                   <label
                     htmlFor="normal_delivery_charges"
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block mb-2 text-sm font-bold text-gray-700"
                   >
                     Normal Delivery Charge
                   </label>
@@ -642,12 +641,12 @@ const OrderForm: React.FC = () => {
             <div className="flex flex-col">
               <label
                 htmlFor="payment_method"
-                className="block text-gray-700 text-sm font-bold mb-2"
+                className="block mb-2 text-sm font-bold text-gray-700"
               >
                 Payment Method
               </label>
               <select
-                className="select border border-gray-300 rounded-md p-2 w-full text-sm"
+                className="w-full p-2 text-sm border border-gray-300 rounded-md select"
                 id="payment_method"
                 value={formData.payment_type ?? ""}
                 onChange={(e) =>
@@ -663,15 +662,15 @@ const OrderForm: React.FC = () => {
                 <option value={1}>Cash on Delivery</option>
                 <option value={2}>Online Payment</option>
               </select>
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.payment_type || "\u00A0"}
               </p>
             </div>
 
-            <div className="flex flex-col justify-center items-start">
+            <div className="flex flex-col items-start justify-center">
               <label
                 htmlFor="have_gst_cb"
-                className="block text-gray-700 text-sm font-bold mb-2"
+                className="block mb-2 text-sm font-bold text-gray-700"
               >
                 Do you have GSTIN ?
               </label>
@@ -692,7 +691,7 @@ const OrderForm: React.FC = () => {
                 <div className="flex flex-col">
                   <label
                     htmlFor="gstin"
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block mb-2 text-sm font-bold text-gray-700"
                   >
                     GSTIN
                   </label>
@@ -707,16 +706,16 @@ const OrderForm: React.FC = () => {
                         gstin: e.target.value,
                       })
                     }
-                    className="uppercase input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+                    className="p-2 text-sm text-gray-600 uppercase border border-gray-300 rounded-md input focus:outline-none"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.gstin || "\u00A0"}
                   </p>
                 </div>
                 <div className="flex flex-col">
                   <label
                     htmlFor="gst_company_name"
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block mb-2 text-sm font-bold text-gray-700"
                   >
                     Company Name
                   </label>
@@ -731,9 +730,9 @@ const OrderForm: React.FC = () => {
                         gst_company_name: e.target.value,
                       })
                     }
-                    className="input border border-gray-300 text-sm text-gray-600 rounded-md p-2 focus:outline-none"
+                    className="p-2 text-sm text-gray-600 border border-gray-300 rounded-md input focus:outline-none"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.gst_company_name || "\u00A0"}
                   </p>
                 </div>
@@ -741,7 +740,7 @@ const OrderForm: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-6 flex gap-4">
+          <div className="flex gap-4 mt-6">
             <button
               type="submit"
               className={`btn btn-primary ${
