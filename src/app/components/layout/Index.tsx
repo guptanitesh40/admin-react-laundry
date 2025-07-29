@@ -7,7 +7,7 @@ import { Footer } from "../footer/Index";
 const MasterLayout: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
-    <div className="flex grow overflow-auto">
+    <div className="flex grow overflow-auto" >
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="wrapper flex grow flex-col">
         <Header setIsOpen={setIsOpen} />

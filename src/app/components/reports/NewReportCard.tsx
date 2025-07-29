@@ -1,41 +1,26 @@
 import React, { useMemo, useState } from "react";
 import MultiSelect from "../MultiSelect/MultiSelect";
-import useGetUsersByRole02 from "../../hooks/user/useGetUserByRole02";
-import { useGetBranches, useGetCompanies } from "../../hooks";
+import { useGetBranches, useGetCompanies, useGetServices } from "../../hooks";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 const { RangePicker } = DatePicker;
 
-interface ReportCardProps {
+interface NewReportCardProps {
   reportTitle: string;
-  index: number;
   dynamic_url: string;
 }
 
-const ReportCard: React.FC<ReportCardProps> = ({
+const NewReportCard: React.FC<NewReportCardProps> = ({
   reportTitle,
-  index,
   dynamic_url,
 }) => {
-  const user_role_id = 5;
-  const delivery_pickup_role_id = 4;
-  const [search, setSearch] = useState("");
-  const [search2, setSearch2] = useState("");
-  const navigate = useNavigate();
-
-  const [selectedCustomers, setSelectedCustomers] = useState<any[]>([]);
-  const [selectedDelPickUsers, setSelectedDelPickUsers] = useState<any[]>([]);
+  const [selectedServices, setSelectedServices] = useState<any[]>([]);
   const [selectedCompanies, setSelectedCompanies] = useState<any[]>([]);
   const [selectedBranches, setSelectedBranches] = useState<any[]>([]);
 
-  const { users, loading: loadingUsers } = useGetUsersByRole02(
-    user_role_id,
-    search
-  );
-  const { users: delivery_pickup_users, loading: loadingUsers2 } =
-    useGetUsersByRole02(delivery_pickup_role_id, search2);
   const { companies, loading: loadingCompanies } = useGetCompanies(1, 1000);
   const { branches, loading: loadingBranches } = useGetBranches(
     1,
@@ -46,37 +31,14 @@ const ReportCard: React.FC<ReportCardProps> = ({
     selectedCompanies
   );
 
+  const { services, loading: loadingServices } = useGetServices(1, 10000);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     start_time: "",
     end_time: "",
   });
-
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
-  const token = localStorage.getItem("authToken");
-
-  const customerOptions = useMemo(() => {
-    if (loadingUsers) return [{ label: "Loading...", value: 0 }];
-    return users.map((user) => ({
-      label: `${user.first_name} ${user.last_name}`,
-      value: user.user_id,
-    }));
-  }, [users, loadingUsers]);
-
-  const deliveryPickupOptions = useMemo(() => {
-    if (reportTitle !== "Pick Up Report" && reportTitle !== "Delivery Report") {
-      return [];
-    }
-
-    if (loadingUsers2) {
-      return [{ label: "Loading...", value: 0 }];
-    }
-
-    return delivery_pickup_users.map((user) => ({
-      label: `${user.first_name} ${user.last_name}`,
-      value: user.user_id,
-    }));
-  }, [reportTitle, delivery_pickup_users, loadingUsers2]);
+  const navigate = useNavigate();
 
   const companyOptions = useMemo(() => {
     if (loadingCompanies) return [{ label: "Loading...", value: 0 }];
@@ -94,6 +56,17 @@ const ReportCard: React.FC<ReportCardProps> = ({
     }));
   }, [branches, loadingBranches]);
 
+  const serviceOptions = useMemo(() => {
+    if (loadingServices) {
+      return [{ label: "Loading...", value: 0 }];
+    }
+
+    return services.map((service) => ({
+      label: `${service.name}`,
+      value: service.service_id,
+    }));
+  }, [services, loadingServices]);
+
   const handleDateChange = (dates: any) => {
     if (dates) {
       setFormData({
@@ -108,57 +81,14 @@ const ReportCard: React.FC<ReportCardProps> = ({
     }
   };
 
-  const handleBtnClick = (index: number) => {
-    switch (index) {
-      case 0:
-        downloadReport();
-        break;
-
-      case 1:
-        downloadReport();
-        break;
-
-      case 2:
-        downloadReport();
-        break;
-
-      case 3:
-        downloadReport();
-        break;
-
-      case 4:
-        downloadReport();
-        break;
-
-      case 5:
-        downloadReport();
-        break;
-
-      case 6:
-        downloadReport();
-        break;
-
-      default:
-        downloadReport();
-    }
-  };
-
   const downloadReport = async () => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const token = localStorage.getItem("authToken");
     setLoading(true);
     const queryParam = new URLSearchParams();
     if (formData.start_time && formData.end_time) {
       queryParam.append("startDate", formData.start_time);
       queryParam.append("endDate", formData.end_time);
-    }
-    if (selectedCustomers.length) {
-      selectedCustomers.forEach((customer_id) => {
-        return queryParam.append("user_id", customer_id);
-      });
-    }
-    if (selectedDelPickUsers.length) {
-      selectedDelPickUsers.forEach((customer_id) => {
-        return queryParam.append("driver_id", customer_id);
-      });
     }
     if (selectedCompanies.length) {
       selectedCompanies.forEach((company_id) => {
@@ -168,6 +98,12 @@ const ReportCard: React.FC<ReportCardProps> = ({
     if (selectedBranches.length) {
       selectedBranches.forEach((branch_id) => {
         return queryParam.append("branch_id", branch_id);
+      });
+    }
+
+    if (setSelectedServices.length) {
+      selectedServices.forEach((service_id) => {
+        return queryParam.append("service_id", service_id);
       });
     }
 
@@ -184,6 +120,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
       if (!response.ok) {
         throw new Error(data.message || "Failed to download report");
       }
+
       const url = data?.url;
       if (!url) {
         toast.error("Download report not found");
@@ -205,7 +142,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
   };
 
   return (
-    <div className="card !shadow-black/10" key={index}>
+    <div className="card !shadow-black/10">
       <div className="card-header">
         <h3 className="card-title">{reportTitle}</h3>
       </div>
@@ -259,57 +196,30 @@ const ReportCard: React.FC<ReportCardProps> = ({
 
         <div className="mui-multiselect-parent">
           <MultiSelect
-            options={customerOptions}
+            options={serviceOptions}
+            defaultOption="No Data Found"
             displayValue="label"
-            placeholder="Select Customer"
-            selectedValues={selectedCustomers}
+            placeholder={"Select Service"}
+            selectedValues={selectedServices}
             onSelect={(selectedList: any[]) => {
               const selectedIds = selectedList.map((item) => item.value);
-              setSelectedCustomers(selectedIds);
+              setSelectedServices(selectedIds);
             }}
             onRemove={(selectedList: any[]) => {
               const selectedIds = selectedList.map((item) => item.value);
-              setSelectedCustomers(selectedIds);
+              setSelectedServices(selectedIds);
             }}
-            setSearch={setSearch}
             className="w-full"
             isSearchInput={true}
           />
         </div>
-
-        {(reportTitle === "Pick Up Report" ||
-          reportTitle === "Delivery Report") && (
-          <div className="mui-multiselect-parent">
-            <MultiSelect
-              options={deliveryPickupOptions}
-              defaultOption="No Data Found"
-              displayValue="label"
-              placeholder={
-                reportTitle === "Pick Up Report"
-                  ? "Select PickUp Boy"
-                  : "Select Delivery Boy"
-              }
-              selectedValues={selectedDelPickUsers}
-              onSelect={(selectedList: any[]) => {
-                const selectedIds = selectedList.map((item) => item.value);
-                setSelectedDelPickUsers(selectedIds);
-              }}
-              onRemove={(selectedList: any[]) => {
-                const selectedIds = selectedList.map((item) => item.value);
-                setSelectedDelPickUsers(selectedIds);
-              }}
-              setSearch={setSearch2}
-              className="w-full"
-              isSearchInput={true}
-            />
-          </div>
-        )}
       </div>
+
       <div className="card-footer">
         <button
           disabled={loading}
           className="relative inline-flex items-center justify-center w-full px-3 py-2 overflow-hidden btn btn-primary"
-          onClick={() => handleBtnClick(index)}
+          onClick={downloadReport}
         >
           {loading && <span className="absolute inset-0 loading-bar"></span>}
           <span>{loading ? "Downloading..." : "Download"}</span>
@@ -319,4 +229,4 @@ const ReportCard: React.FC<ReportCardProps> = ({
   );
 };
 
-export default ReportCard;
+export default NewReportCard;

@@ -79,22 +79,41 @@ const AddressModal: React.FC<AddressModalProps> = ({
     setAddressData({ ...addressData, area: newAddress });
     setSuggesionIsOpen(true);
   };
-
+  
   const handleAddressSelect = async (selectedAddress: string) => {
-    setAddressData({ ...addressData, area: selectedAddress });
     try {
-      const result = await geocodeByAddress(selectedAddress);
-      const latLng = await getLatLng(result[0]);
+      const results = await geocodeByAddress(selectedAddress);
+      const latLng = await getLatLng(results[0]);
+      const addressComponents = results[0].address_components;
 
-      if (latLng) {
-        setAddressData((prev) => ({
-          ...prev,
-          lat: latLng?.lat,
-          long: latLng?.lng,
-        }));
-      }
+      const getComponent = (types: string[]) => {
+        const component = addressComponents.find((c) =>
+          types.some((t) => c.types.includes(t))
+        );
+        return component?.long_name || "";
+      };
+
+      const city =
+        getComponent(["locality"]) ||
+        getComponent(["administrative_area_level_2"]) ||
+        getComponent(["postal_town"]);
+
+      const state = getComponent(["administrative_area_level_1"]);
+      const country = getComponent(["country"]);
+      const pincode = getComponent(["postal_code"]);
+
+      setAddressData((prev) => ({
+        ...prev,
+        area: results[0].formatted_address,
+        lat: latLng.lat,
+        long: latLng.lng,
+        city,
+        state,
+        country,
+        pincode,
+      }));
     } catch {
-      toast.error("Failed to fetch address detail", {
+      toast.error("Failed to fetch full address details", {
         className: "toast-error",
       });
     }
@@ -139,7 +158,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
   if (!isOpen) return;
 
   return (
-    <div className="fixed inset-0 grid overflow-auto items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 grid items-center justify-center p-4 overflow-auto">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
@@ -147,23 +166,23 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
       <div className="bg-white p-5 rounded-lg shadow-lg min-w-[450px] !max-w-full z-10 relative">
         <button
-          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          className="absolute top-0 right-0 mt-5 mr-5 btn btn-sm btn-icon btn-light btn-outline lg:mr-5 shadow-default"
           onClick={onClose}
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <h2 className="text-2xl font-bold mb-6">Add New Address</h2>
+        <h2 className="mb-6 text-2xl font-bold">Add New Address</h2>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="country"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Address Type
               </label>
               <select
-                className="select select-lg text-sm"
+                className="text-sm select select-lg"
                 onChange={(e) =>
                   setAddressData({
                     ...addressData,
@@ -183,7 +202,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 <option value="2">Office</option>
                 <option value="3">Other</option>
               </select>
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.address_type || "\u00A0"}
               </p>
             </div>
@@ -191,7 +210,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="area"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Search Address
               </label>
@@ -250,7 +269,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                   </PlacesAutocomplete>
                 </div>
                 {(errors.area && (
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.area || "\u00A0"}
                   </p>
                 )) ||
@@ -265,7 +284,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="building_number"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 House Number and Society
               </label>
@@ -281,9 +300,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     building_number: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.building_number || "\u00A0"}
               </p>
             </div>
@@ -291,7 +310,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="landmark"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Landmark
               </label>
@@ -307,9 +326,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     landmark: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.landmark || "\u00A0"}
               </p>
             </div>
@@ -317,7 +336,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="city"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 City
               </label>
@@ -333,9 +352,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     city: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.city || "\u00A0"}
               </p>
             </div>
@@ -343,7 +362,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="pincode"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Pin code
               </label>
@@ -359,9 +378,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     pincode: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.pincode || "\u00A0"}
               </p>
             </div>
@@ -369,7 +388,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="state"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 State
               </label>
@@ -385,9 +404,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     state: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.state || "\u00A0"}
               </p>
             </div>
@@ -395,7 +414,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="country"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Country
               </label>
@@ -411,9 +430,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     country: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.country || "\u00A0"}
               </p>
             </div>
@@ -423,7 +442,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-light mr-2"
+              className="mr-2 btn btn-light"
               disabled={loading}
             >
               Cancel

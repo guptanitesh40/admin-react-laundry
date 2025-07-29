@@ -106,20 +106,39 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
   };
 
   const handleAddressSelect = async (selectedAddress: string) => {
-    setAddressData({ ...addressData, area: selectedAddress });
     try {
-      const result = await geocodeByAddress(selectedAddress);
-      const latLng = await getLatLng(result[0]);
+      const results = await geocodeByAddress(selectedAddress);
+      const latLng = await getLatLng(results[0]);
+      const addressComponents = results[0].address_components;
 
-      if (latLng) {
-        setAddressData((prev) => ({
-          ...prev,
-          lat: latLng?.lat,
-          long: latLng?.lng,
-        }));
-      }
+      const getComponent = (types: string[]) => {
+        const component = addressComponents.find((c) =>
+          types.some((t) => c.types.includes(t))
+        );
+        return component?.long_name || "";
+      };
+
+      const city =
+        getComponent(["locality"]) ||
+        getComponent(["administrative_area_level_2"]) ||
+        getComponent(["postal_town"]);
+
+      const state = getComponent(["administrative_area_level_1"]);
+      const country = getComponent(["country"]);
+      const pincode = getComponent(["postal_code"]);
+
+      setAddressData((prev) => ({
+        ...prev,
+        area: results[0].formatted_address,
+        lat: latLng.lat,
+        long: latLng.lng,
+        city,
+        state,
+        country,
+        pincode,
+      }));
     } catch {
-      toast.error("Failed to fetch address detail", {
+      toast.error("Failed to fetch full address details", {
         className: "toast-error",
       });
     }
@@ -182,27 +201,27 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 grid overflow-auto items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 grid items-center justify-center p-4 overflow-auto">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-5xl w-full smobile:min-w-[85%] z-10 relative">
         <button
-          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          className="absolute top-0 right-0 mt-5 mr-5 btn btn-sm btn-icon btn-light btn-outline lg:mr-5 shadow-default"
           onClick={onClose}
         >
           <i className="ki-filled ki-cross"></i>
         </button>
         <form>
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col gap-6 lg:flex-row">
             <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-4">Customer Info</h3>
+              <h3 className="mb-4 text-xl font-semibold">Customer Info</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                 <div>
                   <label
                     htmlFor="first_name"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     First name
                   </label>
@@ -215,9 +234,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     onChange={(e) =>
                       setFormData({ ...formData, first_name: e.target.value })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {errors.first_name || "\u00A0"}
                   </p>
                 </div>
@@ -225,7 +244,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="last_name"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Last name
                   </label>
@@ -241,9 +260,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         last_name: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {errors.last_name || "\u00A0"}
                   </p>
                 </div>
@@ -251,7 +270,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Email
                   </label>
@@ -267,9 +286,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         email: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {errors.email || "\u00A0"}
                   </p>
                 </div>
@@ -277,7 +296,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="mobile_number"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Mobile Number
                   </label>
@@ -293,15 +312,15 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         mobile_number: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {errors.mobile_number || "\u00A0"}
                   </p>
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="mb-2 block text-gray-700 font-semibold">
+                  <label className="block mb-2 font-semibold text-gray-700">
                     Gender
                   </label>
                   <div className="flex space-x-4">
@@ -354,7 +373,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                       <span className="text-sm">Other</span>
                     </label>
                   </div>
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {errors.gender || "\u00A0"}
                   </p>
                 </div>
@@ -362,17 +381,17 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
             </div>
 
             <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-4">Address</h3>
+              <h3 className="mb-4 text-xl font-semibold">Address</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
                 <div>
                   <label
                     htmlFor="country"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Address Type
                   </label>
                   <select
-                    className="select select-lg text-sm w-full p-2 border border-gray-300 rounded-md"
+                    className="w-full p-2 text-sm border border-gray-300 rounded-md select select-lg"
                     onChange={(e) =>
                       setAddressData({
                         ...addressData,
@@ -392,7 +411,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                     <option value="2">Office</option>
                     <option value="3">Other</option>
                   </select>
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.address_type || "\u00A0"}
                   </p>
                 </div>
@@ -400,7 +419,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="area"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Search Address
                   </label>
@@ -459,7 +478,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                       </PlacesAutocomplete>
                     </div>
                     {(errors.area && (
-                      <p className="w-full text-red-500 text-sm">
+                      <p className="w-full text-sm text-red-500">
                         {errors.area || "\u00A0"}
                       </p>
                     )) ||
@@ -474,7 +493,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="building_number"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     House Number
                   </label>
@@ -490,9 +509,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         building_number: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.building_number || "\u00A0"}
                   </p>
                 </div>
@@ -500,7 +519,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="landmark"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Landmark
                   </label>
@@ -516,16 +535,16 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         landmark: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.landmark || "\u00A0"}
                   </p>
                 </div>
                 <div>
                   <label
                     htmlFor="city"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     City
                   </label>
@@ -541,9 +560,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         city: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.city || "\u00A0"}
                   </p>
                 </div>
@@ -551,7 +570,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="pincode"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Pin code
                   </label>
@@ -567,9 +586,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         pincode: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.pincode || "\u00A0"}
                   </p>
                 </div>
@@ -577,7 +596,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="state"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     State
                   </label>
@@ -593,9 +612,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         state: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.state || "\u00A0"}
                   </p>
                 </div>
@@ -603,7 +622,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                 <div>
                   <label
                     htmlFor="country"
-                    className="block text-gray-700 font-semibold"
+                    className="block font-semibold text-gray-700"
                   >
                     Country
                   </label>
@@ -619,9 +638,9 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
                         country: e.target.value,
                       })
                     }
-                    className="w-full input border border-gray-300 rounded-md p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md input"
                   />
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.country || "\u00A0"}
                   </p>
                 </div>
@@ -633,7 +652,7 @@ const CustomerModal: React.FC<CustomerModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-light mr-2"
+              className="mr-2 btn btn-light"
               disabled={addingCustomer || addingAddress}
             >
               Cancel

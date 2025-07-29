@@ -7,6 +7,24 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from "react-places-autocomplete";
+import { useUpdateAddress } from "../../../hooks/address/useUpdateAddress";
+
+interface Address {
+  address_id: number;
+  address_type: number;
+  area?: string;
+  building_number?: string;
+  landmark?: string;
+  city?: string;
+  country?: string;
+  full_name?: string;
+  phone_number?: string;
+  pincode?: number;
+  state?: string;
+  user_id: number;
+  lat: string;
+  long: string;
+}
 
 interface AddressModalProps {
   isOpen: boolean;
@@ -15,6 +33,7 @@ interface AddressModalProps {
   setIsSubmit: (value: boolean) => void;
   onAddressAdded: (address: any) => void;
   fullname: string;
+  address?: Address | null;
 }
 
 const AddressModal: React.FC<AddressModalProps> = ({
@@ -24,14 +43,30 @@ const AddressModal: React.FC<AddressModalProps> = ({
   setIsSubmit,
   onAddressAdded,
   fullname,
+  address,
 }) => {
-  console.log(userId);
-  console.log(fullname);
+  const isEditMode = Boolean(address);
+
   const { addAddress, loading } = useAddAddress();
+  const { updateAddress, loading: updatingAddress } = useUpdateAddress();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [addressData, setAddressData] = useState({
+    building_number: "",
+    area: "",
+    lat: null,
+    long: null,
+    landmark: "",
+    pincode: "",
+    city: "",
+    state: "",
+    country: "",
+    user_id: null,
+    address_type: null,
+    full_name: "",
+  });
+  const [initialAddressData, setInitialAddressData] = useState({
     building_number: "",
     area: "",
     lat: null,
@@ -56,6 +91,25 @@ const AddressModal: React.FC<AddressModalProps> = ({
           user_id: userId,
           full_name: fullname,
         }));
+      }
+
+      if (isEditMode && address) {
+        const newData = {
+          building_number: address?.building_number || "",
+          area: address.area || "",
+          landmark: address.landmark || "",
+          pincode: address.pincode?.toString() || "",
+          city: address.city || "",
+          state: address.state || "",
+          country: address.country || "",
+          lat: address.lat || "",
+          long: address.long || "",
+          user_id: address.user_id,
+          address_type: address.address_type,
+          full_name: address.full_name || "",
+        };
+        setAddressData(newData);
+        setInitialAddressData(newData);
       }
     } else {
       setAddressData({
@@ -82,13 +136,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
   };
 
   const handleAddressSelect = async (selectedAddress: string) => {
-    console.log(selectedAddress);
     try {
       const results = await geocodeByAddress(selectedAddress);
       const latLng = await getLatLng(results[0]);
       const addressComponents = results[0].address_components;
-
-      console.log(addressComponents);
 
       const getComponent = (types: string[]) => {
         const component = addressComponents.find((c) =>
@@ -126,6 +177,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (
+      isEditMode &&
+      JSON.stringify(addressData) === JSON.stringify(initialAddressData)
+    ) {
+      onClose();
+      return;
+    }
+
     const cleanedAddressData = { ...addressData };
 
     if (!cleanedAddressData.pincode) {
@@ -135,19 +194,38 @@ const AddressModal: React.FC<AddressModalProps> = ({
       delete cleanedAddressData.landmark;
     }
 
+    if (cleanedAddressData.lat && cleanedAddressData.long) {
+      cleanedAddressData.lat = Number(cleanedAddressData.lat);
+      cleanedAddressData.long = Number(cleanedAddressData.long);
+    }
+
     try {
       await addressSchema.validate(addressData, { abortEarly: false });
       setErrors({});
-      console.log(cleanedAddressData);
       if (!cleanedAddressData.lat && !cleanedAddressData.long) {
         toast.error("Please search your address and  select it from dropdown");
+        return;
       }
       if (userId) {
-        const addressResponse = await addAddress(cleanedAddressData);
-        if (addressResponse) {
-          // onAddressAdded(addressResponse);
-          onClose();
-          // setIsSubmit(true);
+        if (isEditMode && address?.address_id) {
+          console.log("update address logic");
+          const updated = await updateAddress(
+            address.address_id,
+            cleanedAddressData
+          );
+          console.log("updated : ", updated);
+          if (updated.statusCode === 200) {
+            onAddressAdded(updated);
+            onClose();
+            setIsSubmit(true);
+          }
+        } else {
+          const created = await addAddress(cleanedAddressData);
+          if (created) {
+            onAddressAdded(created);
+            onClose();
+            setIsSubmit(true);
+          }
         }
       }
     } catch (error) {
@@ -166,7 +244,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
   if (!isOpen) return;
 
   return (
-    <div className="fixed inset-0 grid overflow-auto items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 grid items-center justify-center p-4 overflow-auto">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
@@ -174,24 +252,26 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
       <div className="bg-white p-5 rounded-lg shadow-lg min-w-[450px] !max-w-full z-10 relative">
         <button
-          className="btn btn-sm btn-icon btn-light btn-outline absolute top-0 right-0 mr-5 mt-5 lg:mr-5 shadow-default"
+          className="absolute top-0 right-0 mt-5 mr-5 btn btn-sm btn-icon btn-light btn-outline lg:mr-5 shadow-default"
           onClick={onClose}
         >
           <i className="ki-filled ki-cross"></i>
         </button>
-        <h2 className="text-2xl font-bold mb-6">Add New Address</h2>
+        <h2 className="mb-6 text-2xl font-bold">
+          {isEditMode ? "Edit Address" : "Add New Address"}
+        </h2>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="country"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Address Type
               </label>
               <select
-                className="select select-lg text-sm"
-                defaultValue=""
+                className="text-sm select select-lg"
+                value={addressData?.address_type ?? ""}
                 onChange={(e) =>
                   setAddressData({
                     ...addressData,
@@ -199,18 +279,14 @@ const AddressModal: React.FC<AddressModalProps> = ({
                   })
                 }
               >
-                <option
-                  value=""
-                  disabled
-                  className="badge-danger badge-outline"
-                >
+                <option value={null} className="badge-danger badge-outline">
                   Select Address Type
                 </option>
                 <option value="1">Home</option>
                 <option value="2">Office</option>
                 <option value="3">Other</option>
               </select>
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.address_type || "\u00A0"}
               </p>
             </div>
@@ -218,7 +294,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="area"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Search Address
               </label>
@@ -277,7 +353,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
                   </PlacesAutocomplete>
                 </div>
                 {errors.area && (
-                  <p className="w-full text-red-500 text-sm">
+                  <p className="w-full text-sm text-red-500">
                     {errors.area || "\u00A0"}
                   </p>
                 )}
@@ -287,7 +363,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="building_number"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 House Number and Society
               </label>
@@ -303,9 +379,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     building_number: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.building_number || "\u00A0"}
               </p>
             </div>
@@ -313,7 +389,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="landmark"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Landmark
               </label>
@@ -329,9 +405,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     landmark: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.landmark || "\u00A0"}
               </p>
             </div>
@@ -339,7 +415,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="city"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 City
               </label>
@@ -355,9 +431,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     city: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.city || "\u00A0"}
               </p>
             </div>
@@ -365,7 +441,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="pincode"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Pin code
               </label>
@@ -381,9 +457,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     pincode: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.pincode || "\u00A0"}
               </p>
             </div>
@@ -391,7 +467,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="state"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 State
               </label>
@@ -407,9 +483,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     state: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.state || "\u00A0"}
               </p>
             </div>
@@ -417,7 +493,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <div>
               <label
                 htmlFor="country"
-                className="block text-gray-700 font-semibold"
+                className="block font-semibold text-gray-700"
               >
                 Country
               </label>
@@ -433,9 +509,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
                     country: e.target.value,
                   })
                 }
-                className="w-full input border border-gray-300 rounded-md p-2"
+                className="w-full p-2 border border-gray-300 rounded-md input"
               />
-              <p className="w-full text-red-500 text-sm">
+              <p className="w-full text-sm text-red-500">
                 {errors.country || "\u00A0"}
               </p>
             </div>
@@ -445,7 +521,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-light mr-2"
+              className="mr-2 btn btn-light"
               disabled={loading}
             >
               Cancel
@@ -457,7 +533,13 @@ const AddressModal: React.FC<AddressModalProps> = ({
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              {loading ? "Submitting..." : "Submit"}
+              {isEditMode
+                ? loading
+                  ? "updating..."
+                  : "update"
+                : loading
+                ? "submitting..."
+                : "submit"}
             </button>
           </div>
         </form>
