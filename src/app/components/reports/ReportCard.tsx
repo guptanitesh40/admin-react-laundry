@@ -189,14 +189,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
         toast.error("Download report not found");
         return;
       }
-      // navigate("/report-preview", { state: { url, reportTitle } });
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = url;
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      navigate("/report-preview", { state: { url, reportTitle, dynamic_url } });
     } catch (error) {
       toast.error(error.message || "Network error: Failed to download report");
     } finally {
