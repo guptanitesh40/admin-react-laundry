@@ -1,4 +1,5 @@
 import React from "react";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 
 interface Address {
   id: number;
@@ -30,45 +31,60 @@ const CustomerAddress: React.FC<CustomerAddressProps> = ({
           + Add Address
         </button>
       </div>
-
       <div className="scrollable-x-auto">
         <table className="table table-auto table-border min-w-full">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Address</th>
-              <th>City</th>
-              <th>Pincode</th>
-              <th>State</th>
-              <th className="min-w-[150px] text-center">Actions</th>
+              <th className="min-w-[75px]">id</th>
+              <th className="min-w-[150px]">Name</th>
+              <th className="min-w-[150px]">Phone</th>
+              <th className="min-w-[200px]">Address</th>
+              <th className="min-w-[100px]">City</th>
+              <th className="min-w-[100px]">Pincode</th>
+              <th className="min-w-[80px]">State</th>
+              <th className="min-w-[125px] text-center">Actions</th>
             </tr>
           </thead>
           {addresses.length > 0 ? (
             <tbody>
               {addresses.map((address) => {
-                const { id, name, phone, city, pincode, address_line, state } =
-                  address;
+                const {
+                  address_id,
+                  full_name,
+                  phone_number,
+                  full_address,
+                  building_number,
+                  area,
+                  landmark,
+                  city,
+                  pincode,
+                  state,
+                } = address;
+
+                const addrString = [building_number, area, landmark]
+                  .filter(Boolean)
+                  .join(", ");
                 return (
-                  <tr key={id}>
-                    <td>{name}</td>
-                    <td>{phone}</td>
-                    <td>{address_line}</td>
+                  <tr key={address_id}>
+                    <td>{address_id}</td>
+                    <td>{full_name}</td>
+                    <td>{phone_number}</td>
+                    <td>{addrString}</td>
                     <td>{city}</td>
                     <td>{pincode}</td>
                     <td>{state}</td>
                     <td className="text-center">
                       <button
-                        className="btn btn-sm btn-warning mr-2"
-                        onClick={() => onEdit(id)}
+                        className="mr-3 p-3 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                        onClick={() => onEdit(address_id)}
                       >
-                        Edit
+                        <FaPencilAlt className="text-yellow-600 h-4 w-4" />
                       </button>
                       <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => onDelete(id)}
+                        className="p-3 bg-red-100 hover:bg-red-200  rounded-full"
+                        onClick={() => onDelete(address_id)}
                       >
-                        Delete
+                        <FaTrash className="text-red-500 h-4 w-4" />
                       </button>
                     </td>
                   </tr>
@@ -78,7 +94,7 @@ const CustomerAddress: React.FC<CustomerAddressProps> = ({
           ) : (
             <tbody>
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={8} className="text-center">
                   No addresses found.
                 </td>
               </tr>
@@ -91,15 +107,3 @@ const CustomerAddress: React.FC<CustomerAddressProps> = ({
 };
 
 export default CustomerAddress;
-
-// import React from 'react'
-
-// const CustomerAddress = () => {
-//   return (
-//     <div>
-
-//     </div>
-//   )
-// }
-
-// export default CustomerAddress

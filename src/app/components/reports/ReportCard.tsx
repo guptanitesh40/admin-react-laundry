@@ -5,6 +5,7 @@ import { useGetBranches, useGetCompanies } from "../../hooks";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 const { RangePicker } = DatePicker;
 
 interface ReportCardProps {
@@ -22,6 +23,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
   const delivery_pickup_role_id = 4;
   const [search, setSearch] = useState("");
   const [search2, setSearch2] = useState("");
+  const navigate = useNavigate();
 
   const [selectedCustomers, setSelectedCustomers] = useState<any[]>([]);
   const [selectedDelPickUsers, setSelectedDelPickUsers] = useState<any[]>([]);
@@ -187,9 +189,11 @@ const ReportCard: React.FC<ReportCardProps> = ({
         toast.error("Download report not found");
         return;
       }
+      // navigate("/report-preview", { state: { url, reportTitle } });
       const link = document.createElement("a");
       link.href = url;
       link.download = url;
+
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -205,7 +209,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
       <div className="card-header">
         <h3 className="card-title">{reportTitle}</h3>
       </div>
-      <div className="card-body flex flex-col gap-3">
+      <div className="flex flex-col gap-3 card-body">
         <div>
           <RangePicker
             className="w-full min-w-[80px] px-3 py-2 rounded-md border-gray-300"
@@ -304,7 +308,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
       <div className="card-footer">
         <button
           disabled={loading}
-          className="w-full inline-flex items-center justify-center btn btn-primary px-3 py-2 relative overflow-hidden"
+          className="relative inline-flex items-center justify-center w-full px-3 py-2 overflow-hidden btn btn-primary"
           onClick={() => handleBtnClick(index)}
         >
           {loading && <span className="absolute inset-0 loading-bar"></span>}

@@ -69,13 +69,16 @@ const PrivateRoutes: React.FC = () => {
     () => import("../components/roles-permissions/Permissions")
   );
   const Logs = lazy(() => import("../components/customer-logs/Index"));
+  const ReportPreview = lazy(
+    () => import("../components/reports/ReportPreview")
+  );
 
   const { loading } = useValidateToken();
 
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <div className="w-16 h-16 border-8 border-dashed rounded-full animate-spin border-blue-600"></div>
+        <div className="w-16 h-16 border-8 border-blue-600 border-dashed rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -521,6 +524,17 @@ const PrivateRoutes: React.FC = () => {
             element={
               <Suspense fallback={<Loading />}>
                 <Reports />
+              </Suspense>
+            }
+          />
+        </Route>
+
+        <Route element={<ProtectedRoute moduleId={20} action="read" />}>
+          <Route
+            path="/report-preview"
+            element={
+              <Suspense fallback={<Loading />}>
+                <ReportPreview />
               </Suspense>
             }
           />
