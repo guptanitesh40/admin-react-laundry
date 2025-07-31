@@ -82,13 +82,19 @@ const ReportPreview = () => {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-          const arrayBuffer = e.target?.result as ArrayBuffer;
-          const workbook = XLSX.read(arrayBuffer, { type: "array" });
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const json = XLSX.utils.sheet_to_json(worksheet, {
-            defval: "",
-          });
-          setData(json);
+          try {
+            const arrayBuffer = e.target?.result as ArrayBuffer;
+            const workbook = XLSX.read(arrayBuffer, { type: "array" });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(worksheet, {
+              defval: "",
+            });
+            setData(json);
+          } catch {
+            toast.error("Failed to parse Excel file.");
+          } finally {
+            setLoading(false);
+          }
         };
 
         reader.readAsArrayBuffer(blob);
@@ -96,7 +102,6 @@ const ReportPreview = () => {
         toast.error(
           err.message || "Something went wrong while loading report."
         );
-      } finally {
         setLoading(false);
       }
     };
